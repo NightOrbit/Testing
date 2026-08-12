@@ -4841,7 +4841,7 @@ const SIGNUP_TEMPLATE = "template_yq5hh4e";
 
     const CURRENT_APP_VERSION = 31; 
     const APP_CODE_HASH = 'gyidi_v31_20250306';
-    const BASE_URL = "https://mymarketbaazar.web.app/";
+    const BASE_URL = "https://nightorbit.github.io/Testing/";
     const byePoetry = `The stars begin to fade away,
     As Nightorbit closes for the day.
     A digital journey comes to rest,
@@ -6313,7 +6313,7 @@ async function resolveReferralCode(ref) {
             console.log('❌ No affiliate found for code:', ref);
             
             // FALLBACK: Check if CODE is stored in link field
-            const linkSnap = await db.ref('affiliate_links').orderByChild('link').equalTo(`https://mymarketbaazar.web.app/?ref=${ref}`).once('value');
+            const linkSnap = await db.ref('affiliate_links').orderByChild('link').equalTo(`https://nightorbit.github.io/Testing/?ref=${ref}`).once('value');
             if (linkSnap.exists()) {
                 console.log('✅ Found via link field!');
                 linkSnap.forEach(child => {
