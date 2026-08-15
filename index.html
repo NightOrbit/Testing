@@ -19,6 +19,7 @@
     <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" type="image/png" href="logo.png">
     <title>Gyidi Bazar Hub - Earn · Shop · Entertainment</title>
     <meta name="description" content="Gyidi Bazar is a globally recognized digital earning and entertainment marketplace. Earn coins through referrals, daily tasks, ad watching, and wheel spins. Shop from Daraz, Foodpanda, and more. Withdraw real money via JazzCash. Enterprise-grade security with OTP verification, anti-cheat, and Firebase encryption. Trusted across 10+ countries.">
     
@@ -3743,6 +3744,7 @@
             transform: translateY(-3px) scale(1.01) !important;
             box-shadow: 0 8px 30px rgba(0, 240, 255, 0.1) !important;
         }
+ 
     </style>
 </head>
 <body>
@@ -4558,8 +4560,9 @@
         <a href="https://www.udemy.com/" target="_blank" class="link-card" data-affiliate="https://invl.me/clnqf7y?url=https%3A%2F%2Fwww.udemy.com%2F">Udemy</a>
     </div>
 
-    <div class="cat-title" style="margin-top:20px;">👗 International Fashion (2)</div>
+    <div class="cat-title" style="margin-top:20px;">👗 International Fashion (3)</div>
     <div class="link-grid" id="all-fashion-list">
+        <a href="https://papique.com/" target="_blank" class="link-card" data-affiliate="https://invl.us/clnrxkw?url=https%3A%2F%2Fpapique.com%2F">Papique</a>
         <a href="https://www.lovebonito.com/intl/" target="_blank" class="link-card" data-affiliate="https://invl.me/clnqf8i?url=https%3A%2F%2Fwww.lovebonito.com%2Fintl%2F">Love Bonito</a>
         <a href="https://www.lightinthebox.com/" target="_blank" class="link-card" data-affiliate="https://invl.me/clnqf7m?url=https%3A%2F%2Fwww.lightinthebox.com%2F">Lightinthebox</a>
     </div>
@@ -8588,88 +8591,114 @@ Status: ${freezeData.status}
     }
 
       // ===== FIXED: submitPurchaseVerification (currency conversion, both currencies) =====
-    async function submitPurchaseVerification(uid) {
-        const platform = document.getElementById('verify-platform').value;
-        const currency = document.getElementById('verify-currency').value;
-        const amount = parseFloat(document.getElementById('verify-amount').value);
-        const fileInput = document.getElementById('verify-screenshot');
-        const orderTimeStr = document.getElementById('verify-order-time').value;
+   async function submitPurchaseVerification(uid) {
+    const platform = document.getElementById('verify-platform').value;
+    const currency = document.getElementById('verify-currency').value;
+    const amount = parseFloat(document.getElementById('verify-amount').value);
+    const fileInput = document.getElementById('verify-screenshot');
+    const orderTimeStr = document.getElementById('verify-order-time').value;
 
-        if (!amount || amount <= 0) {
-            return alert("❌ Please enter a valid amount!");
-        }
-        if (!fileInput.files[0]) {
-            return alert("❌ Please upload a screenshot");
-        }
-        if (!orderTimeStr) {
-            return alert("❌ Please enter the order time shown in screenshot");
-        }
+    // ----- VALIDATION -----
+    if (!amount || amount <= 0) {
+        alert("❌ Please enter a valid amount!");
+        return;
+    }
+    if (!fileInput.files[0]) {
+        alert("❌ Please upload a screenshot");
+        return;
+    }
+    if (!orderTimeStr) {
+        alert("❌ Please enter the order time shown in screenshot");
+        return;
+    }
 
-        const orderTime = new Date(orderTimeStr).getTime();
-        const now = Date.now();
-        if (now - orderTime > 20 * 60 * 1000) {
-            return alert("❌ Screenshot is too old! It must be within last 20 minutes.");
-        }
-        if (orderTime > now) {
-            return alert("❌ Order time cannot be in the future!");
-        }
+    const orderTime = new Date(orderTimeStr).getTime();
+    const now = Date.now();
+    if (now - orderTime > 20 * 60 * 1000) {
+        alert("❌ Screenshot is too old! It must be within last 20 minutes.");
+        return;
+    }
+    if (orderTime > now) {
+        alert("❌ Order time cannot be in the future!");
+        return;
+    }
 
-        // ===== CURRENCY CONVERSION =====
-        let usdRate = 0;
-        let amountPKR = amount;
-        let displayCurrency = currency;
-        let displayAmount = amount;
-        
-        if (currency === 'USD') {
-            const rateSnap = await db.ref('app_control/usd_to_pkr_rate').once('value');
-            usdRate = rateSnap.val() || 280;
-            amountPKR = amount * usdRate;
-            displayCurrency = 'USD';
-            displayAmount = amount;
-        } else {
-            // PKR
-            amountPKR = amount;
-            displayCurrency = 'PKR';
-            displayAmount = amount;
+    // ----- CURRENCY CONVERSION -----
+    let usdRate = 0;
+    let amountPKR = amount;
+    let displayCurrency = currency;
+    let displayAmount = amount;
+
+    if (currency === 'USD') {
+        const rateSnap = await db.ref('app_control/usd_to_pkr_rate').once('value');
+        usdRate = rateSnap.val() || 280;
+        amountPKR = amount * usdRate;
+        displayCurrency = 'USD';
+        displayAmount = amount;
+    } else {
+        amountPKR = amount;
+        displayCurrency = 'PKR';
+        displayAmount = amount;
+    }
+
+    // ----- FEEDBACK RATE -----
+    const rateSnap = await db.ref('app_control/platform_feedback_defaults/' + platform).once('value');
+    const feedbackRate = rateSnap.val() || 0;
+    const coinsToGive = Math.floor(amountPKR * (feedbackRate / 100) * 10);
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        const screenshotBase64 = e.target.result;
+        const hash = await sha256(screenshotBase64);
+        const hashCheck = await db.ref('used_screenshot_hashes/' + hash).once('value');
+
+        // ----- DUPLICATE CHECK -----
+        if (hashCheck.exists()) {
+            // Add warning and get current warning count
+            const warningCount = await addWarningAndGetCount(uid, 'Duplicate screenshot used');
+            const freezeStatus = await checkIfFrozen(uid);
+            
+            if (freezeStatus) {
+                alert("❌ Your account has been FROZEN due to repeated violations.\n\nReason: Duplicate screenshot attempts.\nPlease contact support via Help Center.");
+            } else {
+                alert(`❌ Submission failed: Duplicate screenshot detected.\n\nWarning #${warningCount}/3. 3 warnings will freeze your account.\nPlease upload a genuine screenshot.`);
+            }
+            document.getElementById('purchase-verify-modal').remove();
+            return;
         }
+        await db.ref('used_screenshot_hashes/' + hash).set({
+            uid: uid,
+            timestamp: now,
+            platform: platform
+        });
 
-        // Platform rate se coins calculate karein (PKR amount ke hisaab se)
-        const rateSnap = await db.ref('app_control/platform_feedback_defaults/' + platform).once('value');
-        const feedbackRate = rateSnap.val() || 0;
-        const coinsToGive = Math.floor(amountPKR * (feedbackRate / 100) * 10);
-
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            const screenshotBase64 = e.target.result;
-            const hash = await sha256(screenshotBase64);
-            const hashCheck = await db.ref('used_screenshot_hashes/' + hash).once('value');
-            if (hashCheck.exists()) {
-                await addWarning(uid, 'Duplicate screenshot used');
+        // ----- EXIF CHECK -----
+        try {
+            const exifTime = await getExifTime(fileInput.files[0]);
+            if (exifTime && Math.abs(exifTime - orderTime) > 5 * 60 * 1000) {
+                const warningCount = await addWarningAndGetCount(uid, 'EXIF time mismatch');
+                const freezeStatus = await checkIfFrozen(uid);
+                
+                if (freezeStatus) {
+                    alert("❌ Your account has been FROZEN due to repeated violations.\n\nReason: Screenshot timestamp mismatch.\nPlease contact support via Help Center.");
+                } else {
+                    alert(`❌ Submission failed: Screenshot timestamp does not match order time.\n\nWarning #${warningCount}/3. 3 warnings will freeze your account.\nPlease upload the correct screenshot.`);
+                }
                 document.getElementById('purchase-verify-modal').remove();
                 return;
             }
-            await db.ref('used_screenshot_hashes/' + hash).set({
-                uid: uid,
-                timestamp: now,
-                platform: platform
-            });
+        } catch (e) {
+            // EXIF not available – ignore
+        }
 
-            try {
-                const exifTime = await getExifTime(fileInput.files[0]);
-                if (exifTime && Math.abs(exifTime - orderTime) > 5 * 60 * 1000) {
-                    await addWarning(uid, 'EXIF time mismatch');
-                    document.getElementById('purchase-verify-modal').remove();
-                    return;
-                }
-            } catch (e) {}
-
-            // ===== SAVE WITH BOTH CURRENCIES =====
-            db.ref('purchase_verifications/' + uid).push({
+        // ===== SAVE VERIFICATION =====
+        try {
+            await db.ref('purchase_verifications/' + uid).push({
                 platform: platform,
-                currency: displayCurrency,          // "PKR" or "USD"
-                amount: displayAmount,              // Original amount in selected currency
-                amountPKR: amountPKR,               // Amount converted to PKR
-                exchangeRate: usdRate,              // USD to PKR rate (0 if PKR)
+                currency: displayCurrency,
+                amount: displayAmount,
+                amountPKR: amountPKR,
+                exchangeRate: usdRate,
                 platformRate: feedbackRate,
                 coinsEstimated: coinsToGive,
                 screenshot: screenshotBase64,
@@ -8684,14 +8713,54 @@ Status: ${freezeData.status}
                 fingerprint: fingerprint,
                 location: userLocation,
                 hash: hash
-            }).then(() => {
-                alert(`✅ Purchase verification submitted!\n\n🪙 Estimated Coins: ${coinsToGive}\n💱 Currency: ${displayCurrency}\n💰 Amount: ${displayCurrency === 'USD' ? '$' : 'Rs.'} ${displayAmount}${displayCurrency === 'USD' ? ` (≈ Rs. ${amountPKR})` : ''}\n\nAdmin will review and add coins within 24 hours.`);
-                document.getElementById('purchase-verify-modal').remove();
-                earnCoins(2, `Purchase submitted - ${platform}`);
             });
-        };
-        reader.readAsDataURL(fileInput.files[0]);
+            alert(`✅ Purchase verification submitted!\n\n🪙 Estimated Coins: ${coinsToGive}\n💱 Currency: ${displayCurrency}\n💰 Amount: ${displayCurrency === 'USD' ? '$' : 'Rs.'} ${displayAmount}${displayCurrency === 'USD' ? ` (≈ Rs. ${amountPKR})` : ''}\n\nAdmin will review and add coins within 24 hours.`);
+            document.getElementById('purchase-verify-modal').remove();
+            earnCoins(2, `Purchase submitted - ${platform}`);
+        } catch (err) {
+            alert("❌ Something went wrong while submitting your request. Please try again later.\nError: " + err.message);
+            document.getElementById('purchase-verify-modal').remove();
+        }
+    };
+
+    reader.onerror = function() {
+        alert("❌ Failed to read the screenshot file. Please try again.");
+        document.getElementById('purchase-verify-modal').remove();
+    };
+
+    reader.readAsDataURL(fileInput.files[0]);
+}
+
+// ----- Helper: Add warning and get new count -----
+async function addWarningAndGetCount(uid, reason) {
+    const today = new Date().toISOString().split('T')[0];
+    const warningRef = db.ref('warnings/' + uid + '/' + today);
+    const snapshot = await warningRef.transaction(current => (current || 0) + 1);
+    const newCount = snapshot.snapshot.val();
+    
+    await db.ref('warning_logs').push({
+        uid: uid,
+        email: auth.currentUser ? auth.currentUser.email : 'unknown',
+        reason: reason,
+        date: today,
+        timestamp: Date.now(),
+        warningCount: newCount
+    });
+    
+    await updateConsecutiveWarningDays(uid);
+    
+    // Check if should freeze
+    if (newCount >= 3) {
+        await freezeAccount(uid, auth.currentUser.email, '3 warnings in one day');
     }
+    return newCount;
+}
+
+// ----- Helper: Check if account is frozen -----
+async function checkIfFrozen(uid) {
+    const snap = await db.ref('users/' + uid + '/frozen').once('value');
+    return snap.val() === true;
+}
 
     async function sha256(message) {
         const msgBuffer = new TextEncoder().encode(message);
@@ -8847,6 +8916,11 @@ Status: ${freezeData.status}
                          };
                    });
          }
+
+ document.addEventListener('DOMContentLoaded', function() {
+    console.log("🔥 DOM Ready - Upgrading all links...");
+    upgradeAllLinks();
+});
 
     // ============================================================
     //  EVENT FUNCTIONS - FIXED
@@ -10450,8 +10524,8 @@ function loadUsersForAdmin() {
                     processUser(user, "Verified", data ? data.ownerNick : user.email.split('@')[0]);
                     syncWithAdminPanel(user.uid);
                     renderSupportRequests();
-                    setTimeout(upgradeAllLinks, 1000);
-                });
+                    upgradeAllLinks();
+                 });
             } else {
                 setTimeout(hideLoad, 1000);
             }
@@ -11705,6 +11779,7 @@ function loadUsersForAdmin() {
         }
     }, 1000);
 }
+
 
     // ============================================================
     //  EVENT TIMERS START
