@@ -434,70 +434,63 @@
             box-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
         }
 
-              /* ============================================
-                 HELP CENTER - 100% PERFECT CENTER
-               ============================================ */
-            #help-container {
-                 display: none;
-                 position: fixed;
-                 inset: 0;
-                 width: 100%;
-                 height: 100vh;
-                 background: rgba(8, 8, 20, 0.96);
-                 backdrop-filter: blur(30px) saturate(1.4);
-                -webkit-backdrop-filter: blur(30px) saturate(1.4);
-                 z-index: 9999;
-                 padding: 20px;
-                 box-sizing: border-box;
-              /* === YAHI SE CENTER HOGA === */
-                 align-items: center;
-                 justify-content: center;
-                 flex-direction: column;
-         }
+        /* ============================================
+           HELP CENTER - 100% PERFECT CENTER
+           ============================================ */
+        #help-container {
+            display: none;
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(8, 8, 20, 0.96);
+            backdrop-filter: blur(30px) saturate(1.4);
+            -webkit-backdrop-filter: blur(30px) saturate(1.4);
+            z-index: 9999;
+            padding: 20px;
+            box-sizing: border-box;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
 
-            #help-container.active {
-                display: flex !important;
-         }
+        #help-container.active {
+            display: flex !important;
+        }
 
-            .help-content {
-                 max-width: 480px;
-                 width: 100%;
-                 max-height: 90vh;
-                 overflow-y: auto;
-                 overflow-x: hidden;
-                 background: rgba(11, 11, 26, 0.95);
-                 backdrop-filter: blur(40px);
-                -webkit-backdrop-filter: blur(40px);
-                 border-radius: 28px;
-                 border: 1px solid rgba(0, 240, 255, 0.1);
-                 box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 60px rgba(0, 240, 255, 0.02);
-                 padding: 35px 28px 28px;
-                 box-sizing: border-box;
-                 position: relative;
-                /* CENTER KE LIYE KOEI margin:auto NAHI LAGANA, FLEX SAMBHAL LEGA */
-                 margin: 0;
-}
-
-                  /* Scrollbar Styling */
-          .help-content::-webkit-scrollbar {
-             width: 4px;
-         }
-
-            .help-content::-webkit-scrollbar-track {
-              background: rgba(255, 255, 255, 0.02);
-              border-radius: 10px;
-          }
-            .help-content::-webkit-scrollbar-thumb {
-               background: var(--neon-cyan);
-               border-radius: 10px;
-         }
-
-
-                /* Firefox scrollbar */
         .help-content {
-           scrollbar-width: thin;
-           scrollbar-color: var(--neon-cyan) transparent;
-       }
+            max-width: 480px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: rgba(11, 11, 26, 0.95);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-radius: 28px;
+            border: 1px solid rgba(0, 240, 255, 0.1);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 60px rgba(0, 240, 255, 0.02);
+            padding: 35px 28px 28px;
+            box-sizing: border-box;
+            position: relative;
+            margin: 0;
+        }
+
+        .help-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .help-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+        .help-content::-webkit-scrollbar-thumb {
+            background: var(--neon-cyan);
+            border-radius: 10px;
+        }
+        .help-content {
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-cyan) transparent;
+        }
 
         .help-content::before {
             content: '';
@@ -727,7 +720,6 @@
             border-color: var(--neon-cyan) !important;
             color: var(--neon-cyan) !important;
         }
-       
 
         /* ============================================
            HAMBURGER MENU - Neon Upgrade
@@ -758,73 +750,72 @@
         }
         #hamburger-overlay.active { display: block; }
 
-             /* ============================================
-   CLOSE BUTTONS — NEON CYBERPUNK STYLE
-   ============================================ */
-.menu-close-btn,
-.menu-close-new,
-.help-close-btn,
-.about-close-btn,
-.modal-close-btn,
-#referral-popup .referral-box > button:first-child,
-#withdraw-history-overlay .withdraw-history-box > button:first-child,
-#winners-popup > div > button:first-child {
-    position: absolute !important;
-    top: 12px !important;
-    right: 12px !important;
-    width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
-    padding: 0 !important;
-    border-radius: 50% !important;
-    background: rgba(0, 240, 255, 0.04) !important;
-    border: 2px solid rgba(0, 240, 255, 0.15) !important;
-    color: var(--neon-cyan) !important;
-    font-size: 20px !important;
-    cursor: pointer !important;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.05), 0 2px 12px rgba(0, 0, 0, 0.3) !important;
-    z-index: 10 !important;
-    flex-shrink: 0 !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-}
+        /* ============================================
+           CLOSE BUTTONS — NEON CYBERPUNK STYLE
+           ============================================ */
+        .menu-close-btn,
+        .menu-close-new,
+        .help-close-btn,
+        .about-close-btn,
+        .modal-close-btn,
+        #referral-popup .referral-box > button:first-child,
+        #withdraw-history-overlay .withdraw-history-box > button:first-child,
+        #winners-popup > div > button:first-child {
+            position: absolute !important;
+            top: 12px !important;
+            right: 12px !important;
+            width: 44px !important;
+            height: 44px !important;
+            min-height: 44px !important;
+            padding: 0 !important;
+            border-radius: 50% !important;
+            background: rgba(0, 240, 255, 0.04) !important;
+            border: 2px solid rgba(0, 240, 255, 0.15) !important;
+            color: var(--neon-cyan) !important;
+            font-size: 20px !important;
+            cursor: pointer !important;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.05), 0 2px 12px rgba(0, 0, 0, 0.3) !important;
+            z-index: 10 !important;
+            flex-shrink: 0 !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+        }
 
-.menu-close-btn:hover,
-.menu-close-new:hover,
-.help-close-btn:hover,
-.about-close-btn:hover,
-.modal-close-btn:hover,
-#referral-popup .referral-box > button:first-child:hover,
-#withdraw-history-overlay .withdraw-history-box > button:first-child:hover,
-#winners-popup > div > button:first-child:hover {
-    background: rgba(0, 240, 255, 0.08) !important;
-    border-color: var(--neon-cyan) !important;
-    color: var(--neon-cyan) !important;
-    transform: rotate(90deg) scale(1.12) !important;
-    box-shadow: 0 0 40px rgba(0, 240, 255, 0.15), 0 0 80px rgba(0, 240, 255, 0.05) !important;
-}
+        .menu-close-btn:hover,
+        .menu-close-new:hover,
+        .help-close-btn:hover,
+        .about-close-btn:hover,
+        .modal-close-btn:hover,
+        #referral-popup .referral-box > button:first-child:hover,
+        #withdraw-history-overlay .withdraw-history-box > button:first-child:hover,
+        #winners-popup > div > button:first-child:hover {
+            background: rgba(0, 240, 255, 0.08) !important;
+            border-color: var(--neon-cyan) !important;
+            color: var(--neon-cyan) !important;
+            transform: rotate(90deg) scale(1.12) !important;
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.15), 0 0 80px rgba(0, 240, 255, 0.05) !important;
+        }
 
-/* ---- Special: Gold variant for some modals ---- */
-#winners-popup > div > button:first-child,
-#referral-popup .referral-box > button:first-child,
-#withdraw-history-overlay .withdraw-history-box > button:first-child {
-    border-color: rgba(255, 215, 0, 0.15) !important;
-    color: var(--neon-gold) !important;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.05), 0 2px 12px rgba(0, 0, 0, 0.3) !important;
-}
-#winners-popup > div > button:first-child:hover,
-#referral-popup .referral-box > button:first-child:hover,
-#withdraw-history-overlay .withdraw-history-box > button:first-child:hover {
-    background: rgba(255, 215, 0, 0.08) !important;
-    border-color: var(--neon-gold) !important;
-    color: var(--neon-gold) !important;
-    box-shadow: 0 0 40px rgba(255, 215, 0, 0.15), 0 0 80px rgba(255, 215, 0, 0.05) !important;
-}        
-
+        /* ---- Special: Gold variant for some modals ---- */
+        #winners-popup > div > button:first-child,
+        #referral-popup .referral-box > button:first-child,
+        #withdraw-history-overlay .withdraw-history-box > button:first-child {
+            border-color: rgba(255, 215, 0, 0.15) !important;
+            color: var(--neon-gold) !important;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.05), 0 2px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+        #winners-popup > div > button:first-child:hover,
+        #referral-popup .referral-box > button:first-child:hover,
+        #withdraw-history-overlay .withdraw-history-box > button:first-child:hover {
+            background: rgba(255, 215, 0, 0.08) !important;
+            border-color: var(--neon-gold) !important;
+            color: var(--neon-gold) !important;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.15), 0 0 80px rgba(255, 215, 0, 0.05) !important;
+        }
 
         .menu-profile-section {
             text-align: center;
@@ -848,12 +839,12 @@
             justify-content: center;
         }
 
-         .menu-profile-pic img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: top center;
-}
+        .menu-profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+        }
         
         .menu-user-name {
             font-size: 18px;
@@ -907,34 +898,34 @@
             background: rgba(255, 215, 0, 0.06);
         }
        
-              /* ===== HEAVY MENU LOGOUT ===== */
-.menu-btn.red {
-    border-color: rgba(255, 0, 0, 0.08) !important;
-    color: #ff4444 !important;
-    background: rgba(255, 0, 0, 0.02) !important;
-    padding: 16px 20px !important;
-    border-radius: var(--radius-md) !important;
-    font-weight: 700 !important;
-    font-size: 14px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-    min-height: 60px !important;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2) !important;
-    transition: all 0.35s ease !important;
-    width: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 14px !important;
-}
-.menu-btn.red:hover {
-    background: rgba(255, 0, 0, 0.08) !important;
-    border-color: #ff4444 !important;
-    transform: translateX(6px) scale(1.01) !important;
-    box-shadow: 0 8px 30px rgba(255, 0, 0, 0.15) !important;
-}
-.menu-btn.red:active {
-    transform: scale(0.97) !important;
-}
+        /* ===== HEAVY MENU LOGOUT ===== */
+        .menu-btn.red {
+            border-color: rgba(255, 0, 0, 0.08) !important;
+            color: #ff4444 !important;
+            background: rgba(255, 0, 0, 0.02) !important;
+            padding: 16px 20px !important;
+            border-radius: var(--radius-md) !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            min-height: 60px !important;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2) !important;
+            transition: all 0.35s ease !important;
+            width: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 14px !important;
+        }
+        .menu-btn.red:hover {
+            background: rgba(255, 0, 0, 0.08) !important;
+            border-color: #ff4444 !important;
+            transform: translateX(6px) scale(1.01) !important;
+            box-shadow: 0 8px 30px rgba(255, 0, 0, 0.15) !important;
+        }
+        .menu-btn.red:active {
+            transform: scale(0.97) !important;
+        }
 
         .menu-btn.winners {
             border-color: var(--neon-gold);
@@ -961,8 +952,7 @@
         #member-area .coin-display {
             display: inline-flex;
             justify-content: center;
-       }
-
+        }
 
         .tab-system {
             display: flex;
@@ -1166,324 +1156,324 @@
             border: 5px solid var(--neon-pink);
         }
 
-       /* ============================================
-   WITHDRAWAL MODAL - HEAVY NEON STYLE
-   ============================================ */
+        /* ============================================
+           WITHDRAWAL MODAL - HEAVY NEON STYLE
+           ============================================ */
 
-/* ---- Modal Container ---- */
-#withdraw-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.92);
-    backdrop-filter: blur(30px) saturate(1.4);
-    -webkit-backdrop-filter: blur(30px) saturate(1.4);
-    z-index: 6000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-#withdraw-overlay.active {
-    display: flex !important;
-}
+        /* ---- Modal Container ---- */
+        #withdraw-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(30px) saturate(1.4);
+            -webkit-backdrop-filter: blur(30px) saturate(1.4);
+            z-index: 6000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        #withdraw-overlay.active {
+            display: flex !important;
+        }
 
-/* ---- Card ---- */
-#withdraw-overlay .withdraw-card {
-    width: 420px;
-    max-width: 95%;
-    max-height: 92vh;
-    overflow-y: auto;
-    background: rgba(11, 11, 26, 0.95);
-    backdrop-filter: blur(50px) saturate(1.8);
-    -webkit-backdrop-filter: blur(50px) saturate(1.8);
-    border-radius: var(--radius-xl);
-    padding: 35px 30px 30px;
-    border: 1px solid rgba(0, 240, 255, 0.08);
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 60px rgba(0, 240, 255, 0.03);
-    position: relative;
-    text-align: center;
-}
+        /* ---- Card ---- */
+        #withdraw-overlay .withdraw-card {
+            width: 420px;
+            max-width: 95%;
+            max-height: 92vh;
+            overflow-y: auto;
+            background: rgba(11, 11, 26, 0.95);
+            backdrop-filter: blur(50px) saturate(1.8);
+            -webkit-backdrop-filter: blur(50px) saturate(1.8);
+            border-radius: var(--radius-xl);
+            padding: 35px 30px 30px;
+            border: 1px solid rgba(0, 240, 255, 0.08);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 60px rgba(0, 240, 255, 0.03);
+            position: relative;
+            text-align: center;
+        }
 
-/* ---- Neon Border Animation ---- */
-#withdraw-overlay .withdraw-card::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: var(--radius-xl);
-    padding: 2px;
-    background: conic-gradient(from 0deg, var(--neon-cyan), var(--neon-gold), var(--neon-purple), var(--neon-cyan));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    animation: borderSpin 8s linear infinite;
-}
+        /* ---- Neon Border Animation ---- */
+        #withdraw-overlay .withdraw-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: var(--radius-xl);
+            padding: 2px;
+            background: conic-gradient(from 0deg, var(--neon-cyan), var(--neon-gold), var(--neon-purple), var(--neon-cyan));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: borderSpin 8s linear infinite;
+        }
 
-/* ---- Scrollbar ---- */
-#withdraw-overlay .withdraw-card::-webkit-scrollbar {
-    width: 4px;
-}
-#withdraw-overlay .withdraw-card::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 10px;
-}
-#withdraw-overlay .withdraw-card::-webkit-scrollbar-thumb {
-    background: var(--neon-cyan);
-    border-radius: 10px;
-}
+        /* ---- Scrollbar ---- */
+        #withdraw-overlay .withdraw-card::-webkit-scrollbar {
+            width: 4px;
+        }
+        #withdraw-overlay .withdraw-card::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+        #withdraw-overlay .withdraw-card::-webkit-scrollbar-thumb {
+            background: var(--neon-cyan);
+            border-radius: 10px;
+        }
 
-/* ---- Heading ---- */
-#withdraw-overlay .withdraw-card h3 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 24px;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--neon-gold), var(--neon-pink));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 2px;
-    margin: 0 0 5px 0 !important;
-}
+        /* ---- Heading ---- */
+        #withdraw-overlay .withdraw-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-gold), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+            margin: 0 0 5px 0 !important;
+        }
 
-#withdraw-overlay .withdraw-card .sub-text {
-    color: var(--text-muted);
-    font-size: 12px;
-    margin-bottom: 15px;
-    opacity: 0.7;
-}
+        #withdraw-overlay .withdraw-card .sub-text {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-bottom: 15px;
+            opacity: 0.7;
+        }
 
-/* ---- Balance Display ---- */
-#withdraw-overlay .withdraw-card #pk-balance-display {
-    font-size: 28px;
-    font-weight: 900;
-    color: var(--neon-cyan) !important;
-    text-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
-    margin: 8px 0 15px 0 !important;
-    background: rgba(0, 240, 255, 0.04);
-    padding: 10px 20px;
-    border-radius: var(--radius-sm);
-    border: 1px solid rgba(0, 240, 255, 0.06);
-}
+        /* ---- Balance Display ---- */
+        #withdraw-overlay .withdraw-card #pk-balance-display {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--neon-cyan) !important;
+            text-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
+            margin: 8px 0 15px 0 !important;
+            background: rgba(0, 240, 255, 0.04);
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(0, 240, 255, 0.06);
+        }
 
-/* ---- Step Headings ---- */
-#withdraw-overlay .withdraw-card h4 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--neon-gold) !important;
-    letter-spacing: 1px;
-    margin: 20px 0 8px 0 !important;
-    text-align: center;
-    border-bottom: 1px solid rgba(255, 215, 0, 0.08);
-    padding-bottom: 8px;
-}
+        /* ---- Step Headings ---- */
+        #withdraw-overlay .withdraw-card h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--neon-gold) !important;
+            letter-spacing: 1px;
+            margin: 20px 0 8px 0 !important;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.08);
+            padding-bottom: 8px;
+        }
 
-/* ---- Description text ---- */
-#withdraw-overlay .withdraw-card p {
-    color: var(--text-secondary);
-    font-size: 13px;
-    line-height: 1.6;
-    margin: 5px 0 12px 0;
-}
+        /* ---- Description text ---- */
+        #withdraw-overlay .withdraw-card p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 5px 0 12px 0;
+        }
 
-/* ============================================
-   INPUTS & SELECT (Dropdown)
-   ============================================ */
-#withdraw-overlay .withdraw-card input,
-#withdraw-overlay .withdraw-card select {
-    width: 100%;
-    padding: 16px 18px;
-    margin: 6px 0;
-    border-radius: var(--radius-md);
-    border: 1.5px solid rgba(0, 240, 255, 0.12);
-    background: rgba(0, 240, 255, 0.04) !important;
-    color: var(--text-primary) !important;
-    font-size: 15px;
-    font-weight: 400;
-    transition: all 0.35s ease;
-    font-family: inherit;
-    backdrop-filter: blur(10px);
-    box-sizing: border-box;
-}
+        /* ============================================
+           INPUTS & SELECT (Dropdown)
+           ============================================ */
+        #withdraw-overlay .withdraw-card input,
+        #withdraw-overlay .withdraw-card select {
+            width: 100%;
+            padding: 16px 18px;
+            margin: 6px 0;
+            border-radius: var(--radius-md);
+            border: 1.5px solid rgba(0, 240, 255, 0.12);
+            background: rgba(0, 240, 255, 0.04) !important;
+            color: var(--text-primary) !important;
+            font-size: 15px;
+            font-weight: 400;
+            transition: all 0.35s ease;
+            font-family: inherit;
+            backdrop-filter: blur(10px);
+            box-sizing: border-box;
+        }
 
-#withdraw-overlay .withdraw-card input:focus,
-#withdraw-overlay .withdraw-card select:focus {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 30px rgba(0, 240, 255, 0.1), inset 0 0 30px rgba(0, 240, 255, 0.03);
-    background: rgba(0, 240, 255, 0.06) !important;
-    transform: scale(1.005);
-}
+        #withdraw-overlay .withdraw-card input:focus,
+        #withdraw-overlay .withdraw-card select:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.1), inset 0 0 30px rgba(0, 240, 255, 0.03);
+            background: rgba(0, 240, 255, 0.06) !important;
+            transform: scale(1.005);
+        }
 
-#withdraw-overlay .withdraw-card input::placeholder,
-#withdraw-overlay .withdraw-card select::placeholder {
-    color: var(--text-muted);
-    font-weight: 300;
-    opacity: 0.6;
-}
+        #withdraw-overlay .withdraw-card input::placeholder,
+        #withdraw-overlay .withdraw-card select::placeholder {
+            color: var(--text-muted);
+            font-weight: 300;
+            opacity: 0.6;
+        }
 
-/* ---- SELECT DROPDOWN (JazzCash/Bank) - FIX ---- */
-#withdraw-overlay .withdraw-card select {
-    appearance: none;
-    -webkit-appearance: none;
-    background: rgba(0, 240, 255, 0.04) !important;
-    color: var(--text-primary) !important;
-    border: 1.5px solid rgba(0, 240, 255, 0.12) !important;
-    cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300f0ff' stroke-width='2' fill='none'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
-    padding-right: 40px;
-}
+        /* ---- SELECT DROPDOWN (JazzCash/Bank) - FIX ---- */
+        #withdraw-overlay .withdraw-card select {
+            appearance: none;
+            -webkit-appearance: none;
+            background: rgba(0, 240, 255, 0.04) !important;
+            color: var(--text-primary) !important;
+            border: 1.5px solid rgba(0, 240, 255, 0.12) !important;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300f0ff' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
 
-#withdraw-overlay .withdraw-card select option {
-    background: #0b0b1a !important;
-    color: var(--text-primary) !important;
-    padding: 10px !important;
-    border: none !important;
-}
+        #withdraw-overlay .withdraw-card select option {
+            background: #0b0b1a !important;
+            color: var(--text-primary) !important;
+            padding: 10px !important;
+            border: none !important;
+        }
 
-#withdraw-overlay .withdraw-card select option:hover {
-    background: rgba(0, 240, 255, 0.1) !important;
-}
+        #withdraw-overlay .withdraw-card select option:hover {
+            background: rgba(0, 240, 255, 0.1) !important;
+        }
 
-/* ---- OTP Inputs (5-digit, 4-digit) ---- */
-#withdraw-overlay .withdraw-card #otp-code,
-#withdraw-overlay .withdraw-card #edit-otp-code,
-#withdraw-overlay .withdraw-card #connected-otp-code {
-    text-align: center !important;
-    font-size: 24px !important;
-    letter-spacing: 8px !important;
-    font-weight: 700 !important;
-    padding: 16px !important;
-    background: rgba(0, 0, 0, 0.3) !important;
-    border-color: var(--neon-gold) !important;
-}
+        /* ---- OTP Inputs (5-digit, 4-digit) ---- */
+        #withdraw-overlay .withdraw-card #otp-code,
+        #withdraw-overlay .withdraw-card #edit-otp-code,
+        #withdraw-overlay .withdraw-card #connected-otp-code {
+            text-align: center !important;
+            font-size: 24px !important;
+            letter-spacing: 8px !important;
+            font-weight: 700 !important;
+            padding: 16px !important;
+            background: rgba(0, 0, 0, 0.3) !important;
+            border-color: var(--neon-gold) !important;
+        }
 
-/* ============================================
-   BUTTONS - ALL HEAVY
-   ============================================ */
+        /* ============================================
+           BUTTONS - ALL HEAVY
+           ============================================ */
 
-/* ---- All buttons (except cancel) ---- */
-#withdraw-overlay .withdraw-card button:not(.btn-cancel) {
-    width: 100%;
-    padding: 16px 24px;
-    border-radius: var(--radius-md);
-    font-weight: 700;
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    min-height: 56px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin: 8px 0;
-    position: relative;
-    overflow: hidden;
-}
+        /* ---- All buttons (except cancel) ---- */
+        #withdraw-overlay .withdraw-card button:not(.btn-cancel) {
+            width: 100%;
+            padding: 16px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            min-height: 56px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 8px 0;
+            position: relative;
+            overflow: hidden;
+        }
 
-#withdraw-overlay .withdraw-card button:not(.btn-cancel):hover {
-    transform: translateY(-3px) scale(1.01);
-    box-shadow: 0 8px 35px rgba(0, 0, 0, 0.4);
-}
+        #withdraw-overlay .withdraw-card button:not(.btn-cancel):hover {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 8px 35px rgba(0, 0, 0, 0.4);
+        }
 
-#withdraw-overlay .withdraw-card button:not(.btn-cancel):active {
-    transform: scale(0.97);
-}
+        #withdraw-overlay .withdraw-card button:not(.btn-cancel):active {
+            transform: scale(0.97);
+        }
 
-/* ---- Primary Button (Cyan to Purple) ---- */
-#withdraw-overlay .withdraw-card .btn-main {
-    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)) !important;
-    color: #000 !important;
-    box-shadow: 0 0 30px rgba(0, 240, 255, 0.15), 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-}
-#withdraw-overlay .withdraw-card .btn-main:hover {
-    box-shadow: 0 8px 40px rgba(0, 240, 255, 0.25), 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-}
+        /* ---- Primary Button (Cyan to Purple) ---- */
+        #withdraw-overlay .withdraw-card .btn-main {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)) !important;
+            color: #000 !important;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15), 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+        }
+        #withdraw-overlay .withdraw-card .btn-main:hover {
+            box-shadow: 0 8px 40px rgba(0, 240, 255, 0.25), 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+        }
 
-/* ---- Gold Button (Verify OTP, Submit) ---- */
-#withdraw-overlay .withdraw-card .btn-gold {
-    background: linear-gradient(135deg, var(--neon-gold), #f59e0b) !important;
-    color: #000 !important;
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.15), 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-}
-#withdraw-overlay .withdraw-card .btn-gold:hover {
-    box-shadow: 0 8px 40px rgba(255, 215, 0, 0.25), 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-}
+        /* ---- Gold Button (Verify OTP, Submit) ---- */
+        #withdraw-overlay .withdraw-card .btn-gold {
+            background: linear-gradient(135deg, var(--neon-gold), #f59e0b) !important;
+            color: #000 !important;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.15), 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+        }
+        #withdraw-overlay .withdraw-card .btn-gold:hover {
+            box-shadow: 0 8px 40px rgba(255, 215, 0, 0.25), 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+        }
 
-/* ---- Cyan Outline (Registered Number, Edit Info) ---- */
-#withdraw-overlay .withdraw-card .btn-cyan {
-    background: rgba(0, 240, 255, 0.04) !important;
-    border: 1.5px solid rgba(0, 240, 255, 0.12) !important;
-    color: var(--neon-cyan) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
-}
-#withdraw-overlay .withdraw-card .btn-cyan:hover {
-    background: rgba(0, 240, 255, 0.08) !important;
-    border-color: var(--neon-cyan) !important;
-    box-shadow: 0 8px 30px rgba(0, 240, 255, 0.06) !important;
-}
+        /* ---- Cyan Outline (Registered Number, Edit Info) ---- */
+        #withdraw-overlay .withdraw-card .btn-cyan {
+            background: rgba(0, 240, 255, 0.04) !important;
+            border: 1.5px solid rgba(0, 240, 255, 0.12) !important;
+            color: var(--neon-cyan) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+        }
+        #withdraw-overlay .withdraw-card .btn-cyan:hover {
+            background: rgba(0, 240, 255, 0.08) !important;
+            border-color: var(--neon-cyan) !important;
+            box-shadow: 0 8px 30px rgba(0, 240, 255, 0.06) !important;
+        }
 
-/* ---- Cancel Button ---- */
-#withdraw-overlay .withdraw-card .btn-cancel {
-    background: rgba(255, 255, 255, 0.03) !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
-    color: var(--text-muted) !important;
-    padding: 14px 18px !important;
-    border-radius: var(--radius-md) !important;
-    font-weight: 600 !important;
-    font-size: 13px !important;
-    cursor: pointer !important;
-    transition: all 0.35s ease !important;
-    width: 100% !important;
-    backdrop-filter: blur(10px) !important;
-    min-height: 50px !important;
-    margin-top: 10px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
-}
+        /* ---- Cancel Button ---- */
+        #withdraw-overlay .withdraw-card .btn-cancel {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
+            color: var(--text-muted) !important;
+            padding: 14px 18px !important;
+            border-radius: var(--radius-md) !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            cursor: pointer !important;
+            transition: all 0.35s ease !important;
+            width: 100% !important;
+            backdrop-filter: blur(10px) !important;
+            min-height: 50px !important;
+            margin-top: 10px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+        }
 
-#withdraw-overlay .withdraw-card .btn-cancel:hover {
-    background: rgba(255, 255, 255, 0.06) !important;
-    border-color: var(--neon-cyan) !important;
-    color: var(--neon-cyan) !important;
-    transform: translateY(-2px) !important;
-}
+        #withdraw-overlay .withdraw-card .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.06) !important;
+            border-color: var(--neon-cyan) !important;
+            color: var(--neon-cyan) !important;
+            transform: translateY(-2px) !important;
+        }
 
-/* ---- Amount Preset Buttons (10,000 / 50,000) ---- */
-#withdraw-overlay .withdraw-card .amount-preset {
-    padding: 14px 10px !important;
-    border-radius: var(--radius-sm) !important;
-    font-weight: 700 !important;
-    font-size: 12px !important;
-    min-height: 64px !important;
-    text-align: center !important;
-    width: 100% !important;
-    border: none !important;
-    cursor: pointer !important;
-    transition: all 0.35s ease !important;
-}
+        /* ---- Amount Preset Buttons (10,000 / 50,000) ---- */
+        #withdraw-overlay .withdraw-card .amount-preset {
+            padding: 14px 10px !important;
+            border-radius: var(--radius-sm) !important;
+            font-weight: 700 !important;
+            font-size: 12px !important;
+            min-height: 64px !important;
+            text-align: center !important;
+            width: 100% !important;
+            border: none !important;
+            cursor: pointer !important;
+            transition: all 0.35s ease !important;
+        }
 
-#withdraw-overlay .withdraw-card .amount-preset:first-child {
-    background: linear-gradient(135deg, var(--neon-cyan), #0066ff) !important;
-    color: #000 !important;
-}
+        #withdraw-overlay .withdraw-card .amount-preset:first-child {
+            background: linear-gradient(135deg, var(--neon-cyan), #0066ff) !important;
+            color: #000 !important;
+        }
 
-#withdraw-overlay .withdraw-card .amount-preset:last-child {
-    background: linear-gradient(135deg, var(--neon-gold), #f59e0b) !important;
-    color: #000 !important;
-    border: 2px solid var(--neon-gold) !important;
-}
+        #withdraw-overlay .withdraw-card .amount-preset:last-child {
+            background: linear-gradient(135deg, var(--neon-gold), #f59e0b) !important;
+            color: #000 !important;
+            border: 2px solid var(--neon-gold) !important;
+        }
 
-#withdraw-overlay .withdraw-card .amount-preset:hover {
-    transform: translateY(-3px) scale(1.01) !important;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3) !important;
-}
+        #withdraw-overlay .withdraw-card .amount-preset:hover {
+            transform: translateY(-3px) scale(1.01) !important;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3) !important;
+        }
 
         /* ============================================
            EVENT POPUP
@@ -1681,6 +1671,9 @@
             pointer-events: none;
         }
 
+        /* ============================================
+           ENTRY PORTAL BUTTONS
+           ============================================ */
         .btn-portal {
             padding: 16px;
             border-radius: 15px;
@@ -1710,559 +1703,551 @@
             background: rgba(255, 255, 255, 0.1);
             border-color: var(--neon-gold);
         }
- 
+
         /* ============================================
-   WITHDRAWAL HISTORY - DISTINCT HEAVY TECH STYLE
-   ============================================ */
-#withdraw-history-overlay {
-    position: fixed;
-    inset: 0;
-    /* Alag background: Deep Navy + Black gradient, baqi popups se hatke */
-    background: radial-gradient(circle at 20% 30%, #0a0a2a, #010105);
-    backdrop-filter: blur(35px) saturate(1.4);
-    -webkit-backdrop-filter: blur(35px) saturate(1.4);
-    z-index: 25000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    /* Tech grid overlay (sirf isi popup mein) */
-    background-image: 
-        linear-gradient(rgba(0, 240, 255, 0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
-    background-size: 45px 45px;
-}
+           WITHDRAWAL HISTORY - DISTINCT HEAVY TECH STYLE
+           ============================================ */
+        #withdraw-history-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 20% 30%, #0a0a2a, #010105);
+            backdrop-filter: blur(35px) saturate(1.4);
+            -webkit-backdrop-filter: blur(35px) saturate(1.4);
+            z-index: 25000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+            background-size: 45px 45px;
+        }
 
-#withdraw-history-overlay .withdraw-history-box {
-    background: rgba(6, 6, 20, 0.95);
-    backdrop-filter: blur(70px) saturate(1.8);
-    -webkit-backdrop-filter: blur(70px) saturate(1.8);
-    /* CYAN + PURPLE border (Gold nahi) */
-    border: 2px solid transparent;
-    border-radius: var(--radius-xl);
-    padding: 38px 30px 30px;
-    max-width: 520px;
-    width: 100%;
-    max-height: 85vh;
-    overflow-y: auto;
-    box-shadow: 0 40px 120px rgba(0, 0, 0, 0.95), 0 0 100px rgba(0, 240, 255, 0.03);
-    position: relative;
-}
+        #withdraw-history-overlay .withdraw-history-box {
+            background: rgba(6, 6, 20, 0.95);
+            backdrop-filter: blur(70px) saturate(1.8);
+            -webkit-backdrop-filter: blur(70px) saturate(1.8);
+            border: 2px solid transparent;
+            border-radius: var(--radius-xl);
+            padding: 38px 30px 30px;
+            max-width: 520px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 40px 120px rgba(0, 0, 0, 0.95), 0 0 100px rgba(0, 240, 255, 0.03);
+            position: relative;
+        }
 
-/* Animated Neon Border - SIRF CYAN + PURPLE */
-#withdraw-history-overlay .withdraw-history-box::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: var(--radius-xl);
-    padding: 2px;
-    background: conic-gradient(from 0deg, #00f0ff, #b400ff, #00f0ff, #b400ff, #00f0ff);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    animation: borderSpin 5s linear infinite; /* Tez spin -> Heavy feel */
-    opacity: 0.9;
-}
+        /* Animated Neon Border - SIRF CYAN + PURPLE */
+        #withdraw-history-overlay .withdraw-history-box::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: var(--radius-xl);
+            padding: 2px;
+            background: conic-gradient(from 0deg, #00f0ff, #b400ff, #00f0ff, #b400ff, #00f0ff);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: borderSpin 5s linear infinite;
+            opacity: 0.9;
+        }
 
-/* ---- HEADER - Orbitron Font (Alag style) ---- */
-#withdraw-history-overlay .withdraw-history-box h3 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 24px;
-    font-weight: 900;
-    background: linear-gradient(135deg, #00f0ff, #b400ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 4px;
-    text-align: center;
-    margin: 0 0 8px 0 !important;
-    text-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
-    padding-bottom: 10px;
-    border-bottom: 2px solid rgba(0, 240, 255, 0.1);
-}
+        /* ---- HEADER - Orbitron Font (Alag style) ---- */
+        #withdraw-history-overlay .withdraw-history-box h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00f0ff, #b400ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 4px;
+            text-align: center;
+            margin: 0 0 8px 0 !important;
+            text-shadow: 0 0 40px rgba(0, 240, 255, 0.15);
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(0, 240, 255, 0.1);
+        }
 
-/* ---- HISTORY ITEMS (Ticket/Ledger Style) ---- */
-.withdraw-history-item {
-    background: rgba(0, 240, 255, 0.02);
-    border-radius: 14px;
-    padding: 16px 20px;
-    margin-bottom: 14px;
-    /* Left border: Cyan neeche se Purple tak gradient */
-    border-left: 4px solid #00f0ff;
-    border-right: 1px solid rgba(0, 240, 255, 0.04);
-    border-top: 1px solid rgba(255, 255, 255, 0.02);
-    transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    backdrop-filter: blur(10px);
-    position: relative;
-    overflow: hidden;
-}
+        /* ---- HISTORY ITEMS (Ticket/Ledger Style) ---- */
+        .withdraw-history-item {
+            background: rgba(0, 240, 255, 0.02);
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin-bottom: 14px;
+            border-left: 4px solid #00f0ff;
+            border-right: 1px solid rgba(0, 240, 255, 0.04);
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
 
-/* Right side ki thin glow line (extra heavy feel) */
-.withdraw-history-item::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 2px;
-    height: 100%;
-    background: linear-gradient(to bottom, transparent, #b400ff, transparent);
-    opacity: 0.2;
-}
+        /* Right side ki thin glow line (extra heavy feel) */
+        .withdraw-history-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, #b400ff, transparent);
+            opacity: 0.2;
+        }
 
-.withdraw-history-item:hover {
-    background: rgba(0, 240, 255, 0.06);
-    transform: translateX(10px) scale(1.01);
-    border-left-color: #b400ff;
-    box-shadow: 0 0 40px rgba(0, 240, 255, 0.04), inset 0 0 40px rgba(0, 240, 255, 0.02);
-}
+        .withdraw-history-item:hover {
+            background: rgba(0, 240, 255, 0.06);
+            transform: translateX(10px) scale(1.01);
+            border-left-color: #b400ff;
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.04), inset 0 0 40px rgba(0, 240, 255, 0.02);
+        }
 
-/* ---- Status Colors (Alag shade) ---- */
-.status-pending { 
-    color: #ffaa33; 
-    text-shadow: 0 0 20px rgba(255, 170, 51, 0.2);
-}
-.status-approved { 
-    color: #00ff88; 
-    text-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
-}
-.status-rejected { 
-    color: #ff3366; 
-    text-shadow: 0 0 20px rgba(255, 51, 102, 0.2);
-}
+        /* ---- Status Colors (Alag shade) ---- */
+        .status-pending { 
+            color: #ffaa33; 
+            text-shadow: 0 0 20px rgba(255, 170, 51, 0.2);
+        }
+        .status-approved { 
+            color: #00ff88; 
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+        .status-rejected { 
+            color: #ff3366; 
+            text-shadow: 0 0 20px rgba(255, 51, 102, 0.2);
+        }
 
-/* ---- Custom Scrollbar (SIRF is box ke liye) ---- */
-#withdraw-history-overlay .withdraw-history-box::-webkit-scrollbar {
-    width: 4px;
-}
-#withdraw-history-overlay .withdraw-history-box::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.01);
-    border-radius: 10px;
-}
-#withdraw-history-overlay .withdraw-history-box::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #00f0ff, #b400ff);
-    border-radius: 10px;
-    box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
-}
+        /* ---- Custom Scrollbar (SIRF is box ke liye) ---- */
+        #withdraw-history-overlay .withdraw-history-box::-webkit-scrollbar {
+            width: 4px;
+        }
+        #withdraw-history-overlay .withdraw-history-box::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.01);
+            border-radius: 10px;
+        }
+        #withdraw-history-overlay .withdraw-history-box::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00f0ff, #b400ff);
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
+        }
 
-/* ---- Close Button (Alag style: Cyan+Purple) ---- */
-#withdraw-history-overlay .withdraw-history-box > button:first-child {
-    position: absolute !important;
-    top: 12px !important;
-    right: 12px !important;
-    width: 44px !important;
-    height: 44px !important;
-    border-radius: 50% !important;
-    background: rgba(0, 240, 255, 0.04) !important;
-    border: 2px solid rgba(0, 240, 255, 0.15) !important;
-    color: #00f0ff !important;
-    font-size: 20px !important;
-    cursor: pointer !important;
-    transition: all 0.4s ease !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    box-shadow: 0 0 30px rgba(0, 240, 255, 0.05) !important;
-    z-index: 10 !important;
-}
-#withdraw-history-overlay .withdraw-history-box > button:first-child:hover {
-    background: rgba(0, 240, 255, 0.1) !important;
-    border-color: #b400ff !important;
-    color: #b400ff !important;
-    transform: rotate(90deg) scale(1.15) !important;
-    box-shadow: 0 0 60px rgba(180, 0, 255, 0.15) !important;
-}
+        /* ---- Close Button (Alag style: Cyan+Purple) ---- */
+        #withdraw-history-overlay .withdraw-history-box > button:first-child {
+            position: absolute !important;
+            top: 12px !important;
+            right: 12px !important;
+            width: 44px !important;
+            height: 44px !important;
+            border-radius: 50% !important;
+            background: rgba(0, 240, 255, 0.04) !important;
+            border: 2px solid rgba(0, 240, 255, 0.15) !important;
+            color: #00f0ff !important;
+            font-size: 20px !important;
+            cursor: pointer !important;
+            transition: all 0.4s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.05) !important;
+            z-index: 10 !important;
+        }
+        #withdraw-history-overlay .withdraw-history-box > button:first-child:hover {
+            background: rgba(0, 240, 255, 0.1) !important;
+            border-color: #b400ff !important;
+            color: #b400ff !important;
+            transform: rotate(90deg) scale(1.15) !important;
+            box-shadow: 0 0 60px rgba(180, 0, 255, 0.15) !important;
+        }
 
-/* ============================================
-   REFERRAL POPUP - SOCIAL NETWORK / CYBER NEON
-   ============================================ */
-#referral-popup {
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(circle at 70% 20%, #0a001a, #000000);
-    backdrop-filter: blur(40px) saturate(1.4);
-    -webkit-backdrop-filter: blur(40px) saturate(1.4);
-    z-index: 99999;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    /* Network grid overlay (sirf referral popup mein) */
-    background-image: 
-        radial-gradient(circle at 20% 30%, rgba(255, 45, 149, 0.05) 1px, transparent 1px),
-        radial-gradient(circle at 80% 70%, rgba(180, 0, 255, 0.05) 1px, transparent 1px);
-    background-size: 60px 60px;
-}
+        /* ============================================
+           REFERRAL POPUP - SOCIAL NETWORK / CYBER NEON
+           ============================================ */
+        #referral-popup {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 70% 20%, #0a001a, #000000);
+            backdrop-filter: blur(40px) saturate(1.4);
+            -webkit-backdrop-filter: blur(40px) saturate(1.4);
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255, 45, 149, 0.05) 1px, transparent 1px),
+                radial-gradient(circle at 80% 70%, rgba(180, 0, 255, 0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
 
-#referral-popup .referral-box {
-    background: rgba(10, 0, 26, 0.95);
-    backdrop-filter: blur(70px) saturate(1.8);
-    -webkit-backdrop-filter: blur(70px) saturate(1.8);
-    /* PINK + PURPLE border (Gold nahi) */
-    border: 2px solid transparent;
-    border-radius: var(--radius-xl);
-    padding: 38px 28px 30px;
-    max-width: 440px;
-    width: 100%;
-    max-height: 85vh;
-    overflow-y: auto;
-    box-shadow: 0 40px 120px rgba(0, 0, 0, 0.95), 0 0 100px rgba(255, 45, 149, 0.04);
-    position: relative;
-}
+        #referral-popup .referral-box {
+            background: rgba(10, 0, 26, 0.95);
+            backdrop-filter: blur(70px) saturate(1.8);
+            -webkit-backdrop-filter: blur(70px) saturate(1.8);
+            border: 2px solid transparent;
+            border-radius: var(--radius-xl);
+            padding: 38px 28px 30px;
+            max-width: 440px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 40px 120px rgba(0, 0, 0, 0.95), 0 0 100px rgba(255, 45, 149, 0.04);
+            position: relative;
+        }
 
-/* Animated Border - Pink + Purple */
-#referral-popup .referral-box::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: var(--radius-xl);
-    padding: 2px;
-    background: conic-gradient(from 0deg, #ff2d95, #b400ff, #ff2d95, #b400ff, #ff2d95);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    animation: borderSpin 4s linear infinite; /* Tez spin */
-    opacity: 0.9;
-}
+        /* Animated Border - Pink + Purple */
+        #referral-popup .referral-box::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: var(--radius-xl);
+            padding: 2px;
+            background: conic-gradient(from 0deg, #ff2d95, #b400ff, #ff2d95, #b400ff, #ff2d95);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: borderSpin 4s linear infinite;
+            opacity: 0.9;
+        }
 
-/* ---- HEADER - Social Pink/Purple ---- */
-#referral-popup .referral-box h3 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 26px;
-    font-weight: 900;
-    background: linear-gradient(135deg, #ff2d95, #b400ff, #ff2d95);
-    background-size: 200% 200%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 4px;
-    text-align: center;
-    margin: 0 0 5px 0 !important;
-    text-shadow: 0 0 60px rgba(255, 45, 149, 0.2);
-    animation: gradientMove 3s ease infinite;
-}
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
+        /* ---- HEADER - Social Pink/Purple ---- */
+        #referral-popup .referral-box h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff2d95, #b400ff, #ff2d95);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 4px;
+            text-align: center;
+            margin: 0 0 5px 0 !important;
+            text-shadow: 0 0 60px rgba(255, 45, 149, 0.2);
+            animation: gradientMove 3s ease infinite;
+        }
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-/* ---- REFERRAL ITEMS (Social Card Style) ---- */
-#referral-popup .referral-box .ref-item {
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 14px;
-    padding: 12px 16px;
-    margin-bottom: 10px;
-    border-left: 4px solid #ff2d95;
-    border-right: 1px solid rgba(255, 45, 149, 0.05);
-    transition: all 0.35s ease;
-    backdrop-filter: blur(5px);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        /* ---- REFERRAL ITEMS (Social Card Style) ---- */
+        #referral-popup .referral-box .ref-item {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            border-left: 4px solid #ff2d95;
+            border-right: 1px solid rgba(255, 45, 149, 0.05);
+            transition: all 0.35s ease;
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-#referral-popup .referral-box .ref-item:hover {
-    background: rgba(255, 45, 149, 0.06);
-    transform: scale(1.02) translateX(8px);
-    border-left-color: #b400ff;
-    box-shadow: 0 0 40px rgba(180, 0, 255, 0.05);
-}
+        #referral-popup .referral-box .ref-item:hover {
+            background: rgba(255, 45, 149, 0.06);
+            transform: scale(1.02) translateX(8px);
+            border-left-color: #b400ff;
+            box-shadow: 0 0 40px rgba(180, 0, 255, 0.05);
+        }
 
-#referral-popup .referral-box .ref-item .ref-name {
-    color: #fff;
-    font-weight: 600;
-}
-#referral-popup .referral-box .ref-item .ref-time {
-    color: #666;
-    font-size: 10px;
-}
-#referral-popup .referral-box .ref-item .ref-num {
-    color: #ff2d95;
-    font-weight: bold;
-    min-width: 30px;
-}
+        #referral-popup .referral-box .ref-item .ref-name {
+            color: #fff;
+            font-weight: 600;
+        }
+        #referral-popup .referral-box .ref-item .ref-time {
+            color: #666;
+            font-size: 10px;
+        }
+        #referral-popup .referral-box .ref-item .ref-num {
+            color: #ff2d95;
+            font-weight: bold;
+            min-width: 30px;
+        }
 
-/* ---- REFERRAL LINK BOX (Glowing Social) ---- */
-#referral-popup .referral-box .ref-link-box {
-    background: rgba(255, 45, 149, 0.04);
-    border: 1.5px solid rgba(255, 45, 149, 0.15);
-    border-radius: 14px;
-    padding: 14px 16px;
-    margin-top: 15px;
-    transition: 0.3s;
-}
-#referral-popup .referral-box .ref-link-box:hover {
-    border-color: #b400ff;
-    box-shadow: 0 0 40px rgba(180, 0, 255, 0.06);
-}
-#referral-popup .referral-box .ref-link-box label {
-    color: #888;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    display: block;
-    margin-bottom: 6px;
-}
-#referral-popup .referral-box .ref-link-box input {
-    background: rgba(0,0,0,0.5) !important;
-    color: #ff2d95 !important;
-    border: 1px solid rgba(255,45,149,0.1) !important;
-    font-weight: bold;
-    font-size: 11px !important;
-    padding: 10px !important;
-    border-radius: 8px !important;
-    width: 100% !important;
-    box-sizing: border-box;
-}
-#referral-popup .referral-box .ref-link-box .copy-btn {
-    background: linear-gradient(135deg, #ff2d95, #b400ff);
-    color: #fff;
-    border: none;
-    padding: 10px;
-    border-radius: 10px;
-    font-weight: bold;
-    margin-top: 8px;
-    width: 100%;
-    cursor: pointer;
-    transition: 0.3s;
-}
-#referral-popup .referral-box .ref-link-box .copy-btn:hover {
-    transform: scale(1.03);
-    box-shadow: 0 0 40px rgba(255, 45, 149, 0.2);
-}
+        /* ---- REFERRAL LINK BOX (Glowing Social) ---- */
+        #referral-popup .referral-box .ref-link-box {
+            background: rgba(255, 45, 149, 0.04);
+            border: 1.5px solid rgba(255, 45, 149, 0.15);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+        #referral-popup .referral-box .ref-link-box:hover {
+            border-color: #b400ff;
+            box-shadow: 0 0 40px rgba(180, 0, 255, 0.06);
+        }
+        #referral-popup .referral-box .ref-link-box label {
+            color: #888;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 6px;
+        }
+        #referral-popup .referral-box .ref-link-box input {
+            background: rgba(0,0,0,0.5) !important;
+            color: #ff2d95 !important;
+            border: 1px solid rgba(255,45,149,0.1) !important;
+            font-weight: bold;
+            font-size: 11px !important;
+            padding: 10px !important;
+            border-radius: 8px !important;
+            width: 100% !important;
+            box-sizing: border-box;
+        }
+        #referral-popup .referral-box .ref-link-box .copy-btn {
+            background: linear-gradient(135deg, #ff2d95, #b400ff);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            margin-top: 8px;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        #referral-popup .referral-box .ref-link-box .copy-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 40px rgba(255, 45, 149, 0.2);
+        }
 
-/* ---- SCROLLBAR (Pink/Purple) ---- */
-#referral-popup .referral-box::-webkit-scrollbar {
-    width: 4px;
-}
-#referral-popup .referral-box::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.01);
-}
-#referral-popup .referral-box::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #ff2d95, #b400ff);
-    border-radius: 10px;
-}
+        /* ---- SCROLLBAR (Pink/Purple) ---- */
+        #referral-popup .referral-box::-webkit-scrollbar {
+            width: 4px;
+        }
+        #referral-popup .referral-box::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.01);
+        }
+        #referral-popup .referral-box::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #ff2d95, #b400ff);
+            border-radius: 10px;
+        }
 
-/* ---- CLOSE BUTTON (Pink/Purple) ---- */
-#referral-popup .referral-box > button:first-child {
-    position: absolute !important;
-    top: 12px !important;
-    right: 12px !important;
-    width: 44px !important;
-    height: 44px !important;
-    border-radius: 50% !important;
-    background: rgba(255, 45, 149, 0.04) !important;
-    border: 2px solid rgba(255, 45, 149, 0.1) !important;
-    color: #ff2d95 !important;
-    font-size: 20px !important;
-    cursor: pointer !important;
-    transition: all 0.4s ease !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    z-index: 10 !important;
-}
-#referral-popup .referral-box > button:first-child:hover {
-    background: rgba(255, 45, 149, 0.08) !important;
-    border-color: #b400ff !important;
-    color: #b400ff !important;
-    transform: rotate(90deg) scale(1.15) !important;
-    box-shadow: 0 0 60px rgba(180, 0, 255, 0.1) !important;
-}
+        /* ---- CLOSE BUTTON (Pink/Purple) ---- */
+        #referral-popup .referral-box > button:first-child {
+            position: absolute !important;
+            top: 12px !important;
+            right: 12px !important;
+            width: 44px !important;
+            height: 44px !important;
+            border-radius: 50% !important;
+            background: rgba(255, 45, 149, 0.04) !important;
+            border: 2px solid rgba(255, 45, 149, 0.1) !important;
+            color: #ff2d95 !important;
+            font-size: 20px !important;
+            cursor: pointer !important;
+            transition: all 0.4s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 10 !important;
+        }
+        #referral-popup .referral-box > button:first-child:hover {
+            background: rgba(255, 45, 149, 0.08) !important;
+            border-color: #b400ff !important;
+            color: #b400ff !important;
+            transform: rotate(90deg) scale(1.15) !important;
+            box-shadow: 0 0 60px rgba(180, 0, 255, 0.1) !important;
+        }
 
-/* ============================================
-   EVENT WINNERS POPUP - LUXURY TROPHY / GOLD THEME
-   ============================================ */
-#winners-popup {
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(circle at 50% 40%, #1a0a00, #0a0500);
-    backdrop-filter: blur(40px) saturate(1.3);
-    -webkit-backdrop-filter: blur(40px) saturate(1.3);
-    z-index: 99999;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    /* Gold sparkle overlay */
-    background-image: 
-        radial-gradient(circle at 10% 20%, rgba(255, 215, 0, 0.03) 2px, transparent 2px),
-        radial-gradient(circle at 90% 80%, rgba(255, 215, 0, 0.03) 2px, transparent 2px);
-    background-size: 80px 80px;
-}
+        /* ============================================
+           EVENT WINNERS POPUP - LUXURY TROPHY / GOLD THEME
+           ============================================ */
+        #winners-popup {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 50% 40%, #1a0a00, #0a0500);
+            backdrop-filter: blur(40px) saturate(1.3);
+            -webkit-backdrop-filter: blur(40px) saturate(1.3);
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 215, 0, 0.03) 2px, transparent 2px),
+                radial-gradient(circle at 90% 80%, rgba(255, 215, 0, 0.03) 2px, transparent 2px);
+            background-size: 80px 80px;
+        }
 
-#winners-popup > div {
-    background: rgba(10, 5, 0, 0.96);
-    backdrop-filter: blur(70px) saturate(1.8);
-    -webkit-backdrop-filter: blur(70px) saturate(1.8);
-    /* DEEP GOLD + RED border (Royal) */
-    border: 2px solid transparent;
-    border-radius: var(--radius-xl);
-    padding: 38px 30px 30px;
-    max-width: 550px;
-    width: 100%;
-    max-height: 85vh;
-    overflow-y: auto;
-    box-shadow: 0 40px 120px rgba(0, 0, 0, 0.95), 0 0 120px rgba(255, 215, 0, 0.03);
-    position: relative;
-}
+        #winners-popup > div {
+            background: rgba(10, 5, 0, 0.96);
+            backdrop-filter: blur(70px) saturate(1.8);
+            -webkit-backdrop-filter: blur(70px) saturate(1.8);
+            border: 2px solid transparent;
+            border-radius: var(--radius-xl);
+            padding: 38px 30px 30px;
+            max-width: 550px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 40px 120px rgba(0, 0, 0, 0.95), 0 0 120px rgba(255, 215, 0, 0.03);
+            position: relative;
+        }
 
-/* Animated Border - GOLD + RED (Royal/Luxury) */
-#winners-popup > div::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: var(--radius-xl);
-    padding: 2px;
-    background: conic-gradient(from 0deg, #ffd700, #b8860b, #ff6b00, #ffd700, #b8860b, #ffd700);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    animation: borderSpin 6s linear infinite;
-    opacity: 0.95;
-}
+        /* Animated Border - GOLD + RED (Royal/Luxury) */
+        #winners-popup > div::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: var(--radius-xl);
+            padding: 2px;
+            background: conic-gradient(from 0deg, #ffd700, #b8860b, #ff6b00, #ffd700, #b8860b, #ffd700);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: borderSpin 6s linear infinite;
+            opacity: 0.95;
+        }
 
-/* ---- HEADER - Gold with Crown ---- */
-#winners-popup > div h3 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 26px;
-    font-weight: 900;
-    background: linear-gradient(135deg, #ffd700, #b8860b, #ffd700);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 4px;
-    text-align: center;
-    margin: 0 0 5px 0 !important;
-    text-shadow: 0 0 60px rgba(255, 215, 0, 0.15);
-    padding-bottom: 8px;
-    border-bottom: 2px solid rgba(255, 215, 0, 0.08);
-}
-#winners-popup > div .sub-gold {
-    text-align: center;
-    color: #886633;
-    font-size: 12px;
-    letter-spacing: 2px;
-    margin-bottom: 15px;
-    text-transform: uppercase;
-}
+        /* ---- HEADER - Gold with Crown ---- */
+        #winners-popup > div h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd700, #b8860b, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 4px;
+            text-align: center;
+            margin: 0 0 5px 0 !important;
+            text-shadow: 0 0 60px rgba(255, 215, 0, 0.15);
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.08);
+        }
+        #winners-popup > div .sub-gold {
+            text-align: center;
+            color: #886633;
+            font-size: 12px;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
 
-/* ---- WINNER ITEMS (Podium Cards) ---- */
-#winners-popup .winner-item {
-    background: rgba(255, 215, 0, 0.02);
-    border-radius: 16px;
-    padding: 16px 20px;
-    margin-bottom: 12px;
-    border-left: 5px solid #ffd700;
-    border-right: 1px solid rgba(255, 215, 0, 0.04);
-    border-top: 1px solid rgba(255, 215, 0, 0.02);
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    backdrop-filter: blur(5px);
-}
+        /* ---- WINNER ITEMS (Podium Cards) ---- */
+        #winners-popup .winner-item {
+            background: rgba(255, 215, 0, 0.02);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            border-left: 5px solid #ffd700;
+            border-right: 1px solid rgba(255, 215, 0, 0.04);
+            border-top: 1px solid rgba(255, 215, 0, 0.02);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: blur(5px);
+        }
 
-#winners-popup .winner-item:hover {
-    background: rgba(255, 215, 0, 0.06);
-    transform: translateX(8px) scale(1.01);
-    border-left-color: #b8860b;
-    box-shadow: 0 0 50px rgba(255, 215, 0, 0.04);
-}
+        #winners-popup .winner-item:hover {
+            background: rgba(255, 215, 0, 0.06);
+            transform: translateX(8px) scale(1.01);
+            border-left-color: #b8860b;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.04);
+        }
 
-/* ---- RANK (Gold Medals) ---- */
-#winners-popup .winner-item .rank {
-    font-size: 24px;
-    min-width: 48px;
-    text-align: center;
-}
-/* Different glow for each rank */
-#winners-popup .winner-item:first-child .rank {
-    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.4));
-}
-#winners-popup .winner-item:nth-child(2) .rank {
-    filter: drop-shadow(0 0 15px rgba(192, 192, 192, 0.3));
-}
-#winners-popup .winner-item:nth-child(3) .rank {
-    filter: drop-shadow(0 0 15px rgba(205, 127, 50, 0.3));
-}
+        /* ---- RANK (Gold Medals) ---- */
+        #winners-popup .winner-item .rank {
+            font-size: 24px;
+            min-width: 48px;
+            text-align: center;
+        }
+        /* Different glow for each rank */
+        #winners-popup .winner-item:first-child .rank {
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.4));
+        }
+        #winners-popup .winner-item:nth-child(2) .rank {
+            filter: drop-shadow(0 0 15px rgba(192, 192, 192, 0.3));
+        }
+        #winners-popup .winner-item:nth-child(3) .rank {
+            filter: drop-shadow(0 0 15px rgba(205, 127, 50, 0.3));
+        }
 
-/* ---- WINNER NAME ---- */
-#winners-popup .winner-item .winner-name {
-    color: #fff;
-    font-weight: 700;
-    font-size: 15px;
-}
-#winners-popup .winner-item .winner-name.assigned {
-    color: #ffd700;
-    text-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
-}
-#winners-popup .winner-item .winner-name.not-assigned {
-    color: #555;
-    font-style: italic;
-}
+        /* ---- WINNER NAME ---- */
+        #winners-popup .winner-item .winner-name {
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+        }
+        #winners-popup .winner-item .winner-name.assigned {
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
+        }
+        #winners-popup .winner-item .winner-name.not-assigned {
+            color: #555;
+            font-style: italic;
+        }
 
-/* ---- REWARD (Gold Coin Badge) ---- */
-#winners-popup .winner-item .reward {
-    background: rgba(255, 215, 0, 0.1);
-    padding: 4px 16px;
-    border-radius: 30px;
-    border: 1.5px solid rgba(255, 215, 0, 0.2);
-    font-weight: 800;
-    color: #ffd700;
-    font-size: 13px;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
-    white-space: nowrap;
-}
+        /* ---- REWARD (Gold Coin Badge) ---- */
+        #winners-popup .winner-item .reward {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 4px 16px;
+            border-radius: 30px;
+            border: 1.5px solid rgba(255, 215, 0, 0.2);
+            font-weight: 800;
+            color: #ffd700;
+            font-size: 13px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+            white-space: nowrap;
+        }
 
-/* ---- END MESSAGE (Gold Box) ---- */
-#winners-popup #winners-end-message {
-    background: rgba(255, 215, 0, 0.04);
-    border: 1px solid rgba(255, 215, 0, 0.08);
-    border-radius: 12px;
-    padding: 12px 16px;
-    margin-bottom: 15px;
-    text-align: center;
-    color: #ccc;
-    font-size: 13px;
-}
+        /* ---- END MESSAGE (Gold Box) ---- */
+        #winners-popup #winners-end-message {
+            background: rgba(255, 215, 0, 0.04);
+            border: 1px solid rgba(255, 215, 0, 0.08);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #ccc;
+            font-size: 13px;
+        }
 
-/* ---- SCROLLBAR (Gold) ---- */
-#winners-popup > div::-webkit-scrollbar {
-    width: 4px;
-}
-#winners-popup > div::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.01);
-}
-#winners-popup > div::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #ffd700, #b8860b);
-    border-radius: 10px;
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
-}
+        /* ---- SCROLLBAR (Gold) ---- */
+        #winners-popup > div::-webkit-scrollbar {
+            width: 4px;
+        }
+        #winners-popup > div::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.01);
+        }
+        #winners-popup > div::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #ffd700, #b8860b);
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.1);
+        }
 
-/* ---- CLOSE BUTTON (Gold) ---- */
-#winners-popup > div > button:first-child {
-    position: absolute !important;
-    top: 12px !important;
-    right: 12px !important;
-    width: 44px !important;
-    height: 44px !important;
-    border-radius: 50% !important;
-    background: rgba(255, 215, 0, 0.04) !important;
-    border: 2px solid rgba(255, 215, 0, 0.1) !important;
-    color: #ffd700 !important;
-    font-size: 20px !important;
-    cursor: pointer !important;
-    transition: all 0.4s ease !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    z-index: 10 !important;
-}
-#winners-popup > div > button:first-child:hover {
-    background: rgba(255, 215, 0, 0.08) !important;
-    border-color: #b8860b !important;
-    color: #b8860b !important;
-    transform: rotate(90deg) scale(1.15) !important;
-    box-shadow: 0 0 60px rgba(255, 215, 0, 0.08) !important;
-}
+        /* ---- CLOSE BUTTON (Gold) ---- */
+        #winners-popup > div > button:first-child {
+            position: absolute !important;
+            top: 12px !important;
+            right: 12px !important;
+            width: 44px !important;
+            height: 44px !important;
+            border-radius: 50% !important;
+            background: rgba(255, 215, 0, 0.04) !important;
+            border: 2px solid rgba(255, 215, 0, 0.1) !important;
+            color: #ffd700 !important;
+            font-size: 20px !important;
+            cursor: pointer !important;
+            transition: all 0.4s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 10 !important;
+        }
+        #winners-popup > div > button:first-child:hover {
+            background: rgba(255, 215, 0, 0.08) !important;
+            border-color: #b8860b !important;
+            color: #b8860b !important;
+            transform: rotate(90deg) scale(1.15) !important;
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.08) !important;
+        }
 
         /* ============================================
            DAILY TASK PANEL
@@ -2527,9 +2512,9 @@
             box-shadow: 0 0 20px var(--neon-cyan);
         }
 
-         /* ============================================
-   UPDATE BANNER - FULL FIXED CSS (RESPONSIVE + SCROLLABLE)
-   ============================================ */
+        /* ============================================
+           UPDATE BANNER - FULL FIXED CSS (RESPONSIVE + SCROLLABLE)
+           ============================================ */
         #update-banner {
             position: fixed;
             top: 0;
@@ -2841,7 +2826,7 @@
             50% { opacity: 1; }
         }
 
-         /* ============================================
+        /* ============================================
            UPDATE BANNER - RESPONSIVE (ALL SCREENS)
            ============================================ */
 
@@ -3283,32 +3268,29 @@
             cursor: pointer !important;
         }
         .view-pic-container {
-                    width: 100%;
-                    height: 75px;
-                    overflow: hidden;
-                    position: relative;
-                    background: #1a1a1a;
-                    border-bottom: 1px solid rgba(255,255,255,0.1);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-             }
- 
-          .view-pic {
-               width: 100%;
-               height: 100%;
-               object-fit: contain;
-               transition: 0.5s ease;
-               background: #1a1a1a;
-          }
-
-         /* FALLBACK FAVICON - CENTER */
-          .view-pic-container .fallback-icon {
-                     width: 50%;
-                     height: 50%;
-                     object-fit: contain;
-                     opacity: 0.8;
-         }
+            width: 100%;
+            height: 75px;
+            overflow: hidden;
+            position: relative;
+            background: #1a1a1a;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .view-pic {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: 0.5s ease;
+            background: #1a1a1a;
+        }
+        .view-pic-container .fallback-icon {
+            width: 50%;
+            height: 50%;
+            object-fit: contain;
+            opacity: 0.8;
+        }
         .link-card:hover .view-pic {
             transform: scale(1.05);
             opacity: 0.9;
@@ -3385,383 +3367,382 @@
 
         #status-checker-overlay {
             z-index: 99999 !important;
-       }
+        }
         
-       #profile-overlay {
-           z-index: 99999 !important;
-       }
+        #profile-overlay {
+            z-index: 99999 !important;
+        }
 
-       /* ===== PROFILE OVERLAY — HEAVY STYLE ===== */
-#profile-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.92);
-    backdrop-filter: blur(30px) saturate(1.6);
-    -webkit-backdrop-filter: blur(30px) saturate(1.6);
-    z-index: 99999 !important;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    animation: overlayFade 0.5s ease;
-}
+        /* ===== PROFILE OVERLAY — HEAVY STYLE ===== */
+        #profile-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(30px) saturate(1.6);
+            -webkit-backdrop-filter: blur(30px) saturate(1.6);
+            z-index: 99999 !important;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: overlayFade 0.5s ease;
+        }
 
-@keyframes overlayFade {
-    0% { opacity: 0; transform: scale(0.95); backdrop-filter: blur(0px); }
-    100% { opacity: 1; transform: scale(1); backdrop-filter: blur(30px); }
-}
+        @keyframes overlayFade {
+            0% { opacity: 0; transform: scale(0.95); backdrop-filter: blur(0px); }
+            100% { opacity: 1; transform: scale(1); backdrop-filter: blur(30px); }
+        }
 
-.profile-card {
-    width: 360px;
-    max-width: 92%;
-    background: rgba(11, 11, 26, 0.95);
-    backdrop-filter: blur(50px) saturate(1.8);
-    -webkit-backdrop-filter: blur(50px) saturate(1.8);
-    border-radius: 30px;
-    padding: 35px 28px;
-    border: 2px solid rgba(0, 240, 255, 0.15);
-    box-shadow: 0 0 80px rgba(0, 240, 255, 0.05), 0 30px 80px rgba(0, 0, 0, 0.9);
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    animation: cardPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
+        .profile-card {
+            width: 360px;
+            max-width: 92%;
+            background: rgba(11, 11, 26, 0.95);
+            backdrop-filter: blur(50px) saturate(1.8);
+            -webkit-backdrop-filter: blur(50px) saturate(1.8);
+            border-radius: 30px;
+            padding: 35px 28px;
+            border: 2px solid rgba(0, 240, 255, 0.15);
+            box-shadow: 0 0 80px rgba(0, 240, 255, 0.05), 0 30px 80px rgba(0, 0, 0, 0.9);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: cardPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
 
-@keyframes cardPop {
-    0% { transform: scale(0.8) rotate(-3deg); opacity: 0; }
-    100% { transform: scale(1) rotate(0deg); opacity: 1; }
-}
+        @keyframes cardPop {
+            0% { transform: scale(0.8) rotate(-3deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
 
-.profile-card::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: 30px;
-    padding: 2px;
-    background: conic-gradient(from 0deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple), var(--neon-cyan));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    animation: borderSpin 6s linear infinite;
-}
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 30px;
+            padding: 2px;
+            background: conic-gradient(from 0deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple), var(--neon-cyan));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: borderSpin 6s linear infinite;
+        }
 
-@keyframes borderSpin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+        @keyframes borderSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-.profile-circle {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    margin: 0 auto 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    background: rgba(0, 240, 255, 0.04);
-    border: 3px solid var(--neon-cyan);
-    box-shadow: 0 0 40px rgba(0, 240, 255, 0.15), inset 0 0 40px rgba(0, 240, 255, 0.05);
-}
+        .profile-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: rgba(0, 240, 255, 0.04);
+            border: 3px solid var(--neon-cyan);
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.15), inset 0 0 40px rgba(0, 240, 255, 0.05);
+        }
 
-.profile-circle .circle-glow {
-    position: absolute;
-    inset: -15px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(0, 240, 255, 0.1), transparent 70%);
-    animation: glowPulse 3s ease-in-out infinite;
-}
+        .profile-circle .circle-glow {
+            position: absolute;
+            inset: -15px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.1), transparent 70%);
+            animation: glowPulse 3s ease-in-out infinite;
+        }
 
-@keyframes glowPulse {
-    0%, 100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.2); }
-}
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
 
-.info-box {
-    background: rgba(0, 240, 255, 0.03) !important;
-    backdrop-filter: blur(10px) !important;
-    padding: 18px !important;
-    border-radius: 15px !important;
-    text-align: left !important;
-    margin: 18px 0 !important;
-    border: 1.5px solid rgba(0, 240, 255, 0.1) !important;
-    box-shadow: 0 0 30px rgba(0, 240, 255, 0.02), inset 0 0 30px rgba(0, 240, 255, 0.02) !important;
-}
+        .info-box {
+            background: rgba(0, 240, 255, 0.03) !important;
+            backdrop-filter: blur(10px) !important;
+            padding: 18px !important;
+            border-radius: 15px !important;
+            text-align: left !important;
+            margin: 18px 0 !important;
+            border: 1.5px solid rgba(0, 240, 255, 0.1) !important;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.02), inset 0 0 30px rgba(0, 240, 255, 0.02) !important;
+        }
 
-.info-item {
-    font-size: 13px;
-    margin: 6px 0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-}
+        .info-item {
+            font-size: 13px;
+            margin: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
 
-.info-item:last-child {
-    border-bottom: none;
-}
+        .info-item:last-child {
+            border-bottom: none;
+        }
 
-.ig-link-btn {
-    background: linear-gradient(135deg, #f09433, #dc2743, #bc1888) !important;
-    color: white !important;
-    padding: 14px !important;
-    border-radius: 50px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 12px !important;
-    text-decoration: none !important;
-    font-weight: bold !important;
-    font-size: 15px !important;
-    margin-bottom: 12px !important;
-    box-shadow: 0 0 40px rgba(220, 39, 67, 0.3) !important;
-    border: 2px solid rgba(255, 255, 255, 0.08) !important;
-    transition: 0.3s !important;
-}
+        .ig-link-btn {
+            background: linear-gradient(135deg, #f09433, #dc2743, #bc1888) !important;
+            color: white !important;
+            padding: 14px !important;
+            border-radius: 50px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 12px !important;
+            text-decoration: none !important;
+            font-weight: bold !important;
+            font-size: 15px !important;
+            margin-bottom: 12px !important;
+            box-shadow: 0 0 40px rgba(220, 39, 67, 0.3) !important;
+            border: 2px solid rgba(255, 255, 255, 0.08) !important;
+            transition: 0.3s !important;
+        }
 
-.ig-link-btn:hover {
-    transform: scale(1.03) !important;
-    box-shadow: 0 0 60px rgba(220, 39, 67, 0.5) !important;
-}
+        .ig-link-btn:hover {
+            transform: scale(1.03) !important;
+            box-shadow: 0 0 60px rgba(220, 39, 67, 0.5) !important;
+        }
 
-/* ===== HEAVY MEMBER AREA LOGOUT ===== */
-#system-logout-btn {
-    width: 100% !important;
-    padding: 16px 20px !important;
-    border-radius: var(--radius-md) !important;
-    background: rgba(255, 0, 0, 0.02) !important;
-    border: 1.5px solid rgba(255, 0, 0, 0.08) !important;
-    color: #ff4444 !important;
-    font-weight: 700 !important;
-    font-size: 14px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1px !important;
-    cursor: pointer !important;
-    transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 12px !important;
-    min-height: 56px !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    margin-top: 10px !important;
-}
+        /* ===== HEAVY MEMBER AREA LOGOUT ===== */
+        #system-logout-btn {
+            width: 100% !important;
+            padding: 16px 20px !important;
+            border-radius: var(--radius-md) !important;
+            background: rgba(255, 0, 0, 0.02) !important;
+            border: 1.5px solid rgba(255, 0, 0, 0.08) !important;
+            color: #ff4444 !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            cursor: pointer !important;
+            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 12px !important;
+            min-height: 56px !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            margin-top: 10px !important;
+        }
 
-#system-logout-btn:hover {
-    background: rgba(255, 0, 0, 0.08) !important;
-    border-color: #ff4444 !important;
-    transform: translateY(-3px) scale(1.01) !important;
-    box-shadow: 0 8px 30px rgba(255, 0, 0, 0.2) !important;
-}
-#system-logout-btn:active {
-    transform: scale(0.97) !important;
-}
+        #system-logout-btn:hover {
+            background: rgba(255, 0, 0, 0.08) !important;
+            border-color: #ff4444 !important;
+            transform: translateY(-3px) scale(1.01) !important;
+            box-shadow: 0 8px 30px rgba(255, 0, 0, 0.2) !important;
+        }
+        #system-logout-btn:active {
+            transform: scale(0.97) !important;
+        }
 
-  /* ============================================
-   STATUS CHECKER — HEAVY NEON STYLE
-   ============================================ */
-#status-checker-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.92);
-    backdrop-filter: blur(30px) saturate(1.6);
-    -webkit-backdrop-filter: blur(30px) saturate(1.6);
-    z-index: 99999 !important;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    animation: overlayFade 0.4s ease;
-}
+        /* ============================================
+           STATUS CHECKER — HEAVY NEON STYLE
+           ============================================ */
+        #status-checker-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(30px) saturate(1.6);
+            -webkit-backdrop-filter: blur(30px) saturate(1.6);
+            z-index: 99999 !important;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: overlayFade 0.4s ease;
+        }
 
-#status-checker-overlay .status-window {
-    width: 420px;
-    max-width: 95%;
-    background: rgba(11, 11, 26, 0.95);
-    backdrop-filter: blur(50px) saturate(1.8);
-    -webkit-backdrop-filter: blur(50px) saturate(1.8);
-    border-radius: var(--radius-xl);
-    padding: 35px 30px 30px;
-    border: 2px solid rgba(0, 240, 255, 0.08);
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 60px rgba(0, 240, 255, 0.03);
-    position: relative;
-    overflow: hidden;
-    animation: helpSlide 0.4s ease;
-    text-align: center;
-}
+        #status-checker-overlay .status-window {
+            width: 420px;
+            max-width: 95%;
+            background: rgba(11, 11, 26, 0.95);
+            backdrop-filter: blur(50px) saturate(1.8);
+            -webkit-backdrop-filter: blur(50px) saturate(1.8);
+            border-radius: var(--radius-xl);
+            padding: 35px 30px 30px;
+            border: 2px solid rgba(0, 240, 255, 0.08);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 60px rgba(0, 240, 255, 0.03);
+            position: relative;
+            overflow: hidden;
+            animation: helpSlide 0.4s ease;
+            text-align: center;
+        }
 
-#status-checker-overlay .status-window::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: var(--radius-xl);
-    padding: 2px;
-    background: conic-gradient(from 0deg, var(--neon-cyan), var(--neon-gold), var(--neon-purple), var(--neon-cyan));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    animation: borderSpin 8s linear infinite;
-}
+        #status-checker-overlay .status-window::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: var(--radius-xl);
+            padding: 2px;
+            background: conic-gradient(from 0deg, var(--neon-cyan), var(--neon-gold), var(--neon-purple), var(--neon-cyan));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            animation: borderSpin 8s linear infinite;
+        }
 
-/* ---- Heading ---- */
-#status-checker-overlay .status-window h3 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 26px;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--neon-gold), var(--neon-pink));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 3px;
-    margin: 0 0 5px 0 !important;
-    text-shadow: 0 0 40px rgba(255, 215, 0, 0.1);
-}
+        /* ---- Heading ---- */
+        #status-checker-overlay .status-window h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon-gold), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 3px;
+            margin: 0 0 5px 0 !important;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.1);
+        }
 
-#status-checker-overlay .status-window .sub-text {
-    color: var(--text-muted);
-    font-size: 13px;
-    letter-spacing: 1px;
-    margin-bottom: 20px;
-    opacity: 0.7;
-}
+        #status-checker-overlay .status-window .sub-text {
+            color: var(--text-muted);
+            font-size: 13px;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
 
-/* ---- Input Field ---- */
-#status-checker-overlay .status-window input {
-    width: 100%;
-    padding: 16px 20px;
-    border-radius: var(--radius-md);
-    border: 1.5px solid rgba(0, 240, 255, 0.12);
-    background: rgba(0, 240, 255, 0.04);
-    color: var(--text-primary);
-    font-size: 15px;
-    font-weight: 400;
-    transition: all 0.35s ease;
-    font-family: inherit;
-    backdrop-filter: blur(10px);
-    margin: 0 0 15px 0;
-    box-sizing: border-box;
-}
-#status-checker-overlay .status-window input:focus {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 30px rgba(0, 240, 255, 0.12), inset 0 0 30px rgba(0, 240, 255, 0.04);
-    background: rgba(0, 240, 255, 0.06);
-    transform: scale(1.005);
-}
-#status-checker-overlay .status-window input::placeholder {
-    color: var(--text-muted);
-    font-weight: 300;
-    opacity: 0.6;
-}
+        /* ---- Input Field ---- */
+        #status-checker-overlay .status-window input {
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            border: 1.5px solid rgba(0, 240, 255, 0.12);
+            background: rgba(0, 240, 255, 0.04);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: 400;
+            transition: all 0.35s ease;
+            font-family: inherit;
+            backdrop-filter: blur(10px);
+            margin: 0 0 15px 0;
+            box-sizing: border-box;
+        }
+        #status-checker-overlay .status-window input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.12), inset 0 0 30px rgba(0, 240, 255, 0.04);
+            background: rgba(0, 240, 255, 0.06);
+            transform: scale(1.005);
+        }
+        #status-checker-overlay .status-window input::placeholder {
+            color: var(--text-muted);
+            font-weight: 300;
+            opacity: 0.6;
+        }
 
-/* ---- Fetch Button (Main) ---- */
-#status-checker-overlay .status-window .btn-main {
-    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)) !important;
-    color: #000 !important;
-    border: none !important;
-    padding: 16px 28px !important;
-    border-radius: var(--radius-md) !important;
-    cursor: pointer !important;
-    width: 100% !important;
-    font-weight: 800 !important;
-    font-size: 15px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1.5px !important;
-    transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
-    box-shadow: 0 0 30px rgba(0, 240, 255, 0.15), 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-    min-height: 56px !important;
-    margin: 0 0 15px 0 !important;
-}
-#status-checker-overlay .status-window .btn-main:hover {
-    transform: translateY(-3px) scale(1.01) !important;
-    box-shadow: 0 8px 40px rgba(0, 240, 255, 0.3), 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-}
-#status-checker-overlay .status-window .btn-main:active {
-    transform: scale(0.97) !important;
-}
+        /* ---- Fetch Button (Main) ---- */
+        #status-checker-overlay .status-window .btn-main {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)) !important;
+            color: #000 !important;
+            border: none !important;
+            padding: 16px 28px !important;
+            border-radius: var(--radius-md) !important;
+            cursor: pointer !important;
+            width: 100% !important;
+            font-weight: 800 !important;
+            font-size: 15px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1.5px !important;
+            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15), 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+            min-height: 56px !important;
+            margin: 0 0 15px 0 !important;
+        }
+        #status-checker-overlay .status-window .btn-main:hover {
+            transform: translateY(-3px) scale(1.01) !important;
+            box-shadow: 0 8px 40px rgba(0, 240, 255, 0.3), 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+        }
+        #status-checker-overlay .status-window .btn-main:active {
+            transform: scale(0.97) !important;
+        }
 
-/* ---- Result Box ---- */
-#status-checker-overlay .status-window #status-result {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: var(--radius-sm);
-    padding: 12px 15px;
-    margin-top: 10px;
-    max-height: 200px;
-    overflow-y: auto;
-    border: 1px solid rgba(0, 240, 255, 0.04);
-    text-align: left;
-    font-size: 12px;
-    color: var(--text-secondary);
-}
-#status-checker-overlay .status-window #status-result::-webkit-scrollbar {
-    width: 4px;
-}
-#status-checker-overlay .status-window #status-result::-webkit-scrollbar-thumb {
-    background: var(--neon-cyan);
-    border-radius: 10px;
-}
+        /* ---- Result Box ---- */
+        #status-checker-overlay .status-window #status-result {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 12px 15px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid rgba(0, 240, 255, 0.04);
+            text-align: left;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        #status-checker-overlay .status-window #status-result::-webkit-scrollbar {
+            width: 4px;
+        }
+        #status-checker-overlay .status-window #status-result::-webkit-scrollbar-thumb {
+            background: var(--neon-cyan);
+            border-radius: 10px;
+        }
 
-/* ---- Close Button ---- */
-#status-checker-overlay .status-window .close-status-btn {
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
-    color: var(--text-muted) !important;
-    padding: 14px 20px !important;
-    border-radius: var(--radius-md) !important;
-    font-weight: 600 !important;
-    font-size: 14px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1px !important;
-    cursor: pointer !important;
-    transition: all 0.35s ease !important;
-    width: 100% !important;
-    backdrop-filter: blur(10px) !important;
-    min-height: 50px !important;
-    margin-top: 8px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
-}
-#status-checker-overlay .status-window .close-status-btn:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border-color: var(--neon-cyan) !important;
-    color: var(--neon-cyan) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 0 30px rgba(0, 240, 255, 0.04) !important;
-}
+        /* ---- Close Button ---- */
+        #status-checker-overlay .status-window .close-status-btn {
+            background: rgba(255, 255, 255, 0.04) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
+            color: var(--text-muted) !important;
+            padding: 14px 20px !important;
+            border-radius: var(--radius-md) !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            cursor: pointer !important;
+            transition: all 0.35s ease !important;
+            width: 100% !important;
+            backdrop-filter: blur(10px) !important;
+            min-height: 50px !important;
+            margin-top: 8px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+        }
+        #status-checker-overlay .status-window .close-status-btn:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: var(--neon-cyan) !important;
+            color: var(--neon-cyan) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.04) !important;
+        }
 
-/* ===== YOUR REQUEST BUTTON (Help Center) ===== */
-#help-container .help-content .btn-signup {
-    background: rgba(0, 240, 255, 0.04) !important;
-    border: 1.5px solid rgba(0, 240, 255, 0.08) !important;
-    color: var(--neon-cyan) !important;
-    padding: 16px 24px !important;
-    border-radius: var(--radius-md) !important;
-    font-weight: 700 !important;
-    font-size: 14px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1px !important;
-    cursor: pointer !important;
-    transition: all 0.35s ease !important;
-    width: 100% !important;
-    min-height: 56px !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
-    backdrop-filter: blur(10px) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 10px !important;
-}
-#help-container .help-content .btn-signup:hover {
-    background: rgba(0, 240, 255, 0.08) !important;
-    border-color: var(--neon-cyan) !important;
-    transform: translateY(-3px) scale(1.01) !important;
-    box-shadow: 0 8px 30px rgba(0, 240, 255, 0.1) !important;
-}
-
+        /* ===== YOUR REQUEST BUTTON (Help Center) ===== */
+        #help-container .help-content .btn-signup {
+            background: rgba(0, 240, 255, 0.04) !important;
+            border: 1.5px solid rgba(0, 240, 255, 0.08) !important;
+            color: var(--neon-cyan) !important;
+            padding: 16px 24px !important;
+            border-radius: var(--radius-md) !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            cursor: pointer !important;
+            transition: all 0.35s ease !important;
+            width: 100% !important;
+            min-height: 56px !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+            backdrop-filter: blur(10px) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 10px !important;
+        }
+        #help-container .help-content .btn-signup:hover {
+            background: rgba(0, 240, 255, 0.08) !important;
+            border-color: var(--neon-cyan) !important;
+            transform: translateY(-3px) scale(1.01) !important;
+            box-shadow: 0 8px 30px rgba(0, 240, 255, 0.1) !important;
+        }
     </style>
 </head>
 <body>
@@ -4412,17 +4393,33 @@
                 </div>
             </div>
 
-            <!-- Step 4: Amount -->
-            <div id="withdraw-step4" style="display:none;">
-                <h4 style="color:var(--neon-gold); margin:15px 0;">STEP 4: ENTER AMOUNT</h4>
-                <p style="font-size:12px; color:#888;">Minimum withdrawal: 10000 coins</p>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:10px 0;">
-                    <button onclick="setWithdrawAmount(10000)" style="background:var(--neon-cyan); color:#000; padding:10px; font-size:10px; border-radius:var(--radius-sm);">10,000<br><small>Rs. 1,000</small></button>
-                    <button onclick="setWithdrawAmount(52000, true)" style="background:linear-gradient(45deg, var(--neon-gold), #ff6b00); color:#000; padding:10px; font-size:10px; border-radius:var(--radius-sm); border:2px solid var(--neon-gold);">50,000+2,000<br><small>Rs. 5,200</small></button>
-                </div>
-                <input type="number" id="withdraw-amount-coins" placeholder="Enter Coins to Withdraw" min="10000" style="text-align:center; font-size:18px; width:100%; padding:14px; margin:5px 0; border-radius:var(--radius-sm); border:1.5px solid rgba(0,240,255,0.12); background:rgba(0,240,255,0.04); color:var(--text-primary);">
-                <button class="btn-main" onclick="handleWithdrawRequest()">SUBMIT WITHDRAWAL</button>
-            </div>
+                             <!-- STEP 4: AMOUNT WITH CURRENCY -->
+         <div id="withdraw-step4" style="display:none;">
+             <h4 style="color:var(--neon-gold); margin:15px 0;">STEP 4: ENTER AMOUNT</h4>
+             <p style="font-size:12px; color:#888;">Minimum withdrawal: 50000 coins</p>
+             
+             <div style="margin: 10px 0;">
+                 <label style="color:var(--neon-cyan); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:5px;">💱 Withdraw in</label>
+                 <select id="withdraw-currency" style="width:100%; padding:14px; border-radius:var(--radius-sm); border:1.5px solid rgba(0,240,255,0.12); background:rgba(0,240,255,0.04); color:var(--text-primary); font-size:15px;">
+                     <option value="PKR">PKR (Pakistani Rupee)</option>
+                     <option value="USD">USD (US Dollar)</option>
+                 </select>
+                 <div id="withdraw-rate-hint" style="font-size:10px; color:#888; margin-top:4px;"></div>
+             </div>
+             
+             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:10px 0;">
+                 <button onclick="setWithdrawAmount(5000)" style="background:var(--neon-cyan); color:#000; padding:10px; font-size:10px; border-radius:var(--radius-sm);">
+                     5,0000<br><small id="preset-1-label">Rs. 5000</small>
+                 </button>
+                 <button onclick="setWithdrawAmount(10000, true)" style="background:linear-gradient(45deg, var(--neon-gold), #ff6b00); color:#000; padding:10px; font-size:10px; border-radius:var(--radius-sm); border:2px solid var(--neon-gold);">
+                     10,0000+200<br><small id="preset-2-label">Rs. 1,0020</small>
+                 </button>
+             </div>
+             
+             <input type="number" id="withdraw-amount-coins" placeholder="Enter Coins to Withdraw" min="5000" style="text-align:center; font-size:18px; width:100%; padding:14px; margin:5px 0; border-radius:var(--radius-sm); border:1.5px solid rgba(0,240,255,0.12); background:rgba(0,240,255,0.04); color:var(--text-primary);">
+             
+             <button class="btn-main" onclick="handleWithdrawRequest()">SUBMIT WITHDRAWAL</button>
+         </div>
 
             <button onclick="closeWithdrawModal()" class="btn-cancel">
                    <i class="fa-solid fa-xmark"></i> CANCEL
@@ -4678,12 +4675,14 @@
          <button id="system-logout-btn" onclick="logoutSequence()">Logout System</button>
         <p style="text-align:center; margin-top:15px; font-size:9px; color:var(--text-muted); opacity:0.5;">Powered by NightOrbit | Owner: Anas Farooq</p>
     </div>
-
+   
     <!-- ============================================================
          JAVASCRIPT - FULL APPLICATION
          ============================================================ -->
-    <script>
-        // ===== FIREBASE CONFIG =====
+
+  <script>
+      
+     // ===== FIREBASE CONFIG =====
       const firebaseConfig = {
   apiKey: "AIzaSyBxJqJkrAaFf3eR0QWvhet6IvvFVHYExeU",
   authDomain: "my-market-ff254.firebaseapp.com",
@@ -6588,6 +6587,8 @@ function claimRefBonus() {
     // ============================================================
     //  WITHDRAWAL FUNCTIONS
     // ============================================================
+    let bonusCoins = 0;
+
     function openWithdrawModal() {
         const user = auth.currentUser;
         if (!user) return alert("Please login first!");
@@ -6637,6 +6638,58 @@ function claimRefBonus() {
             updateWithdrawFields();
             window.isPayPalMode = false;
             bonusCoins = 0;
+  
+             // ===== CURRENCY DROPDOWN EVENT LISTENER =====
+             document.getElementById('withdraw-currency').addEventListener('change', function() {
+                 const hint = document.getElementById('withdraw-rate-hint');
+                 const preset1Label = document.getElementById('preset-1-label');
+                 const preset2Label = document.getElementById('preset-2-label');
+                 
+                 if (this.value === 'USD') {
+                     db.ref('app_control/usd_to_pkr_rate').once('value', snap => {
+                         const rate = snap.val() || 280;
+                         hint.textContent = `💵 1 USD = ${rate} PKR (Admin Rate) - Withdrawal will be in USD`;
+                         hint.style.color = 'var(--neon-gold)';
+                         
+                         // Update preset labels to USD
+                         const pkr1 = 50000 / 10; // 5000 PKR
+                         const usd1 = (pkr1 / rate).toFixed(2);
+                         preset1Label.textContent = `$ ${usd1}`;
+                         
+                         const pkr2 = (100000 + 200) / 10; // 10020 PKR
+                         const usd2 = (pkr2 / rate).toFixed(2);
+                         preset2Label.textContent = `$ ${usd2}`;
+                     });
+                 } else {
+                     hint.textContent = '💵 Withdrawal in PKR (Pakistani Rupee)';
+                     hint.style.color = '#888';
+                     preset1Label.textContent = 'Rs. 5000';
+                     preset2Label.textContent = 'Rs. 1,0020';
+                 }
+             });
+             // Trigger once to set default
+             setTimeout(() => {
+                 document.getElementById('withdraw-currency').dispatchEvent(new Event('change'));
+             }, 200);
+
+            // ===== CURRENCY DROPDOWN EVENT LISTENER =====
+            document.getElementById('withdraw-currency').addEventListener('change', function() {
+                const hint = document.getElementById('withdraw-rate-hint');
+                if (this.value === 'USD') {
+                    db.ref('app_control/usd_to_pkr_rate').once('value', snap => {
+                        const rate = snap.val() || 280;
+                        hint.textContent = `💵 1 USD = ${rate} PKR (Admin Rate) - Withdrawal will be in USD`;
+                        hint.style.color = 'var(--neon-gold)';
+                    });
+                } else {
+                    hint.textContent = '💵 Withdrawal in PKR (Pakistani Rupee)';
+                    hint.style.color = '#888';
+                }
+            });
+            // Trigger once to set default
+            setTimeout(() => {
+                document.getElementById('withdraw-currency').dispatchEvent(new Event('change'));
+            }, 200);
         });
     }
 
@@ -6659,21 +6712,48 @@ function claimRefBonus() {
         bonusCoins = 0;
     }
 
-    let bonusCoins = 0;
+     function setWithdrawAmount(amount, hasBonus = false) {
+             const input = document.getElementById('withdraw-amount-coins');
+             if (hasBonus) {
+                 input.value = amount;
+                 bonusCoins = 200; // 🆕 Changed from 2000 to 200
+                 // Update display with currency
+                 updateWithdrawDisplay();
+                 alert(`✅ 10,0000 coins + 200 BONUS coins = 100,200 coins (${getCurrencyDisplay(100200)})`);
+             } else {
+                 input.value = amount;
+                 bonusCoins = 0;
+                 updateWithdrawDisplay();
+             }
+         }
 
-    function setWithdrawAmount(amount, hasBonus = false) {
-        const input = document.getElementById('withdraw-amount-coins');
-        if (hasBonus) {
-            input.value = amount;
-            bonusCoins = 2000;
-            document.getElementById('pk-balance-display').innerText = "Rs. " + ((amount + bonusCoins) / 10).toFixed(2);
-            alert(`✅ 50,000 coins + 2,000 BONUS coins = 52,000 coins (Rs. 5,200)`);
-        } else {
-            input.value = amount;
-            bonusCoins = 0;
-            document.getElementById('pk-balance-display').innerText = "Rs. " + (amount / 10).toFixed(2);
-        }
-    }
+     function updateWithdrawDisplay() {
+             const coins = parseInt(document.getElementById('withdraw-amount-coins').value) || 0;
+             const totalCoins = coins + bonusCoins;
+             const currency = document.getElementById('withdraw-currency').value;
+             const pkrAmount = totalCoins / 10;
+             
+             if (currency === 'USD') {
+                 db.ref('app_control/usd_to_pkr_rate').once('value', snap => {
+                     const rate = snap.val() || 280;
+                     const usdAmount = (pkrAmount / rate).toFixed(2);
+                     document.getElementById('pk-balance-display').innerText = `$ ${usdAmount}`;
+                 });
+             } else {
+                 document.getElementById('pk-balance-display').innerText = `Rs. ${pkrAmount.toFixed(2)}`;
+             }
+         }
+         
+         // 🆕 Helper to get currency display
+         function getCurrencyDisplay(coins) {
+             const currency = document.getElementById('withdraw-currency').value;
+             const pkr = coins / 10;
+             if (currency === 'USD') {
+                 // We'll update async, return placeholder
+                 return 'USD';
+             }
+             return `Rs. ${pkr.toFixed(2)}`;
+         }
 
     function updateWithdrawFields() {
         const method = document.getElementById('withdraw-method').value;
@@ -7144,59 +7224,77 @@ function sendOTPEmail(email, otp, type = 'withdrawal') {
         document.getElementById('verify-connected-otp-btn').style.display = 'none';
     }
 
-    function handleWithdrawRequest() {
-        const user = auth.currentUser;
-        let amountCoins = parseInt(document.getElementById('withdraw-amount-coins').value);
-        const method = window.tempWithdrawDetails?.method;
-        const details = window.tempWithdrawDetails;
-
-        if (bonusCoins > 0) {
-            amountCoins = amountCoins + bonusCoins;
-        }
-
-        if(!method) return alert("Please complete previous steps first!");
-        if(!amountCoins || amountCoins < 10000) return alert("Minimum withdrawal is 10000 coins!");
-        if(currentUserCoins < 10000) return alert("You need at least 10000 coins to withdraw!");
-        if(amountCoins > currentUserCoins) return alert("Insufficient coins!");
-
-        let accountInfo = {};
-        if (method === 'JazzCash') {
-            accountInfo = { number: details.jazzNum, name: details.jazzName, email: details.jazzEmail };
-        } else if (method === 'Bank Account') {
-            accountInfo = { bank: details.bankName, iban: details.bankIban, title: details.bankTitle, email: details.bankEmail };
-        }
-
-        showLoad("PROCESSING...");
-        db.ref('users/' + user.uid + '/coins').transaction((current) => {
-            if((current || 0) >= amountCoins) return current - amountCoins;
-        }).then((result) => {
-            if(result.committed) {
-                db.ref('withdrawals').push({
-                    uid: user.uid,
-                    email: user.email,
-                    coins: amountCoins,
-                    pkr: (amountCoins / 10),
-                    method: method,
-                    accountInfo: accountInfo,
-                    bonusCoins: bonusCoins,
-                    deviceId: deviceId,
-                    fingerprint: fingerprint,
-                    location: userLocation,
-                    otpVerified: true,
-                    connectedEmailVerified: true,
-                    status: "pending",
-                    time: new Date().toLocaleString()
-                }).then(() => {
-                    hideLoad();
-                    alert(`Withdrawal request sent for ${amountCoins} coins (Rs. ${(amountCoins/10).toFixed(2)})!`);
-                    closeWithdrawModal();
-                });
-            } else {
-                hideLoad();
-                alert("Transaction Failed");
-            }
-        });
-    }
+    // ===== FIXED: handleWithdrawRequest (with currency, min 50000 coins) =====
+            function handleWithdrawRequest() {
+             const user = auth.currentUser;
+             if (!user) return alert("Please login first!");
+             
+             let amountCoins = parseInt(document.getElementById('withdraw-amount-coins').value);
+             if (bonusCoins > 0) amountCoins = amountCoins + bonusCoins;
+             
+             const method = window.tempWithdrawDetails?.method;
+             const details = window.tempWithdrawDetails;
+             const currency = document.getElementById('withdraw-currency').value;
+             
+             if (!method) return alert("Please complete previous steps first!");
+             if (!amountCoins || amountCoins < 50000) return alert("Minimum withdrawal is 50000 coins!");
+             if (currentUserCoins < 50000) return alert("You need at least 50000 coins to withdraw!");
+             if (amountCoins > currentUserCoins) return alert("Insufficient coins!");
+             
+             const pkrAmount = amountCoins / 10;
+             let requestedAmount = pkrAmount;
+             let usdRate = 0;
+             
+             if (currency === 'USD') {
+                 db.ref('app_control/usd_to_pkr_rate').once('value', snap => {
+                     usdRate = snap.val() || 280;
+                     requestedAmount = pkrAmount / usdRate;
+                     saveWithdrawalRequest(amountCoins, currency, requestedAmount, usdRate, pkrAmount, method, details);
+                 });
+             } else {
+                 saveWithdrawalRequest(amountCoins, currency, requestedAmount, 0, pkrAmount, method, details);
+             }
+             
+             function saveWithdrawalRequest(coins, curr, reqAmt, rate, pkr, method, details) {
+                 let accountInfo = {};
+                 if (method === 'JazzCash') accountInfo = { number: details.jazzNum, name: details.jazzName, email: details.jazzEmail };
+                 else if (method === 'Bank Account') accountInfo = { bank: details.bankName, iban: details.bankIban, title: details.bankTitle, email: details.bankEmail };
+                 
+                 showLoad("PROCESSING...");
+                 db.ref('users/' + user.uid + '/coins').transaction((current) => {
+                     if ((current || 0) >= coins) return current - coins;
+                 }).then((result) => {
+                     if (result.committed) {
+                         db.ref('withdrawals').push({
+                             uid: user.uid,
+                             email: user.email,
+                             coins: coins,
+                             pkr: pkr,
+                             currency: curr,
+                             requestedAmount: reqAmt,
+                             usdRate: rate,
+                             method: method,
+                             accountInfo: accountInfo,
+                             bonusCoins: bonusCoins,
+                             deviceId: deviceId,
+                             fingerprint: fingerprint,
+                             location: userLocation,
+                             otpVerified: true,
+                             connectedEmailVerified: true,
+                             status: "pending",
+                             time: new Date().toLocaleString()
+                         }).then(() => {
+                             hideLoad();
+                             alert(`✅ Withdrawal request sent!\n\n🪙 ${coins} coins\n💱 ${curr} ${reqAmt.toFixed(2)}\n📅 ${new Date().toLocaleString()}`);
+                             closeWithdrawModal();
+                         });
+                     } else {
+                         hideLoad();
+                         alert("❌ Transaction Failed");
+                     }
+                 });
+             }
+         }
 
     function openWithdrawHistory() {
         document.getElementById('withdraw-history-overlay').style.display = 'flex';
@@ -7812,166 +7910,6 @@ function showSpinCountdown(onComplete, uid) {
             }, actionType, user.uid);
         });
     }
-function showAdModal(onSuccess, actionType, uid) {
-    let modal = document.getElementById('ad-modal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'ad-modal';
-        modal.style.cssText = `
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(0,0,0,0.92), rgba(0,0,0,0.98));
-            z-index: 999999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            animation: modalFadeIn 0.5s ease;
-        `;
-        
-        modal.innerHTML = `
-            <div style="
-                background: linear-gradient(145deg, rgba(20,20,40,0.95), rgba(10,10,20,0.98));
-                border: 2px solid rgba(0, 240, 255, 0.08);
-                border-radius: 28px;
-                padding: 40px 35px;
-                max-width: 380px;
-                width: 90%;
-                text-align: center;
-                box-shadow: 0 0 80px rgba(0, 240, 255, 0.02), inset 0 1px 0 rgba(255,255,255,0.02);
-                position: relative;
-                overflow: hidden;
-            ">
-                <!-- Animated Border Glow -->
-                <div style="
-                    position: absolute;
-                    inset: -2px;
-                    border-radius: 28px;
-                    padding: 2px;
-                    background: conic-gradient(from 0deg, #00f0ff, #ff2d95, #b400ff, #00f0ff);
-                    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-                    -webkit-mask-composite: xor;
-                    mask-composite: exclude;
-                    animation: borderSpin 6s linear infinite;
-                    pointer-events: none;
-                "></div>
-                
-                <!-- Icon -->
-                <div style="font-size: 48px; margin-bottom: 10px;">📺</div>
-                
-                <h3 style="color: #ffd700; font-family: 'Orbitron', sans-serif; font-size: 18px; letter-spacing: 3px; margin: 0 0 5px 0; text-shadow: 0 0 30px rgba(255,215,0,0.1);">
-                    ADVERTISEMENT
-                </h3>
-                
-                <p style="color: #888; font-size: 12px; margin: 5px 0 20px 0; letter-spacing: 1px;">
-                    Please watch this 10-second ad to continue
-                </p>
-                
-                <!-- Countdown Number with Neon Glow -->
-                <div style="
-                    font-size: 72px;
-                    font-weight: 900;
-                    font-family: 'Orbitron', monospace;
-                    background: linear-gradient(135deg, #00f0ff, #b400ff);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    text-shadow: 0 0 60px rgba(0, 240, 255, 0.15);
-                    line-height: 1.2;
-                    animation: glowPulse 1s ease-in-out infinite alternate;
-                    padding: 10px 0;
-                " id="ad-countdown-number">10</div>
-                
-                <!-- Progress Bar -->
-                <div style="
-                    width: 100%;
-                    height: 4px;
-                    background: rgba(255,255,255,0.04);
-                    border-radius: 10px;
-                    overflow: hidden;
-                    margin: 15px 0 20px 0;
-                    box-shadow: 0 0 20px rgba(0, 240, 255, 0.02);
-                ">
-                    <div id="ad-progress-bar" style="
-                        width: 100%;
-                        height: 100%;
-                        background: linear-gradient(90deg, #00f0ff, #b400ff);
-                        border-radius: 10px;
-                        transition: width 0.1s linear;
-                        box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
-                    "></div>
-                </div>
-                
-                <!-- Warning -->
-                <p style="color: #444; font-size: 10px; margin: 0; letter-spacing: 1px;">
-                    ⚡ Do not switch tabs or minimize
-                </p>
-                
-                <!-- Loading dots -->
-                <div style="margin-top: 12px; display: flex; justify-content: center; gap: 8px;">
-                    <div style="width: 6px; height: 6px; border-radius: 50%; background: #00f0ff; opacity: 0.2; animation: dotPulse 1s ease-in-out infinite;"></div>
-                    <div style="width: 6px; height: 6px; border-radius: 50%; background: #00f0ff; opacity: 0.2; animation: dotPulse 1s ease-in-out infinite 0.2s;"></div>
-                    <div style="width: 6px; height: 6px; border-radius: 50%; background: #00f0ff; opacity: 0.2; animation: dotPulse 1s ease-in-out infinite 0.4s;"></div>
-                </div>
-            </div>
-        `;
-        
-        // Add keyframes
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes borderSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-            @keyframes glowPulse { 0% { opacity: 0.8; transform: scale(0.98); } 100% { opacity: 1; transform: scale(1.02); } }
-            @keyframes dotPulse { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 0.8; transform: scale(1.2); } }
-            @keyframes modalFadeIn { 0% { opacity: 0; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
-        `;
-        document.head.appendChild(style);
-        document.body.appendChild(modal);
-    } else {
-        modal.style.display = 'flex';
-    }
-
-    let countdown = 10;
-    const numberEl = document.getElementById('ad-countdown-number') || modal.querySelector('#ad-countdown-number');
-    const progressBar = document.getElementById('ad-progress-bar') || modal.querySelector('#ad-progress-bar');
-    
-    let countdownInterval = setInterval(() => {
-        countdown--;
-        if (numberEl) numberEl.textContent = countdown;
-        if (progressBar) progressBar.style.width = (countdown / 10 * 3000) + '%';
-        
-        if (countdown <= 0) {
-            clearInterval(countdownInterval);
-            modal.style.display = 'none';
-            onSuccess()
-        }
-    }, 2000);
-
-    // Tab switch protection
-    const blurHandler = () => {
-        if (modal.style.display !== 'none') {
-            clearInterval(countdownInterval);
-            modal.style.display = 'none';
-            incrementAdWarning(uid, 'Ad skipped by switching tabs/app');
-            alert('⏳ Ad skipped! Please do not switch tabs during ad.');
-        }
-    };
-    window.addEventListener('blur', blurHandler, { once: true });
-
-        const cleanup = () => {
-            window.removeEventListener('blur', blurHandler);
-        };
-        const newInterval = setInterval(() => {
-            countdown--;
-            if (countdownEl) countdownEl.innerText = countdown;
-            if (countdown <= 0) {
-                clearInterval(newInterval);
-                cleanup();
-                modal.style.display = 'none';
-                onSuccess();
-            }
-        }, 1000);
-    }
 
     function incrementAdWarning(uid, reason) {
         if (!uid) return;
@@ -8281,357 +8219,365 @@ Status: ${freezeData.status}
         }
     }
 
-    function showPlatformInfoPopup(platform, callback) {
-        if (document.getElementById('platform-info-modal')) {
-            document.getElementById('platform-info-modal').remove();
-        }
-        const modal = document.createElement('div');
-        modal.id = 'platform-info-modal';
-        modal.style.cssText = `
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background:rgba(0,0,0,0.98); z-index:30001; display:flex;
-            align-items:center; justify-content:center; backdrop-filter:blur(10px);
-        `;
-       modal.innerHTML = `
-    <div style="
-        background: var(--card-bg);
-        backdrop-filter: blur(40px) saturate(1.6);
-        -webkit-backdrop-filter: blur(40px) saturate(1.6);
-        padding: 35px 30px;
-        border-radius: var(--radius-xl);
-        max-width: 420px;
-        width: 92%;
-        border: 1px solid rgba(255, 215, 0, 0.2);
-        box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 60px rgba(255, 215, 0, 0.06);
-        position: relative;
-        overflow: hidden;
-        text-align: center;
-    ">
-        <!-- Neon Border Animation -->
-        <div style="
-            position: absolute;
-            inset: -2px;
-            border-radius: var(--radius-xl);
-            padding: 2px;
-            background: conic-gradient(from 0deg, var(--neon-cyan), var(--neon-gold), var(--neon-pink), var(--neon-cyan));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            animation: borderSpin 6s linear infinite;
-        "></div>
-
-        <!-- Icon with Glow -->
-        <div style="
-            font-size: 48px;
-            display: block;
-            margin-bottom: 5px;
-            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3));
-        ">🌟</div>
-
-        <h2 style="
-            font-family: 'Orbitron', sans-serif;
-            background: linear-gradient(135deg, var(--neon-gold), #f59e0b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 22px;
-            font-weight: 900;
-            letter-spacing: 3px;
-            margin: 0 0 15px 0;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
-        ">FROM NIGHTORBIT</h2>
-
-        <!-- Divider -->
-        <div style="
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--neon-gold), transparent);
-            margin: 0 auto 15px auto;
-            border-radius: 10px;
-        "></div>
-
-        <p style="
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.8;
-            margin: 10px 0;
-        ">
-            Dear user, if you purchase anything worth <b style="color: var(--neon-gold);">Rs. 1000 or more</b> on 
-            <b style="
-                background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-            ">${platform}</b>, 
-            you will receive <b style="
-                background: linear-gradient(135deg, var(--neon-gold), #f59e0b);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-            ">100 coins</b> for every Rs. 1000 spent.
-        </p>
-
-        <p style="
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.8;
-            margin: 10px 0;
-        ">
-            To get coins, you need to provide a screenshot of your order showing the amount and time. 
-            After your purchase, come back and you will get a popup to upload the screenshot.
-        </p>
-
-        <!-- Gold Highlight Box -->
-        <div style="
-            background: rgba(255, 215, 0, 0.06);
-            border: 1px solid rgba(255, 215, 0, 0.15);
-            border-radius: var(--radius-sm);
-            padding: 12px 16px;
-            margin: 15px 0;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.03);
-        ">
-            <p style="
-                background: linear-gradient(135deg, var(--neon-gold), #f59e0b);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                font-size: 16px;
-                font-weight: 700;
-                margin: 0;
-            ">
-                ✨ You have already received <b>1 coin</b> for clicking this link!
-            </p>
-        </div>
-
-        <button onclick="proceedToPlatform()" style="
-            background: linear-gradient(135deg, var(--neon-gold), #f59e0b);
-            color: #000;
-            border: none;
-            padding: 16px 28px;
-            border-radius: var(--radius-md);
-            width: 100%;
-            font-weight: 800;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
-            margin-top: 5px;
-        "
-        onmouseover="this.style.transform='translateY(-3px) scale(1.02)'; this.style.boxShadow='0 8px 40px rgba(255, 215, 0, 0.4)';"
-        onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 0 30px rgba(255, 215, 0, 0.2)';">PROCEED TO PLATFORM</button>
-    </div>
-`;
-        document.body.appendChild(modal);
-        window.proceedToPlatform = () => {
-            if (document.getElementById('platform-info-modal')) {
-                document.body.removeChild(modal);
-            }
-            callback();
-        };
+    // ===== FIXED: showPlatformInfoPopup (dynamic feedback rate) =====
+    function getPlatformFeedback(platform) {
+        return new Promise((resolve) => {
+            db.ref('app_control/platform_feedback_defaults/' + platform).once('value', snap => {
+                const rate = snap.val();
+                resolve(rate !== null && !isNaN(rate) ? parseFloat(rate) : 0);
+            });
+        });
     }
 
+    function showPlatformInfoPopup(platform, callback) {
+        getPlatformFeedback(platform).then(rate => {
+            if (document.getElementById('platform-info-modal')) {
+                document.getElementById('platform-info-modal').remove();
+            }
+            const modal = document.createElement('div');
+            modal.id = 'platform-info-modal';
+            modal.style.cssText = `
+                position: fixed; top:0; left:0; width:100%; height:100%;
+                background:rgba(0,0,0,0.98); z-index:30001; display:flex;
+                align-items:center; justify-content:center; backdrop-filter:blur(10px);
+            `;
+            modal.innerHTML = `
+            <div style="background: var(--card-bg); backdrop-filter: blur(40px) saturate(1.6); -webkit-backdrop-filter: blur(40px) saturate(1.6); padding: 35px 30px; border-radius: var(--radius-xl); max-width: 420px; width: 92%; border: 1px solid rgba(255, 215, 0, 0.2); box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 60px rgba(255, 215, 0, 0.06); position: relative; overflow: hidden; text-align: center;">
+                <div style="position: absolute; inset: -2px; border-radius: var(--radius-xl); padding: 2px; background: conic-gradient(from 0deg, var(--neon-cyan), var(--neon-gold), var(--neon-pink), var(--neon-cyan)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; animation: borderSpin 6s linear infinite;"></div>
+                <div style="font-size: 48px; display: block; margin-bottom: 5px; filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3));">🌟</div>
+                <h2 style="font-family: 'Orbitron', sans-serif; background: linear-gradient(135deg, var(--neon-gold), #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 22px; font-weight: 900; letter-spacing: 3px; margin: 0 0 15px 0; text-shadow: 0 0 30px rgba(255, 215, 0, 0.15);">FROM NIGHTORBIT</h2>
+                <div style="width: 60px; height: 3px; background: linear-gradient(90deg, transparent, var(--neon-gold), transparent); margin: 0 auto 15px auto; border-radius: 10px;"></div>
+                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.8; margin: 10px 0;">Dear user, if you purchase anything on <b style="background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${platform}</b>, you will earn <b style="background: linear-gradient(135deg, var(--neon-gold), #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${rate}%</b> of your purchase amount as coins upon successful verification.</p>
+                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.8; margin: 10px 0;">To get coins, you need to provide a screenshot of your order showing the amount and time. After your purchase, come back and you will get a popup to upload the screenshot.</p>
+                <div style="background: rgba(255, 215, 0, 0.06); border: 1px solid rgba(255, 215, 0, 0.15); border-radius: var(--radius-sm); padding: 12px 16px; margin: 15px 0; box-shadow: 0 0 20px rgba(255, 215, 0, 0.03);"><p style="background: linear-gradient(135deg, var(--neon-gold), #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 16px; font-weight: 700; margin: 0;">✨ You have already received <b>1 coin</b> for clicking this link!</p></div>
+                <button onclick="proceedToPlatform()" style="background: linear-gradient(135deg, var(--neon-gold), #f59e0b); color: #000; border: none; padding: 16px 28px; border-radius: var(--radius-md); width: 100%; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); box-shadow: 0 0 30px rgba(255, 215, 0, 0.2); margin-top: 5px;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)'; this.style.boxShadow='0 8px 40px rgba(255, 215, 0, 0.4)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 0 30px rgba(255, 215, 0, 0.2)';">PROCEED TO PLATFORM</button>
+            </div>`;
+            document.body.appendChild(modal);
+            window.proceedToPlatform = () => {
+                if (document.getElementById('platform-info-modal')) {
+                    document.body.removeChild(modal);
+                }
+                callback();
+            };
+        }).catch(() => {
+            alert("Rate load nahi ho raha, lakin platform open ho jayega.");
+            callback();
+        });
+    }
+
+           // ===== FIXED: showPurchaseVerificationModal (currency symbol in amount field) =====
     function showPurchaseVerificationModal(platform, uid) {
+        console.log('📸 showPurchaseVerificationModal called for', platform);
+        
+        // Remove existing modal if present
         if (document.getElementById('purchase-verify-modal')) {
             document.getElementById('purchase-verify-modal').remove();
         }
+
         const modal = document.createElement('div');
         modal.id = 'purchase-verify-modal';
         modal.style.cssText = `
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background:rgba(0,0,0,0.98); z-index:30000; display:flex;
-            align-items:center; justify-content:center; backdrop-filter:blur(10px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 300000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            box-sizing: border-box;
         `;
+
         modal.innerHTML = `
-    <div style="
-        background: var(--card-bg);
-        backdrop-filter: blur(40px) saturate(1.6);
-        -webkit-backdrop-filter: blur(40px) saturate(1.6);
-        padding: 35px 30px;
-        border-radius: var(--radius-xl);
-        max-width: 420px;
-        width: 92%;
-        border: 1px solid rgba(255, 215, 0, 0.2);
-        box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 60px rgba(255, 215, 0, 0.06);
-        position: relative;
-        overflow: hidden;
-        text-align: left;
-    ">
-        <!-- Neon Border Animation -->
         <div style="
-            position: absolute;
-            inset: -2px;
+            background: var(--card-bg);
+            backdrop-filter: blur(40px) saturate(1.6);
+            -webkit-backdrop-filter: blur(40px) saturate(1.6);
+            padding: 25px 25px 20px;
             border-radius: var(--radius-xl);
-            padding: 2px;
-            background: conic-gradient(from 0deg, var(--neon-cyan), var(--neon-gold), var(--neon-pink), var(--neon-cyan));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            animation: borderSpin 6s linear infinite;
-        "></div>
-
-        <h3 style="
-            font-family: 'Orbitron', sans-serif;
-            background: linear-gradient(135deg, var(--neon-gold), #f59e0b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 20px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            margin: 0 0 20px 0;
-            text-align: center;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
-        ">🔍 VERIFY PURCHASE</h3>
-
-        <div style="margin-bottom: 15px;">
-            <label style="
-                color: var(--neon-cyan);
-                font-size: 11px;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                display: block;
-                margin-bottom: 5px;
-            ">📱 Platform</label>
-            <input type="text" id="verify-platform" value="${platform}" readonly style="
-                width:100%;
-                padding: 14px 16px;
-                border-radius: var(--radius-sm);
-                border: 1.5px solid rgba(0, 240, 255, 0.12);
-                background: rgba(0, 240, 255, 0.04);
-                color: var(--text-primary);
-                font-size: 14px;
-                font-weight: 500;
-                backdrop-filter: blur(10px);
-            ">
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label style="
-                color: var(--neon-cyan);
-                font-size: 11px;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                display: block;
-                margin-bottom: 5px;
-            ">💰 Amount (Rs.)</label>
-            <input type="number" id="verify-amount" placeholder="e.g., 500" min="100" style="
-                width:100%;
-                padding: 14px 16px;
-                border-radius: var(--radius-sm);
-                border: 1.5px solid rgba(0, 240, 255, 0.12);
-                background: rgba(0, 240, 255, 0.04);
-                color: var(--text-primary);
-                font-size: 14px;
-                backdrop-filter: blur(10px);
-            ">
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label style="
-                color: var(--neon-cyan);
-                font-size: 11px;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                display: block;
-                margin-bottom: 5px;
-            ">📸 Screenshot of Order/Receipt</label>
-            <input type="file" id="verify-screenshot" accept="image/*" style="
-                width:100%;
-                padding: 12px;
-                border-radius: var(--radius-sm);
-                border: 1.5px solid rgba(0, 240, 255, 0.12);
-                background: rgba(0, 240, 255, 0.04);
-                color: var(--text-primary);
-                font-size: 13px;
-                backdrop-filter: blur(10px);
-            ">
-            <p style="
-                font-size: 10px;
-                color: var(--text-muted);
-                margin-top: 5px;
-                letter-spacing: 0.5px;
-            ">Screenshot must be taken within last 20 minutes and show order details & time.</p>
-            <p style="
-                font-size: 10px;
-                color: var(--neon-gold);
-                margin-top: 3px;
-                font-weight: 600;
-            " id="screenshot-timer"></p>
-        </div>
-
-        <div style="margin-bottom: 20px;">
-            <label style="
-                color: var(--neon-cyan);
-                font-size: 11px;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                display: block;
-                margin-bottom: 5px;
-            ">🕒 Order Time (as shown in screenshot)</label>
-            <input type="datetime-local" id="verify-order-time" style="
-                width:100%;
-                padding: 14px 16px;
-                border-radius: var(--radius-sm);
-                border: 1.5px solid rgba(0, 240, 255, 0.12);
-                background: rgba(0, 240, 255, 0.04);
-                color: var(--text-primary);
-                font-size: 14px;
-                backdrop-filter: blur(10px);
-            ">
-        </div>
-
-        <button onclick="submitPurchaseVerification('${uid}')" style="
-            background: linear-gradient(135deg, var(--neon-gold), #f59e0b);
-            color: #000;
-            border: none;
-            padding: 16px 28px;
-            border-radius: var(--radius-md);
+            max-width: 420px;
             width: 100%;
-            font-weight: 800;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
-            margin-bottom: 10px;
-        "
-        onmouseover="this.style.transform='translateY(-3px) scale(1.02)'; this.style.boxShadow='0 8px 40px rgba(255, 215, 0, 0.4)';"
-        onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 0 30px rgba(255, 215, 0, 0.2)';">SUBMIT FOR VERIFICATION</button>
+            max-height: 80vh;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 60px rgba(255, 215, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+        ">
+            <!-- Neon Border Animation -->
+            <div style="
+                position: absolute;
+                inset: -2px;
+                border-radius: var(--radius-xl);
+                padding: 2px;
+                background: conic-gradient(from 0deg, var(--neon-cyan), var(--neon-gold), var(--neon-pink), var(--neon-cyan));
+                -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                -webkit-mask-composite: xor;
+                mask-composite: exclude;
+                pointer-events: none;
+                animation: borderSpin 6s linear infinite;
+            "></div>
+            
+            <!-- Scrollable Content -->
+            <div style="
+                flex: 1;
+                overflow-y: auto;
+                padding-right: 5px;
+                position: relative;
+                z-index: 1;
+            ">
+                <h3 style="
+                    font-family: 'Orbitron', sans-serif;
+                    background: linear-gradient(135deg, var(--neon-gold), #f59e0b);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    font-size: 20px;
+                    font-weight: 900;
+                    letter-spacing: 2px;
+                    margin: 0 0 15px 0;
+                    text-align: center;
+                    text-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+                ">🔍 VERIFY PURCHASE</h3>
+                
+                <!-- Platform -->
+                <div style="margin-bottom: 12px;">
+                    <label style="
+                        color: var(--neon-cyan);
+                        font-size: 11px;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        display: block;
+                        margin-bottom: 4px;
+                    ">📱 Platform</label>
+                    <input type="text" id="verify-platform" value="${platform}" readonly style="
+                        width:100%;
+                        padding: 12px 14px;
+                        border-radius: var(--radius-sm);
+                        border: 1.5px solid rgba(0, 240, 255, 0.12);
+                        background: rgba(0, 240, 255, 0.04);
+                        color: var(--text-primary);
+                        font-size: 14px;
+                        font-weight: 500;
+                        backdrop-filter: blur(10px);
+                        box-sizing: border-box;
+                    ">
+                </div>
+                
+                <!-- Currency Dropdown - FIXED -->
+                <div style="margin-bottom: 10px;">
+                    <label style="
+                        color: var(--neon-cyan);
+                        font-size: 11px;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        display: block;
+                        margin-bottom: 4px;
+                    ">💱 Currency</label>
+                    <select id="verify-currency" style="
+                        width:100%;
+                        padding: 12px 14px;
+                        border-radius: var(--radius-sm);
+                        border: 1.5px solid rgba(0, 240, 255, 0.12);
+                        background: #1a1a2e !important;
+                        color: #ffffff !important;
+                        font-size: 14px;
+                        backdrop-filter: blur(10px);
+                        box-sizing: border-box;
+                        appearance: none;
+                        -webkit-appearance: none;
+                        cursor: pointer;
+                    ">
+                        <option value="PKR" style="background: #1a1a2e; color: #ffffff; padding: 8px;">🇵🇰 PKR (Pakistani Rupee)</option>
+                        <option value="USD" style="background: #1a1a2e; color: #ffffff; padding: 8px;">🇺🇸 USD (US Dollar)</option>
+                    </select>
+                </div>
+                
+                <!-- Amount with Currency Symbol -->
+                <div style="margin-bottom: 12px;">
+                    <label style="
+                        color: var(--neon-cyan);
+                        font-size: 11px;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        display: block;
+                        margin-bottom: 4px;
+                    " id="amount-label">💰 Amount (PKR)</label>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <span id="currency-symbol" style="
+                            position: absolute;
+                            left: 14px;
+                            color: var(--neon-gold);
+                            font-weight: 700;
+                            font-size: 16px;
+                            pointer-events: none;
+                            z-index: 2;
+                        ">Rs.</span>
+                        <input type="number" id="verify-amount" placeholder="e.g., 500" min="1" step="0.01" style="
+                            width:100%;
+                            padding: 12px 14px 12px 50px;
+                            border-radius: var(--radius-sm);
+                            border: 1.5px solid rgba(0, 240, 255, 0.12);
+                            background: rgba(0, 240, 255, 0.04);
+                            color: var(--text-primary);
+                            font-size: 14px;
+                            backdrop-filter: blur(10px);
+                            box-sizing: border-box;
+                        ">
+                    </div>
+                    <span id="usd-rate-hint" style="font-size:10px; color:#888; display:block; margin-top:4px;">💵 Amount will be saved in PKR (Pakistani Rupee)</span>
+                </div>
+                
+                <!-- Screenshot -->
+                <div style="margin-bottom: 12px;">
+                    <label style="
+                        color: var(--neon-cyan);
+                        font-size: 11px;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        display: block;
+                        margin-bottom: 4px;
+                    ">📸 Screenshot of Order/Receipt</label>
+                    <input type="file" id="verify-screenshot" accept="image/*" style="
+                        width:100%;
+                        padding: 10px;
+                        border-radius: var(--radius-sm);
+                        border: 1.5px solid rgba(0, 240, 255, 0.12);
+                        background: rgba(0, 240, 255, 0.04);
+                        color: var(--text-primary);
+                        font-size: 13px;
+                        backdrop-filter: blur(10px);
+                        box-sizing: border-box;
+                    ">
+                    <p style="
+                        font-size: 10px;
+                        color: var(--text-muted);
+                        margin-top: 4px;
+                        letter-spacing: 0.5px;
+                    ">Screenshot must be taken within last 20 minutes and show order details & time.</p>
+                    <p style="
+                        font-size: 10px;
+                        color: var(--neon-gold);
+                        margin-top: 3px;
+                        font-weight: 600;
+                    " id="screenshot-timer"></p>
+                </div>
+                
+                <!-- Order Time -->
+                <div style="margin-bottom: 15px;">
+                    <label style="
+                        color: var(--neon-cyan);
+                        font-size: 11px;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        display: block;
+                        margin-bottom: 4px;
+                    ">🕒 Order Time (as shown in screenshot)</label>
+                    <input type="datetime-local" id="verify-order-time" style="
+                        width:100%;
+                        padding: 12px 14px;
+                        border-radius: var(--radius-sm);
+                        border: 1.5px solid rgba(0, 240, 255, 0.12);
+                        background: rgba(0, 240, 255, 0.04);
+                        color: var(--text-primary);
+                        font-size: 14px;
+                        backdrop-filter: blur(10px);
+                        box-sizing: border-box;
+                    ">
+                </div>
+                
+                <!-- Submit Button -->
+                <button onclick="submitPurchaseVerification('${uid}')" style="
+                    background: linear-gradient(135deg, var(--neon-gold), #f59e0b);
+                    color: #000;
+                    border: none;
+                    padding: 14px 20px;
+                    border-radius: var(--radius-md);
+                    width: 100%;
+                    font-weight: 800;
+                    font-size: 14px;
+                    text-transform: uppercase;
+                    letter-spacing: 1.5px;
+                    cursor: pointer;
+                    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                    box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+                    margin: 5px 0;
+                "
+                onmouseover="this.style.transform='translateY(-2px) scale(1.01)'; this.style.boxShadow='0 8px 40px rgba(255, 215, 0, 0.4)';"
+                onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 0 30px rgba(255, 215, 0, 0.2)';">SUBMIT FOR VERIFICATION</button>
+                
+                <!-- Cancel Button -->
+                <button onclick="document.getElementById('purchase-verify-modal').remove()" style="
+                    background: transparent;
+                    color: var(--text-muted);
+                    border: 1.5px solid rgba(255, 255, 255, 0.06);
+                    padding: 12px 16px;
+                    border-radius: var(--radius-md);
+                    width: 100%;
+                    font-weight: 600;
+                    font-size: 13px;
+                    cursor: pointer;
+                    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                    backdrop-filter: blur(10px);
+                    margin-top: 3px;
+                "
+                onmouseover="this.style.borderColor='var(--neon-pink)'; this.style.color='var(--neon-pink)'; this.style.background='rgba(255,45,149,0.05)';"
+                onmouseout="this.style.borderColor='rgba(255,255,255,0.06)'; this.style.color='var(--text-muted)'; this.style.background='transparent';">CANCEL</button>
+            </div>
+        </div>`;
 
-        <button onclick="document.getElementById('purchase-verify-modal').remove()" style="
-            background: transparent;
-            color: var(--text-muted);
-            border: 1.5px solid rgba(255, 255, 255, 0.06);
-            padding: 14px 18px;
-            border-radius: var(--radius-md);
-            width: 100%;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            backdrop-filter: blur(10px);
-            margin-top: 5px;
-        "
-        onmouseover="this.style.borderColor='var(--neon-pink)'; this.style.color='var(--neon-pink)'; this.style.background='rgba(255,45,149,0.05)';"
-        onmouseout="this.style.borderColor='rgba(255,255,255,0.06)'; this.style.color='var(--text-muted)'; this.style.background='transparent';">CANCEL</button>
-    </div>
-`;
         document.body.appendChild(modal);
+
+        // ===== CURRENCY CHANGE EVENT - UPDATED with symbol =====
+        document.getElementById('verify-currency').addEventListener('change', function() {
+            const hint = document.getElementById('usd-rate-hint');
+            const symbol = document.getElementById('currency-symbol');
+            const label = document.getElementById('amount-label');
+            const amountInput = document.getElementById('verify-amount');
+            
+            if (this.value === 'USD') {
+                db.ref('app_control/usd_to_pkr_rate').once('value', snap => {
+                    const rate = snap.val() || 280;
+                    hint.textContent = `💵 1 USD = ${rate} PKR (Admin Rate) - Amount will be saved in USD`;
+                    hint.style.color = 'var(--neon-gold)';
+                    symbol.textContent = '$';
+                    label.textContent = '💰 Amount (USD)';
+                    amountInput.placeholder = 'e.g., 50';
+                });
+            } else {
+                hint.textContent = '💵 Amount will be saved in PKR (Pakistani Rupee)';
+                hint.style.color = '#888';
+                symbol.textContent = 'Rs.';
+                label.textContent = '💰 Amount (PKR)';
+                amountInput.placeholder = 'e.g., 500';
+            }
+        });
         
+        // Trigger once to set default
+        setTimeout(() => {
+            const el = document.getElementById('verify-currency');
+            if (el) el.dispatchEvent(new Event('change'));
+        }, 300);
+
+        // Timer for screenshot
         const timerDiv = document.getElementById('screenshot-timer');
         const startTime = Date.now();
         const timer = setInterval(() => {
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
             const remaining = 1200 - elapsed;
-            
             if (remaining <= 0) {
                 clearInterval(timer);
                 timerDiv.innerHTML = '⏰ Time expired! Please take new screenshot.';
-                timerDiv.style.color = 'var(--neon)';
+                timerDiv.style.color = 'var(--neon-red)';
             } else {
                 const mins = Math.floor(remaining / 60);
                 const secs = remaining % 60;
@@ -8641,14 +8587,16 @@ Status: ${freezeData.status}
         modal.timer = timer;
     }
 
+      // ===== FIXED: submitPurchaseVerification (currency conversion, both currencies) =====
     async function submitPurchaseVerification(uid) {
         const platform = document.getElementById('verify-platform').value;
-        const amount = document.getElementById('verify-amount').value;
+        const currency = document.getElementById('verify-currency').value;
+        const amount = parseFloat(document.getElementById('verify-amount').value);
         const fileInput = document.getElementById('verify-screenshot');
         const orderTimeStr = document.getElementById('verify-order-time').value;
-        
-        if (!amount || amount < 100) {
-            return alert("❌ Minimum purchase amount is Rs. 100");
+
+        if (!amount || amount <= 0) {
+            return alert("❌ Please enter a valid amount!");
         }
         if (!fileInput.files[0]) {
             return alert("❌ Please upload a screenshot");
@@ -8656,21 +8604,43 @@ Status: ${freezeData.status}
         if (!orderTimeStr) {
             return alert("❌ Please enter the order time shown in screenshot");
         }
-        
+
         const orderTime = new Date(orderTimeStr).getTime();
         const now = Date.now();
-        
         if (now - orderTime > 20 * 60 * 1000) {
             return alert("❌ Screenshot is too old! It must be within last 20 minutes.");
         }
         if (orderTime > now) {
             return alert("❌ Order time cannot be in the future!");
         }
+
+        // ===== CURRENCY CONVERSION =====
+        let usdRate = 0;
+        let amountPKR = amount;
+        let displayCurrency = currency;
+        let displayAmount = amount;
         
+        if (currency === 'USD') {
+            const rateSnap = await db.ref('app_control/usd_to_pkr_rate').once('value');
+            usdRate = rateSnap.val() || 280;
+            amountPKR = amount * usdRate;
+            displayCurrency = 'USD';
+            displayAmount = amount;
+        } else {
+            // PKR
+            amountPKR = amount;
+            displayCurrency = 'PKR';
+            displayAmount = amount;
+        }
+
+        // Platform rate se coins calculate karein (PKR amount ke hisaab se)
+        const rateSnap = await db.ref('app_control/platform_feedback_defaults/' + platform).once('value');
+        const feedbackRate = rateSnap.val() || 0;
+        const coinsToGive = Math.floor(amountPKR * (feedbackRate / 100) * 10);
+
         const reader = new FileReader();
         reader.onload = async function(e) {
             const screenshotBase64 = e.target.result;
-            
             const hash = await sha256(screenshotBase64);
             const hashCheck = await db.ref('used_screenshot_hashes/' + hash).once('value');
             if (hashCheck.exists()) {
@@ -8678,13 +8648,12 @@ Status: ${freezeData.status}
                 document.getElementById('purchase-verify-modal').remove();
                 return;
             }
-            
             await db.ref('used_screenshot_hashes/' + hash).set({
                 uid: uid,
                 timestamp: now,
                 platform: platform
             });
-            
+
             try {
                 const exifTime = await getExifTime(fileInput.files[0]);
                 if (exifTime && Math.abs(exifTime - orderTime) > 5 * 60 * 1000) {
@@ -8693,10 +8662,16 @@ Status: ${freezeData.status}
                     return;
                 }
             } catch (e) {}
-            
+
+            // ===== SAVE WITH BOTH CURRENCIES =====
             db.ref('purchase_verifications/' + uid).push({
                 platform: platform,
-                amount: parseInt(amount),
+                currency: displayCurrency,          // "PKR" or "USD"
+                amount: displayAmount,              // Original amount in selected currency
+                amountPKR: amountPKR,               // Amount converted to PKR
+                exchangeRate: usdRate,              // USD to PKR rate (0 if PKR)
+                platformRate: feedbackRate,
+                coinsEstimated: coinsToGive,
                 screenshot: screenshotBase64,
                 orderTime: orderTime,
                 orderTimeStr: new Date(orderTime).toLocaleString(),
@@ -8704,11 +8679,13 @@ Status: ${freezeData.status}
                 submitTimeStr: new Date(now).toLocaleString(),
                 status: 'pending',
                 userEmail: auth.currentUser.email,
+                userNickname: currentUserName || auth.currentUser.displayName || 'User',
                 deviceId: deviceId,
                 fingerprint: fingerprint,
+                location: userLocation,
                 hash: hash
             }).then(() => {
-                alert("✅ Purchase verification submitted! Admin will review and add coins within 24 hours.");
+                alert(`✅ Purchase verification submitted!\n\n🪙 Estimated Coins: ${coinsToGive}\n💱 Currency: ${displayCurrency}\n💰 Amount: ${displayCurrency === 'USD' ? '$' : 'Rs.'} ${displayAmount}${displayCurrency === 'USD' ? ` (≈ Rs. ${amountPKR})` : ''}\n\nAdmin will review and add coins within 24 hours.`);
                 document.getElementById('purchase-verify-modal').remove();
                 earnCoins(2, `Purchase submitted - ${platform}`);
             });
@@ -8811,7 +8788,7 @@ Status: ${freezeData.status}
                          
                          const url = card.href;
                          const affiliateUrl = card.getAttribute('data-affiliate') || url;
-                         let platform = card.innerText.trim().replace(/[\n\r]+/g, ' ').trim();
+                         let platform = card.getAttribute('data-platform') || card.innerText.trim().replace(/[\n\r]+/g, ' ').trim();
                          
                          if (url === '#' || !url || url === '') {
                                card.innerHTML = `
@@ -9932,7 +9909,7 @@ function loadUsersForAdmin() {
     });
 }
 
-    function loadPurchaseVerifications() {
+             function loadPurchaseVerifications() {
         const list = document.getElementById('purchase-verifications-list');
         list.innerHTML = "Loading...";
         db.ref('purchase_verifications').once('value').then(snap => {
@@ -9941,24 +9918,30 @@ function loadUsersForAdmin() {
                 userVerifications.forEach(verif => {
                     const v = verif.val();
                     if (v.status === 'pending') {
+                        let amountDisplay = v.currency === 'USD'
+                            ? `$${v.amount} (≈ Rs. ${v.amountPKR})`
+                            : `Rs. ${v.amount}`;
                         list.innerHTML += `
                         <div class="admin-card">
                             <p><b>${v.userEmail}</b> - ${v.platform}</p>
-                            <p>Amount: Rs. ${v.amount} (${Math.floor(v.amount/100)*10} coins)</p>
+                            <p>Amount: ${amountDisplay} (Exchange Rate: 1 USD = ${v.exchangeRate || 280} PKR)</p>
+                            <p>Coins Estimated: ${v.coinsEstimated}</p>
                             <div style="max-width:200px; max-height:200px; margin:10px 0;">
                                 <img src="${v.screenshot}" style="max-width:100%; border-radius:10px;">
                             </div>
                             <p>Order Time: ${v.orderTimeStr}</p>
                             <p>Submitted: ${v.submitTimeStr}</p>
                             <div class="action-btns">
-                                <button onclick="approvePurchase('${verif.key}', '${userVerifications.key}', ${v.amount})" style="background:green;">APPROVE</button>
+                                <button onclick="approvePurchase('${verif.key}', '${userVerifications.key}', ${v.amountPKR})" style="background:green;">APPROVE</button>
                                 <button onclick="rejectPurchase('${verif.key}', '${userVerifications.key}')" style="background:red;">REJECT</button>
                             </div>
                         </div>`;
                     }
                 });
             });
-            if (list.innerHTML === "") list.innerHTML = "<p>No pending verifications</p>";
+            if (list.innerHTML === "") {
+                list.innerHTML = "<p>No pending verifications</p>";
+            }
         });
     }
 
@@ -10279,7 +10262,7 @@ function loadUsersForAdmin() {
     // ============================================================
     //  BROWSER FUNCTIONS (Dummy)
     // ============================================================
-    function openInNightorbitBrowser(url, platform) {
+  function openInNightorbitBrowser(url, platform) {
         window.open(url, '_blank');
     }
     function startBrowserPurchaseDetection() {}
@@ -11615,15 +11598,15 @@ function loadUsersForAdmin() {
     }
 
      // ============================================================
-//  OPEN HELP CENTER - FIX
-// ============================================================
-function openHelp() {
-    // Menu band karo
-    if (document.getElementById('hamburger-menu').classList.contains('open')) {
-        document.getElementById('hamburger-menu').classList.remove('open');
-        document.getElementById('hamburger-overlay').classList.remove('active');
-        menuOpen = false;
-    }
+          //  OPEN HELP CENTER - FIX
+    // ============================================================
+      function openHelp() {
+          // Menu band karo
+         if (document.getElementById('hamburger-menu').classList.contains('open')) {
+            document.getElementById('hamburger-menu').classList.remove('open');
+            document.getElementById('hamburger-overlay').classList.remove('active');
+              menuOpen = false;
+          }
     
     // Help Center show
     var helpContainer = document.getElementById('help-container');
@@ -11644,20 +11627,83 @@ function openHelp() {
         helpContainer.style.boxSizing = 'border-box';
         helpContainer.style.overflow = 'hidden';
         helpContainer.classList.add('active');
-    }
+     }
     
     // Login box hide
     var loginBox = document.getElementById('login-box');
     if (loginBox) {
         loginBox.style.display = 'none';
-    }
+     }
     
-    // BACK button text update
-    var user = auth.currentUser;
-    var backBtn = document.getElementById('back-btn-text');
-    if (backBtn) {
-        backBtn.textContent = user ? 'BACK TO MEMBER AREA' : 'BACK TO LOGIN';
+        // BACK button text update
+         var user = auth.currentUser;
+          var backBtn = document.getElementById('back-btn-text');
+         if (backBtn) {
+                 backBtn.textContent = user ? 'BACK TO MEMBER AREA' : 'BACK TO LOGIN';
+         }
+      }
+
+
+
+
+// ============================================================
+//  FIXED: showAdModal (countdownEl ka error theek kiya)
+// ============================================================
+ function showAdModal(onSuccess, actionType, uid) {
+    let modal = document.getElementById('ad-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'ad-modal';
+        modal.style.cssText = `
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.92), rgba(0,0,0,0.98));
+            z-index: 999999; display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        `;
+        modal.innerHTML = `
+            <div style="background: linear-gradient(145deg, rgba(20,20,40,0.95), rgba(10,10,20,0.98)); border: 2px solid rgba(0,240,255,0.08); border-radius: 28px; padding: 40px 35px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 0 80px rgba(0,240,255,0.02); position: relative; overflow: hidden;">
+                <div style="position: absolute; inset: -2px; border-radius: 28px; padding: 2px; background: conic-gradient(from 0deg, #00f0ff, #ff2d95, #b400ff, #00f0ff); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: borderSpin 6s linear infinite; pointer-events: none;"></div>
+                <div style="font-size: 48px; margin-bottom: 10px;">📺</div>
+                <h3 style="color: #ffd700; font-family: 'Orbitron', sans-serif; font-size: 18px; letter-spacing: 3px; margin: 0 0 5px 0;">ADVERTISEMENT</h3>
+                <p style="color: #888; font-size: 12px; margin: 5px 0 20px 0;">Please watch this 10-second ad to continue</p>
+                <div style="font-size: 72px; font-weight: 900; font-family: 'Orbitron', monospace; background: linear-gradient(135deg, #00f0ff, #b400ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; padding: 10px 0;" id="ad-countdown-number">10</div>
+                <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.04); border-radius: 10px; overflow: hidden; margin: 15px 0 20px 0;">
+                    <div id="ad-progress-bar" style="width: 100%; height: 100%; background: linear-gradient(90deg, #00f0ff, #b400ff); border-radius: 10px; transition: width 0.1s linear;"></div>
+                </div>
+                <p style="color: #444; font-size: 10px; margin: 0;">⚡ Do not switch tabs or minimize</p>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    } else {
+        modal.style.display = 'flex';
     }
+
+    let countdown = 10;
+    const numberEl = document.getElementById('ad-countdown-number') || modal.querySelector('#ad-countdown-number');
+    const progressBar = document.getElementById('ad-progress-bar') || modal.querySelector('#ad-progress-bar');
+
+    // Tab switch protection
+    const blurHandler = () => {
+        if (modal.style.display !== 'none') {
+            clearInterval(intervalId);
+            modal.style.display = 'none';
+            incrementAdWarning(uid, 'Ad skipped by switching tabs/app');
+            alert('⏳ Ad skipped! Please do not switch tabs during ad.');
+        }
+    };
+    window.addEventListener('blur', blurHandler, { once: true });
+
+   const intervalId = setInterval(() => {
+        countdown--;
+        if (numberEl) numberEl.innerText = countdown; // ✅ FIX: countdownEl ko numberEl kiya
+        if (progressBar) progressBar.style.width = (countdown / 10 * 100) + '%';
+        if (countdown <= 0) {
+            clearInterval(intervalId);
+            window.removeEventListener('blur', blurHandler);
+            modal.style.display = 'none';
+            onSuccess();
+        }
+    }, 1000);
 }
 
     // ============================================================
@@ -11672,10 +11718,9 @@ function openHelp() {
     // ============================================================
     setInterval(autoVIPCheck, 60000);
     
-
 </script>
 
-    <style>
+       <style>
         .g-sticker { width: 18px; height: 18px; margin-right: 10px; }
         .link-card { 
             display: flex !important; flex-direction: column !important; padding: 0 !important; 
