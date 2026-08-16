@@ -4686,16 +4686,17 @@
   <script>
       
      // ===== FIREBASE CONFIG =====
-      const firebaseConfig = {
-  apiKey: "AIzaSyBxJqJkrAaFf3eR0QWvhet6IvvFVHYExeU",
-  authDomain: "my-market-ff254.firebaseapp.com",
-  databaseURL: "https://my-market-ff254-default-rtdb.firebaseio.com",
-  projectId: "my-market-ff254",
-  storageBucket: "my-market-ff254.firebasestorage.app",
-  messagingSenderId: "1039626785987",
-  appId: "1:1039626785987:web:0569e739e3d65013cffe76",
-  measurementId: "G-FBND32X3RF"
-};
+       const firebaseConfig = {
+                 apiKey: "AIzaSyC7kZON-2obr2-X_jC93a6oFg7FnxY6foc",
+                 authDomain: "mymarketbaazar.firebaseapp.com",
+                 databaseURL: "https://mymarketbaazar-default-rtdb.firebaseio.com",
+                 projectId: "mymarketbaazar",
+                 storageBucket: "mymarketbaazar.firebasestorage.app",
+                 messagingSenderId: "922160804079",
+                 appId: "1:922160804079:web:9f9ea945503af9ee436b1a",
+                 measurementId: "G-5EJ35H1TJ1"
+       };
+
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
@@ -4843,7 +4844,7 @@ const SIGNUP_TEMPLATE = "template_yq5hh4e";
 
     const CURRENT_APP_VERSION = 31; 
     const APP_CODE_HASH = 'gyidi_v31_20250306';
-    const BASE_URL = "https://nightorbit.github.io/Testing/";
+    const BASE_URL = "https://mymarketbaazar.web.app/";
     const byePoetry = `The stars begin to fade away,
     As Nightorbit closes for the day.
     A digital journey comes to rest,
@@ -6315,7 +6316,7 @@ async function resolveReferralCode(ref) {
             console.log('❌ No affiliate found for code:', ref);
             
             // FALLBACK: Check if CODE is stored in link field
-            const linkSnap = await db.ref('affiliate_links').orderByChild('link').equalTo(`https://nightorbit.github.io/Testing/?ref=${ref}`).once('value');
+            const linkSnap = await db.ref('affiliate_links').orderByChild('link').equalTo(`https://mymarketbaazar.web.app/?ref=${ref}`).once('value');
             if (linkSnap.exists()) {
                 console.log('✅ Found via link field!');
                 linkSnap.forEach(child => {
