@@ -3930,7 +3930,7 @@
             </div>
 
             <!-- ===== MAIN TITLE ===== -->
-            <h1 class="update-title">VERSION 31</h1>
+            <h1 class="update-title">VERSION 32</h1>
             <div class="update-subtitle">Major Update Available</div>
 
             <!-- ===== DIVIDER ===== -->
@@ -3949,23 +3949,23 @@
                 </div>
 
                 <div class="feature-item">
-                    <span class="feature-icon">✦</span>
-                    <span class="feature-text">Enhanced Security &amp; Performance Updates</span>
+                    <span class="feature-icon">🌍</span>
+                    <span class="feature-text">International Currency Support – Now verify purchases in <b>PKR</b> &amp; <b>USD</b> with real-time exchange rate</span>
                 </div>
 
                 <div class="feature-item">
-                    <span class="feature-icon">✦</span>
-                    <span class="feature-text">Improved User Interface &amp; Navigation</span>
+                    <span class="feature-icon">📊</span>
+                    <span class="feature-text">New Feedback System – Platform-specific feedback rates for user coin earnings</span>
                 </div>
 
                 <div class="feature-item">
-                    <span class="feature-icon">✦</span>
-                    <span class="feature-text">Bug Fixes &amp; Stability Improvements</span>
+                    <span class="feature-icon">💵</span>
+                    <span class="feature-text">USD to PKR Exchange Rate Management – Admin-controlled conversion rate</span>
                 </div>
 
                 <div class="feature-item">
-                    <span class="feature-icon">✦</span>
-                    <span class="feature-text">Remove Fav Folder completely</span>
+                    <span class="feature-icon">💰</span>
+                    <span class="feature-text">Multi-Currency Withdrawals – Now withdraw in <b>PKR</b> or <b>USD</b></span>
                 </div>
 
             </div>
@@ -3980,17 +3980,17 @@
             <!-- ===== VERSION INFO ===== -->
             <div class="update-version-info">
                 <span class="version-label">Current Version</span>
-                <span class="version-old">v<span id="current-version">30</span></span>
+                <span class="version-old">v<span id="current-version">31</span></span>
                 <span class="version-arrow">⟶</span>
                 <span class="version-label">New Version</span>
-                <span class="version-new">v<span id="new-version">31</span></span>
+                <span class="version-new">v<span id="new-version">32</span></span>
             </div>
 
             <!-- ===== DESCRIPTION ===== -->
             <p class="update-description">
-                This update brings exciting new features, performance improvements,
-                and crucial security enhancements. We recommend updating now for the
-                best experience.
+                 🌍 This update introduces <b>international currency support</b> for purchase verification (PKR &amp; USD), 
+                a new <b>platform-specific feedback rate system</b> for earning coins, and <b>multi-currency withdrawals</b> 
+                (now withdraw in PKR or USD). We recommend updating now for the best experience.
             </p>
 
             <!-- ===== UPDATE BUTTON ===== -->
@@ -4002,7 +4002,7 @@
             <!-- ===== FOOTER ===== -->
             <p class="update-footer">
                 <span class="footer-dot">●</span>
-                NightOrbit Gyidi Bazar • v30 → v31
+                NightOrbit Gyidi Bazar • v31 → v32
                 <span class="footer-dot">●</span>
             </p>
 
@@ -4087,7 +4087,7 @@
             <div id="payment-amount-section" style="display:none; margin:10px 0;">
                 <p style="font-size:12px; color:#888;">Enter amount to send:</p>
                 <input type="number" id="payment-amount-input" placeholder="Enter amount in Rs" style="text-align:center; font-size:16px; background:#222; color:#fff; border:1px solid var(--neon-gold);">
-                <p style="font-size:10px; color:#555; margin-top:5px;">Send to: <b id="admin-number-display" style="color:var(--neon-gold);">03014618631</b></p>
+                <p style="font-size:10px; color:#555; margin-top:5px;">Send to: <b id="admin-number-display" style="color:var(--neon-gold);">030********</b></p>
                 <button id="confirm-payment-btn" class="btn-main" onclick="confirmPayment()" style="background:var(--neon-gold); color:#000; font-weight:bold; pointer-events:auto !important; cursor:pointer !important;">✅ I HAVE SENT THE PAYMENT</button>
             </div>
 
@@ -4842,8 +4842,8 @@ const SIGNUP_TEMPLATE = "template_yq5hh4e";
         const labels = ['10', '20', '50', '5', '100', '15']
 
 
-    const CURRENT_APP_VERSION = 31; 
-    const APP_CODE_HASH = 'gyidi_v31_20250306';
+    const CURRENT_APP_VERSION = 32; 
+    const APP_CODE_HASH = 'gyidi_v32_20250306';
     const BASE_URL = "https://mymarketbaazar.web.app/";
     const byePoetry = `The stars begin to fade away,
     As Nightorbit closes for the day.
@@ -4914,7 +4914,7 @@ function registerWithdrawalInfo() {
     
     // Validate phone (11 digits)
     if (!/^\d{11}$/.test(phone)) {
-        alert("Phone number must be 11 digits (e.g., 03001234567)");
+        alert("Phone number must be 11 digits (e.g., 030********)");
         return;
     }
     
@@ -7038,7 +7038,7 @@ function sendOTPEmail(email, otp, type = 'withdrawal') {
         
         const phoneRegex = /^\d{11}$/;
         if (!phoneRegex.test(newPhone)) {
-            return alert("❌ Phone number must be exactly 11 digits (e.g., 03001234567)");
+            return alert("❌ Phone number must be exactly 11 digits (e.g., 030*******)");
         }
         
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -8834,7 +8834,7 @@ async function checkIfFrozen(uid) {
     }
 
 
-        function upgradeAllLinks() {
+            function upgradeAllLinks() {
                    const allLinkCards = document.querySelectorAll(
                           '#main-ent-list .link-card, ' +
                           '#all-shop-list .link-card, ' +
@@ -8918,10 +8918,10 @@ async function checkIfFrozen(uid) {
                    });
          }
 
- document.addEventListener('DOMContentLoaded', function() {
-    console.log("🔥 DOM Ready - Upgrading all links...");
-    upgradeAllLinks();
-});
+              document.addEventListener('DOMContentLoaded', function() {
+                  console.log("🔥 DOM Ready - Upgrading all links...");
+                  upgradeAllLinks();
+              });
 
     // ============================================================
     //  EVENT FUNCTIONS - FIXED
@@ -9446,7 +9446,7 @@ async function checkIfFrozen(uid) {
         
         const methodName = method === 'jazzcash' ? 'JazzCash' : 'Bank Account';
         const numberDisplay = document.getElementById('admin-number-display');
-        numberDisplay.textContent = '03014618631';
+        numberDisplay.textContent = '03089649612';
         numberDisplay.style.color = 'var(--gold)';
         
         document.getElementById('payment-amount-input').value = eventEntryFee;
@@ -9469,7 +9469,7 @@ async function checkIfFrozen(uid) {
             return;
         }
         
-        if (confirm('✅ Confirm that you have sent Rs. ' + amount + ' via ' + method + ' to 03014618631?')) {
+        if (confirm('✅ Confirm that you have sent Rs. ' + amount + ' via ' + method + ' to 03089649612?')) {
             const requestKey = db.ref('event_payments').push().key;
             paymentRequestId = requestKey;
             
@@ -9484,7 +9484,7 @@ async function checkIfFrozen(uid) {
                 status: 'pending',
                 time: new Date().toLocaleString(),
                 timestamp: Date.now(),
-                adminNumber: '03014618631'
+                adminNumber: '03089649612'
             };
             
             db.ref('event_payments/' + requestKey).set(paymentData);
