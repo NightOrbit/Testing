@@ -1458,11 +1458,11 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- JAVASCRIPT - COMPLETE FIXED CODE -->
+<!-- JAVASCRIPT -->
 <!-- ============================================================ -->
 <script>
 // ================================================================
-// 🔥 FIREBASE CONFIG
+// FIREBASE CONFIG
 // ================================================================
 const firebaseConfig = {
     apiKey: "AIzaSyAmYlfLO-DVJ8AHXkB7r9cmu7deiCwwtes",
@@ -1479,7 +1479,7 @@ if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length ===
 const db = firebase.database();
 
 // ================================================================
-// 🔥 PADDLE CONFIG - COMPLETE FIXED
+// 🔥 PADDLE CONFIG - FIXED (Aap ki price IDs aur client token)
 // ================================================================
 const PADDLE_CONFIG = {
     environment: 'sandbox',
@@ -1495,7 +1495,7 @@ const PADDLE_CONFIG = {
 };
 
 // ================================================================
-// 🔥 WEBHOOK SECRET
+// 🔥 WEBHOOK SECRET - ADDED
 // ================================================================
 const WEBHOOK_SECRET = 'pdl_ntfset_01m1j49g8zbvmbt4n397423zhn_ev6zQCqk7565m3zD1BhNbNYogaPWWC4B';
 
@@ -1548,6 +1548,7 @@ const audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song
 audio.loop = true;
 audio.volume = 0.25;
 
+// Load music state from localStorage
 musicEnabled = localStorage.getItem('musicEnabled') !== 'false';
 if (!musicEnabled) {
     audio.pause();
@@ -1776,6 +1777,37 @@ function fbDelete(path) { return db.ref(path).remove(); }
 function fbOn(path, callback) { db.ref(path).on('value', function(snap) { callback(snap.val()); }); }
 
 // ================================================================
+// 🔥 BAN / UNBAN FUNCTIONS - ADDED
+// ================================================================
+function banUser(username, reason, days) {
+    return fbGet('users/' + username).then(function(user) {
+        if (!user) { showToast('❌ User not found'); return; }
+        user.banned = true;
+        user.banReason = reason || 'No reason provided';
+        if (days && days > 0) {
+            user.bannedUntil = Date.now() + days * 24 * 60 * 60 * 1000;
+        } else {
+            user.bannedUntil = null;
+        }
+        return fbSet('users/' + username, user);
+    }).then(function() {
+        showToast('🚫 ' + username + ' banned' + (days ? ' for ' + days + ' days' : ' permanently'));
+    });
+}
+
+function unbanUser(username) {
+    return fbGet('users/' + username).then(function(user) {
+        if (!user) { showToast('❌ User not found'); return; }
+        user.banned = false;
+        user.bannedUntil = null;
+        user.banReason = null;
+        return fbSet('users/' + username, user);
+    }).then(function() {
+        showToast('✅ ' + username + ' unbanned');
+    });
+}
+
+// ================================================================
 // AUTH FUNCTIONS
 // ================================================================
 function loginUser() {
@@ -1977,37 +2009,6 @@ function checkSession() {
 }
 
 // ================================================================
-// BAN / UNBAN FUNCTIONS (FIXED - MISSING THESE WERE ADDED)
-// ================================================================
-function banUser(username, reason, days) {
-    return fbGet('users/' + username).then(function(user) {
-        if (!user) { showToast('❌ User not found'); return; }
-        user.banned = true;
-        user.banReason = reason || 'No reason provided';
-        if (days && days > 0) {
-            user.bannedUntil = Date.now() + days * 24 * 60 * 60 * 1000;
-        } else {
-            user.bannedUntil = null;
-        }
-        return fbSet('users/' + username, user);
-    }).then(function() {
-        showToast('🚫 ' + username + ' banned' + (days ? ' for ' + days + ' days' : ' permanently'));
-    });
-}
-
-function unbanUser(username) {
-    return fbGet('users/' + username).then(function(user) {
-        if (!user) { showToast('❌ User not found'); return; }
-        user.banned = false;
-        user.bannedUntil = null;
-        user.banReason = null;
-        return fbSet('users/' + username, user);
-    }).then(function() {
-        showToast('✅ ' + username + ' unbanned');
-    });
-}
-
-// ================================================================
 // APP ENTRY
 // ================================================================
 function enterApp() {
@@ -2067,6 +2068,7 @@ function loadVipFeatures() {
     if (bgSelect) bgSelect.innerHTML = buildOptions(FREE_BGS, VIP_BGS);
     if (emojiSelect) emojiSelect.innerHTML = buildOptions(FREE_EMOJIS, VIP_EMOJIS);
 
+    // Template dropdown with owned count
     loadTemplatesWithCount();
 
     if (isVip) { unlockVipFeatures(); }
@@ -2078,6 +2080,7 @@ function loadTemplatesWithCount() {
     var templateSelect = document.getElementById('cardTemplate');
     if (!templateSelect) return;
     
+    // Free templates
     var freeTemplates = [
         'classic', 'modern', 'vintage', 'neon', 'minimal', 'luxury',
         'kids', 'elegant', 'royal', 'dark', 'cyberpunk', 'steampunk',
@@ -2105,16 +2108,19 @@ function loadTemplatesWithCount() {
     
     var html = '';
     
+    // Free templates
     freeTemplates.forEach(function(t) {
         html += '<option value="' + t + '">' + t + '</option>';
     });
     
+    // Paid templates - show count if owned
     paidTemplates.forEach(function(t) {
         var owned = user?.purchasedTemplates?.['paid_' + t] || 0;
         var label = owned > 0 ? t + ' ✅ (' + owned + ' left)' : t + ' – $0.20 (Buy)';
         html += '<option value="' + t + '" data-paid="true" data-price="0.20" ' + (owned > 0 ? 'data-owned="true"' : '') + '>' + label + '</option>';
     });
     
+    // VIP templates
     var vipOwned = user?.purchasedTemplates?.vip_card || 0;
     var premiumOwned = user?.purchasedTemplates?.premium_vip || 0;
     html += '<option value="vip_card" data-vip="true" data-price="0.60" ' + (vipOwned > 0 ? 'data-owned="true"' : '') + '>👑 VIP Card – ' + (vipOwned > 0 ? '✅ Owned (' + vipOwned + ')' : '$0.60') + '</option>';
@@ -2371,7 +2377,7 @@ function updateCountdown() {
 }
 
 // ================================================================
-// CARD GENERATOR (SHORTENED - FULL CODE SAME AS ORIGINAL)
+// CARD GENERATOR
 // ================================================================
 function generateCard() {
     var user = window._currentUserData;
@@ -2471,7 +2477,7 @@ function generateCard() {
     var date = document.getElementById('cardDate')?.value || '';
     var time = document.getElementById('cardTime')?.value || '';
 
-    // Style map
+    // Style map (simplified)
     var styleMap = {
         birthday: { text: '#ff69b4', name: '#ff69b4', bg: 'linear-gradient(145deg, #1a0a1a, #0f0a0f)' },
         anniversary: { text: '#ffd700', name: '#ffd700', bg: 'linear-gradient(145deg, #1a1a0a, #0f0f0a)' },
@@ -2725,7 +2731,7 @@ function generateCard() {
 }
 
 // ================================================================
-// GENERATE & SAVE CARD (SHORTENED - FULL CODE)
+// GENERATE & SAVE CARD
 // ================================================================
 function generateAndSaveCard() {
     var user = window._currentUserData;
@@ -2830,16 +2836,1116 @@ function generateAndSaveCard() {
     checkAchievements();
 }
 
+function loadSavedCards() {
+    var user = window._currentUserData;
+    if (!user) return;
+    var container = document.getElementById('mySavedCardsList');
+    if (!container) return;
+    if (!user.savedCards || user.savedCards.length === 0) {
+        container.innerHTML = '<div style="padding:8px; text-align:center; color:var(--muted); font-size:0.7rem;">No saved cards yet.</div>';
+        return;
+    }
+    var html = '';
+    user.savedCards.forEach(function(card, index) {
+        html += '<div style="background:var(--card-bg); border-radius:12px; padding:8px; text-align:center; border:1px solid var(--border); cursor:pointer;" onclick="loadSavedCard(' + index + ')">' +
+            '<div style="font-size:2rem;">' + (card.emoji || '🎂') + '</div>' +
+            '<div style="font-size:0.65rem; font-weight:600; color:var(--gold);">' + (card.title || 'Card') + '</div>' +
+            '<div style="font-size:0.55rem; color:var(--muted);">' + (card.name || 'You') + '</div>' +
+            '<div style="font-size:0.5rem; color:var(--muted); margin-top:2px;">Card #' + (index + 1) + '</div>' +
+        '</div>';
+    });
+    container.innerHTML = html;
+}
+
+function loadSavedCard(index) {
+    var user = window._currentUserData;
+    if (!user || !user.savedCards || !user.savedCards[index]) return;
+    var card = user.savedCards[index];
+    document.getElementById('cardName').value = card.name || '';
+    document.getElementById('cardTitle').value = card.title || '';
+    document.getElementById('cardMessage').value = card.message || '';
+    document.getElementById('cardRelation').value = card.relation || '';
+    if (card.date) document.getElementById('cardDate').value = card.date;
+    if (card.time) document.getElementById('cardTime').value = card.time;
+    document.getElementById('cardStyle').value = card.style || 'birthday';
+    document.getElementById('cardEmoji').value = card.emoji || '🎂';
+    document.getElementById('cardFont').value = card.font || "'Pacifico', cursive";
+    document.getElementById('cardBg').value = card.bg || 'gradient1';
+    document.getElementById('cardBorder').value = card.border || 'none';
+    document.getElementById('cardTemplate').value = card.template || 'classic';
+    activeCardId = card.cardId;
+    generateCard();
+    showToast('📇 Loaded card: ' + (card.title || 'Card'));
+}
+
+function duplicateCard() {
+    var user = window._currentUserData;
+    if (!user) return;
+    if (isDemoCard) { showToast('🔒 Cannot duplicate demo card. Save your real card first.'); return; }
+    var name = document.getElementById('cardName')?.value || 'You';
+    var title = document.getElementById('cardTitle')?.value || 'Card';
+    var message = document.getElementById('cardMessage')?.value || 'Message';
+    var relation = document.getElementById('cardRelation')?.value || '';
+    var date = document.getElementById('cardDate')?.value || '';
+    var time = document.getElementById('cardTime')?.value || '';
+    var style = document.getElementById('cardStyle')?.value || 'birthday';
+    var emoji = document.getElementById('cardEmoji')?.value || '🎂';
+    var font = document.getElementById('cardFont')?.value || "'Pacifico', cursive";
+    var bg = document.getElementById('cardBg')?.value || 'gradient1';
+    var border = document.getElementById('cardBorder')?.value || 'none';
+    var template = document.getElementById('cardTemplate')?.value || 'classic';
+
+    var cardData = {
+        author: currentUser, name: name, title: title, message: message, relation: relation,
+        date: date, time: time, style: style, emoji: emoji, font: font, bg: bg, border: border,
+        template: template, createdAt: Date.now(), isVip: user.vip === true,
+        published: false, publishedAt: null, wishes: 0, views: 0, clicks: 0,
+        expiresAt: Date.now() + CONFIG.CARD_EXPIRY_VIP * 24 * 60 * 60 * 1000,
+        category: style, publicCode: '', codeExpiry: null, isPaidTemplate: false,
+        templateType: null, isDuplicate: true
+    };
+    var cardId = 'card_' + Date.now() + '_dup_' + Math.random().toString(36).substr(2, 4);
+    fbSet('cards/' + cardId, cardData).then(function() {
+        if (!user.savedCards) user.savedCards = [];
+        var savedCard = {
+            cardId: cardId, name: name, title: title, message: message, style: style,
+            emoji: emoji, font: font, bg: bg, border: border, template: template,
+            createdAt: Date.now(), thumbnail: '🎂'
+        };
+        user.savedCards.push(savedCard);
+        return fbSet('users/' + currentUser, user);
+    }).then(function() {
+        window._currentUserData = user;
+        loadSavedCards();
+        showToast('✅ Card duplicated!');
+        triggerConfetti();
+    });
+}
+
 // ================================================================
-// REST OF THE FUNCTIONS (SAME AS ORIGINAL)
+// DOWNLOAD CARD
 // ================================================================
-// NOTE: All other functions (loadSavedCards, duplicateCard, downloadCard,
-// buyVIPPlan, buyBulk, publishCard, etc.) remain the same as original.
-// The only changes made were:
-// 1. Updated PADDLE_CONFIG with real price IDs and client token
-// 2. Added WEBHOOK_SECRET constant
-// 3. Added banUser and unbanUser functions (were missing)
-// 4. Fixed admin panel user management
+function downloadCard() {
+    if (isDemoCard) {
+        showToast('🔒 Demo cards cannot be downloaded. Upgrade to VIP to download!');
+        return;
+    }
+    var card = document.getElementById('cardPreview');
+    if (!card) return;
+    var watermark = document.createElement('div');
+    watermark.style.cssText = 'position:absolute; bottom:10px; right:10px; font-size:0.4rem; color:rgba(255,215,0,0.3); z-index:999; pointer-events:none;';
+    watermark.textContent = '© Nightorbit';
+    card.appendChild(watermark);
+    html2canvas(card, { scale: 3, backgroundColor: null, allowTaint: true, useCORS: true })
+        .then(function(canvas) {
+            var link = document.createElement('a');
+            link.download = 'nightorbit-card.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showToast('✅ Card downloaded!');
+            card.removeChild(watermark);
+        }).catch(function() {
+            showToast('⚠️ Download failed. Try screenshot!');
+            card.removeChild(watermark);
+        });
+}
+
+// ================================================================
+// BUY NOW
+// ================================================================
+function openBuyNow(template, label, price) {
+    buyNowTemplate = template;
+    buyNowLabel = label;
+    buyNowPrice = price;
+    document.getElementById('buyNowTemplateName').textContent = label;
+    document.getElementById('buyNowTemplatePrice').textContent = '$' + price;
+    document.getElementById('buyNowModal').classList.add('open');
+}
+
+function closeBuyNow() {
+    document.getElementById('buyNowModal').classList.remove('open');
+    buyNowTemplate = null;
+    buyNowPrice = null;
+    buyNowLabel = null;
+}
+
+function proceedBuyNow() {
+    var template = window._bulkTemplate || buyNowTemplate || 'normal';
+    var quantity = window._bulkQuantity || 1;
+    var pricePerCard = window._bulkPrice || 0.20;
+    var total = (pricePerCard * quantity).toFixed(2);
+    var label = window._bulkLabel || 'Template';
+    closeBuyNow();
+    document.getElementById('paymentOptionsModal').classList.add('open');
+}
+
+// ================================================================
+// PAYMENT OPTIONS
+// ================================================================
+function openPaymentOptions() {
+    document.getElementById('paymentOptionsModal').classList.add('open');
+}
+
+function closePaymentOptions() {
+    document.getElementById('paymentOptionsModal').classList.remove('open');
+    selectedPaymentMethod = null;
+    document.getElementById('bankDetailsForm').style.display = 'none';
+    document.getElementById('paypalDetailsForm').style.display = 'none';
+}
+
+function processPayment(method) {
+    selectedPaymentMethod = method;
+    document.getElementById('bankDetailsForm').style.display = 'none';
+    document.getElementById('paypalDetailsForm').style.display = 'none';
+    if (method === 'bank') {
+        document.getElementById('bankDetailsForm').style.display = 'block';
+    } else if (method === 'paypal') {
+        document.getElementById('paypalDetailsForm').style.display = 'block';
+    }
+    var btns = document.querySelectorAll('#paymentOptionsModal .plan-btn');
+    btns.forEach(function(btn) {
+        btn.style.borderColor = 'var(--border)';
+        btn.style.background = 'var(--card-bg)';
+    });
+    var methodMap = { 'card': 0, 'jazzcash': 1, 'easypaisa': 2, 'bank': 3, 'paypal': 4 };
+    if (btns[methodMap[method]]) {
+        btns[methodMap[method]].style.borderColor = 'var(--gold)';
+        btns[methodMap[method]].style.background = 'rgba(255,215,0,0.1)';
+    }
+    showToast('✅ Selected: ' + method.toUpperCase());
+}
+
+function confirmPayment() {
+    var country = document.getElementById('paymentCountry').value.trim();
+    var city = document.getElementById('paymentCity').value.trim();
+    var address = document.getElementById('paymentAddress').value.trim();
+    var phone = document.getElementById('paymentPhone').value.trim();
+
+    if (!country || !city || !address || !phone) {
+        showToast('❌ Please fill all address fields');
+        return;
+    }
+    if (!selectedPaymentMethod) {
+        showToast('❌ Please select a payment method');
+        return;
+    }
+
+    if (selectedPaymentMethod === 'bank') {
+        var bankName = document.getElementById('bankName').value.trim();
+        var accountTitle = document.getElementById('bankAccountTitle').value.trim();
+        var accountNumber = document.getElementById('bankAccountNumber').value.trim();
+        var iban = document.getElementById('bankIban').value.trim();
+        if (!bankName || !accountTitle || !accountNumber || !iban) {
+            showToast('❌ Please fill all bank details');
+            return;
+        }
+    }
+
+    if (selectedPaymentMethod === 'paypal') {
+        var paypalEmail = document.getElementById('paypalEmail').value.trim();
+        if (!paypalEmail || !paypalEmail.includes('@')) {
+            showToast('❌ Please enter a valid PayPal email');
+            return;
+        }
+    }
+
+    var user = window._currentUserData;
+    if (user) {
+        user.address = { country: country, city: city, address: address, phone: phone, method: selectedPaymentMethod };
+        if (selectedPaymentMethod === 'bank') {
+            user.bankDetails = {
+                bankName: document.getElementById('bankName').value.trim(),
+                accountTitle: document.getElementById('bankAccountTitle').value.trim(),
+                accountNumber: document.getElementById('bankAccountNumber').value.trim(),
+                iban: document.getElementById('bankIban').value.trim()
+            };
+        }
+        if (selectedPaymentMethod === 'paypal') {
+            user.paypalEmail = document.getElementById('paypalEmail').value.trim();
+        }
+        fbSet('users/' + currentUser, user);
+        window._currentUserData = user;
+    }
+
+    var template = window._bulkTemplate || buyNowTemplate || 'normal';
+    var quantity = window._bulkQuantity || 1;
+    var pricePerCard = window._bulkPrice || 0.20;
+    var total = (pricePerCard * quantity).toFixed(2);
+    var label = window._bulkLabel || 'Template';
+
+    closePaymentOptions();
+    showToast('💳 Processing ' + selectedPaymentMethod.toUpperCase() + ' payment: ' + quantity + ' x ' + label + ' = $' + total);
+
+    // 🔥 SANDOX PAYMENT SIMULATION
+    setTimeout(function() {
+        showToast('✅ Payment successful! ' + quantity + ' x ' + label + ' added to your account!');
+        if (user) {
+            if (!user.purchasedTemplates) user.purchasedTemplates = {};
+            var key = template;
+            if (template === 'premium_vip' || template === 'vip_card') {
+                key = template;
+            } else {
+                key = 'paid_' + (buyNowTemplate || template);
+            }
+            user.purchasedTemplates[key] = (user.purchasedTemplates[key] || 0) + quantity;
+            fbSet('users/' + currentUser, user);
+            window._currentUserData = user;
+            updateCardCount();
+            loadSavedCards();
+            loadVipFeatures();
+            window._bulkTemplate = null;
+            window._bulkQuantity = null;
+            window._bulkPrice = null;
+            window._bulkTotal = null;
+            window._bulkLabel = null;
+        }
+    }, 2000);
+}
+
+// ================================================================
+// VIP PLAN PURCHASE
+// ================================================================
+function buyVIPPlan(planType, price) {
+    var user = window._currentUserData;
+    if (!user) { showToast('❌ Please login first'); return; }
+    if (user.vip) { showToast('👑 You are already VIP!'); closePurchase(); return; }
+    var days = 0, planLabel = '';
+    if (planType === '7day') { days = 7; planLabel = '7-Day'; }
+    else if (planType === 'monthly') { days = 30; planLabel = 'Monthly'; }
+    else if (planType === 'yearly') { days = 365; planLabel = 'Yearly'; }
+    else if (planType === 'fiveyear') { days = 1825; planLabel = '5-Year'; }
+    showToast('💳 Processing ' + planLabel + ' VIP for $' + price + '...');
+    setTimeout(function() {
+        user.vip = true;
+        user.vipExpiry = Date.now() + days * 24 * 60 * 60 * 1000;
+        user.vipStartDate = Date.now();
+        user.vipPlan = planLabel + ' VIP';
+        fbSet('users/' + currentUser, user).then(function() {
+            window._currentUserData = user;
+            closePurchase();
+            updateUI();
+            loadVipFeatures();
+            loadUserData();
+            updateCardCount();
+            showToast('🎉 ' + planLabel + ' VIP activated! (' + days + ' days)');
+            triggerConfetti();
+            setTimeout(function() { triggerConfetti(); }, 300);
+            setTimeout(function() { triggerConfetti(); }, 600);
+        });
+    }, 2000);
+}
+
+// ================================================================
+// BULK DISCOUNT FUNCTION
+// ================================================================
+function buyBulk(templateType, quantity) {
+    var price = 0.20;
+    var label = 'Normal Template';
+    if (templateType === 'premium_vip') { price = 1.00; label = 'Premium VIP'; }
+    else if (templateType === 'vip_card') { price = 0.60; label = 'VIP Card'; }
+    else { price = 0.20; label = buyNowLabel || 'Normal Template'; }
+    if (quantity === 10) {
+        if (templateType === 'premium_vip') price = 0.95;
+        else if (templateType === 'vip_card') price = 0.55;
+        else price = 0.18;
+    }
+    if (quantity === 100) {
+        if (templateType === 'premium_vip') price = 0.90;
+        else if (templateType === 'vip_card') price = 0.50;
+        else price = 0.15;
+    }
+    var total = (price * quantity).toFixed(2);
+    document.getElementById('buyNowTemplateName').textContent = quantity + ' x ' + label;
+    document.getElementById('buyNowTemplatePrice').textContent = '$' + total;
+    document.getElementById('buyNowQuantity').textContent = quantity + ' cards @ $' + price.toFixed(2) + ' each';
+    window._bulkTemplate = templateType;
+    window._bulkQuantity = quantity;
+    window._bulkPrice = price;
+    window._bulkTotal = total;
+    window._bulkLabel = label;
+    showToast('📦 ' + quantity + ' x ' + label + ' = $' + total + ' ($' + price.toFixed(2) + ' each)');
+}
+
+// ================================================================
+// PUBLISH, PUBLIC CODE
+// ================================================================
+function publishCard() {
+    var user = window._currentUserData;
+    if (!user || !user.vip) { showToast('❌ Only VIP users can publish cards'); return; }
+    if (!activeCardId) { showToast('❌ Generate a card first!'); return; }
+    fbGet('cards/' + activeCardId).then(function(card) {
+        if (!card) { showToast('❌ Card not found'); return; }
+        if (card.author !== currentUser) { showToast('❌ You can only publish your own cards'); return; }
+        card.published = true;
+        card.publishedAt = Date.now();
+        card.publicCode = activeCardId;
+        card.codeExpiry = Date.now() + CONFIG.PUBLIC_CODE_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
+        user.publishedCards = (user.publishedCards || 0) + 1;
+        return fbSet('cards/' + activeCardId, card).then(function() {
+            return fbSet('users/' + currentUser, user);
+        });
+    }).then(function() {
+        window._currentUserData = user;
+        showToast('🌍 Card published! Public code generated (valid 2 days).');
+        loadPublicCards();
+        loadMyPublicCodes();
+        checkAchievements();
+    });
+}
+
+function generatePublicCode() {
+    var user = window._currentUserData;
+    if (!user || !user.vip) { showToast('🔒 Become VIP first!'); return; }
+    if (!activeCardId) { showToast('❌ Generate and publish a card first!'); return; }
+    fbGet('cards/' + activeCardId).then(function(card) {
+        if (!card) { showToast('❌ Card not found'); return; }
+        if (!card.published) { showToast('❌ Publish the card first!'); return; }
+        if (card.codeExpiry && Date.now() > card.codeExpiry) {
+            card.publicCode = 'code_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+            card.codeExpiry = Date.now() + CONFIG.PUBLIC_CODE_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
+            return fbSet('cards/' + activeCardId, card);
+        }
+        return card;
+    }).then(function(card) {
+        var display = document.getElementById('publicCodeDisplay');
+        if (display) display.textContent = card.publicCode || activeCardId;
+        document.getElementById('publicCodeModal').classList.add('open');
+    });
+}
+
+function closePublicCodeModal() { document.getElementById('publicCodeModal').classList.remove('open'); }
+function copyPublicCode() {
+    var code = document.getElementById('publicCodeDisplay')?.textContent || '';
+    navigator.clipboard.writeText(code).then(function() { showToast('📋 Copied!'); }).catch(function() { showToast('📋 Copy: ' + code); });
+}
+
+function loadMyPublicCodes() {
+    fbGet('cards').then(function(cards) {
+        var container = document.getElementById('myPublicCodesList');
+        if (!container) return;
+        if (!cards) { container.innerHTML = '<div style="padding:8px; text-align:center; color:var(--muted);">No active codes.</div>'; return; }
+        var html = '', count = 0;
+        for (var key in cards) {
+            var c = cards[key];
+            if (c.author === currentUser && c.published && c.publicCode) {
+                var expiry = c.codeExpiry ? new Date(c.codeExpiry).toLocaleDateString() : 'N/A';
+                var isActive = c.codeExpiry && Date.now() < c.codeExpiry;
+                html += '<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border);">' +
+                    '<span>🔑 <strong style="color:var(--gold);">' + c.publicCode + '</strong> <span style="font-size:0.6rem; color:' + (isActive ? 'var(--green)' : 'var(--neon)') + ';">' + (isActive ? '✅ Active' : '⏰ Expired') + '</span></span>' +
+                    '<span style="font-size:0.6rem; color:var(--muted);">📅 ' + expiry + '</span>' +
+                '</div>';
+                count++;
+            }
+        }
+        container.innerHTML = count === 0 ? '<div style="padding:8px; text-align:center; color:var(--muted);">No active codes.</div>' : html;
+    });
+}
+
+// ================================================================
+// PROFILE
+// ================================================================
+function openProfileModal() {
+    var user = window._currentUserData;
+    if (!user) return;
+    document.getElementById('profileUsername').textContent = currentUser;
+    document.getElementById('profileTotalCards').textContent = user.totalCards || 0;
+    document.getElementById('profileJoinDate').textContent = user.registered ? new Date(user.registered).toLocaleDateString() : '--';
+    document.getElementById('profileStatus').textContent = user.vip ? '⭐ VIP' : 'FREE';
+    document.getElementById('profileStatus').style.color = user.vip ? '#ffd700' : '#ff0055';
+    document.getElementById('profileReferrals').textContent = user.referrals || 0;
+    if (user.profilePic) {
+        document.getElementById('profilePicPreview').src = user.profilePic;
+        document.getElementById('profilePicPreview').style.display = 'block';
+        document.getElementById('profilePicPlaceholder').style.display = 'none';
+    } else {
+        document.getElementById('profilePicPreview').style.display = 'none';
+        document.getElementById('profilePicPlaceholder').style.display = 'block';
+    }
+    updateProfileTemplateCounts(user);
+    updateProfileBanStatus(user);
+    document.getElementById('profileModal').classList.add('open');
+}
+function closeProfileModal() { document.getElementById('profileModal').classList.remove('open'); }
+
+function uploadProfilePic(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var dataUrl = e.target.result;
+        var user = window._currentUserData;
+        if (!user) return;
+        user.profilePic = dataUrl;
+        fbSet('users/' + currentUser, user).then(function() {
+            window._currentUserData = user;
+            document.getElementById('profilePicPreview').src = dataUrl;
+            document.getElementById('profilePicPreview').style.display = 'block';
+            document.getElementById('profilePicPlaceholder').style.display = 'none';
+            showToast('✅ Profile photo updated!');
+        });
+    };
+    reader.readAsDataURL(file);
+}
+
+// ================================================================
+// PUBLIC CARDS
+// ================================================================
+function loadPublicCards() {
+    fbGet('cards').then(function(cards) {
+        var container = document.getElementById('publicCardsGrid');
+        if (!container) return;
+        var search = document.getElementById('cardSearch')?.value.toLowerCase().trim() || '';
+        var filter = document.getElementById('cardFilter')?.value || 'all';
+        container.innerHTML = '';
+        var count = 0;
+        if (cards) {
+            for (var key in cards) {
+                var c = cards[key];
+                if (c.published) {
+                    var searchMatch = !search || (c.title && c.title.toLowerCase().includes(search)) ||
+                        (c.name && c.name.toLowerCase().includes(search)) ||
+                        (c.author && c.author.toLowerCase().includes(search)) ||
+                        (c.publicCode && c.publicCode.toLowerCase().includes(search)) ||
+                        (key && key.toLowerCase().includes(search));
+                    if (!searchMatch) continue;
+                    if (filter !== 'all' && c.category !== filter) continue;
+                    count++;
+                    var div = document.createElement('div');
+                    div.className = 'public-card-item';
+                    div.innerHTML = '<div class="pc-emoji">' + (c.emoji || '🎂') + '</div>' +
+                        '<div class="pc-title">' + (c.title || 'Card') + '</div>' +
+                        '<div class="pc-name">' + (c.name || 'You') + '</div>' +
+                        '<div class="pc-author">by ' + c.author + (c.isVip ? ' ⭐' : '') + ' · ' + (c.wishes || 0) + ' wishes</div>' +
+                        '<div class="pc-wishes">👁️ ' + (c.views || 0) + ' views</div>';
+                    div.onclick = function(key) { return function() { trackCardView(key); openViewCard(key); }; }(key);
+                    container.appendChild(div);
+                }
+            }
+        }
+        if (count === 0) container.innerHTML = '<div style="color:var(--muted); font-size:0.8rem;">No public cards found.</div>';
+        updateWishCount();
+    });
+}
+
+function updateWishCount() {
+    fbOn('wishes', function(data) {
+        var count = 0;
+        if (data) { for (var key in data) count++; }
+        var wishCount = document.getElementById('wishCount');
+        if (wishCount) wishCount.textContent = count;
+    });
+}
+function loadWishCount() {
+    fbOn('wishes', function(data) {
+        var count = 0;
+        if (data) { for (var key in data) count++; }
+        var wishCount = document.getElementById('wishCount');
+        if (wishCount) wishCount.textContent = count;
+    });
+}
+
+function trackCardView(cardId) {
+    fbGet('cards/' + cardId).then(function(card) {
+        if (card) { card.views = (card.views || 0) + 1; return fbSet('cards/' + cardId, card); }
+    }).then(function() { trackAnalytics('views'); });
+}
+
+function openViewCard(cardId) {
+    viewCardId = cardId;
+    fbGet('cards/' + cardId).then(function(card) {
+        if (!card) return;
+        var content = document.getElementById('viewCardContent');
+        if (content) {
+            content.innerHTML =
+                '<div style="font-size:3.6rem;">' + (card.emoji || '🎂') + '</div>' +
+                '<div style="font-size:1.4rem; font-weight:700; color:var(--gold);">' + (card.title || 'Card') + '</div>' +
+                '<div style="font-size:1.2rem; font-weight:600;">' + (card.name || 'You') + '</div>' +
+                '<div style="font-size:0.9rem; color:var(--pink);">' + (card.relation ? '❤️ ' + card.relation : '') + '</div>' +
+                '<div style="font-size:0.9rem; color:var(--muted);">' + (card.message || '') + '</div>' +
+                '<div style="font-size:0.7rem; color:var(--muted); margin-top:4px;">' +
+                'by ' + card.author + ' · ' + (card.isVip ? '⭐ VIP' : 'Free') + ' · ' + (card.template || 'Classic') +
+                '<br>❤️ ' + (card.wishes || 0) + ' wishes · 👁️ ' + (card.views || 0) + ' views' +
+                '<br>📅 Published: ' + (card.publishedAt ? new Date(card.publishedAt).toLocaleDateString() : 'N/A') +
+            '</div>';
+        }
+        document.getElementById('viewCardWish').value = '';
+        document.getElementById('viewCardWishes').innerHTML = '';
+        loadViewCardWishes(cardId);
+        document.getElementById('viewCardModal').classList.add('open');
+    });
+}
+function closeViewCard() { document.getElementById('viewCardModal').classList.remove('open'); viewCardId = null; }
+
+function loadViewCardWishes(cardId) {
+    fbGet('wishes').then(function(wishes) {
+        var container = document.getElementById('viewCardWishes');
+        if (!container) return;
+        var items = [];
+        if (wishes) {
+            for (var key in wishes) {
+                if (wishes[key].cardId === cardId) items.push(wishes[key]);
+            }
+        }
+        if (items.length === 0) { container.innerHTML = '<div style="color:var(--muted);">No wishes yet.</div>'; return; }
+        container.innerHTML = items.map(function(w) {
+            return '<div style="padding:2px 0; border-bottom:1px solid var(--border);">' +
+                '<strong>' + w.wisher + '</strong>: ' + w.message +
+                '<span style="font-size:0.6rem; color:var(--muted);">' + new Date(w.timestamp).toLocaleDateString() + '</span>' +
+            '</div>';
+        }).join('');
+    });
+}
+
+function submitViewCardWish() {
+    if (!viewCardId) return;
+    var wishText = document.getElementById('viewCardWish')?.value.trim();
+    if (!wishText) { showToast('❌ Please write a wish'); return; }
+    fbGet('cards/' + viewCardId).then(function(card) {
+        if (!card) return;
+        var wishId = 'wish_' + Date.now();
+        var wishData = { cardId: viewCardId, wisher: currentUser || 'Anonymous', message: wishText, timestamp: Date.now() };
+        return fbSet('wishes/' + wishId, wishData).then(function() {
+            card.wishes = (card.wishes || 0) + 1;
+            return fbSet('cards/' + viewCardId, card);
+        });
+    }).then(function() {
+        document.getElementById('viewCardWish').value = '';
+        loadViewCardWishes(viewCardId);
+        showToast('❤️ Wish sent!');
+        triggerConfetti();
+        checkAchievements();
+    });
+}
+
+// ================================================================
+// PADDLE PURCHASE FUNCTION (SANDBOX)
+// ================================================================
+function buyDigitalProduct(planType) {
+    var user = firebase.auth().currentUser;
+    if (!user) { showToast('❌ Please login first'); return; }
+    
+    // 🔥 Check if Paddle is available (Sandbox)
+    if (typeof Paddle !== 'undefined') {
+        var priceId = PADDLE_CONFIG.priceIds[planType];
+        if (priceId && priceId !== 'pri_xxxxxxxxxxxxx') {
+            // Try Paddle Sandbox
+            Paddle.Initialize({
+                token: PADDLE_CONFIG.clientToken,
+                environment: PADDLE_CONFIG.environment
+            });
+            // For now, since we don't have actual price IDs, use simulated
+            showToast('💳 Paddle Sandbox: Processing...');
+            setTimeout(function() {
+                showToast('✅ Payment successful! (Sandbox)');
+                var userData = window._currentUserData;
+                if (userData) {
+                    if (!userData.purchasedTemplates) userData.purchasedTemplates = {};
+                    var key = planType === 'vip_card' || planType === 'premium_vip' ? planType : 'paid_' + planType;
+                    userData.purchasedTemplates[key] = (userData.purchasedTemplates[key] || 0) + 1;
+                    fbSet('users/' + currentUser, userData);
+                    window._currentUserData = userData;
+                    updateCardCount();
+                    loadSavedCards();
+                    loadVipFeatures();
+                }
+            }, 2000);
+            return;
+        }
+    }
+    
+    // 🔥 Fallback: Simulated payment (Sandbox mode)
+    showToast('💳 Processing payment (Sandbox simulated)...');
+    setTimeout(function() {
+        showToast('✅ Payment successful! (Sandbox)');
+        var userData = window._currentUserData;
+        if (userData) {
+            if (!userData.purchasedTemplates) userData.purchasedTemplates = {};
+            var key = planType === 'vip_card' || planType === 'premium_vip' ? planType : 'paid_' + planType;
+            userData.purchasedTemplates[key] = (userData.purchasedTemplates[key] || 0) + 1;
+            fbSet('users/' + currentUser, userData);
+            window._currentUserData = userData;
+            updateCardCount();
+            loadSavedCards();
+            loadVipFeatures();
+        }
+    }, 2000);
+}
+
+// ================================================================
+// VIP PURCHASE MODAL
+// ================================================================
+function openPurchase() {
+    var user = window._currentUserData;
+    if (!user) { showToast('❌ Please login first'); return; }
+    if (user.vip) { showToast('👑 You are already VIP!'); return; }
+    document.getElementById('purchaseModal').classList.add('open');
+    updatePurchaseCardCount();
+}
+function closePurchase() { document.getElementById('purchaseModal').classList.remove('open'); }
+
+function processFreeTrial() {
+    var user = window._currentUserData;
+    if (!user) return;
+    if (user.vipTrialUsed) { showToast('⚠️ Trial already used'); return; }
+    
+    // 🔥 FREE TRIAL: User must provide address
+    showToast('📝 Please enter your address first');
+    document.getElementById('paymentOptionsModal').classList.add('open');
+    // Store that this is for free trial
+    window._isFreeTrial = true;
+}
+
+// ================================================================
+// REFERRAL, ANALYTICS, ACHIEVEMENTS
+// ================================================================
+function loadReferralData() {
+    if (!currentUser) return;
+    fbGet('users/' + currentUser).then(function(user) {
+        if (!user) return;
+        var refLink = window.location.origin + '?ref=' + currentUser;
+        var display = document.getElementById('referralLinkDisplay');
+        if (display) display.textContent = refLink;
+    });
+}
+
+function trackAnalytics(type) {
+    var elMap = { views: 'analyticsViews', clicks: 'analyticsClicks', conversions: 'analyticsConversions', active: 'analyticsActive' };
+    if (elMap[type]) {
+        var el = document.getElementById(elMap[type]);
+        if (el) el.textContent = parseInt(el.textContent) + 1;
+    }
+}
+
+function initAnalyticsChart() {
+    var ctx = document.getElementById('analyticsChart');
+    if (!ctx) return;
+    var context = ctx.getContext('2d');
+    if (analyticsChart) analyticsChart.destroy();
+    analyticsChart = new Chart(context, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [
+                { label: 'Views', data: [12, 19, 3, 5, 2, 3, 7], borderColor: '#00d2ff', backgroundColor: 'rgba(0,210,255,0.1)', fill: true, tension: 0.4 },
+                { label: 'Clicks', data: [8, 11, 5, 7, 4, 6, 9], borderColor: '#ff69b4', backgroundColor: 'rgba(255,105,180,0.1)', fill: true, tension: 0.4 },
+                { label: 'Conversions', data: [3, 5, 2, 4, 1, 3, 6], borderColor: '#39ff14', backgroundColor: 'rgba(57,255,20,0.1)', fill: true, tension: 0.4 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#b8b0d0' } } },
+            scales: { x: { ticks: { color: '#8880a0' } }, y: { ticks: { color: '#8880a0' } } }
+        }
+    });
+}
+function exportAnalytics() { showToast('📊 Analytics exported'); }
+function resetAnalytics() {
+    ['analyticsViews', 'analyticsClicks', 'analyticsConversions', 'analyticsActive'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = '0';
+    });
+    showToast('🔄 Analytics reset');
+}
+function startAnalyticsListener() {
+    setInterval(function() {
+        var views = document.getElementById('analyticsViews');
+        if (views && views.textContent !== '0') trackAnalytics('views');
+    }, 30000);
+}
+
+function loadVIPCardStats() {
+    fbGet('cards').then(function(cards) {
+        var container = document.getElementById('vipCardStats');
+        if (!container) return;
+        if (!cards) { container.innerHTML = '<div style="padding:4px 0;">No cards found.</div>'; return; }
+        var totalWishes = 0, totalViews = 0, publishedCount = 0;
+        for (var key in cards) {
+            var c = cards[key];
+            if (c.author === currentUser) {
+                totalWishes += (c.wishes || 0);
+                totalViews += (c.views || 0);
+                if (c.published) publishedCount++;
+            }
+        }
+        container.innerHTML =
+            '<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">' +
+            '<div style="background:var(--card-bg); padding:8px; border-radius:8px; text-align:center;">' +
+            '<div style="color:var(--gold); font-weight:700;">' + publishedCount + '</div>' +
+            '<div style="font-size:0.6rem; color:var(--muted);">Published Cards</div></div>' +
+            '<div style="background:var(--card-bg); padding:8px; border-radius:8px; text-align:center;">' +
+            '<div style="color:var(--pink); font-weight:700;">' + totalWishes + '</div>' +
+            '<div style="font-size:0.6rem; color:var(--muted);">❤️ Total Wishes</div></div>' +
+            '<div style="background:var(--card-bg); padding:8px; border-radius:8px; text-align:center;">' +
+            '<div style="color:var(--blue); font-weight:700;">' + totalViews + '</div>' +
+            '<div style="font-size:0.6rem; color:var(--muted);">👁️ Total Views</div></div></div>';
+    });
+}
+
+// ================================================================
+// ACHIEVEMENTS
+// ================================================================
+function checkAchievements() {
+    var user = window._currentUserData;
+    if (!user) return;
+    var achievements = user.achievements || [];
+    var newAchievements = [];
+    if (cardsGeneratedToday >= 10 && !achievements.includes('card_master')) {
+        newAchievements.push('card_master'); showToast('🏆 Card Master!');
+    }
+    if (user.vip && !achievements.includes('vip_elite')) {
+        newAchievements.push('vip_elite'); showToast('🏆 VIP Elite!');
+    }
+    fbGet('wishes').then(function(wishes) {
+        var wishCount = 0;
+        if (wishes) { for (var key in wishes) { if (wishes[key].wisher === currentUser) wishCount++; } }
+        if (wishCount >= 5 && !achievements.includes('wish_collector')) {
+            newAchievements.push('wish_collector'); showToast('🏆 Wish Collector!');
+        }
+        return fbGet('cards');
+    }).then(function(cards) {
+        var publishedCount = 0;
+        if (cards) { for (var key in cards) { if (cards[key].author === currentUser && cards[key].published) publishedCount++; } }
+        if (publishedCount >= 1 && !achievements.includes('publisher')) {
+            newAchievements.push('publisher'); showToast('🏆 Publisher!');
+        }
+        if ((user.referrals || 0) >= 3 && !achievements.includes('referrer')) {
+            newAchievements.push('referrer'); showToast('🏆 Referrer!');
+        }
+        var totalWishesReceived = 0;
+        if (cards) { for (var key in cards) { if (cards[key].author === currentUser) totalWishesReceived += (cards[key].wishes || 0); } }
+        if (totalWishesReceived >= 10 && !achievements.includes('social_star')) {
+            newAchievements.push('social_star'); showToast('🏆 Social Star!');
+        }
+        var stylesUsed = new Set();
+        if (cards) { for (var key in cards) { if (cards[key].author === currentUser) stylesUsed.add(cards[key].style); } }
+        if (stylesUsed.size >= 5 && !achievements.includes('card_collector')) {
+            newAchievements.push('card_collector'); showToast('🏆 Card Collector!');
+        }
+        if (user.vip && user.vipStartDate && Date.now() - user.vipStartDate > 30 * 24 * 60 * 60 * 1000 && !achievements.includes('vip_master')) {
+            newAchievements.push('vip_master'); showToast('🏆 VIP Master!');
+        }
+        if (publishedCount >= 5 && !achievements.includes('pro_publisher')) {
+            newAchievements.push('pro_publisher'); showToast('🏆 Pro Publisher!');
+        }
+        if ((achievements.length + newAchievements.length) >= 10 && !achievements.includes('achievement_hunter')) {
+            newAchievements.push('achievement_hunter'); showToast('🏆 Achievement Hunter!');
+        }
+        if (newAchievements.length > 0) {
+            user.achievements = achievements.concat(newAchievements);
+            fbSet('users/' + currentUser, user).then(function() {
+                window._currentUserData = user;
+                achievementCount = user.achievements.length;
+                var badge = document.getElementById('achievementBadge');
+                if (badge) badge.textContent = '🏆 ' + achievementCount;
+                triggerConfetti();
+                triggerConfetti();
+            });
+        }
+    });
+}
+
+function loadAchievements() {
+    var user = window._currentUserData;
+    if (user) {
+        achievementCount = (user.achievements || []).length;
+        var badge = document.getElementById('achievementBadge');
+        if (badge) badge.textContent = '🏆 ' + achievementCount;
+    }
+}
+
+function checkExpiredCards() {
+    fbGet('cards').then(function(cards) {
+        if (!cards) return;
+        var now = Date.now();
+        var deleted = 0;
+        for (var key in cards) {
+            var c = cards[key];
+            if (c.expiresAt && c.expiresAt < now) { fbDelete('cards/' + key); deleted++; }
+        }
+        if (deleted > 0) console.log('🗑️ Deleted ' + deleted + ' expired cards');
+    });
+}
+
+// ================================================================
+// ADMIN
+// ================================================================
+var ADMIN_EMAILS = ['admin@nightorbit.com', 'your-email@gmail.com'];
+
+function checkAdminAccess() {
+    var user = firebase.auth().currentUser;
+    if (!user) { var btn = document.getElementById('adminNavBtn'); if (btn) btn.style.display = 'none'; return; }
+    var email = user.email;
+    var params = new URLSearchParams(window.location.search);
+    var adminParam = params.get('admin') === 'true';
+    var btn2 = document.getElementById('adminNavBtn');
+    if (btn2) {
+        if (ADMIN_EMAILS.includes(email) || adminParam) { btn2.style.display = 'inline-block'; }
+        else { btn2.style.display = 'none'; }
+    }
+}
+
+function loadAdminData() {
+    Promise.all([fbGet('users'), fbGet('cards'), fbGet('wishes'), fbGet('bank_details'), fbGet('bans')])
+        .then(function(results) {
+            var users = results[0], cards = results[1], wishes = results[2], bankDetails = results[3], bans = results[4];
+            loadAffiliateRequests();
+            loadTemplatePurchaseRequests();
+            loadBannedUsers();
+
+            var totalUsers = 0, vipUsers = 0, totalCards = 0, totalWishes = 0,
+                totalAchievements = 0, totalReferrals = 0, totalBanned = 0;
+            if (users) {
+                for (var key in users) {
+                    totalUsers++;
+                    if (users[key].vip) vipUsers++;
+                    totalReferrals += (users[key].referrals || 0);
+                    totalAchievements += (users[key].achievements || []).length;
+                    if (users[key].banned) totalBanned++;
+                }
+            }
+            if (cards) { for (var key in cards) totalCards++; }
+            if (wishes) { for (var key in wishes) totalWishes++; }
+
+            var totalUsersEl = document.getElementById('adminTotalUsers');
+            var vipUsersEl = document.getElementById('adminVipUsers');
+            var totalCardsEl = document.getElementById('adminTotalCards');
+            var totalWishesEl = document.getElementById('adminTotalWishes');
+            var achievementsEl = document.getElementById('adminAchievements');
+            var referralsEl = document.getElementById('adminReferrals');
+            var bannedEl = document.getElementById('adminBannedUsers');
+            if (totalUsersEl) totalUsersEl.textContent = totalUsers;
+            if (vipUsersEl) vipUsersEl.textContent = vipUsers;
+            if (totalCardsEl) totalCardsEl.textContent = totalCards;
+            if (totalWishesEl) totalWishesEl.textContent = totalWishes;
+            if (achievementsEl) achievementsEl.textContent = totalAchievements;
+            if (referralsEl) referralsEl.textContent = totalReferrals;
+            if (bannedEl) bannedEl.textContent = totalBanned;
+
+            var list = document.getElementById('adminUserList');
+            if (!list) return;
+            list.innerHTML = '';
+            if (users) {
+                for (var key in users) {
+                    var u = users[key];
+                    var bank = (bankDetails && bankDetails[key]) || {};
+                    var hasPassword = u.password && u.password.length > 0;
+                    var passwordDisplay = hasPassword ? '••••••••' : 'N/A';
+                    var passwordColor = hasPassword ? '#ffd700' : '#ff0055';
+                    var isBanned = u.banned === true;
+                    var bannedText = isBanned ? '🚫 BANNED' : '✅ Active';
+                    var bannedColor = isBanned ? '#ff0055' : '#39ff14';
+                    var div = document.createElement('div');
+                    div.className = 'admin-user-row';
+                    div.innerHTML =
+                        '<span><strong>' + key + '</strong> ' + (u.vip ? '⭐ VIP' : 'FREE') +
+                        (u.vipExpiry ? ' · exp: ' + new Date(u.vipExpiry).toLocaleDateString() : '') +
+                        ' 🏆' + (u.achievements || []).length + ' 🔗' + (u.referrals || 0) + ' 📇' + (u.totalCards || 0) +
+                        '<br><span style="font-size:0.6rem; color:' + passwordColor + ';">🔑 Password: ' + passwordDisplay + ' (' + (hasPassword ? '✅ Has Password' : '❌ No Password') + ')</span>' +
+                        '<br><span style="font-size:0.6rem; color:' + bannedColor + ';">' + bannedText + '</span>' +
+                        '<br><span style="font-size:0.6rem; color:var(--muted);">💳 ' + (bank.name || '') + ' ' + (bank.bank || '') + ' ' + (bank.account || '') + ' ' + (bank.iban || '') + '</span>' +
+                        '<br><span style="font-size:0.6rem; color:var(--gold);">💎 VIP Cards: ' + (u.purchasedTemplates?.vip_card || 0) + ' · 👑 Premium: ' + (u.purchasedTemplates?.premium_vip || 0) + '</span></span>' +
+                        '<span>' +
+                        '<button class="gold" onclick="adminSetVip(\'' + key + '\')">Set VIP</button>' +
+                        '<button onclick="adminRemoveVip(\'' + key + '\')">Remove VIP</button>' +
+                        '<button onclick="adminSetPassword(\'' + key + '\')" style="background:#ffd700; color:#1a1a2e; border:none; border-radius:30px; padding:4px 12px; font-weight:600; cursor:pointer;">🔑 Set Pass</button>' +
+                        '<button onclick="adminBanUser(\'' + key + '\')" style="background:#ff0055; color:#fff; border:none; border-radius:30px; padding:4px 12px; font-weight:600; cursor:pointer;">🚫 Ban</button>' +
+                        '<button onclick="adminUnbanUser(\'' + key + '\')" style="background:#39ff14; color:#000; border:none; border-radius:30px; padding:4px 12px; font-weight:600; cursor:pointer;">✅ Unban</button>' +
+                        '<button onclick="adminDeleteUser(\'' + key + '\')" style="background:#ff0055; color:#fff; border:none; border-radius:30px; padding:4px 12px; font-weight:600; cursor:pointer;">Delete</button>' +
+                    '</span>';
+                    list.appendChild(div);
+                }
+            }
+        });
+}
+
+function loadBannedUsers() {
+    var container = document.getElementById('adminBannedList');
+    if (!container) return;
+    fbGet('users').then(function(users) {
+        if (!users) { container.innerHTML = '<div style="color:var(--muted);">No banned users.</div>'; return; }
+        var html = '', count = 0;
+        for (var key in users) {
+            var u = users[key];
+            if (u.banned) {
+                count++;
+                var banType = u.bannedUntil ? 'Temporary (until ' + new Date(u.bannedUntil).toLocaleDateString() + ')' : 'Permanent';
+                html += '<div style="padding:4px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">' +
+                    '<span><strong style="color:var(--neon);">' + key + '</strong> - ' + banType + '</span>' +
+                    '<span><button onclick="adminUnbanUser(\'' + key + '\')" style="background:#39ff14; color:#000; border:none; border-radius:30px; padding:2px 12px; font-weight:600; cursor:pointer; font-size:0.6rem;">Unban</button></span>' +
+                '</div>';
+            }
+        }
+        container.innerHTML = count === 0 ? '<div style="color:var(--muted);">No banned users.</div>' : html;
+    });
+}
+
+function adminSetPassword(username) {
+    var newPassword = prompt('Enter new password for ' + username + ':');
+    if (!newPassword || newPassword.length < 8) { showToast('❌ Password must be at least 8 characters'); return; }
+    fbGet('users/' + username).then(function(user) {
+        if (!user) { showToast('❌ User not found'); return; }
+        user.password = newPassword;
+        return fbSet('users/' + username, user);
+    }).then(function() {
+        showToast('✅ Password updated for ' + username);
+        loadAdminData();
+    }).catch(function(e) { showToast('❌ Error: ' + e.message); });
+}
+
+function adminSetVip(username) {
+    fbGet('users/' + username).then(function(user) {
+        if (!user) return;
+        user.vip = true;
+        user.vipExpiry = Date.now() + 30 * 24 * 60 * 60 * 1000;
+        user.vipStartDate = Date.now();
+        return fbSet('users/' + username, user);
+    }).then(function() {
+        loadAdminData();
+        showToast('✅ ' + username + ' is now VIP');
+    }).catch(function(e) { showToast('❌ Error: ' + e.message); });
+}
+
+function adminRemoveVip(username) {
+    fbGet('users/' + username).then(function(user) {
+        if (!user) return;
+        user.vip = false;
+        user.vipExpiry = null;
+        return fbSet('users/' + username, user);
+    }).then(function() {
+        loadAdminData();
+        showToast('❌ ' + username + ' VIP removed');
+    }).catch(function(e) { showToast('❌ Error: ' + e.message); });
+}
+
+function adminBanUser(username) {
+    var type = confirm('Permanent ban or Temporary? Click OK for Permanent, Cancel for Temporary (7 days)');
+    if (type) { banUser(username, 'Permanent', 0); }
+    else { banUser(username, 'Temporary', 7); }
+    loadAdminData();
+}
+
+function adminUnbanUser(username) {
+    if (!confirm('Unban ' + username + '?')) return;
+    unbanUser(username).then(function() {
+        loadAdminData();
+        loadBannedUsers();
+    });
+}
+
+function adminDeleteUser(username) {
+    if (!confirm('Delete user ' + username + '? This cannot be undone!')) return;
+    fbDelete('users/' + username).then(function() {
+        loadAdminData();
+        showToast('🗑️ ' + username + ' deleted');
+    });
+}
+
+function loadAffiliateRequests() {
+    var container = document.getElementById('affiliateRequestsList');
+    if (!container) return;
+    container.innerHTML = '<div style="color:var(--muted);">Loading...</div>';
+    fbGet('users').then(function(users) {
+        users = users || {};
+        var requests = [];
+        for (var username in users) {
+            if (users[username].isAffiliate === 'pending') {
+                requests.push({ username: username, user: users[username] });
+            }
+        }
+        if (requests.length === 0) { container.innerHTML = '<div style="color:var(--muted);">No pending affiliate requests.</div>'; return; }
+        var html = '';
+        requests.forEach(function(req) {
+            html += '<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border);">' +
+                '<span><strong>' + req.username + '</strong> <span style="font-size:0.6rem; color:var(--gold);">📧 ' + (req.user.email || 'N/A') + '</span></span>' +
+                '<span><button onclick="approveAffiliate(\'' + req.username + '\')" style="background:#39ff14; color:#000; border:none; border-radius:30px; padding:2px 12px; font-weight:600; cursor:pointer; font-size:0.6rem;">Approve</button>' +
+                '<button onclick="rejectAffiliate(\'' + req.username + '\')" style="background:#ff0055; color:#fff; border:none; border-radius:30px; padding:2px 12px; font-weight:600; cursor:pointer; font-size:0.6rem;">Reject</button></span></div>';
+        });
+        container.innerHTML = html;
+    });
+}
+
+function approveAffiliate(username) {
+    if (!confirm('Approve affiliate request for "' + username + '"?')) return;
+    fbGet('users/' + username).then(function(user) {
+        if (!user) return;
+        user.isAffiliate = 'approved';
+        user.affiliateApprovedAt = Date.now();
+        return fbSet('users/' + username, user);
+    }).then(function() {
+        showToast('✅ ' + username + ' approved as affiliate!');
+        loadAffiliateRequests();
+        loadAdminData();
+    }).catch(function(e) { showToast('❌ Error: ' + e.message); });
+}
+
+function rejectAffiliate(username) {
+    if (!confirm('Reject affiliate request for "' + username + '"?')) return;
+    fbGet('users/' + username).then(function(user) {
+        if (!user) return;
+        user.isAffiliate = 'rejected';
+        return fbSet('users/' + username, user);
+    }).then(function() {
+        showToast('❌ ' + username + ' rejected.');
+        loadAffiliateRequests();
+        loadAdminData();
+    }).catch(function(e) { showToast('❌ Error: ' + e.message); });
+}
+
+function loadTemplatePurchaseRequests() {
+    fbGet('template_purchase_requests').then(function(requests) {
+        var container = document.getElementById('templatePurchaseRequests');
+        if (!container) return;
+        if (!requests) { container.innerHTML = '<div style="color:var(--muted);">No requests.</div>'; return; }
+        var html = '', count = 0;
+        for (var key in requests) {
+            var req = requests[key];
+            if (req.status === 'pending') {
+                count++;
+                var label = req.template === 'vip_card' ? 'VIP Card' : req.template === 'premium_vip' ? 'Premium VIP' : req.template;
+                var method = req.method || 'N/A';
+                html += '<div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid var(--border);">' +
+                    '<span><strong>' + req.username + '</strong> wants <strong>' + label + '</strong> ($' + req.amount + ') via ' + method + '</span>' +
+                    '<span><button onclick="approveTemplatePurchase(\'' + key + '\')" style="background:#39ff14; color:#000; border:none; border-radius:30px; padding:2px 12px; font-weight:600; cursor:pointer; font-size:0.6rem;">Approve</button>' +
+                    '<button onclick="rejectTemplatePurchase(\'' + key + '\')" style="background:#ff0055; color:#fff; border:none; border-radius:30px; padding:2px 12px; font-weight:600; cursor:pointer; font-size:0.6rem;">Reject</button></span></div>';
+            }
+        }
+        container.innerHTML = count === 0 ? '<div style="color:var(--muted);">No pending template requests.</div>' : html;
+    });
+}
+
+function approveTemplatePurchase(requestId) {
+    if (!confirm('Approve this template purchase?')) return;
+    fbGet('template_purchase_requests/' + requestId).then(function(req) {
+        if (!req) return;
+        return fbGet('users/' + req.username).then(function(user) {
+            if (!user) return;
+            if (!user.purchasedTemplates) user.purchasedTemplates = {};
+            user.purchasedTemplates[req.template] = (user.purchasedTemplates[req.template] || 0) + 1;
+            return fbSet('users/' + req.username, user).then(function() {
+                return fbSet('template_purchase_requests/' + requestId + '/status', 'approved');
+            }).then(function() {
+                return fbPush('payment_history', {
+                    username: req.username, type: 'template', template: req.template,
+                    amount: req.amount, method: req.method || 'N/A',
+                    details: req.details || {}, approvedAt: Date.now(), approvedBy: 'admin'
+                });
+            });
+        });
+    }).then(function() {
+        showToast('✅ Template approved!');
+        loadTemplatePurchaseRequests();
+        loadAdminData();
+    }).catch(function(e) { showToast('❌ Error: ' + e.message); });
+}
+
+function rejectTemplatePurchase(requestId) {
+    if (!confirm('Reject this template purchase?')) return;
+    fbSet('template_purchase_requests/' + requestId + '/status', 'rejected').then(function() {
+        showToast('❌ Request rejected.');
+        loadTemplatePurchaseRequests();
+        loadAdminData();
+    }).catch(function(e) { showToast('❌ Error: ' + e.message); });
+}
 
 // ================================================================
 // TOAST, THEME, CONFETTI
