@@ -70,7 +70,7 @@
     .container {
         position: relative;
         z-index: 1;
-        max-width: 1200px;
+        max-width: 1100px;
         margin: 0 auto;
         padding: 20px 16px 40px;
     }
@@ -671,67 +671,6 @@
         border-radius: 32px;
     }
 
-    /* CANVA STYLE CARDS GRID */
-    .cards-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 16px;
-        margin-top: 12px;
-    }
-    .card-mini {
-        background: var(--card-bg);
-        border-radius: 16px;
-        padding: 12px;
-        border: 1px solid var(--border);
-        text-align: center;
-        cursor: pointer;
-        transition: 0.3s;
-        position: relative;
-    }
-    .card-mini:hover {
-        border-color: var(--gold);
-        transform: translateY(-4px);
-    }
-    .card-mini .mini-emoji { font-size: 2.4rem; }
-    .card-mini .mini-title {
-        font-size: 0.7rem;
-        font-weight: 600;
-        color: var(--gold);
-    }
-    .card-mini .mini-name {
-        font-size: 0.6rem;
-        color: var(--muted);
-    }
-    .card-mini .mini-actions {
-        display: flex;
-        gap: 4px;
-        justify-content: center;
-        margin-top: 6px;
-        flex-wrap: wrap;
-    }
-    .card-mini .mini-actions button {
-        padding: 2px 8px;
-        border: none;
-        border-radius: 20px;
-        font-size: 0.5rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-    .card-mini .mini-actions .btn-download-mini {
-        background: var(--blue);
-        color: #fff;
-    }
-    .card-mini .mini-actions .btn-duplicate-mini {
-        background: var(--purple);
-        color: #fff;
-    }
-    .card-mini .mini-actions .btn-delete-mini {
-        background: var(--neon);
-        color: #fff;
-    }
-    .card-mini .mini-actions button:hover { transform: scale(1.05); }
-
     .public-cards {
         margin: 14px 0;
         background: var(--card-bg);
@@ -1091,6 +1030,67 @@
         cursor: pointer;
     }
 
+    /* CANVA STYLE CARDS GRID */
+    .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+        margin-top: 12px;
+    }
+    .card-mini {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 12px;
+        border: 1px solid var(--border);
+        text-align: center;
+        cursor: pointer;
+        transition: 0.3s;
+        position: relative;
+    }
+    .card-mini:hover {
+        border-color: var(--gold);
+        transform: translateY(-4px);
+    }
+    .card-mini .mini-emoji { font-size: 2.4rem; }
+    .card-mini .mini-title {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--gold);
+    }
+    .card-mini .mini-name {
+        font-size: 0.6rem;
+        color: var(--muted);
+    }
+    .card-mini .mini-actions {
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+        margin-top: 6px;
+        flex-wrap: wrap;
+    }
+    .card-mini .mini-actions button {
+        padding: 2px 8px;
+        border: none;
+        border-radius: 20px;
+        font-size: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .card-mini .mini-actions .btn-download-mini {
+        background: var(--blue);
+        color: #fff;
+    }
+    .card-mini .mini-actions .btn-duplicate-mini {
+        background: var(--purple);
+        color: #fff;
+    }
+    .card-mini .mini-actions .btn-delete-mini {
+        background: var(--neon);
+        color: #fff;
+    }
+    .card-mini .mini-actions button:hover { transform: scale(1.05); }
+
     @media (max-width: 820px) {
         .main-grid { grid-template-columns: 1fr; gap: 18px; }
         .preview-panel { order: -1; }
@@ -1250,7 +1250,7 @@
                 </div>
 
                 <button class="btn-generate" id="generateBtn" onclick="generateAndSaveCard()"><i class="fas fa-wand-magic-sparkles"></i> Generate & Save</button>
-                <button class="btn-download" id="downloadBtn" onclick="downloadCard()"><i class="fas fa-download"></i> Download</button>
+                <button class="btn-download" id="downloadBtn" onclick="downloadCard()" disabled><i class="fas fa-download"></i> Download</button>
                 <button class="btn-publish" id="publishBtn" onclick="publishCard()"><i class="fas fa-globe"></i> Publish</button>
                 <button class="btn-public-code" id="publicCodeBtn" onclick="generatePublicCode()"><i class="fas fa-qrcode"></i> Get Public Code</button>
                 <button class="btn-profile" onclick="openProfileModal()"><i class="fas fa-user-circle"></i> Profile</button>
@@ -1369,7 +1369,6 @@
             <p style="font-size:0.55rem; color:var(--muted);">VIP: <span id="purchaseVipCount">0</span> · Premium: <span id="purchasePremiumCount">0</span> · Paid: <span id="purchasePaidCount">0</span></p>
         </div>
 
-        <!-- 🔥 FREE TRIAL - PEHLE YE LENA HOGA -->
         <div style="margin:10px 0; border-bottom:2px solid var(--gold); padding-bottom:10px;">
             <h4 style="color:var(--gold);">🎁 FREE TRIAL (MUST TAKE FIRST)</h4>
             <p style="font-size:0.7rem; color:var(--muted);">1 Month FREE · Then $6.99/month</p>
@@ -1554,7 +1553,7 @@
     </div>
 </div>
 
-<!-- JAVASCRIPT - COMPLETE -->
+<!-- JAVASCRIPT - COMPLETE FIXED -->
 <script>
 // ================================================================
 // FIREBASE CONFIG
@@ -1620,6 +1619,7 @@ let buyNowLabel = null;
 let customBadgeText = '';
 let savedCards = [];
 let isVipUser = false;
+let isCardSaved = false;
 
 // ================================================================
 // MUSIC
@@ -1649,7 +1649,7 @@ function toggleMusic() {
 }
 
 // ================================================================
-// ALL STYLES, FONTS, ETC
+// ALL STYLES, FONTS, ETC (HEAVY EDITION)
 // ================================================================
 const ALL_FONTS = [
     "'Pacifico', cursive", "'Poppins', sans-serif", "'Playfair Display', serif",
@@ -2261,6 +2261,7 @@ function loadUserData() {
         window._currentUserData = user;
         savedCards = user.savedCards || [];
         isVipUser = user.vip === true;
+        isCardSaved = false;
         achievementCount = (user.achievements || []).length;
         const badge = document.getElementById('achievementBadge');
         if (badge) badge.textContent = '🏆 ' + achievementCount;
@@ -2350,6 +2351,18 @@ function updateUI() {
         if (celebrationCountEl) celebrationCountEl.textContent = celebrationCount;
         const savedCount = document.getElementById('savedCardsCount');
         if (savedCount && user.savedCards) savedCount.textContent = '(' + user.savedCards.length + ')';
+        
+        // 🔥 Download button enable/disable based on saved card
+        const downloadBtn = document.getElementById('downloadBtn');
+        if (downloadBtn) {
+            if (isCardSaved) {
+                downloadBtn.disabled = false;
+                downloadBtn.style.opacity = '1';
+            } else {
+                downloadBtn.disabled = true;
+                downloadBtn.style.opacity = '0.4';
+            }
+        }
     } catch (e) { console.error('updateUI error:', e); }
 }
 
@@ -2467,7 +2480,7 @@ function updateBadgeText() {
 }
 
 // ================================================================
-// GENERATE CARD
+// 🔥 GENERATE CARD - FULL HEAVY STYLES
 // ================================================================
 function generateCard() {
     const user = window._currentUserData;
@@ -2547,15 +2560,13 @@ function generateCard() {
         const genBtn = document.getElementById('generateBtn');
         if (genBtn) { genBtn.disabled = true; genBtn.style.opacity = '0.5'; }
         const downloadBtn = document.getElementById('downloadBtn');
-        if (downloadBtn) { downloadBtn.disabled = true; downloadBtn.style.opacity = '0.5'; }
+        if (downloadBtn) { downloadBtn.disabled = true; downloadBtn.style.opacity = '0.4'; }
         return;
     }
 
     isDemoCard = false;
     const genBtn2 = document.getElementById('generateBtn');
     if (genBtn2) { genBtn2.disabled = false; genBtn2.style.opacity = '1'; }
-    const downloadBtn2 = document.getElementById('downloadBtn');
-    if (downloadBtn2) { downloadBtn2.disabled = false; downloadBtn2.style.opacity = '1'; }
 
     const name = document.getElementById('cardName')?.value || 'You';
     const title = document.getElementById('cardTitle')?.value || 'Card';
@@ -2564,7 +2575,7 @@ function generateCard() {
     const date = document.getElementById('cardDate')?.value || '';
     const time = document.getElementById('cardTime')?.value || '';
 
-    // HEAVY STYLE MAP - 200+ styles
+    // 🔥 HEAVY STYLE MAP - 200+ styles
     const styleMap = {
         birthday: { text: '#ff69b4', name: '#ff69b4', bg: 'linear-gradient(145deg, #1a0a1a, #0f0a0f)' },
         anniversary: { text: '#ffd700', name: '#ffd700', bg: 'linear-gradient(145deg, #1a1a0a, #0f0f0a)' },
@@ -2643,15 +2654,10 @@ function generateCard() {
         martian: { text: '#ff4500', name: '#ffd700', bg: 'linear-gradient(145deg, #8a0000, #ff4500)' }
     };
     
-    // Continue with rest of style map...
-    // For brevity, using a simplified version but full code has all styles
-    
-    // Apply style
     const styleConfig = styleMap[style] || styleMap.birthday;
     preview.className = '';
     preview.style.background = styleConfig.bg || 'linear-gradient(145deg, #1a1a2e, #0f0f1a)';
     
-    // Set content
     const titleEl = preview.querySelector('.card-title');
     const nameEl = preview.querySelector('.card-name');
     const relationEl = preview.querySelector('.card-relation');
@@ -2661,25 +2667,26 @@ function generateCard() {
     const badgeEl = preview.querySelector('.card-badge');
     const footerEl = preview.querySelector('.card-footer');
 
+    // Set colors
+    if (titleEl) titleEl.style.color = styleConfig.text || '#fff';
+    if (nameEl) nameEl.style.color = styleConfig.name || '#ffd700';
+    if (titleEl) titleEl.style.fontFamily = font;
+    if (nameEl) nameEl.style.fontFamily = font;
+    if (relationEl) relationEl.style.fontFamily = font;
+    if (messageEl) messageEl.style.fontFamily = font;
+
     if (emojiElPreview) emojiElPreview.textContent = emoji;
     if (titleEl) titleEl.textContent = title || 'Card';
     if (nameEl) nameEl.textContent = name || 'You';
     if (relationEl) relationEl.textContent = relation ? '❤️ ' + relation : '';
     if (messageEl) messageEl.textContent = message || 'Message';
     
-    // Date
     let dateStr = '';
     if (date) { const d = new Date(date); dateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
     const timeStr = time || '';
     if (dateEl) dateEl.textContent = dateStr || timeStr ? '📅 ' + dateStr + (timeStr ? ' 🕐 ' + timeStr : '') : '';
 
-    // Font
-    if (titleEl) titleEl.style.fontFamily = font;
-    if (nameEl) nameEl.style.fontFamily = font;
-    if (relationEl) relationEl.style.fontFamily = font;
-    if (messageEl) messageEl.style.fontFamily = font;
-
-    // Badge - 🔥 CUSTOM BADGE OR VIP BADGE
+    // 🔥 BADGE - Custom or VIP
     let badgeText = '';
     if (customBadgeText && isVipUser) {
         badgeText = customBadgeText;
@@ -2702,7 +2709,6 @@ function generateCard() {
         }
     }
 
-    // Footer
     if (footerEl) {
         if (isVipUser || (isPaidTemplate && hasPaidTemplate)) {
             footerEl.textContent = '✨ Nightorbit · ' + (badgeText || 'VIP');
@@ -2710,10 +2716,68 @@ function generateCard() {
             footerEl.textContent = '✨ Nightorbit · Made with ❤️';
         }
     }
+
+    // 🔥 BORDER & BG
+    const bgMap = {
+        gradient1: 'linear-gradient(145deg, #ff6b6b, #ffd93d)',
+        gradient2: 'linear-gradient(145deg, #0c0c3a, #00d2ff)',
+        gradient3: 'linear-gradient(145deg, #0a3d0a, #39ff14)',
+        gradient4: 'linear-gradient(145deg, #0a0a12, #1a1a3e)',
+        gradient5: 'linear-gradient(145deg, #ff69b4, #ffb6c1)',
+        gradient6: 'linear-gradient(145deg, #4a0080, #b400ff)',
+        gradient7: 'linear-gradient(145deg, #8a0000, #ff4500)',
+        gradient8: 'linear-gradient(145deg, #00aaff, #ffffff)',
+        gradient9: 'linear-gradient(145deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8b00ff)',
+        gradient10: 'linear-gradient(145deg, #1a1a2e, #16213e)',
+        gradient11: 'linear-gradient(145deg, #ffd700, #ff8c00)',
+        gradient12: 'linear-gradient(145deg, #00b894, #00d2ff)',
+        rainbow: 'linear-gradient(145deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8b00ff)',
+        sunset: 'linear-gradient(145deg, #ff6b6b, #ffd93d, #ff8c00)',
+        ocean: 'linear-gradient(145deg, #0c0c3a, #00d2ff, #00b894)',
+        forest: 'linear-gradient(145deg, #0a3d0a, #39ff14, #00b894)',
+        night: 'linear-gradient(145deg, #0a0a12, #1a1a3e, #2d1b69)',
+        pink: 'linear-gradient(145deg, #ff69b4, #ffb6c1, #ff1493)',
+        purple: 'linear-gradient(145deg, #4a0080, #b400ff, #8b00ff)',
+        fire: 'linear-gradient(145deg, #8a0000, #ff4500, #ffd700)',
+        ice: 'linear-gradient(145deg, #00aaff, #ffffff, #00d2ff)',
+        aurora: 'linear-gradient(145deg, #00ff00, #00d2ff, #8b00ff)',
+        galaxy: 'linear-gradient(145deg, #0a0a12, #1a1a3e, #4a0080, #b400ff)',
+        space: 'linear-gradient(145deg, #0a0a12, #1a1a3e, #2d1b69)',
+        cloud: 'linear-gradient(145deg, #ffffff, #e8edf5, #d0d8e8)',
+        gold: 'linear-gradient(145deg, #ffd700, #ff8c00, #ffd700)',
+        emerald: 'linear-gradient(145deg, #00b894, #00ff00, #00b894)',
+        crystal: 'linear-gradient(145deg, #ffffff, #00d2ff, #ffffff)',
+        neon: 'linear-gradient(145deg, #ff0055, #00d2ff, #ff0055)'
+    };
+    if (bg && bgMap[bg]) preview.style.background = bgMap[bg];
+
+    const borderMap = {
+        none: 'none', solid: '2px solid #ffd700', dashed: '2px dashed #ffd700',
+        double: '4px double #ffd700', groove: '4px groove #ffd700',
+        dotted: '2px dotted #ffd700', ridge: '4px ridge #ffd700',
+        inset: '4px inset #ffd700', outset: '4px outset #ffd700',
+        'thick-solid': '4px solid #ffd700', 'thin-dashed': '1px dashed #ffd700',
+        'gold-double': '6px double #ffd700', 'neon-glow': '2px solid #ff0055',
+        rainbow: '2px solid rainbow', gradient: '2px solid #ffd700'
+    };
+    preview.style.border = borderMap[border] || 'none';
+
+    const templateGlowMap = {
+        classic: 'none', modern: '0 0 20px rgba(255,215,0,0.1)',
+        vintage: '0 0 30px rgba(255,215,0,0.05)', neon: '0 0 40px rgba(255,105,180,0.3)',
+        minimal: 'none', luxury: '0 0 50px rgba(255,215,0,0.15)',
+        kids: '0 0 20px rgba(255,105,180,0.2)', elegant: '0 0 30px rgba(255,215,0,0.08)',
+        royal: '0 0 50px rgba(255,215,0,0.2)', dark: '0 0 30px rgba(0,0,0,0.5)',
+        cyberpunk: '0 0 40px rgba(255,0,85,0.3)', steampunk: '0 0 30px rgba(255,215,0,0.1)',
+        boho: '0 0 20px rgba(255,215,0,0.05)', scandinavian: '0 0 20px rgba(255,215,0,0.05)',
+        midcentury: '0 0 20px rgba(255,215,0,0.05)', artdeco: '0 0 30px rgba(255,215,0,0.1)',
+        vip_card: '0 0 60px rgba(255,215,0,0.3)', premium_vip: '0 0 80px rgba(255,215,0,0.5)'
+    };
+    preview.style.boxShadow = templateGlowMap[template] || 'none';
 }
 
 // ================================================================
-// GENERATE & SAVE CARD
+// 🔥 GENERATE & SAVE CARD - SAVE HONA ZAROORI HAI
 // ================================================================
 function generateAndSaveCard() {
     const user = window._currentUserData;
@@ -2789,7 +2853,6 @@ function generateAndSaveCard() {
     };
     fbSet('cards/' + cardId, cardData);
 
-    // 🔥 TEMPLATE USE HO GAYA - COUNT MINUS
     if (isPaidTemplate && hasPaidTemplate) {
         user.purchasedTemplates[template] = (user.purchasedTemplates[template] || 1) - 1;
         fbSet('users/' + currentUser + '/purchasedTemplates', user.purchasedTemplates);
@@ -2798,12 +2861,12 @@ function generateAndSaveCard() {
         updateCardCount();
     }
 
-    // Save to user's cards
     if (!user.savedCards) user.savedCards = [];
     const savedCard = {
         cardId: cardId, name: name, title: title, message: message, style: style,
         emoji: emoji, font: font, bg: bg, border: border, template: template,
-        createdAt: Date.now(), customBadge: customBadgeText || ''
+        createdAt: Date.now(), customBadge: customBadgeText || '',
+        date: date, time: time, relation: relation
     };
     user.savedCards.push(savedCard);
     user.cardsGenerated = (user.cardsGenerated || 0) + 1;
@@ -2813,13 +2876,67 @@ function generateAndSaveCard() {
     window._currentUserData = user;
 
     activeCardId = cardId;
+    isCardSaved = true;
     updateUI();
     loadSavedCards();
-    showToast('✅ Card generated! (' + cardsGeneratedToday + '/' + maxDaily + ')');
+    showToast('✅ Card saved! (' + cardsGeneratedToday + '/' + maxDaily + ')');
     const genStatus = document.getElementById('generationStatus');
     if (genStatus) genStatus.textContent = '✅ Saved! ID: ' + cardId.slice(0, 8) + '...';
     triggerConfetti();
     checkAchievements();
+    
+    // 🔥 Download button enable
+    const downloadBtn = document.getElementById('downloadBtn');
+    if (downloadBtn) {
+        downloadBtn.disabled = false;
+        downloadBtn.style.opacity = '1';
+    }
+}
+
+// ================================================================
+// 🔥 DOWNLOAD CARD - SIRF SAVED CARD
+// ================================================================
+function downloadCard() {
+    if (isDemoCard) {
+        showToast('🔒 Demo cards cannot be downloaded. Save your real card first!');
+        return;
+    }
+    if (!isCardSaved || !activeCardId) {
+        showToast('⚠️ Please generate and save the card first!');
+        return;
+    }
+    
+    const card = document.getElementById('cardPreview');
+    if (!card) return;
+    
+    // 🔥 Make sure all styles are applied before download
+    generateCard();
+    
+    setTimeout(function() {
+        const watermark = document.createElement('div');
+        watermark.style.cssText = 'position:absolute; bottom:10px; right:10px; font-size:0.4rem; color:rgba(255,215,0,0.3); z-index:999; pointer-events:none;';
+        watermark.textContent = '© Nightorbit';
+        card.appendChild(watermark);
+        
+        html2canvas(card, { 
+            scale: 3, 
+            backgroundColor: null, 
+            allowTaint: true, 
+            useCORS: true,
+            logging: false
+        }).then(function(canvas) {
+            const link = document.createElement('a');
+            const title = document.getElementById('cardTitle')?.value || 'card';
+            link.download = 'nightorbit-' + title.replace(/\s+/g, '-').toLowerCase() + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showToast('✅ Card downloaded!');
+            card.removeChild(watermark);
+        }).catch(function() {
+            showToast('⚠️ Download failed. Try screenshot!');
+            card.removeChild(watermark);
+        });
+    }, 300);
 }
 
 // ================================================================
@@ -2839,11 +2956,13 @@ function loadSavedCards() {
     
     let html = '';
     saved.forEach(function(card, index) {
+        const badgeText = card.customBadge || '';
         html += `
             <div class="card-mini" onclick="loadSavedCard(${index})">
                 <div class="mini-emoji">${card.emoji || '🎂'}</div>
                 <div class="mini-title">${card.title || 'Card'}</div>
                 <div class="mini-name">${card.name || 'You'}</div>
+                ${badgeText ? `<div style="font-size:0.45rem; color:var(--gold);">${badgeText}</div>` : ''}
                 <div style="font-size:0.5rem; color:var(--muted);">${card.template || 'Classic'}</div>
                 <div class="mini-actions">
                     <button class="btn-download-mini" onclick="event.stopPropagation(); downloadSavedCard(${index})"><i class="fas fa-download"></i></button>
@@ -2878,15 +2997,22 @@ function loadSavedCard(index) {
         customBadgeText = card.customBadge;
     }
     activeCardId = card.cardId;
+    isCardSaved = true;
     generateCard();
     showToast('📇 Loaded card: ' + (card.title || 'Card'));
+    
+    // Enable download
+    const downloadBtn = document.getElementById('downloadBtn');
+    if (downloadBtn) {
+        downloadBtn.disabled = false;
+        downloadBtn.style.opacity = '1';
+    }
 }
 
 function downloadSavedCard(index) {
     const user = window._currentUserData;
     if (!user || !user.savedCards || !user.savedCards[index]) return;
     const card = user.savedCards[index];
-    // Load the card then download
     loadSavedCard(index);
     setTimeout(function() {
         downloadCard();
@@ -2897,10 +3023,20 @@ function duplicateSavedCard(index) {
     const user = window._currentUserData;
     if (!user || !user.savedCards || !user.savedCards[index]) return;
     const card = user.savedCards[index];
-    loadSavedCard(index);
-    setTimeout(function() {
-        duplicateCard();
-    }, 500);
+    
+    // 🔥 DUPLICATE WITH SAME STYLE
+    const newCard = JSON.parse(JSON.stringify(card));
+    newCard.cardId = 'card_' + Date.now() + '_dup_' + Math.random().toString(36).substr(2, 4);
+    newCard.title = card.title + ' (Copy)';
+    newCard.createdAt = Date.now();
+    
+    if (!user.savedCards) user.savedCards = [];
+    user.savedCards.push(newCard);
+    fbSet('users/' + currentUser, user);
+    window._currentUserData = user;
+    loadSavedCards();
+    showToast('✅ Card duplicated with same style!');
+    triggerConfetti();
 }
 
 function deleteSavedCard(index) {
@@ -2915,14 +3051,14 @@ function deleteSavedCard(index) {
 }
 
 // ================================================================
-// DUPLICATE CARD
+// DUPLICATE CURRENT CARD - SAME STYLE
 // ================================================================
 function duplicateCard() {
     const user = window._currentUserData;
     if (!user) return;
-    if (isDemoCard) { showToast('🔒 Cannot duplicate demo card. Save your real card first.'); return; }
+    if (isDemoCard) { showToast('🔒 Cannot duplicate demo card. Save your real card first!'); return; }
+    if (!isCardSaved) { showToast('⚠️ Please generate and save the card first!'); return; }
     
-    // Get current card data
     const name = document.getElementById('cardName')?.value || 'You';
     const title = document.getElementById('cardTitle')?.value || 'Card';
     const message = document.getElementById('cardMessage')?.value || 'Message';
@@ -2959,7 +3095,7 @@ function duplicateCard() {
     fbSet('users/' + currentUser, user);
     window._currentUserData = user;
     loadSavedCards();
-    showToast('✅ Card duplicated!');
+    showToast('✅ Card duplicated with same style!');
     triggerConfetti();
 }
 
@@ -2970,339 +3106,62 @@ function cancelCard() {
     if (!activeCardId) { showToast('ℹ️ No active card to cancel'); return; }
     if (!confirm('Cancel current card?')) return;
     activeCardId = null;
+    isCardSaved = false;
     document.getElementById('generationStatus').textContent = '❌ Cancelled';
     showToast('❌ Card cancelled');
-    // Reset form
-    document.getElementById('cardName').value = '';
-    document.getElementById('cardTitle').value = '';
-    document.getElementById('cardMessage').value = '';
-    document.getElementById('cardRelation').value = '';
-    document.getElementById('cardDate').value = '';
-    document.getElementById('cardTime').value = '';
-    generateCard();
-}
-
-// ================================================================
-// DOWNLOAD CARD
-// ================================================================
-function downloadCard() {
-    if (isDemoCard) {
-        showToast('🔒 Demo cards cannot be downloaded. Upgrade to VIP to download!');
-        return;
-    }
-    const card = document.getElementById('cardPreview');
-    if (!card) return;
-    const watermark = document.createElement('div');
-    watermark.style.cssText = 'position:absolute; bottom:10px; right:10px; font-size:0.4rem; color:rgba(255,215,0,0.3); z-index:999; pointer-events:none;';
-    watermark.textContent = '© Nightorbit';
-    card.appendChild(watermark);
-    html2canvas(card, { scale: 3, backgroundColor: null, allowTaint: true, useCORS: true })
-        .then(function(canvas) {
-            const link = document.createElement('a');
-            link.download = 'nightorbit-card.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            showToast('✅ Card downloaded!');
-            card.removeChild(watermark);
-        }).catch(function() {
-            showToast('⚠️ Download failed. Try screenshot!');
-            card.removeChild(watermark);
-        });
-}
-
-// ================================================================
-// BUY NOW
-// ================================================================
-function openBuyNow(template, label, price) {
-    buyNowTemplate = template;
-    buyNowLabel = label;
-    buyNowPrice = price;
-    document.getElementById('buyNowTemplateName').textContent = label;
-    document.getElementById('buyNowTemplatePrice').textContent = '$' + price;
-    document.getElementById('buyNowModal').classList.add('open');
-}
-
-function closeBuyNow() {
-    document.getElementById('buyNowModal').classList.remove('open');
-    buyNowTemplate = null;
-    buyNowPrice = null;
-    buyNowLabel = null;
-}
-
-function proceedBuyNow() {
-    const template = window._bulkTemplate || buyNowTemplate || 'normal';
-    const quantity = window._bulkQuantity || 1;
-    const pricePerCard = window._bulkPrice || 0.20;
-    const total = (pricePerCard * quantity).toFixed(2);
-    const label = window._bulkLabel || 'Template';
-    closeBuyNow();
-    document.getElementById('paymentOptionsModal').classList.add('open');
-}
-
-// ================================================================
-// PAYMENT OPTIONS
-// ================================================================
-function openPaymentOptions() {
-    document.getElementById('paymentOptionsModal').classList.add('open');
-}
-
-function closePaymentOptions() {
-    document.getElementById('paymentOptionsModal').classList.remove('open');
-    selectedPaymentMethod = null;
-    document.getElementById('bankDetailsForm').style.display = 'none';
-    document.getElementById('paypalDetailsForm').style.display = 'none';
-}
-
-function processPayment(method) {
-    selectedPaymentMethod = method;
-    document.getElementById('bankDetailsForm').style.display = 'none';
-    document.getElementById('paypalDetailsForm').style.display = 'none';
-    if (method === 'bank') {
-        document.getElementById('bankDetailsForm').style.display = 'block';
-    } else if (method === 'paypal') {
-        document.getElementById('paypalDetailsForm').style.display = 'block';
-    }
-    const btns = document.querySelectorAll('#paymentOptionsModal .plan-btn');
-    btns.forEach(function(btn) {
-        btn.style.borderColor = 'var(--border)';
-        btn.style.background = 'var(--card-bg)';
-    });
-    const methodMap = { 'card': 0, 'jazzcash': 1, 'easypaisa': 2, 'bank': 3, 'paypal': 4 };
-    if (btns[methodMap[method]]) {
-        btns[methodMap[method]].style.borderColor = 'var(--gold)';
-        btns[methodMap[method]].style.background = 'rgba(255,215,0,0.1)';
-    }
-    showToast('✅ Selected: ' + method.toUpperCase());
-}
-
-function confirmPayment() {
-    const country = document.getElementById('paymentCountry').value.trim();
-    const city = document.getElementById('paymentCity').value.trim();
-    const address = document.getElementById('paymentAddress').value.trim();
-    const phone = document.getElementById('paymentPhone').value.trim();
-
-    if (!country || !city || !address || !phone) {
-        showToast('❌ Please fill all address fields');
-        return;
-    }
-    if (!selectedPaymentMethod) {
-        showToast('❌ Please select a payment method');
-        return;
-    }
-
-    if (selectedPaymentMethod === 'bank') {
-        const bankName = document.getElementById('bankName').value.trim();
-        const accountTitle = document.getElementById('bankAccountTitle').value.trim();
-        const accountNumber = document.getElementById('bankAccountNumber').value.trim();
-        const iban = document.getElementById('bankIban').value.trim();
-        if (!bankName || !accountTitle || !accountNumber || !iban) {
-            showToast('❌ Please fill all bank details');
-            return;
-        }
-    }
-
-    if (selectedPaymentMethod === 'paypal') {
-        const paypalEmail = document.getElementById('paypalEmail').value.trim();
-        if (!paypalEmail || !paypalEmail.includes('@')) {
-            showToast('❌ Please enter a valid PayPal email');
-            return;
-        }
-    }
-
-    const user = window._currentUserData;
-    if (user) {
-        user.address = { country: country, city: city, address: address, phone: phone, method: selectedPaymentMethod };
-        if (selectedPaymentMethod === 'bank') {
-            user.bankDetails = {
-                bankName: document.getElementById('bankName').value.trim(),
-                accountTitle: document.getElementById('bankAccountTitle').value.trim(),
-                accountNumber: document.getElementById('bankAccountNumber').value.trim(),
-                iban: document.getElementById('bankIban').value.trim()
-            };
-        }
-        if (selectedPaymentMethod === 'paypal') {
-            user.paypalEmail = document.getElementById('paypalEmail').value.trim();
-        }
-        fbSet('users/' + currentUser, user);
-        window._currentUserData = user;
-    }
-
-    const template = window._bulkTemplate || buyNowTemplate || 'normal';
-    const quantity = window._bulkQuantity || 1;
-    const pricePerCard = window._bulkPrice || 0.20;
-    const total = (pricePerCard * quantity).toFixed(2);
-    const label = window._bulkLabel || 'Template';
-
-    closePaymentOptions();
-    showToast('💳 Processing ' + selectedPaymentMethod.toUpperCase() + ' payment: ' + quantity + ' x ' + label + ' = $' + total);
-
-    // 🔥 SANDOX PAYMENT SIMULATION
-    setTimeout(function() {
-        showToast('✅ Payment successful! ' + quantity + ' x ' + label + ' added to your account!');
-        if (user) {
-            if (!user.purchasedTemplates) user.purchasedTemplates = {};
-            let key = template;
-            if (template === 'premium_vip' || template === 'vip_card') {
-                key = template;
-            } else {
-                key = 'paid_' + (buyNowTemplate || template);
-            }
-            user.purchasedTemplates[key] = (user.purchasedTemplates[key] || 0) + quantity;
-            
-            // Save purchase record with all details
-            const purchaseId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
-            const purchaseData = {
-                username: currentUser,
-                email: user.email || currentUser + '@nightorbit.user',
-                plan: label,
-                quantity: quantity,
-                total: total,
-                method: selectedPaymentMethod,
-                country: country,
-                city: city,
-                address: address,
-                phone: phone,
-                bankName: document.getElementById('bankName')?.value || '',
-                accountTitle: document.getElementById('bankAccountTitle')?.value || '',
-                accountNumber: document.getElementById('bankAccountNumber')?.value || '',
-                iban: document.getElementById('bankIban')?.value || '',
-                paypalEmail: document.getElementById('paypalEmail')?.value || '',
-                timestamp: Date.now()
-            };
-            fbSet('purchases/' + purchaseId, purchaseData);
-            
-            fbSet('users/' + currentUser, user);
-            window._currentUserData = user;
-            updateCardCount();
-            loadSavedCards();
-            loadVipFeatures();
-            window._bulkTemplate = null;
-            window._bulkQuantity = null;
-            window._bulkPrice = null;
-            window._bulkTotal = null;
-            window._bulkLabel = null;
-        }
-    }, 2000);
-}
-
-// ================================================================
-// VIP PLAN PURCHASE - SIRF FREE TRIAL KE BAAD
-// ================================================================
-function buyVIPPlan(planType, price) {
-    const user = window._currentUserData;
-    if (!user) { showToast('❌ Please login first'); return; }
-    if (user.vip) { showToast('👑 You are already VIP!'); closePurchase(); return; }
     
-    // 🔥 CHECK: FREE TRIAL LIYA YA NAHI
-    if (!user.vipTrialUsed) {
-        showToast('⚠️ Please take the FREE TRIAL first before purchasing any VIP plan!');
-        return;
+    const downloadBtn = document.getElementById('downloadBtn');
+    if (downloadBtn) {
+        downloadBtn.disabled = true;
+        downloadBtn.style.opacity = '0.4';
     }
-    
-    let days = 0, planLabel = '';
-    if (planType === '7day') { days = 7; planLabel = '7-Day'; }
-    else if (planType === 'monthly') { days = 30; planLabel = 'Monthly'; }
-    else if (planType === 'yearly') { days = 365; planLabel = 'Yearly'; }
-    else if (planType === 'fiveyear') { days = 1825; planLabel = '5-Year'; }
-    
-    showToast('💳 Processing ' + planLabel + ' VIP for $' + price + '...');
-    setTimeout(function() {
-        user.vip = true;
-        user.vipExpiry = Date.now() + days * 24 * 60 * 60 * 1000;
-        user.vipStartDate = Date.now();
-        user.vipPlan = planLabel + ' VIP';
-        user.vipTrialUsed = true;
-        
-        // Save purchase
-        const purchaseId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
-        const purchaseData = {
-            username: currentUser,
-            email: user.email || currentUser + '@nightorbit.user',
-            plan: planLabel + ' VIP',
-            quantity: 1,
-            total: price,
-            method: 'Card (Sandbox)',
-            timestamp: Date.now()
-        };
-        fbSet('purchases/' + purchaseId, purchaseData);
-        
-        fbSet('users/' + currentUser, user).then(function() {
-            window._currentUserData = user;
-            closePurchase();
-            updateUI();
-            loadVipFeatures();
-            loadUserData();
-            updateCardCount();
-            showToast('🎉 ' + planLabel + ' VIP activated! (' + days + ' days)');
-            triggerConfetti();
-            setTimeout(function() { triggerConfetti(); }, 300);
-            setTimeout(function() { triggerConfetti(); }, 600);
-        });
-    }, 2000);
 }
 
 // ================================================================
-// BULK DISCOUNT
-// ================================================================
-function buyBulk(templateType, quantity) {
-    let price = 0.20;
-    let label = 'Normal Template';
-    if (templateType === 'premium_vip') { price = 1.00; label = 'Premium VIP'; }
-    else if (templateType === 'vip_card') { price = 0.60; label = 'VIP Card'; }
-    else { price = 0.20; label = buyNowLabel || 'Normal Template'; }
-    if (quantity === 10) {
-        if (templateType === 'premium_vip') price = 0.95;
-        else if (templateType === 'vip_card') price = 0.55;
-        else price = 0.18;
-    }
-    if (quantity === 100) {
-        if (templateType === 'premium_vip') price = 0.90;
-        else if (templateType === 'vip_card') price = 0.50;
-        else price = 0.15;
-    }
-    const total = (price * quantity).toFixed(2);
-    document.getElementById('buyNowTemplateName').textContent = quantity + ' x ' + label;
-    document.getElementById('buyNowTemplatePrice').textContent = '$' + total;
-    document.getElementById('buyNowQuantity').textContent = quantity + ' cards @ $' + price.toFixed(2) + ' each';
-    window._bulkTemplate = templateType;
-    window._bulkQuantity = quantity;
-    window._bulkPrice = price;
-    window._bulkTotal = total;
-    window._bulkLabel = label;
-    showToast('📦 ' + quantity + ' x ' + label + ' = $' + total + ' ($' + price.toFixed(2) + ' each)');
-}
-
-// ================================================================
-// PUBLISH, PUBLIC CODE
+// PUBLISH CARD - SAME STYLE
 // ================================================================
 function publishCard() {
     const user = window._currentUserData;
     if (!user || !user.vip) { showToast('❌ Only VIP users can publish cards'); return; }
-    if (!activeCardId) { showToast('❌ Generate a card first!'); return; }
+    if (!isCardSaved || !activeCardId) { showToast('❌ Generate and save a card first!'); return; }
+    
     fbGet('cards/' + activeCardId).then(function(card) {
         if (!card) { showToast('❌ Card not found'); return; }
         if (card.author !== currentUser) { showToast('❌ You can only publish your own cards'); return; }
+        
+        // 🔥 Update card with all current styles
         card.published = true;
         card.publishedAt = Date.now();
         card.publicCode = activeCardId;
         card.codeExpiry = Date.now() + CONFIG.PUBLIC_CODE_EXPIRY_DAYS * 24 * 60 * 60 * 1000;
+        card.style = document.getElementById('cardStyle')?.value || 'birthday';
+        card.emoji = document.getElementById('cardEmoji')?.value || '🎂';
+        card.font = document.getElementById('cardFont')?.value || "'Pacifico', cursive";
+        card.bg = document.getElementById('cardBg')?.value || 'gradient1';
+        card.border = document.getElementById('cardBorder')?.value || 'none';
+        card.template = document.getElementById('cardTemplate')?.value || 'classic';
+        card.customBadge = customBadgeText || '';
+        
         user.publishedCards = (user.publishedCards || 0) + 1;
         return fbSet('cards/' + activeCardId, card).then(function() {
             return fbSet('users/' + currentUser, user);
         });
     }).then(function() {
         window._currentUserData = user;
-        showToast('🌍 Card published! Public code generated (valid 2 days).');
+        showToast('🌍 Card published with all styles! Public code generated (valid 2 days).');
         loadPublicCards();
         loadMyPublicCodes();
         checkAchievements();
     });
 }
 
+// ================================================================
+// PUBLIC CODE
+// ================================================================
 function generatePublicCode() {
     const user = window._currentUserData;
     if (!user || !user.vip) { showToast('🔒 Become VIP first!'); return; }
-    if (!activeCardId) { showToast('❌ Generate and publish a card first!'); return; }
+    if (!isCardSaved || !activeCardId) { showToast('❌ Generate and publish a card first!'); return; }
     fbGet('cards/' + activeCardId).then(function(card) {
         if (!card) { showToast('❌ Card not found'); return; }
         if (!card.published) { showToast('❌ Publish the card first!'); return; }
@@ -3586,7 +3445,7 @@ function openPurchase() {
 function closePurchase() { document.getElementById('purchaseModal').classList.remove('open'); }
 
 // ================================================================
-// 🔥 FREE TRIAL - PEHLE YE LENA HOGA
+// FREE TRIAL
 // ================================================================
 function processFreeTrial() {
     const user = window._currentUserData;
@@ -3612,7 +3471,6 @@ function processFreeTrial() {
 
         closePaymentOptions();
         
-        // 🔥 ACTIVATE FREE TRIAL
         user.vip = true;
         user.vipExpiry = Date.now() + 30 * 24 * 60 * 60 * 1000;
         user.vipStartDate = Date.now();
@@ -3632,7 +3490,6 @@ function processFreeTrial() {
             setTimeout(function() { triggerConfetti(); }, 300);
             setTimeout(function() { triggerConfetti(); }, 600);
             
-            // Save to purchases
             const purchaseId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
             const purchaseData = {
                 username: currentUser,
@@ -3652,6 +3509,263 @@ function processFreeTrial() {
             window._isFreeTrial = false;
         });
     };
+}
+
+// ================================================================
+// BUY NOW
+// ================================================================
+function openBuyNow(template, label, price) {
+    buyNowTemplate = template;
+    buyNowLabel = label;
+    buyNowPrice = price;
+    document.getElementById('buyNowTemplateName').textContent = label;
+    document.getElementById('buyNowTemplatePrice').textContent = '$' + price;
+    document.getElementById('buyNowModal').classList.add('open');
+}
+
+function closeBuyNow() {
+    document.getElementById('buyNowModal').classList.remove('open');
+    buyNowTemplate = null;
+    buyNowPrice = null;
+    buyNowLabel = null;
+}
+
+function proceedBuyNow() {
+    const template = window._bulkTemplate || buyNowTemplate || 'normal';
+    const quantity = window._bulkQuantity || 1;
+    const pricePerCard = window._bulkPrice || 0.20;
+    const total = (pricePerCard * quantity).toFixed(2);
+    const label = window._bulkLabel || 'Template';
+    closeBuyNow();
+    document.getElementById('paymentOptionsModal').classList.add('open');
+}
+
+// ================================================================
+// PAYMENT OPTIONS
+// ================================================================
+function openPaymentOptions() {
+    document.getElementById('paymentOptionsModal').classList.add('open');
+}
+
+function closePaymentOptions() {
+    document.getElementById('paymentOptionsModal').classList.remove('open');
+    selectedPaymentMethod = null;
+    document.getElementById('bankDetailsForm').style.display = 'none';
+    document.getElementById('paypalDetailsForm').style.display = 'none';
+}
+
+function processPayment(method) {
+    selectedPaymentMethod = method;
+    document.getElementById('bankDetailsForm').style.display = 'none';
+    document.getElementById('paypalDetailsForm').style.display = 'none';
+    if (method === 'bank') {
+        document.getElementById('bankDetailsForm').style.display = 'block';
+    } else if (method === 'paypal') {
+        document.getElementById('paypalDetailsForm').style.display = 'block';
+    }
+    const btns = document.querySelectorAll('#paymentOptionsModal .plan-btn');
+    btns.forEach(function(btn) {
+        btn.style.borderColor = 'var(--border)';
+        btn.style.background = 'var(--card-bg)';
+    });
+    const methodMap = { 'card': 0, 'jazzcash': 1, 'easypaisa': 2, 'bank': 3, 'paypal': 4 };
+    if (btns[methodMap[method]]) {
+        btns[methodMap[method]].style.borderColor = 'var(--gold)';
+        btns[methodMap[method]].style.background = 'rgba(255,215,0,0.1)';
+    }
+    showToast('✅ Selected: ' + method.toUpperCase());
+}
+
+function confirmPayment() {
+    const country = document.getElementById('paymentCountry').value.trim();
+    const city = document.getElementById('paymentCity').value.trim();
+    const address = document.getElementById('paymentAddress').value.trim();
+    const phone = document.getElementById('paymentPhone').value.trim();
+
+    if (!country || !city || !address || !phone) {
+        showToast('❌ Please fill all address fields');
+        return;
+    }
+    if (!selectedPaymentMethod) {
+        showToast('❌ Please select a payment method');
+        return;
+    }
+
+    if (selectedPaymentMethod === 'bank') {
+        const bankName = document.getElementById('bankName').value.trim();
+        const accountTitle = document.getElementById('bankAccountTitle').value.trim();
+        const accountNumber = document.getElementById('bankAccountNumber').value.trim();
+        const iban = document.getElementById('bankIban').value.trim();
+        if (!bankName || !accountTitle || !accountNumber || !iban) {
+            showToast('❌ Please fill all bank details');
+            return;
+        }
+    }
+
+    if (selectedPaymentMethod === 'paypal') {
+        const paypalEmail = document.getElementById('paypalEmail').value.trim();
+        if (!paypalEmail || !paypalEmail.includes('@')) {
+            showToast('❌ Please enter a valid PayPal email');
+            return;
+        }
+    }
+
+    const user = window._currentUserData;
+    if (user) {
+        user.address = { country: country, city: city, address: address, phone: phone, method: selectedPaymentMethod };
+        if (selectedPaymentMethod === 'bank') {
+            user.bankDetails = {
+                bankName: document.getElementById('bankName').value.trim(),
+                accountTitle: document.getElementById('bankAccountTitle').value.trim(),
+                accountNumber: document.getElementById('bankAccountNumber').value.trim(),
+                iban: document.getElementById('bankIban').value.trim()
+            };
+        }
+        if (selectedPaymentMethod === 'paypal') {
+            user.paypalEmail = document.getElementById('paypalEmail').value.trim();
+        }
+        fbSet('users/' + currentUser, user);
+        window._currentUserData = user;
+    }
+
+    const template = window._bulkTemplate || buyNowTemplate || 'normal';
+    const quantity = window._bulkQuantity || 1;
+    const pricePerCard = window._bulkPrice || 0.20;
+    const total = (pricePerCard * quantity).toFixed(2);
+    const label = window._bulkLabel || 'Template';
+
+    closePaymentOptions();
+    showToast('💳 Processing ' + selectedPaymentMethod.toUpperCase() + ' payment: ' + quantity + ' x ' + label + ' = $' + total);
+
+    setTimeout(function() {
+        showToast('✅ Payment successful! ' + quantity + ' x ' + label + ' added to your account!');
+        if (user) {
+            if (!user.purchasedTemplates) user.purchasedTemplates = {};
+            let key = template;
+            if (template === 'premium_vip' || template === 'vip_card') {
+                key = template;
+            } else {
+                key = 'paid_' + (buyNowTemplate || template);
+            }
+            user.purchasedTemplates[key] = (user.purchasedTemplates[key] || 0) + quantity;
+            
+            const purchaseId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+            const purchaseData = {
+                username: currentUser,
+                email: user.email || currentUser + '@nightorbit.user',
+                plan: label,
+                quantity: quantity,
+                total: total,
+                method: selectedPaymentMethod,
+                country: country,
+                city: city,
+                address: address,
+                phone: phone,
+                bankName: document.getElementById('bankName')?.value || '',
+                accountTitle: document.getElementById('bankAccountTitle')?.value || '',
+                accountNumber: document.getElementById('bankAccountNumber')?.value || '',
+                iban: document.getElementById('bankIban')?.value || '',
+                paypalEmail: document.getElementById('paypalEmail')?.value || '',
+                timestamp: Date.now()
+            };
+            fbSet('purchases/' + purchaseId, purchaseData);
+            
+            fbSet('users/' + currentUser, user);
+            window._currentUserData = user;
+            updateCardCount();
+            loadSavedCards();
+            loadVipFeatures();
+            window._bulkTemplate = null;
+            window._bulkQuantity = null;
+            window._bulkPrice = null;
+            window._bulkTotal = null;
+            window._bulkLabel = null;
+        }
+    }, 2000);
+}
+
+// ================================================================
+// VIP PLAN PURCHASE
+// ================================================================
+function buyVIPPlan(planType, price) {
+    const user = window._currentUserData;
+    if (!user) { showToast('❌ Please login first'); return; }
+    if (user.vip) { showToast('👑 You are already VIP!'); closePurchase(); return; }
+    if (!user.vipTrialUsed) {
+        showToast('⚠️ Please take the FREE TRIAL first before purchasing any VIP plan!');
+        return;
+    }
+    
+    let days = 0, planLabel = '';
+    if (planType === '7day') { days = 7; planLabel = '7-Day'; }
+    else if (planType === 'monthly') { days = 30; planLabel = 'Monthly'; }
+    else if (planType === 'yearly') { days = 365; planLabel = 'Yearly'; }
+    else if (planType === 'fiveyear') { days = 1825; planLabel = '5-Year'; }
+    
+    showToast('💳 Processing ' + planLabel + ' VIP for $' + price + '...');
+    setTimeout(function() {
+        user.vip = true;
+        user.vipExpiry = Date.now() + days * 24 * 60 * 60 * 1000;
+        user.vipStartDate = Date.now();
+        user.vipPlan = planLabel + ' VIP';
+        user.vipTrialUsed = true;
+        
+        const purchaseId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+        const purchaseData = {
+            username: currentUser,
+            email: user.email || currentUser + '@nightorbit.user',
+            plan: planLabel + ' VIP',
+            quantity: 1,
+            total: price,
+            method: 'Card (Sandbox)',
+            timestamp: Date.now()
+        };
+        fbSet('purchases/' + purchaseId, purchaseData);
+        
+        fbSet('users/' + currentUser, user).then(function() {
+            window._currentUserData = user;
+            closePurchase();
+            updateUI();
+            loadVipFeatures();
+            loadUserData();
+            updateCardCount();
+            showToast('🎉 ' + planLabel + ' VIP activated! (' + days + ' days)');
+            triggerConfetti();
+            setTimeout(function() { triggerConfetti(); }, 300);
+            setTimeout(function() { triggerConfetti(); }, 600);
+        });
+    }, 2000);
+}
+
+// ================================================================
+// BULK DISCOUNT
+// ================================================================
+function buyBulk(templateType, quantity) {
+    let price = 0.20;
+    let label = 'Normal Template';
+    if (templateType === 'premium_vip') { price = 1.00; label = 'Premium VIP'; }
+    else if (templateType === 'vip_card') { price = 0.60; label = 'VIP Card'; }
+    else { price = 0.20; label = buyNowLabel || 'Normal Template'; }
+    if (quantity === 10) {
+        if (templateType === 'premium_vip') price = 0.95;
+        else if (templateType === 'vip_card') price = 0.55;
+        else price = 0.18;
+    }
+    if (quantity === 100) {
+        if (templateType === 'premium_vip') price = 0.90;
+        else if (templateType === 'vip_card') price = 0.50;
+        else price = 0.15;
+    }
+    const total = (price * quantity).toFixed(2);
+    document.getElementById('buyNowTemplateName').textContent = quantity + ' x ' + label;
+    document.getElementById('buyNowTemplatePrice').textContent = '$' + total;
+    document.getElementById('buyNowQuantity').textContent = quantity + ' cards @ $' + price.toFixed(2) + ' each';
+    window._bulkTemplate = templateType;
+    window._bulkQuantity = quantity;
+    window._bulkPrice = price;
+    window._bulkTotal = total;
+    window._bulkLabel = label;
+    showToast('📦 ' + quantity + ' x ' + label + ' = $' + total + ' ($' + price.toFixed(2) + ' each)');
 }
 
 // ================================================================
@@ -4153,9 +4267,9 @@ function init() {
         console.log('🔑 Admin: email-based');
         console.log('🚫 Anti-cheat & Fraud detection active');
         console.log('🔐 Paddle Sandbox Mode: Test payments only');
-        console.log('✅ Paddle Config: All price IDs and client token set!');
         console.log('🎁 FREE TRIAL: Must take before any VIP subscription');
         console.log('📇 CANVA STYLE: Cards grid with download, duplicate, delete buttons');
+        console.log('💾 SAVE FIRST: Must generate & save before download');
     }).catch(function(e) {
         console.error('Init error:', e);
     });
