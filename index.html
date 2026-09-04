@@ -1202,47 +1202,91 @@
     }
 
 
-    /* ===== SCREENSHOT PROTECTION ===== */
-    body {
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-    }
+    /* ===== SCREENSHOT PROTECTION - HEAVY EDITION ===== */
 
-    body.screenshot-mode #appScreen,
-    body.screenshot-mode #authScreen {
-        filter: blur(20px) !important;
-        pointer-events: none !important;
-    }
+/* Disable selection */
+body {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
 
-    #screenshotOverlay {
-        display: none;  /* ✅ Yeh "none" hi rahega */
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.95);
-        z-index: 99999;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        color: var(--gold);
-        font-size: 1.5rem;
-        font-weight: 700;
-        text-align: center;
-        padding: 20px;
-    }
-    #screenshotOverlay.show {
-        display: flex !important;  /* ✅ "!important" add karo */
-    }
-    #screenshotOverlay i {
-        font-size: 4rem;
-        margin-bottom: 20px;
-        animation: pulse 1s ease-in-out infinite;
-    }
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 0.5; }
-        50% { transform: scale(1.2); opacity: 1; }
-    }
+/* Screenshot mode - instant blur */
+body.screenshot-mode #appScreen,
+body.screenshot-mode #authScreen {
+    filter: blur(30px) !important;
+    pointer-events: none !important;
+    transition: filter 0.01s !important;
+    opacity: 0.3 !important;
+}
+
+body.screenshot-mode .top-bar,
+body.screenshot-mode .stats-row,
+body.screenshot-mode .main-grid,
+body.screenshot-mode .form-panel,
+body.screenshot-mode .preview-panel,
+body.screenshot-mode .public-cards,
+body.screenshot-mode .public-codes-section {
+    filter: blur(30px) !important;
+    pointer-events: none !important;
+}
+
+/* SCREENSHOT OVERLAY - INSTANT SHOW */
+#screenshotOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.98);
+    z-index: 9999999;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: #ffd700;
+    font-size: 2rem;
+    font-weight: 900;
+    text-align: center;
+    padding: 20px;
+    animation: none !important;
+    backdrop-filter: blur(20px);
+}
+
+#screenshotOverlay.show {
+    display: flex !important;
+}
+
+#screenshotOverlay .shield-icon {
+    font-size: 6rem;
+    margin-bottom: 20px;
+    animation: shieldPulse 0.5s ease-in-out infinite;
+}
+
+#screenshotOverlay .main-text {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #ffd700;
+    text-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+}
+
+#screenshotOverlay .sub-text {
+    font-size: 1rem;
+    color: #b8b0d0;
+    margin-top: 10px;
+}
+
+#screenshotOverlay .warning-text {
+    font-size: 0.8rem;
+    color: #ff0055;
+    margin-top: 15px;
+    border-top: 1px solid rgba(255, 0, 85, 0.2);
+    padding-top: 15px;
+}
+
+@keyframes shieldPulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.3); opacity: 1; }
+}
 
 </style>
 </head>
@@ -1252,9 +1296,10 @@
 
 <!-- SCREENSHOT PROTECTION OVERLAY - YAHAN RAKHO -->
 <div id="screenshotOverlay">
-    <i class="fas fa-shield-alt"></i>
-    <div>📸 Screenshot Detected!</div>
-    <div style="font-size:0.8rem; color:var(--muted); margin-top:10px;">Content is protected</div>
+    <i class="fas fa-shield-alt shield-icon"></i>
+    <div class="main-text">📸 Screenshot Detected!</div>
+    <div class="sub-text">Content is protected by Nightorbit</div>
+    <div class="warning-text">⚠️ Unauthorized screenshot attempts are logged</div>
 </div>
 
 <!-- LOADING OVERLAY -->
@@ -1727,82 +1772,379 @@ const db = firebase.database();
 
 // Show warning overlay
 function showScreenshotWarning() {
-    const overlay = document.getElementById('screenshotOverlay');
-    if (overlay) {
-        if (window._screenshotTimeout) {
-            clearTimeout(window._screenshotTimeout);
-        }
+    var overlay = document.getElementById('screenshotOverlay');
+    if (!overlay) return;
+    
+    // Clear existing timeout
+    if (window._screenshotTimeout) {
+        clearTimeout(window._screenshotTimeout);
+    }
+    
+    // INSTANT SHOW - 0.001s delay using requestAnimationFrame
+    requestAnimationFrame(function() {
         overlay.classList.add('show');
         document.body.classList.add('screenshot-mode');
+        
+        // Play alert sound
+        try {
+            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            var oscillator = audioCtx.createOscillator();
+            var gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.frequency.value = 800;
+            oscillator.type = 'square';
+            gainNode.gain.value = 0.3;
+            oscillator.start();
+            setTimeout(function() {
+                oscillator.stop();
+            }, 200);
+        } catch(e) {}
+        
+        // Auto-hide after 3 seconds
         window._screenshotTimeout = setTimeout(function() {
             overlay.classList.remove('show');
             document.body.classList.remove('screenshot-mode');
         }, 3000);
-    }
+    });
 }
 
-// Disable right-click
+// 🔥 PREVENT RIGHT-CLICK
 document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
+    e.stopPropagation();
     showToast('📸 Right-click disabled');
+    showScreenshotWarning();
     return false;
 });
 
-// Disable keyboard shortcuts
+// 🔥 PREVENT ALL KEYBOARD SHORTCUTS
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'F12' || 
-        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C' || e.key === 'S')) ||
-        (e.ctrlKey && e.key === 'U') ||
-        (e.key === 'PrintScreen') ||
-        (e.ctrlKey && e.key === 's')) {
+    // F12 - DevTools
+    if (e.key === 'F12') {
         e.preventDefault();
-        showToast('📸 Screenshot disabled');
+        e.stopPropagation();
+        showToast('📸 F12 blocked');
         showScreenshotWarning();
         return false;
     }
-});
-
-// Detect Print Screen key
-document.addEventListener('keyup', function(e) {
-    if (e.key === 'PrintScreen') {
-        showToast('📸 Screenshot disabled');
+    
+    // Ctrl+Shift+I, J, C, S
+    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C' || e.key === 'S')) {
+        e.preventDefault();
+        e.stopPropagation();
+        showToast('📸 DevTools shortcut blocked');
         showScreenshotWarning();
+        return false;
+    }
+    
+    // Ctrl+U - View Source
+    if (e.ctrlKey && e.key === 'U') {
+        e.preventDefault();
+        e.stopPropagation();
+        showToast('📸 View source blocked');
+        showScreenshotWarning();
+        return false;
+    }
+    
+    // PrintScreen key
+    if (e.key === 'PrintScreen') {
+        e.preventDefault();
+        e.stopPropagation();
+        showToast('📸 PrintScreen blocked');
+        showScreenshotWarning();
+        // Clear clipboard
         try {
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText('⚠️ Content Protected - Nightorbit');
             }
         } catch(err) {}
+        return false;
+    }
+    
+    // Ctrl+S - Save
+    if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        e.stopPropagation();
+        showToast('📸 Save blocked');
+        showScreenshotWarning();
+        return false;
+    }
+    
+    // Ctrl+P - Print
+    if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault();
+        e.stopPropagation();
+        showToast('📸 Print blocked');
+        showScreenshotWarning();
+        return false;
     }
 });
 
-// Detect visibility change
+// 🔥 DETECT PRINT SCREEN KEY UP
+document.addEventListener('keyup', function(e) {
+    if (e.key === 'PrintScreen') {
+        e.preventDefault();
+        showScreenshotWarning();
+        showToast('📸 Screenshot blocked!');
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText('⚠️ Content Protected - Nightorbit');
+            }
+        } catch(err) {}
+        return false;
+    }
+});
+
+// 🔥 PREVENT COPY
+document.addEventListener('copy', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    showToast('📸 Copy disabled');
+    showScreenshotWarning();
+    return false;
+});
+
+// 🔥 PREVENT CUT
+document.addEventListener('cut', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    showToast('📸 Cut disabled');
+    showScreenshotWarning();
+    return false;
+});
+
+// 🔥 PREVENT PASTE
+document.addEventListener('paste', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    showToast('📸 Paste disabled');
+    return false;
+});
+
+// 🔥 PREVENT DRAG
+document.addEventListener('dragstart', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+});
+
+// 🔥 PREVENT DROP
+document.addEventListener('drop', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+});
+
+// 🔥 PREVENT IMAGE DRAG
+document.querySelectorAll('img, canvas, video, iframe').forEach(function(el) {
+    el.addEventListener('dragstart', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    });
+    el.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    });
+});
+
+// 🔥 DETECT VISIBILITY CHANGE (Alt+Tab, Switch apps)
 document.addEventListener('visibilitychange', function() {
     if (document.hidden) {
         showScreenshotWarning();
     }
 });
 
-// Prevent copy
-document.addEventListener('copy', function(e) {
-    e.preventDefault();
-    showToast('📸 Copy disabled');
+// 🔥 DETECT WINDOW BLUR (User switches window)
+window.addEventListener('blur', function() {
     showScreenshotWarning();
-    return false;
 });
 
-// Disable drag and drop
-document.addEventListener('dragstart', function(e) {
+// 🔥 DETECT WINDOW FOCUS (User comes back)
+window.addEventListener('focus', function() {
+    setTimeout(function() {
+        var overlay = document.getElementById('screenshotOverlay');
+        if (overlay) {
+            overlay.classList.remove('show');
+            document.body.classList.remove('screenshot-mode');
+        }
+    }, 100);
+});
+
+// 🔥 DETECT RESIZE (Possible screenshot tool)
+var _resizeTimeout;
+window.addEventListener('resize', function() {
+    clearTimeout(_resizeTimeout);
+    _resizeTimeout = setTimeout(function() {
+        showScreenshotWarning();
+    }, 100);
+});
+
+// 🔥 DETECT ORIENTATION CHANGE (Mobile screenshot)
+window.addEventListener('orientationchange', function() {
+    showScreenshotWarning();
+});
+
+// 🔥 PREVENT SELECTION
+document.addEventListener('selectstart', function(e) {
     e.preventDefault();
     return false;
 });
 
-// Prevent image drag
-document.querySelectorAll('img').forEach(function(img) {
-    img.addEventListener('dragstart', function(e) {
+// 🔥 PREVENT MOUSE SELECTION
+document.addEventListener('mousedown', function(e) {
+    if (e.button === 2) {
         e.preventDefault();
+        return false;
+    }
+});
+
+// 🔥 CLEAR CLIPBOARD INTERVAL
+setInterval(function() {
+    try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+            navigator.clipboard.readText().then(function(text) {
+                if (text && text.includes('screenshot')) {
+                    navigator.clipboard.writeText('⚠️ Content Protected');
+                }
+            }).catch(function() {});
+        }
+    } catch(e) {}
+}, 5000);
+
+// 🔥 DETECT SCREENSHOT APPS (Windows + Shift + S)
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'S' && e.shiftKey && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        showScreenshotWarning();
+        showToast('📸 Snipping Tool blocked');
+        return false;
+    }
+});
+
+// 🔥 DETECT MAC SCREENSHOT (Cmd + Shift + 3, 4, 5)
+document.addEventListener('keydown', function(e) {
+    if (e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4' || e.key === '5')) {
+        e.preventDefault();
+        showScreenshotWarning();
+        showToast('📸 Mac Screenshot blocked');
+        return false;
+    }
+});
+
+// 🔥 DETECT ANDROID SCREENSHOT (Volume Down + Power)
+// Note: Can't fully prevent hardware keys, but we can detect
+var _volumePressTime = 0;
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'VolumeDown' || e.key === 'VolumeUp') {
+        if (_volumePressTime === 0) {
+            _volumePressTime = Date.now();
+        } else if (Date.now() - _volumePressTime < 500) {
+            // Volume + Power combination detected
+            showScreenshotWarning();
+            showToast('📸 Screenshot attempt detected');
+            _volumePressTime = 0;
+        } else {
+            _volumePressTime = Date.now();
+        }
+    }
+});
+
+// 🔥 DETECT POWER BUTTON (Android/iOS)
+// Note: Can't directly detect, but visibility change handles it
+
+// 🔥 PREVENT CONTEXT MENU ON IMAGES
+document.querySelectorAll('img').forEach(function(img) {
+    img.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        showToast('📸 Right-click on image disabled');
+        showScreenshotWarning();
         return false;
     });
 });
+
+// 🔥 OVERRIDE PRINT
+window.print = function() {
+    showToast('📸 Print disabled');
+    showScreenshotWarning();
+    return false;
+};
+
+// 🔥 OVERRIDE SAVE
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        showToast('📸 Save disabled');
+        showScreenshotWarning();
+        return false;
+    }
+});
+
+// 🔥 DETECT DEVELOPER TOOLS OPEN
+var _devToolsCheck = 0;
+setInterval(function() {
+    var threshold = 160;
+    var widthThreshold = window.outerWidth - window.innerWidth > threshold;
+    var heightThreshold = window.outerHeight - window.innerHeight > threshold;
+    if (widthThreshold || heightThreshold) {
+        _devToolsCheck++;
+        if (_devToolsCheck > 3) {
+            showScreenshotWarning();
+            showToast('📸 DevTools detected!');
+            _devToolsCheck = 0;
+        }
+    } else {
+        _devToolsCheck = 0;
+    }
+}, 1000);
+
+// 🔥 BLOCK PRINT SCREEN (Alternative method)
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'PrintScreen') {
+        e.preventDefault();
+        document.execCommand('clear');
+        showScreenshotWarning();
+        showToast('📸 Screenshot blocked');
+        return false;
+    }
+});
+
+// 🔥 BLOCK SHIFT + COMMAND + 4 (Mac selection screenshot)
+document.addEventListener('keydown', function(e) {
+    if (e.metaKey && e.shiftKey && e.key === '4') {
+        e.preventDefault();
+        showScreenshotWarning();
+        showToast('📸 Mac selection screenshot blocked');
+        return false;
+    }
+});
+
+// 🔥 BLOCK SHIFT + COMMAND + 3 (Mac full screenshot)
+document.addEventListener('keydown', function(e) {
+    if (e.metaKey && e.shiftKey && e.key === '3') {
+        e.preventDefault();
+        showScreenshotWarning();
+        showToast('📸 Mac full screenshot blocked');
+        return false;
+    }
+});
+
+// 🔥 DETECT SCREEN RECORDING (if possible)
+try {
+    if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+        navigator.mediaDevices.getDisplayMedia().then(function(stream) {
+            showScreenshotWarning();
+            showToast('📸 Screen recording detected!');
+            stream.getTracks().forEach(function(track) { track.stop(); });
+        }).catch(function() {});
+    }
+} catch(e) {}
+
+console.log('🛡️ Heavy Screenshot Protection Active!');
+console.log('📸 All screenshot methods blocked!');
 
 // ================================================================
 // PADDLE CONFIG
@@ -1851,6 +2193,7 @@ let buyNowLabel = null;
 let customBadgeText = '';
 let savedCards = [];
 let isVipUser = false;
+let isCardSaved = false;
 
 // ================================================================
 // LOADING
@@ -2344,6 +2687,8 @@ function registerUser() {
 
 function logoutUser() {
     currentUser = null;
+    isCardSaved = false;  // ✅ YEH ADD KARO
+    activeCardId = null;
     localStorage.removeItem('nightorbit_session');
     document.getElementById('appScreen').style.display = 'none';
     document.getElementById('authScreen').style.display = 'flex';
@@ -2621,51 +2966,64 @@ function updateProfileBanStatus(user) {
 // UPDATE UI
 // ================================================================
 function updateUI() {
-    const user = window._currentUserData;
+    var user = window._currentUserData;
     if (!user) return;
     try {
-        const userNameDisplay = document.getElementById('userNameDisplay');
+        var userNameDisplay = document.getElementById('userNameDisplay');
         if (userNameDisplay) userNameDisplay.textContent = currentUser;
-        const isVipUser = user.vip === true;
-        const badge = document.getElementById('vipBadge');
-        const statusDisplay = document.getElementById('vipStatusDisplay');
+        var isVipUser = user.vip === true;
+        var badge = document.getElementById('vipBadge');
+        var statusDisplay = document.getElementById('vipStatusDisplay');
         if (isVipUser) {
-            const daysLeft = Math.ceil((user.vipExpiry - Date.now()) / (1000 * 60 * 60 * 24));
-            const countdownText = daysLeft > 0 ? 'VIP (' + daysLeft + 'd)' : 'VIP (expiring)';
+            var daysLeft = Math.ceil((user.vipExpiry - Date.now()) / (1000 * 60 * 60 * 24));
+            var countdownText = daysLeft > 0 ? 'VIP (' + daysLeft + 'd)' : 'VIP (expiring)';
             if (badge) { badge.textContent = '⭐ ' + countdownText; badge.className = 'vip-badge'; }
             if (statusDisplay) { statusDisplay.textContent = countdownText; statusDisplay.style.color = '#ffd700'; }
-            const cardLimitSub = document.getElementById('cardLimitSub');
+            var cardLimitSub = document.getElementById('cardLimitSub');
             if (cardLimitSub) cardLimitSub.textContent = 'VIP: Unlimited';
-            const publishBtn = document.getElementById('publishBtn');
+            var publishBtn = document.getElementById('publishBtn');
             if (publishBtn) { publishBtn.disabled = false; publishBtn.style.opacity = '1'; }
-            const publicCodeBtn = document.getElementById('publicCodeBtn');
+            var publicCodeBtn = document.getElementById('publicCodeBtn');
             if (publicCodeBtn) { publicCodeBtn.disabled = false; publicCodeBtn.style.opacity = '1'; }
-            const analyticsNavBtn = document.getElementById('analyticsNavBtn');
+            var analyticsNavBtn = document.getElementById('analyticsNavBtn');
             if (analyticsNavBtn) analyticsNavBtn.style.display = 'inline-block';
             unlockVipFeatures();
         } else {
             if (badge) { badge.textContent = 'FREE'; badge.className = 'vip-badge free'; }
             if (statusDisplay) { statusDisplay.textContent = 'FREE'; statusDisplay.style.color = '#ff0055'; }
-            const remaining = CONFIG.FREE_CARD_LIMIT - cardsGeneratedToday;
-            const cardLimitSub2 = document.getElementById('cardLimitSub');
+            var remaining = CONFIG.FREE_CARD_LIMIT - cardsGeneratedToday;
+            var cardLimitSub2 = document.getElementById('cardLimitSub');
             if (cardLimitSub2) cardLimitSub2.textContent = 'Free: ' + remaining + ' remaining';
-            const publishBtn2 = document.getElementById('publishBtn');
+            var publishBtn2 = document.getElementById('publishBtn');
             if (publishBtn2) { publishBtn2.disabled = true; publishBtn2.style.opacity = '0.4'; }
-            const publicCodeBtn2 = document.getElementById('publicCodeBtn');
+            var publicCodeBtn2 = document.getElementById('publicCodeBtn');
             if (publicCodeBtn2) { publicCodeBtn2.disabled = true; publicCodeBtn2.style.opacity = '0.4'; }
-            const analyticsNavBtn2 = document.getElementById('analyticsNavBtn');
+            var analyticsNavBtn2 = document.getElementById('analyticsNavBtn');
             if (analyticsNavBtn2) analyticsNavBtn2.style.display = 'none';
             lockVipFeatures();
         }
-        const cardsGeneratedCount = document.getElementById('cardsGeneratedCount');
+        var cardsGeneratedCount = document.getElementById('cardsGeneratedCount');
         if (cardsGeneratedCount) cardsGeneratedCount.textContent = cardsGeneratedToday;
-        const cardLimitDisplay = document.getElementById('cardLimitDisplay');
+        var cardLimitDisplay = document.getElementById('cardLimitDisplay');
         if (cardLimitDisplay) cardLimitDisplay.textContent = 'Cards: ' + cardsGeneratedToday + '/' + (isVipUser ? '∞' : CONFIG.FREE_CARD_LIMIT);
-        const celebrationCountEl = document.getElementById('celebrationCount');
+        var celebrationCountEl = document.getElementById('celebrationCount');
         if (celebrationCountEl) celebrationCountEl.textContent = celebrationCount;
-        const savedCount = document.getElementById('savedCardsCount');
+        var savedCount = document.getElementById('savedCardsCount');
         if (savedCount && user.savedCards) savedCount.textContent = '(' + user.savedCards.length + ')';
-        updateCardCounter();
+        
+        // 🔥 DOWNLOAD BUTTON - BASED ON isCardSaved
+        var downloadBtn = document.getElementById('downloadBtn');
+        if (downloadBtn) {
+            if (isCardSaved && activeCardId) {
+                downloadBtn.disabled = false;
+                downloadBtn.style.opacity = '1';
+                downloadBtn.style.cursor = 'pointer';
+            } else {
+                downloadBtn.disabled = true;
+                downloadBtn.style.opacity = '0.4';
+                downloadBtn.style.cursor = 'not-allowed';
+            }
+        }
     } catch (e) { console.error('updateUI error:', e); }
 }
 
@@ -3090,122 +3448,134 @@ function generateCard() {
 // GENERATE & SAVE CARD - FIXED
 // ================================================================
 function generateAndSaveCard() {
-    const user = window._currentUserData;
-    if (!user) { showToast('❌ Please login first'); return Promise.reject('No user'); }
-    if (isDemoCard) { 
-        showToast('🔒 This is a demo. Purchase VIP or template to save!'); 
-        return Promise.reject('Demo');
-    }
+    var user = window._currentUserData;
+    if (!user) { showToast('❌ Please login first'); return; }
+    if (isDemoCard) { showToast('🔒 This is a demo. Purchase VIP or template to save!'); return; }
 
-    const isVipUser = user.vip === true;
-    const template = document.getElementById('cardTemplate')?.value || 'classic';
-    
-    const isPaidTemplate = ['vip_card', 'premium_vip'].includes(template);
-    const isAnyPaidTemplate = document.getElementById('cardTemplate')?.querySelector('option:checked')?.dataset?.paid === 'true';
-    
-    let hasPaidTemplate = false;
+    var isVipUser = user.vip === true;
+    var template = document.getElementById('cardTemplate')?.value || 'classic';
+    var isPaidTemplate = template === 'vip_card' || template === 'premium_vip';
+    var hasPaidTemplate = false;
     if (isPaidTemplate) {
-        const remaining = user.purchasedTemplates?.[template] || 0;
-        if (remaining > 0) hasPaidTemplate = true;
-    } else if (isAnyPaidTemplate) {
-        const templateKey = 'paid_' + template;
-        const remaining = user.purchasedTemplates?.[templateKey] || 0;
+        var remaining = user.purchasedTemplates?.[template] || 0;
         if (remaining > 0) hasPaidTemplate = true;
     }
 
-    const styleEl = document.getElementById('cardStyle');
-    const fontEl = document.getElementById('cardFont');
-    const bgEl = document.getElementById('cardBg');
-    const borderEl = document.getElementById('cardBorder');
-    const emojiEl = document.getElementById('cardEmoji');
+    var styleEl = document.getElementById('cardStyle');
+    var fontEl = document.getElementById('cardFont');
+    var bgEl = document.getElementById('cardBg');
+    var borderEl = document.getElementById('cardBorder');
+    var emojiEl = document.getElementById('cardEmoji');
 
-    const usingVipOption = (styleEl?.querySelector('option:checked')?.dataset?.vip === 'true') ||
-        (fontEl?.querySelector('option:checked')?.dataset?.vip === 'true') ||
-        (bgEl?.querySelector('option:checked')?.dataset?.vip === 'true') ||
-        (borderEl?.querySelector('option:checked')?.dataset?.vip === 'true') ||
-        (emojiEl?.querySelector('option:checked')?.dataset?.vip === 'true');
-
-    if (!isVipUser && usingVipOption) {
+    if (!isVipUser && (styleEl?.querySelector('option:checked')?.dataset?.vip === 'true' ||
+        fontEl?.querySelector('option:checked')?.dataset?.vip === 'true' ||
+        bgEl?.querySelector('option:checked')?.dataset?.vip === 'true' ||
+        borderEl?.querySelector('option:checked')?.dataset?.vip === 'true' ||
+        emojiEl?.querySelector('option:checked')?.dataset?.vip === 'true')) {
         showToast('🔒 VIP options selected. Become VIP to save this card.');
-        return Promise.reject('VIP option');
+        return;
     }
 
     if (isPaidTemplate && !hasPaidTemplate) {
-        showToast('❌ You need to purchase this template first. Click "VIP" to buy.');
-        return Promise.reject('Not owned');
+        showToast('❌ You need to purchase this template first.');
+        return;
     }
 
-    const today = new Date().toDateString();
-    if (user.lastGenDate !== today) {
-        user.cardsGenerated = 0;
-        user.lastGenDate = today;
-    }
-
-    const maxDaily = isVipUser ? CONFIG.VIP_CARD_LIMIT : CONFIG.FREE_CARD_LIMIT;
-    if (cardsGeneratedToday >= maxDaily) {
-        showToast('❌ Daily limit reached (' + maxDaily + ' cards)');
-        return Promise.reject('Limit');
-    }
-
-    const cardId = 'card_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-    const name = document.getElementById('cardName')?.value || 'You';
-    const title = document.getElementById('cardTitle')?.value || 'Card';
-    const message = document.getElementById('cardMessage')?.value || 'Message';
-    const relation = document.getElementById('cardRelation')?.value || '';
-    const date = document.getElementById('cardDate')?.value || '';
-    const time = document.getElementById('cardTime')?.value || '';
-    const style = styleEl?.value || 'birthday';
-    const emoji = emojiEl?.value || '🎂';
-    const font = fontEl?.value || "'Pacifico', cursive";
-    const bg = bgEl?.value || 'gradient1';
-    const border = borderEl?.value || 'none';
-
-    const expiryDays = isVipUser ? CONFIG.CARD_EXPIRY_VIP : CONFIG.CARD_EXPIRY_FREE;
-    const cardData = {
-        author: currentUser, name: name, title: title, message: message, relation: relation,
-        date: date, time: time, style: style, emoji: emoji, font: font, bg: bg, border: border,
-        template: template, createdAt: Date.now(), isVip: isVipUser || hasPaidTemplate,
-        published: false, publishedAt: null, wishes: 0, views: 0, clicks: 0,
-        expiresAt: Date.now() + expiryDays * 24 * 60 * 60 * 1000, category: style,
-        publicCode: '', codeExpiry: null, isPaidTemplate: isPaidTemplate,
-        templateType: isPaidTemplate ? template : null,
-        customBadge: customBadgeText || ''
-    };
-    
-    return fbSet('cards/' + cardId, cardData).then(function() {
-        if (isPaidTemplate && hasPaidTemplate) {
-            user.purchasedTemplates[template] = (user.purchasedTemplates[template] || 1) - 1;
-            fbSet('users/' + currentUser + '/purchasedTemplates', user.purchasedTemplates);
-            window._currentUserData = user;
-            updateProfileTemplateCounts(user);
-            updateCardCount();
-            updateCardCounter();
+    fbGet('users/' + currentUser).then(function(freshUser) {
+        if (!freshUser) { showToast('❌ User not found'); return; }
+        
+        Object.assign(user, freshUser);
+        window._currentUserData = user;
+        
+        var today = new Date().toDateString();
+        if (user.lastGenDate !== today) {
+            user.cardsGenerated = 0;
+            user.lastGenDate = today;
+            return fbSet('users/' + currentUser + '/cardsGenerated', 0);
+        }
+        return Promise.resolve();
+    }).then(function() {
+        var maxDaily = isVipUser ? CONFIG.VIP_CARD_LIMIT : CONFIG.FREE_CARD_LIMIT;
+        var currentGen = user.cardsGenerated || 0;
+        
+        if (currentGen >= maxDaily) {
+            showToast('❌ Daily limit reached (' + maxDaily + ' cards). Upgrade to VIP for unlimited!');
+            return Promise.reject('Limit reached');
         }
 
-        if (!user.savedCards) user.savedCards = [];
-        const savedCard = {
-            cardId: cardId, name: name, title: title, message: message, style: style,
-            emoji: emoji, font: font, bg: bg, border: border, template: template,
-            createdAt: Date.now(), customBadge: customBadgeText || ''
+        var cardId = 'card_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+        var name = document.getElementById('cardName')?.value || 'You';
+        var title = document.getElementById('cardTitle')?.value || 'Card';
+        var message = document.getElementById('cardMessage')?.value || 'Message';
+        var relation = document.getElementById('cardRelation')?.value || '';
+        var date = document.getElementById('cardDate')?.value || '';
+        var time = document.getElementById('cardTime')?.value || '';
+        var style = styleEl?.value || 'birthday';
+        var emoji = emojiEl?.value || '🎂';
+        var font = fontEl?.value || "'Pacifico', cursive";
+        var bg = bgEl?.value || 'gradient1';
+        var border = borderEl?.value || 'none';
+
+        var expiryDays = isVipUser ? CONFIG.CARD_EXPIRY_VIP : CONFIG.CARD_EXPIRY_FREE;
+        var cardData = {
+            author: currentUser, name: name, title: title, message: message, relation: relation,
+            date: date, time: time, style: style, emoji: emoji, font: font, bg: bg, border: border,
+            template: template, createdAt: Date.now(), isVip: isVipUser || hasPaidTemplate,
+            published: false, publishedAt: null, wishes: 0, views: 0, clicks: 0,
+            expiresAt: Date.now() + expiryDays * 24 * 60 * 60 * 1000, category: style,
+            publicCode: '', codeExpiry: null, isPaidTemplate: isPaidTemplate,
+            templateType: isPaidTemplate ? template : null,
+            customBadge: customBadgeText || ''
         };
-        user.savedCards.push(savedCard);
-        user.cardsGenerated = (user.cardsGenerated || 0) + 1;
-        user.totalCards = (user.totalCards || 0) + 1;
-        cardsGeneratedToday = user.cardsGenerated;
         
-        return fbSet('users/' + currentUser, user).then(function() {
-            window._currentUserData = user;
-            activeCardId = cardId;
-            document.getElementById('downloadBtn').disabled = false;
-            updateUI();
-            loadSavedCards();
-            showToast('✅ Card generated! (' + cardsGeneratedToday + '/' + maxDaily + ')');
-            const genStatus = document.getElementById('generationStatus');
-            if (genStatus) genStatus.textContent = '✅ Saved! ID: ' + cardId.slice(0, 8) + '...';
-            triggerConfetti();
-            checkAchievements();
-            return cardId;
+        return fbSet('cards/' + cardId, cardData).then(function() {
+            if (isPaidTemplate && hasPaidTemplate) {
+                user.purchasedTemplates[template] = (user.purchasedTemplates[template] || 1) - 1;
+                fbSet('users/' + currentUser + '/purchasedTemplates', user.purchasedTemplates);
+            }
+
+            if (!user.savedCards) user.savedCards = [];
+            var savedCard = {
+                cardId: cardId, name: name, title: title, message: message, style: style,
+                emoji: emoji, font: font, bg: bg, border: border, template: template,
+                createdAt: Date.now(), customBadge: customBadgeText || '',
+                date: date, time: time, relation: relation
+            };
+            user.savedCards.push(savedCard);
+            
+            user.cardsGenerated = (user.cardsGenerated || 0) + 1;
+            user.totalCards = (user.totalCards || 0) + 1;
+            cardsGeneratedToday = user.cardsGenerated;
+            
+            return fbSet('users/' + currentUser, user).then(function() {
+                window._currentUserData = user;
+                
+                // 🔥 SAVE THE CARD STATE - YEH ADD KARO
+                activeCardId = cardId;
+                isCardSaved = true;
+                
+                // ✅ ENABLE DOWNLOAD BUTTON
+                var downloadBtn = document.getElementById('downloadBtn');
+                if (downloadBtn) {
+                    downloadBtn.disabled = false;
+                    downloadBtn.style.opacity = '1';
+                    downloadBtn.style.cursor = 'pointer';
+                }
+                
+                updateUI();
+                loadSavedCards();
+                var remaining = maxDaily - user.cardsGenerated;
+                showToast('✅ Card saved! (' + user.cardsGenerated + '/' + maxDaily + ') - ' + remaining + ' remaining');
+                var genStatus = document.getElementById('generationStatus');
+                if (genStatus) genStatus.textContent = '✅ Saved! ID: ' + cardId.slice(0, 8) + '... ( ' + remaining + ' left)';
+                triggerConfetti();
+                checkAchievements();
+            });
         });
+    }).catch(function(e) {
+        if (e === 'Limit reached') return;
+        console.error('Generate error:', e);
+        showToast('❌ Error: ' + e.message);
     });
 }
 
@@ -3272,9 +3642,11 @@ function filterMyCards() {
 // SAVED CARD ACTIONS - FIXED (with confirm)
 // ================================================================
 function loadSavedCard(index) {
-    const user = window._currentUserData;
+    var user = window._currentUserData;
     if (!user || !user.savedCards || !user.savedCards[index]) return;
-    const card = user.savedCards[index];
+    var card = user.savedCards[index];
+    
+    // Load all values into form
     document.getElementById('cardName').value = card.name || '';
     document.getElementById('cardTitle').value = card.title || '';
     document.getElementById('cardMessage').value = card.message || '';
@@ -3291,7 +3663,19 @@ function loadSavedCard(index) {
         document.getElementById('customBadgeText').value = card.customBadge;
         customBadgeText = card.customBadge;
     }
+    
+    // 🔥 SET CARD AS SAVED - YEH ADD KARO
     activeCardId = card.cardId;
+    isCardSaved = true;
+    
+    // ✅ ENABLE DOWNLOAD BUTTON
+    var downloadBtn = document.getElementById('downloadBtn');
+    if (downloadBtn) {
+        downloadBtn.disabled = false;
+        downloadBtn.style.opacity = '1';
+        downloadBtn.style.cursor = 'pointer';
+    }
+    
     generateCard();
     showToast('📇 Loaded card: ' + (card.title || 'Card'));
 }
@@ -3389,9 +3773,19 @@ function cancelCard() {
     if (!activeCardId) { showToast('ℹ️ No active card to cancel'); return; }
     if (!confirm('Cancel current card?')) return;
     activeCardId = null;
-    document.getElementById('downloadBtn').disabled = true;
+    isCardSaved = false;  // ✅ YEH ADD KARO
     document.getElementById('generationStatus').textContent = '❌ Cancelled';
     showToast('❌ Card cancelled');
+    
+    // ✅ DISABLE DOWNLOAD BUTTON
+    var downloadBtn = document.getElementById('downloadBtn');
+    if (downloadBtn) {
+        downloadBtn.disabled = true;
+        downloadBtn.style.opacity = '0.4';
+        downloadBtn.style.cursor = 'not-allowed';
+    }
+    
+    // Reset form
     document.getElementById('cardName').value = '';
     document.getElementById('cardTitle').value = '';
     document.getElementById('cardMessage').value = '';
@@ -3405,100 +3799,46 @@ function cancelCard() {
 // DOWNLOAD CARD
 // ================================================================
 function downloadCard() {
-    // ✅ Check if demo card
     if (isDemoCard) {
-        showToast('🔒 Demo cards cannot be downloaded. Upgrade to VIP to download!');
+        showToast('🔒 Demo cards cannot be downloaded. Save your real card first!');
+        return;
+    }
+    if (!isCardSaved || !activeCardId) {
+        showToast('⚠️ Please click "Generate & Save" button first, then download!');
         return;
     }
     
-    const user = window._currentUserData;
-    if (!user) { showToast('❌ Please login first'); return; }
+    var card = document.getElementById('cardPreview');
+    if (!card) return;
     
-    // ✅ Check if card exists and is saved
-    if (!activeCardId) {
-        showToast('⚠️ Please generate and save the card first!');
-        // ✅ Force generate & save
-        generateAndSaveCard().then(function(cardId) {
-            if (cardId) {
-                setTimeout(function() {
-                    performDownload();
-                }, 500);
-            }
+    // 🔥 Re-apply all styles before download
+    generateCard();
+    
+    setTimeout(function() {
+        var watermark = document.createElement('div');
+        watermark.style.cssText = 'position:absolute; bottom:10px; right:10px; font-size:0.4rem; color:rgba(255,215,0,0.3); z-index:999; pointer-events:none;';
+        watermark.textContent = '© Nightorbit';
+        card.appendChild(watermark);
+        
+        html2canvas(card, { 
+            scale: 3, 
+            backgroundColor: null, 
+            allowTaint: true, 
+            useCORS: true,
+            logging: false
+        }).then(function(canvas) {
+            var link = document.createElement('a');
+            var title = document.getElementById('cardTitle')?.value || 'card';
+            link.download = 'nightorbit-' + title.replace(/\s+/g, '-').toLowerCase() + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showToast('✅ Card downloaded with full colors!');
+            card.removeChild(watermark);
+        }).catch(function() {
+            showToast('⚠️ Download failed. Try screenshot!');
+            card.removeChild(watermark);
         });
-        return;
-    }
-    
-    // ✅ Verify card exists in database
-    fbGet('cards/' + activeCardId).then(function(card) {
-        if (!card) {
-            showToast('❌ Card not found. Please generate again.');
-            activeCardId = null;
-            // ✅ Force generate & save
-            generateAndSaveCard().then(function(cardId) {
-                if (cardId) {
-                    setTimeout(function() {
-                        performDownload();
-                    }, 500);
-                }
-            });
-            return;
-        }
-        if (card.author !== currentUser) {
-            showToast('❌ You can only download your own cards');
-            return;
-        }
-        // ✅ All checks passed
-        performDownload();
-    }).catch(function() {
-        showToast('❌ Error checking card. Please generate again.');
-    });
-}
-
-// ✅ PERFORM DOWNLOAD - SEPARATE FUNCTION
-function performDownload() {
-    const card = document.getElementById('cardPreview');
-    if (!card) { showToast('❌ Card preview not found'); return; }
-    
-    // ✅ Check daily limit one more time before download
-    const user = window._currentUserData;
-    if (user) {
-        const today = new Date().toDateString();
-        if (user.lastGenDate !== today) {
-            user.cardsGenerated = 0;
-            user.lastGenDate = today;
-        }
-        const maxDaily = user.vip ? CONFIG.VIP_CARD_LIMIT : CONFIG.FREE_CARD_LIMIT;
-        if (user.cardsGenerated === 0) {
-            showToast('⚠️ No cards generated today. Please generate first!');
-            return;
-        }
-    }
-    
-    // ✅ Add watermark
-    const watermark = document.createElement('div');
-    watermark.style.cssText = 'position:absolute; bottom:10px; right:10px; font-size:0.4rem; color:rgba(255,215,0,0.3); z-index:999; pointer-events:none;';
-    watermark.textContent = '© Nightorbit';
-    card.appendChild(watermark);
-    
-    showToast('📥 Downloading...');
-    
-    html2canvas(card, { 
-        scale: 3, 
-        backgroundColor: null, 
-        allowTaint: true, 
-        useCORS: true 
-    }).then(function(canvas) {
-        const link = document.createElement('a');
-        const cardTitle = document.getElementById('cardTitle')?.value || 'card';
-        link.download = 'nightorbit-' + cardTitle.replace(/\s+/g, '-') + '.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        showToast('✅ Card downloaded!');
-        card.removeChild(watermark);
-    }).catch(function() {
-        showToast('⚠️ Download failed. Try screenshot!');
-        card.removeChild(watermark);
-    });
+    }, 300);
 }
 
 // ================================================================
