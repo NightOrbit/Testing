@@ -5,1642 +5,362 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIk5pZ2h0T3JiaXQgT21uaVNjYW4iLAogICJzaG9ydF9uYW1lIjogIk9tbmlTY2FuIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwMDAwMDAiLAogICJ0aGVtZV9jb2xvciI6ICIjMDBmMGZmIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLDxzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgNTEyIDUxMic+PHJlY3Qgd2lkdGg9JzUxMicgaGVpZ2h0PSc1MTInIHJ4PSc4MCcgZmlsbD0nIzAwZjBmZicvPjx0ZXh0IHg9JzI1NicgeT0nMzUwJyBmb250LXNpemU9JzI4MCcgdGV4dC1hbmNob3I9J21pZGRsZScgZm9udC1mYW1pbHk9J3NhbnMtc2VyaWYnIGZpbGw9JyMwMDAnPuKGkTwvdGV4dD48L3N2Zz4iLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFzayBhbnlzaXplIgogICAgfQogIF0KfQ==" />
-    <title>NightOrbit OmniScan — Forensic Scanner + Gyidi</title>
+    
+    <!-- ===== MANIFEST (inline base64 with icons) ===== -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIk5pZ2h0T3JiaXQgT21uaVNjYW4iLAogICJzaG9ydF9uYW1lIjogIk9tbmlTY2FuIiwKICAiZGVzY3JpcHRpb24iOiAiRm9yZW5zaWMtZ3JhZGUgUVIgJiBiYXJjb2RlIHNjYW5uZXIgd2l0aCBtdWx0aS1mb3JtYXQgc3VwcG9ydC4gT2ZmbGluZS1yZWFkeSBQV0EiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgIm9yaWVudGF0aW9uIjogInBvcnRyYWl0IiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDUwNzBhIiwKICAidGhlbWVfY29sb3IiOiAiIzAwZDJmZiIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0NzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgNTEyIDUxMiclM0UlM0NyZWN0IHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyByeD0nODAnIGZpbGw9JyUyMzAwZjBmZicvJTNFJTNDdGV4dCB4PScyNTYnIHk9JzM1MCcgZm9udC1zaXplPScyODAnIHRleHQtYW5jaG9yPSdtaWRkbGUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJyBmaWxsPSclMjMwMDAnJTNFJUUyJTg2JTkwJTNDL3RleHQlM0UlM0Mvc3ZnJTNFIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIiwKICAgICAgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIgogICAgfSwKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWwsJTNDc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDIyNSAyMjUnJTNFJTNDcmVjdCB3aWR0aD0nMjI1JyBoZWlnaHQ9JzIyNScgcng9JzMwJyBmaWxsPSclMjMwMGYwZmYnLyUzRSUzQ3RleHQgeD0nMTEyJyB5PScxNTAnIGZvbnQtc2l6ZT0nMTIwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBmb250LWZhbWlseT0nc2Fucy1zZXJpZicgZmlsbD0nJTIzMDAwJyUzRSVFMiU4NiU5MCUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsCiAgICAgICJzaXplcyI6ICIyMjV4MjI1IiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsCiAgICAgICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSIKICAgIH0KICBdCn0=" />
 
-    <!-- ===== HTML5-QRCODE ===== -->
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js">
-    </script>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%2300f0ff'/%3E%3Ctext x='256' y='350' font-size='280' text-anchor='middle' font-family='sans-serif' fill='%23000'%3E%E2%86%90%3C/text%3E%3C/svg%3E" />
+    
+    <title>NightOrbit OmniScan</title>
 
-    <!-- ===== FONT AWESOME ===== -->
+    <!-- QR Library -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
     <style>
         /* ================================================================
-           NIGHTORBIT OMNISCAN — DEEP BLACK FORENSIC EDITION (ORIGINAL)
-           + GYIDI BAZAR OFFLINE MODULES
+           HEAVY OMNISCAN — DEEP BLACK FORENSIC EDITION
+           No extra UI, pure scanner with security
            ================================================================ */
 
-        /* ---- ROOT VARIABLES ---- */
         :root {
-            --no-cyan: #00f0ff;
-            --no-pink: #ff2d95;
-            --no-purple: #b400ff;
-            --no-gold: #ffd700;
-            --no-green: #39ff14;
-            --no-red: #ff073a;
-            --no-dark: #000000;
-            --no-card: rgba(10, 12, 24, 0.92);
-            --no-glass: rgba(255, 255, 255, 0.02);
-            --no-border: rgba(0, 240, 255, 0.06);
-            --no-text: #f0f0f8;
-            --no-muted: #6a6a8a;
-            --no-radius: 28px;
-            --no-radius-sm: 16px;
-            --no-shadow: 0 40px 120px rgba(0, 0, 0, 0.9);
-            --no-transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --cyan: #00f0ff;
+            --pink: #ff2d95;
+            --purple: #b400ff;
+            --gold: #ffd700;
+            --green: #39ff14;
+            --red: #ff073a;
+            --dark: #000000;
+            --card: rgba(10, 12, 24, 0.92);
+            --glass: rgba(255, 255, 255, 0.02);
+            --border: rgba(0, 240, 255, 0.06);
+            --text: #f0f0f8;
+            --muted: #6a6a8a;
+            --radius: 28px;
+            --radius-sm: 16px;
+            --shadow: 0 40px 120px rgba(0,0,0,0.9);
+            --transition: 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
         }
 
-        /* ---- RESET & BASE ---- */
-        *,
-        *::before,
-        *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html, body {
+            width:100%; min-height:100vh;
+            background:var(--dark);
+            font-family:'Inter','Segoe UI',system-ui,sans-serif;
+            color:var(--text);
+            overflow-x:hidden;
+            -webkit-user-select:none;
+            user-select:none;
         }
-        html,
-        body {
-            width: 100%;
-            min-height: 100vh;
-            background: var(--no-dark);
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-            color: var(--no-text);
-            overflow-x: hidden;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.01);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, var(--no-cyan), var(--no-purple));
-            border-radius: 10px;
+        ::-webkit-scrollbar { width:3px; height:3px; }
+        ::-webkit-scrollbar-track { background:rgba(255,255,255,0.01); }
+        ::-webkit-scrollbar-thumb { background:linear-gradient(180deg,var(--cyan),var(--purple)); border-radius:10px; }
+
+        .app-container {
+            display:flex; flex-direction:column; min-height:100vh;
+            width:100%; max-width:100vw;
+            padding:14px;
+            background:radial-gradient(ellipse at 20% 30%, #0a0a1a 0%, #000000 80%);
+            position:relative;
+            overflow-x:hidden;
         }
 
-        /* ---- Glassmorphic Card ---- */
-        .glass {
-            background: var(--no-card);
-            backdrop-filter: blur(50px) saturate(1.8);
-            -webkit-backdrop-filter: blur(50px) saturate(1.8);
-            border-radius: var(--no-radius);
-            border: 1px solid var(--no-border);
-            box-shadow: var(--no-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.02);
-        }
-
-        /* ================================================================
-           STATUS BAR
-           ================================================================ */
+        /* Status Bar */
         .status-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 16px;
-            margin-bottom: 12px;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: var(--no-radius-sm);
-            border: 1px solid rgba(255, 255, 255, 0.02);
-            flex-wrap: wrap;
-            gap: 6px;
+            display:flex; align-items:center; justify-content:space-between;
+            padding:8px 16px; margin-bottom:12px;
+            background:rgba(0,0,0,0.6);
+            border-radius:var(--radius-sm);
+            border:1px solid rgba(255,255,255,0.02);
+            flex-wrap:wrap; gap:6px;
         }
-        .status-bar .brand {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .status-bar .brand { display:flex; align-items:center; gap:8px; }
         .status-bar .brand .icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--no-cyan), var(--no-purple));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: #000;
-            font-weight: 900;
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
-            flex-shrink: 0;
+            width:30px; height:30px; border-radius:10px;
+            background:linear-gradient(135deg,var(--cyan),var(--purple));
+            display:flex; align-items:center; justify-content:center;
+            font-size:12px; color:#000; font-weight:900;
+            box-shadow:0 0 30px rgba(0,240,255,0.15);
+            flex-shrink:0;
         }
         .status-bar .brand .name {
-            font-size: 13px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--no-cyan), var(--no-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 0.5px;
+            font-size:13px; font-weight:700;
+            background:linear-gradient(135deg,var(--cyan),var(--pink));
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            letter-spacing:0.5px;
         }
         .status-bar .brand .sub {
-            font-size: 7px;
-            color: var(--no-muted);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            display: block;
-            margin-top: -1px;
+            font-size:7px; color:var(--muted);
+            letter-spacing:2px; text-transform:uppercase;
+            display:block; margin-top:-1px;
         }
         .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 3px 12px;
-            border-radius: 50px;
-            font-size: 7px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            border: 1px solid transparent;
-            transition: var(--no-transition);
-            flex-shrink: 0;
+            display:inline-flex; align-items:center; gap:5px;
+            padding:3px 12px; border-radius:50px;
+            font-size:7px; font-weight:700; text-transform:uppercase;
+            letter-spacing:0.8px; border:1px solid transparent;
+            transition:var(--transition);
+            flex-shrink:0;
         }
-        .status-badge.idle {
-            background: rgba(255, 255, 255, 0.02);
-            color: var(--no-muted);
-            border-color: rgba(255, 255, 255, 0.03);
-        }
-        .status-badge.scanning {
-            background: rgba(0, 240, 255, 0.06);
-            color: var(--no-cyan);
-            border-color: rgba(0, 240, 255, 0.12);
-            animation: pulseBadge 1.5s ease-in-out infinite;
-        }
-        .status-badge.success {
-            background: rgba(57, 255, 20, 0.06);
-            color: var(--no-green);
-            border-color: rgba(57, 255, 20, 0.12);
-        }
-        .status-badge.error {
-            background: rgba(255, 7, 58, 0.06);
-            color: var(--no-red);
-            border-color: rgba(255, 7, 58, 0.12);
-        }
-        @keyframes pulseBadge {
-            0%,
-            100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.4;
-            }
-        }
-        .status-badge .dot {
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: currentColor;
-            transition: 0.3s;
-            flex-shrink: 0;
-        }
+        .status-badge.idle { background:rgba(255,255,255,0.02); color:var(--muted); border-color:rgba(255,255,255,0.03); }
+        .status-badge.scanning { background:rgba(0,240,255,0.06); color:var(--cyan); border-color:rgba(0,240,255,0.12); animation:pulseBadge 1.5s infinite; }
+        .status-badge.success { background:rgba(57,255,20,0.06); color:var(--green); border-color:rgba(57,255,20,0.12); }
+        .status-badge.error { background:rgba(255,7,58,0.06); color:var(--red); border-color:rgba(255,7,58,0.12); }
+        @keyframes pulseBadge { 0%,100%{ opacity:1; } 50%{ opacity:0.4; } }
+        .status-badge .dot { width:5px; height:5px; border-radius:50%; background:currentColor; }
 
-        /* ================================================================
-           SCANNER VIEWFINDER
-           ================================================================ */
+        /* Scanner Viewfinder */
         #scanner-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            max-width: 560px;
-            margin: 0 auto;
-            background: #05070c;
-            border-radius: var(--no-radius);
-            overflow: hidden;
-            border: 1.5px solid var(--no-border);
-            box-shadow: 0 0 100px rgba(0, 240, 255, 0.02), inset 0 0 100px rgba(0, 0, 0, 0.6);
+            position:relative; width:100%; aspect-ratio:1/1;
+            max-width:560px; margin:0 auto;
+            background:#05070c;
+            border-radius:var(--radius);
+            overflow:hidden;
+            border:1.5px solid var(--border);
+            box-shadow:0 0 100px rgba(0,240,255,0.02), inset 0 0 100px rgba(0,0,0,0.6);
         }
-        #scanner-container video {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover !important;
-        }
-        #scanner-container #qr-reader {
-            width: 100% !important;
-            height: 100% !important;
-        }
+        #scanner-container video { width:100% !important; height:100% !important; object-fit:cover !important; }
+        #scanner-container #qr-reader { width:100% !important; height:100% !important; }
+
         .scan-overlay {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 5;
+            position:absolute; inset:0; pointer-events:none; z-index:5;
         }
         .scan-overlay .corner {
-            position: absolute;
-            width: 26px;
-            height: 26px;
-            border-color: var(--no-cyan);
-            border-style: solid;
-            border-width: 0;
-            opacity: 0.35;
-            transition: opacity 0.5s ease;
+            position:absolute; width:26px; height:26px;
+            border-color:var(--cyan); border-style:solid; border-width:0;
+            opacity:0.35;
         }
-        .scan-overlay .corner.tl {
-            top: 14px;
-            left: 14px;
-            border-top-width: 2.5px;
-            border-left-width: 2.5px;
-        }
-        .scan-overlay .corner.tr {
-            top: 14px;
-            right: 14px;
-            border-top-width: 2.5px;
-            border-right-width: 2.5px;
-        }
-        .scan-overlay .corner.bl {
-            bottom: 14px;
-            left: 14px;
-            border-bottom-width: 2.5px;
-            border-left-width: 2.5px;
-        }
-        .scan-overlay .corner.br {
-            bottom: 14px;
-            right: 14px;
-            border-bottom-width: 2.5px;
-            border-right-width: 2.5px;
-        }
+        .scan-overlay .corner.tl { top:14px; left:14px; border-top-width:2.5px; border-left-width:2.5px; }
+        .scan-overlay .corner.tr { top:14px; right:14px; border-top-width:2.5px; border-right-width:2.5px; }
+        .scan-overlay .corner.bl { bottom:14px; left:14px; border-bottom-width:2.5px; border-left-width:2.5px; }
+        .scan-overlay .corner.br { bottom:14px; right:14px; border-bottom-width:2.5px; border-right-width:2.5px; }
+
         .scan-line {
-            position: absolute;
-            left: 10%;
-            right: 10%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--no-cyan), var(--no-purple), transparent);
-            top: 15%;
-            z-index: 6;
-            opacity: 0.25;
-            animation: scanMove 3.6s ease-in-out infinite;
-            box-shadow: 0 0 40px rgba(0, 240, 255, 0.08);
+            position:absolute; left:10%; right:10%; height:2px;
+            background:linear-gradient(90deg, transparent, var(--cyan), var(--purple), transparent);
+            top:15%; z-index:6; opacity:0.25;
+            animation:scanMove 3.6s ease-in-out infinite;
+            box-shadow:0 0 40px rgba(0,240,255,0.08);
         }
-        @keyframes scanMove {
-            0%,
-            100% {
-                top: 12%;
-                opacity: 0.15;
-            }
-            50% {
-                top: 82%;
-                opacity: 0.5;
-            }
-        }
+        @keyframes scanMove { 0%,100%{ top:12%; opacity:0.15; } 50%{ top:82%; opacity:0.5; } }
+
         .scanner-status-overlay {
-            position: absolute;
-            bottom: 14px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 5px 16px;
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 8px;
-            font-weight: 500;
-            color: var(--no-muted);
-            letter-spacing: 0.3px;
-            white-space: nowrap;
-            flex-wrap: wrap;
-            justify-content: center;
+            position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
+            z-index:10; background:rgba(0,0,0,0.75);
+            backdrop-filter:blur(20px);
+            padding:5px 16px; border-radius:50px;
+            border:1px solid rgba(255,255,255,0.03);
+            display:flex; align-items:center; gap:8px;
+            font-size:8px; font-weight:500; color:var(--muted);
+            letter-spacing:0.3px; white-space:nowrap; flex-wrap:wrap; justify-content:center;
         }
         .scanner-status-overlay .dot {
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: var(--no-muted);
-            transition: 0.3s;
-            flex-shrink: 0;
+            width:5px; height:5px; border-radius:50%; background:var(--muted);
+            transition:0.3s;
         }
         .scanner-status-overlay .dot.active {
-            background: var(--no-cyan);
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
-            animation: dotPulse 1.2s ease-in-out infinite;
+            background:var(--cyan);
+            box-shadow:0 0 20px rgba(0,240,255,0.3);
+            animation:dotPulse 1.2s infinite;
         }
-        @keyframes dotPulse {
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.3;
-                transform: scale(0.7);
-            }
-        }
+        @keyframes dotPulse { 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:0.3; transform:scale(0.7); } }
         .scanner-status-overlay .format-hint {
-            font-size: 6px;
-            opacity: 0.25;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            border-left: 1px solid rgba(255, 255, 255, 0.04);
-            padding-left: 8px;
+            font-size:6px; opacity:0.25; letter-spacing:1px; text-transform:uppercase;
+            border-left:1px solid rgba(255,255,255,0.04);
+            padding-left:8px;
         }
 
-        /* ================================================================
-           CONTROLS
-           ================================================================ */
+        /* Controls */
         .control-matrix {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            margin-top: 12px;
-            padding: 2px;
+            display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
+            gap:6px; margin-top:12px; padding:2px;
         }
         .btn-matrix {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 8px 14px;
-            border-radius: var(--no-radius-sm);
-            border: 1px solid var(--no-border);
-            background: var(--no-glass);
-            color: var(--no-muted);
-            font-size: 9px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            transition: var(--no-transition);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            font-family: inherit;
-            flex-shrink: 0;
+            display:inline-flex; align-items:center; gap:5px;
+            padding:8px 14px; border-radius:var(--radius-sm);
+            border:1px solid var(--border);
+            background:var(--glass); color:var(--muted);
+            font-size:9px; font-weight:600; text-transform:uppercase;
+            letter-spacing:0.5px; cursor:pointer;
+            transition:var(--transition);
+            backdrop-filter:blur(10px);
+            font-family:inherit; flex-shrink:0;
         }
-        .btn-matrix:hover {
-            background: rgba(0, 240, 255, 0.04);
-            border-color: rgba(0, 240, 255, 0.15);
-            color: #fff;
-            transform: translateY(-1px);
+        .btn-matrix:hover { background:rgba(0,240,255,0.04); border-color:rgba(0,240,255,0.15); color:#fff; transform:translateY(-1px); }
+        .btn-matrix.active { background:rgba(0,240,255,0.06); border-color:var(--cyan); color:var(--cyan); box-shadow:0 0 30px rgba(0,240,255,0.02); }
+        .btn-matrix .icon { font-size:11px; }
+        .btn-upload-matrix { position:relative; overflow:hidden; cursor:pointer; }
+        .btn-upload-matrix input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; }
+        .btn-install {
+            background:rgba(0,240,255,0.04);
+            border-color:var(--cyan);
+            color:var(--cyan);
         }
-        .btn-matrix.active {
-            background: rgba(0, 240, 255, 0.06);
-            border-color: var(--no-cyan);
-            color: var(--no-cyan);
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.02);
+        .btn-install:hover {
+            background:rgba(0,240,255,0.08);
+            border-color:var(--cyan);
+            box-shadow:0 0 40px rgba(0,240,255,0.04);
         }
-        .btn-matrix .icon {
-            font-size: 11px;
-        }
-        .btn-upload-matrix {
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        .btn-upload-matrix input[type="file"] {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-        .btn-download {
-            background: rgba(255, 215, 0, 0.03);
-            border-color: rgba(255, 215, 0, 0.08);
-            color: var(--no-gold);
-        }
-        .btn-download:hover {
-            background: rgba(255, 215, 0, 0.08);
-            border-color: var(--no-gold);
-            color: #fff;
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.04);
-        }
-        .btn-download .icon {
-            color: var(--no-gold);
-        }
-        #install-btn {
-            background: rgba(0, 240, 255, 0.04);
-            border-color: var(--no-cyan);
-            color: var(--no-cyan);
-        }
-        #install-btn:hover {
-            background: rgba(0, 240, 255, 0.08);
-            border-color: var(--no-cyan);
-        }
+        .btn-install.hidden { display:none !important; }
 
-        /* ================================================================
-           HAMBURGER MENU (Gyidi Bazar Style)
-           ================================================================ */
-        #hamburger-icon {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 15000;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--no-cyan);
-            border-radius: 12px;
-            padding: 10px 12px;
-            cursor: pointer;
-            color: white;
-            font-size: 20px;
-            transition: 0.3s;
-            display: block;
-            backdrop-filter: blur(10px);
-        }
-        #hamburger-icon:hover {
-            background: var(--no-cyan);
-            color: black;
-        }
-        #hamburger-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 14999;
-            display: none;
-        }
-        #hamburger-overlay.active {
-            display: block;
-        }
-        #hamburger-menu {
-            position: fixed;
-            top: 0;
-            left: -380px;
-            width: 360px;
-            height: 100%;
-            background: rgba(11, 11, 26, 0.98);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            z-index: 20000;
-            transition: left 0.4s cubic-bezier(0.87, 0, 0.13, 1);
-            overflow-y: auto;
-            border-right: 2px solid var(--no-cyan);
-            padding: 20px;
-            box-shadow: 10px 0 50px rgba(0, 0, 0, 0.9);
-        }
-        #hamburger-menu.open {
-            left: 0;
-        }
-        .menu-close-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(0, 240, 255, 0.04);
-            border: 1.5px solid rgba(0, 240, 255, 0.08);
-            color: var(--no-cyan);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            transition: var(--no-transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-        }
-        .menu-close-btn:hover {
-            background: rgba(0, 240, 255, 0.08);
-            border-color: var(--no-cyan);
-            transform: rotate(90deg);
-        }
-        .menu-profile-section {
-            text-align: center;
-            padding: 30px 0 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            margin-bottom: 20px;
-        }
-        .menu-user-name {
-            font-size: 18px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #fff, var(--no-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .menu-user-email {
-            font-size: 12px;
-            color: var(--no-muted);
-        }
-        .menu-coin-display {
-            background: rgba(255, 215, 0, 0.08);
-            border: 1px solid var(--no-gold);
-            padding: 10px;
-            border-radius: var(--no-radius-sm);
-            text-align: center;
-            margin: 10px 0;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
-        }
-        .menu-coin-display span {
-            color: var(--no-gold);
-            font-weight: bold;
-            font-size: 16px;
-        }
-        .menu-btn {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            color: white;
-            padding: 12px 15px;
-            border-radius: var(--no-radius-sm);
-            margin: 6px 0;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: var(--no-transition);
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-        }
-        .menu-btn:hover {
-            background: rgba(0, 240, 255, 0.06);
-            border-color: var(--no-cyan);
-            transform: translateX(4px);
-        }
-        .menu-btn.gold {
-            border-color: var(--no-gold);
-            color: var(--no-gold);
-        }
-        .menu-btn.gold:hover {
-            background: rgba(255, 215, 0, 0.06);
-        }
-        .menu-btn.red {
-            border-color: rgba(255, 0, 0, 0.08);
-            color: #ff4444;
-            background: rgba(255, 0, 0, 0.02);
-        }
-        .menu-btn.red:hover {
-            background: rgba(255, 0, 0, 0.08);
-            border-color: #ff4444;
-        }
-
-        /* ================================================================
-           LOGIN / SIGNUP OVERLAY (Gyidi Bazar)
-           ================================================================ */
-        #auth-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(40px);
-            z-index: 30000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        #auth-overlay.hidden {
-            display: none;
-        }
-        .auth-box {
-            background: var(--no-card);
-            backdrop-filter: blur(60px);
-            border-radius: var(--no-radius);
-            padding: 32px 28px;
-            max-width: 400px;
-            width: 100%;
-            border: 1px solid var(--no-border);
-            box-shadow: var(--no-shadow);
-            position: relative;
-            animation: popupIn 0.4s ease;
-        }
-        .auth-box::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: var(--no-radius);
-            padding: 1px;
-            background: conic-gradient(from 0deg, var(--no-cyan), var(--no-pink), var(--no-purple), var(--no-cyan));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            animation: borderSpin 8s linear infinite;
-        }
-        @keyframes borderSpin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-        @keyframes popupIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.92) translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-        .auth-box .gyidi-logo {
-            text-align: center;
-            margin-bottom: 16px;
-        }
-        .auth-box .gyidi-logo .big {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 38px;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--no-cyan), var(--no-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 3px;
-        }
-        .auth-box .gyidi-logo .small {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #fff, var(--no-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .auth-box .gyidi-logo .bazar {
-            font-size: 10px;
-            color: var(--no-muted);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            font-weight: 600;
-        }
-        .auth-box .input-group {
-            position: relative;
-            margin: 6px 0;
-        }
-        .auth-box input {
-            width: 100%;
-            padding: 14px 16px;
-            border-radius: var(--no-radius-sm);
-            border: 1.5px solid rgba(0, 240, 255, 0.10);
-            background: rgba(0, 240, 255, 0.04);
-            color: var(--no-text);
-            font-size: 15px;
-            transition: var(--no-transition);
-            font-family: inherit;
-        }
-        .auth-box input:focus {
-            border-color: var(--no-cyan);
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.10);
-            background: rgba(0, 240, 255, 0.06);
-        }
-        .auth-box .toggle-pw {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--no-muted);
-            cursor: pointer;
-            padding: 5px;
-        }
-        .auth-box .btn-main {
-            background: linear-gradient(135deg, var(--no-cyan), var(--no-purple));
-            color: #000;
-            border: none;
-            padding: 14px 20px;
-            border-radius: var(--no-radius-sm);
-            cursor: pointer;
-            width: 100%;
-            font-weight: 800;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: var(--no-transition);
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
-            margin-top: 8px;
-        }
-        .auth-box .btn-main:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 40px rgba(0, 240, 255, 0.25);
-        }
-        .auth-box .btn-signup {
-            background: transparent;
-            color: var(--no-muted);
-            border: 1.5px solid rgba(255, 255, 255, 0.04);
-            padding: 12px 18px;
-            border-radius: var(--no-radius-sm);
-            width: 100%;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: var(--no-transition);
-            margin-top: 8px;
-        }
-        .auth-box .btn-signup:hover {
-            background: rgba(0, 240, 255, 0.04);
-            border-color: var(--no-cyan);
-            color: #fff;
-        }
-        .auth-box .btn-help-center {
-            background: transparent;
-            color: var(--no-cyan);
-            border: 1.5px dashed rgba(0, 240, 255, 0.15);
-            padding: 12px 18px;
-            border-radius: var(--no-radius-sm);
-            width: 100%;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            transition: var(--no-transition);
-            margin-top: 6px;
-        }
-        .auth-box .btn-help-center:hover {
-            border: 1.5px solid var(--no-cyan);
-            transform: translateY(-2px);
-        }
-        #signup-box {
-            display: none;
-        }
-        #signup-box.active {
-            display: block;
-        }
-        #login-box {
-            display: block;
-        }
-        #login-box.hidden {
-            display: none;
-        }
-
-        /* ================================================================
-           HELP CENTER (Gyidi Bazar)
-           ================================================================ */
-        #help-container {
-            display: none;
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100vh;
-            background: rgba(8, 8, 20, 0.96);
-            backdrop-filter: blur(30px);
-            z-index: 30001;
-            padding: 20px;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-        #help-container.active {
-            display: flex !important;
-        }
-        .help-content {
-            max-width: 480px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            background: rgba(11, 11, 26, 0.95);
-            backdrop-filter: blur(40px);
-            border-radius: 28px;
-            border: 1px solid rgba(0, 240, 255, 0.08);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
-            padding: 35px 28px 28px;
-            position: relative;
-        }
-        .help-content::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 28px;
-            padding: 2px;
-            background: conic-gradient(from 0deg, var(--no-pink), var(--no-cyan), var(--no-purple), var(--no-pink));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            animation: borderSpin 8s linear infinite;
-        }
-        .help-header {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 22px;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--no-cyan), var(--no-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            letter-spacing: 2px;
-        }
-        .help-subtitle {
-            color: var(--no-muted);
-            font-size: 12px;
-            text-align: center;
-            margin-bottom: 16px;
-            letter-spacing: 1px;
-        }
-        .help-description {
-            background: rgba(0, 240, 255, 0.04);
-            padding: 14px 16px;
-            border-radius: var(--no-radius-sm);
-            border-left: 4px solid var(--no-cyan);
-            color: var(--no-muted);
-            font-size: 13px;
-            line-height: 1.8;
-            margin-bottom: 16px;
-        }
-        .help-close-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(0, 240, 255, 0.04);
-            border: 1.5px solid rgba(0, 240, 255, 0.08);
-            color: var(--no-muted);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 18px;
-            cursor: pointer;
-            transition: var(--no-transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-        }
-        .help-close-btn:hover {
-            background: rgba(0, 240, 255, 0.08);
-            border-color: var(--no-cyan);
-            color: var(--no-cyan);
-            transform: rotate(90deg);
-        }
-        .submit-label {
-            font-size: 12px;
-            color: var(--no-cyan);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        /* ================================================================
-           WITHDRAWAL OVERLAY
-           ================================================================ */
-        #withdraw-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.92);
-            backdrop-filter: blur(30px);
-            z-index: 30002;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        #withdraw-overlay.active {
-            display: flex !important;
-        }
-        .withdraw-card {
-            width: 420px;
-            max-width: 95%;
-            max-height: 92vh;
-            overflow-y: auto;
-            background: rgba(11, 11, 26, 0.95);
-            backdrop-filter: blur(50px);
-            border-radius: var(--no-radius);
-            padding: 35px 30px 30px;
-            border: 1px solid rgba(0, 240, 255, 0.08);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
-            position: relative;
-            text-align: center;
-        }
-        .withdraw-card::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: var(--no-radius);
-            padding: 2px;
-            background: conic-gradient(from 0deg, var(--no-cyan), var(--no-gold), var(--no-purple), var(--no-cyan));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            animation: borderSpin 8s linear infinite;
-        }
-        .withdraw-card h3 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 24px;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--no-gold), var(--no-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 2px;
-            margin: 0 0 5px 0;
-        }
-        .withdraw-card h4 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--no-gold);
-            letter-spacing: 1px;
-            margin: 16px 0 6px 0;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.08);
-            padding-bottom: 6px;
-        }
-        .btn-cancel {
-            background: rgba(255, 255, 255, 0.03) !important;
-            border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
-            color: var(--no-muted) !important;
-            padding: 14px 18px !important;
-            border-radius: var(--no-radius-sm) !important;
-            font-weight: 600 !important;
-            font-size: 13px !important;
-            cursor: pointer !important;
-            transition: var(--no-transition) !important;
-            width: 100% !important;
-            margin-top: 10px !important;
-        }
-        .btn-cancel:hover {
-            background: rgba(255, 255, 255, 0.06) !important;
-            border-color: var(--no-cyan) !important;
-            color: var(--no-cyan) !important;
-            transform: translateY(-2px);
-        }
-
-        /* ================================================================
-           RESULT POPUP (OmniScan)
-           ================================================================ */
+        /* Result Popup */
         #result-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.94);
-            backdrop-filter: blur(40px);
-            z-index: 20000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-            animation: overlayIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position:fixed; inset:0;
+            background:rgba(0,0,0,0.94);
+            backdrop-filter:blur(40px) saturate(1.4);
+            z-index:20000; display:none;
+            align-items:center; justify-content:center; padding:16px;
+            animation:overlayIn 0.4s ease;
         }
-        #result-overlay.active {
-            display: flex;
-        }
-        @keyframes overlayIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.94);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
+        #result-overlay.active { display:flex; }
+        @keyframes overlayIn { 0%{ opacity:0; transform:scale(0.94); } 100%{ opacity:1; transform:scale(1); } }
         .result-popup {
-            background: var(--no-card);
-            backdrop-filter: blur(60px);
-            border-radius: var(--no-radius);
-            padding: 28px 24px 22px;
-            max-width: 460px;
-            width: 100%;
-            max-height: 88vh;
-            overflow-y: auto;
-            border: 1px solid var(--no-border);
-            box-shadow: var(--no-shadow);
-            position: relative;
-            animation: popupIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background:var(--card);
+            backdrop-filter:blur(60px) saturate(1.8);
+            border-radius:var(--radius);
+            padding:28px 24px 22px;
+            max-width:460px; width:100%; max-height:88vh;
+            overflow-y:auto;
+            border:1px solid var(--border);
+            box-shadow:var(--shadow), 0 0 80px rgba(0,240,255,0.02);
+            position:relative;
+            animation:popupIn 0.45s ease;
         }
+        @keyframes popupIn { 0%{ opacity:0; transform:translateY(16px) scale(0.94); } 100%{ opacity:1; transform:translateY(0) scale(1); } }
         .result-popup::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: var(--no-radius);
-            padding: 1px;
-            background: conic-gradient(from 0deg, var(--no-cyan), var(--no-gold), var(--no-purple), var(--no-cyan));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            animation: borderSpin 8s linear infinite;
+            content:''; position:absolute; inset:-1px; border-radius:var(--radius);
+            padding:1px; background:conic-gradient(from 0deg, var(--cyan), var(--gold), var(--purple), var(--cyan));
+            -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite:xor; mask-composite:exclude;
+            pointer-events:none; animation:borderSpin 8s linear infinite;
         }
+        @keyframes borderSpin { 0%{ transform:rotate(0deg); } 100%{ transform:rotate(360deg); } }
         .result-popup .close-popup {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            color: var(--no-muted);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            font-size: 14px;
-            cursor: pointer;
-            transition: var(--no-transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-            font-family: inherit;
-            flex-shrink: 0;
+            position:absolute; top:10px; right:10px;
+            background:rgba(255,255,255,0.02);
+            border:1px solid rgba(255,255,255,0.04);
+            color:var(--muted); width:32px; height:32px;
+            border-radius:50%; font-size:14px; cursor:pointer;
+            transition:var(--transition);
+            display:flex; align-items:center; justify-content:center;
+            z-index:10; font-family:inherit; flex-shrink:0;
         }
         .result-popup .close-popup:hover {
-            background: rgba(0, 240, 255, 0.04);
-            border-color: var(--no-cyan);
-            color: var(--no-cyan);
-            transform: rotate(90deg);
+            background:rgba(0,240,255,0.04);
+            border-color:var(--cyan);
+            color:var(--cyan);
+            transform:rotate(90deg);
         }
-        .result-popup .icon-row {
-            text-align: center;
-            font-size: 36px;
-            margin-bottom: 2px;
-            display: block;
-        }
+        .result-popup .icon-row { text-align:center; font-size:36px; margin-bottom:2px; display:block; }
         .result-popup .title-row {
-            text-align: center;
-            font-size: 16px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--no-cyan), var(--no-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 0.5px;
-            margin-bottom: 2px;
+            text-align:center; font-size:16px; font-weight:800;
+            background:linear-gradient(135deg, var(--cyan), var(--purple));
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            letter-spacing:0.5px; margin-bottom:2px;
         }
         .result-popup .sub-row {
-            text-align: center;
-            font-size: 10px;
-            color: var(--no-muted);
-            margin-bottom: 12px;
-            letter-spacing: 0.3px;
+            text-align:center; font-size:10px; color:var(--muted);
+            margin-bottom:12px; letter-spacing:0.3px;
         }
         .result-popup .format-badge {
-            display: inline-block;
-            padding: 2px 12px;
-            border-radius: 50px;
-            font-size: 8px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            background: rgba(0, 240, 255, 0.04);
-            color: var(--no-cyan);
-            border: 1px solid rgba(0, 240, 255, 0.06);
-            margin-bottom: 12px;
-            text-align: center;
-            width: 100%;
+            display:inline-block; padding:2px 12px; border-radius:50px;
+            font-size:8px; font-weight:700; text-transform:uppercase;
+            letter-spacing:0.8px; background:rgba(0,240,255,0.04);
+            color:var(--cyan); border:1px solid rgba(0,240,255,0.06);
+            margin-bottom:12px; text-align:center; width:100%;
         }
         .result-popup .data-body {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: var(--no-radius-sm);
-            padding: 14px 16px;
-            border: 1px solid rgba(255, 255, 255, 0.02);
-            max-height: 180px;
-            overflow-y: auto;
-            font-size: 12px;
-            line-height: 1.7;
-            color: var(--no-text);
-            word-break: break-all;
+            background:rgba(0,0,0,0.4); border-radius:var(--radius-sm);
+            padding:14px 16px; border:1px solid rgba(255,255,255,0.02);
+            max-height:250px; overflow-y:auto;
+            font-size:12px; line-height:1.7; color:var(--text);
+            word-break:break-all;
         }
         .result-popup .data-body .label {
-            color: var(--no-muted);
-            font-size: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            display: block;
-            margin-top: 5px;
+            color:var(--muted); font-size:8px;
+            text-transform:uppercase; letter-spacing:0.6px;
+            display:block; margin-top:5px;
         }
-        .result-popup .data-body .label:first-child {
-            margin-top: 0;
-        }
-        .result-popup .data-body .value {
-            font-weight: 500;
-            color: #f0f0f8;
-        }
-        .result-popup .data-body .value.cyan {
-            color: var(--no-cyan);
-        }
-        .result-popup .data-body .value.gold {
-            color: var(--no-gold);
-        }
-        .result-popup .data-body .value.green {
-            color: var(--no-green);
+        .result-popup .data-body .label:first-child { margin-top:0; }
+        .result-popup .data-body .value { font-weight:500; color:#f0f0f8; }
+        .result-popup .data-body .value.cyan { color:var(--cyan); }
+        .result-popup .data-body .value.gold { color:var(--gold); }
+        .result-popup .data-body .value.green { color:var(--green); }
+        .result-popup .data-body .raw-data {
+            background:#0a0a0a; padding:8px; border-radius:8px;
+            font-size:11px; word-break:break-all; max-height:120px;
+            overflow-y:auto; color:#aaa; font-family:monospace;
+            margin-top:8px; border:1px solid rgba(255,255,255,0.02);
         }
         .result-popup .action-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 14px;
+            display:flex; flex-wrap:wrap; gap:6px; margin-top:14px;
         }
         .result-popup .action-grid .act {
-            flex: 1;
-            min-width: 70px;
-            padding: 8px 14px;
-            border-radius: var(--no-radius-sm);
-            border: none;
-            font-weight: 700;
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            transition: var(--no-transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            font-family: inherit;
+            flex:1; min-width:70px; padding:8px 14px;
+            border-radius:var(--radius-sm); border:none;
+            font-weight:700; font-size:9px; text-transform:uppercase;
+            letter-spacing:0.5px; cursor:pointer;
+            transition:var(--transition);
+            display:inline-flex; align-items:center; justify-content:center;
+            gap:5px; font-family:inherit;
         }
         .result-popup .action-grid .act-primary {
-            background: linear-gradient(135deg, var(--no-cyan), var(--no-purple));
-            color: #000;
+            background:linear-gradient(135deg, var(--cyan), var(--purple));
+            color:#000;
         }
         .result-popup .action-grid .act-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 240, 255, 0.2);
+            transform:translateY(-2px);
+            box-shadow:0 8px 30px rgba(0,240,255,0.2);
         }
         .result-popup .action-grid .act-secondary {
-            background: var(--no-glass);
-            color: var(--no-muted);
-            border: 1px solid var(--no-border);
+            background:var(--glass); color:var(--muted);
+            border:1px solid var(--border);
         }
         .result-popup .action-grid .act-secondary:hover {
-            background: rgba(255, 255, 255, 0.04);
-            color: #fff;
-            border-color: rgba(255, 255, 255, 0.08);
+            background:rgba(255,255,255,0.04); color:#fff;
+            border-color:rgba(255,255,255,0.08);
         }
 
-        /* ================================================================
-           PLATFORM MENU
-           ================================================================ */
-        .platform-menu {
-            margin-top: 16px;
-            padding: 16px 14px 14px;
-            background: var(--no-card);
-            backdrop-filter: blur(30px) saturate(1.4);
-            border-radius: var(--no-radius);
-            border: 1px solid var(--no-border);
-            box-shadow: var(--no-shadow);
-        }
-        .platform-menu .menu-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-        .platform-menu .menu-header .label {
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--no-muted);
-        }
-        .platform-menu .menu-header .label i {
-            margin-right: 6px;
-            color: var(--no-cyan);
-        }
-        .platform-menu .menu-header .badge {
-            font-size: 7px;
-            color: var(--no-cyan);
-            background: rgba(0, 240, 255, 0.04);
-            padding: 2px 10px;
-            border-radius: 50px;
-            border: 1px solid rgba(0, 240, 255, 0.04);
-            letter-spacing: 0.5px;
-        }
-        .platform-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-        .platform-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 14px 8px 12px;
-            border-radius: var(--no-radius-sm);
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            text-decoration: none;
-            color: var(--no-text);
-            transition: var(--no-transition);
-            cursor: pointer;
-            text-align: center;
-            min-height: 80px;
-            position: relative;
-            overflow: hidden;
-        }
-        .platform-card:hover {
-            background: rgba(0, 240, 255, 0.04);
-            border-color: rgba(0, 240, 255, 0.12);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-        }
-        .platform-card .p-icon {
-            font-size: 22px;
-            margin-bottom: 3px;
-            display: block;
-        }
-        .platform-card .p-name {
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            line-height: 1.2;
-            color: #f0f0f8;
-        }
-        .platform-card .p-desc {
-            font-size: 7px;
-            color: var(--no-muted);
-            margin-top: 2px;
-            letter-spacing: 0.3px;
-        }
-        .platform-card .p-arrow {
-            font-size: 8px;
-            color: var(--no-cyan);
-            margin-top: 4px;
-            opacity: 0;
-            transition: var(--no-transition);
-        }
-        .platform-card:hover .p-arrow {
-            opacity: 1;
-        }
-        .platform-card .p-badge {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            font-size: 6px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--no-cyan);
-            background: rgba(0, 240, 255, 0.04);
-            padding: 1px 8px;
-            border-radius: 50px;
-            border: 1px solid rgba(0, 240, 255, 0.04);
-            letter-spacing: 0.5px;
-        }
-        .platform-card.featured {
-            border-color: rgba(0, 240, 255, 0.08);
-            background: rgba(0, 240, 255, 0.02);
-        }
-        .platform-card.featured .p-badge {
-            color: var(--no-gold);
-            border-color: rgba(255, 215, 0, 0.08);
-            background: rgba(255, 215, 0, 0.04);
-        }
-
-        /* ================================================================
-           TOAST
-           ================================================================ */
+        /* Toast */
         #toast {
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--no-card);
-            backdrop-filter: blur(40px);
-            padding: 10px 20px;
-            border-radius: var(--no-radius-sm);
-            border: 1px solid var(--no-border);
-            box-shadow: var(--no-shadow);
-            z-index: 99999;
-            display: none;
-            font-size: 12px;
-            color: var(--no-text);
-            max-width: 92%;
-            text-align: center;
-            animation: toastIn 0.4s ease;
+            position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+            background:var(--card); backdrop-filter:blur(40px);
+            padding:10px 20px; border-radius:var(--radius-sm);
+            border:1px solid var(--border); box-shadow:var(--shadow);
+            z-index:9999; display:none;
+            font-size:11px; color:var(--text);
+            max-width:92%; text-align:center;
+            animation:toastIn 0.4s ease;
         }
-        #toast.show {
-            display: block;
-        }
-        #toast.success {
-            border-color: var(--no-green);
-        }
-        #toast.error {
-            border-color: var(--no-red);
-        }
-        #toast.info {
-            border-color: var(--no-cyan);
-        }
-        @keyframes toastIn {
-            0% {
-                opacity: 0;
-                transform: translateX(-50%) translateY(14px) scale(0.94);
-            }
-            100% {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0) scale(1);
-            }
-        }
+        #toast.show { display:block; }
+        @keyframes toastIn { 0%{ opacity:0; transform:translateX(-50%) translateY(14px) scale(0.94); } 100%{ opacity:1; transform:translateX(-50%) translateY(0) scale(1); } }
 
-        /* ================================================================
-           WHEEL
-           ================================================================ */
-        .wheel-container {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            margin: 20px auto;
-            padding: 5px;
-            background: #1a1a1a;
-            border-radius: 50%;
-            border: 4px solid #222;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
-        }
-        .wheel-container::before {
-            content: '';
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-top: 26px solid #FFD700;
-            z-index: 10;
-            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
-        }
-        #taskWheel {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
-        }
+        /* No extra banners or menus */
 
-        /* ================================================================
-           UPDATE BANNER (One Time)
-           ================================================================ */
-        #update-banner {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.96);
-            backdrop-filter: blur(40px);
-            z-index: 999999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            animation: updateFadeIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        @media (max-width:480px) {
+            .app-container { padding:10px; }
+            .result-popup { padding:20px 16px 18px; max-width:100%; }
+            .control-matrix .btn-matrix { padding:6px 10px; font-size:8px; }
         }
-        @keyframes updateFadeIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.92);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        .update-content {
-            max-width: 420px;
-            width: 100%;
-            background: rgba(11, 11, 26, 0.96);
-            backdrop-filter: blur(60px);
-            border-radius: 30px;
-            padding: 36px 30px 28px;
-            border: 1px solid rgba(0, 240, 255, 0.06);
-            box-shadow: 0 40px 120px rgba(0, 0, 0, 0.9);
-            position: relative;
-            text-align: center;
-        }
-        .update-content::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 30px;
-            padding: 2px;
-            background: conic-gradient(from 0deg, #00f0ff, #ff2d95, #b400ff, #ffd700, #00f0ff);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            animation: borderSpin 5s linear infinite;
-        }
-        .update-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 28px;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--no-cyan), var(--no-pink));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 3px;
-            margin: 0;
-        }
-        .update-sub {
-            font-size: 12px;
-            color: var(--no-muted);
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-        .update-features {
-            background: rgba(0, 240, 255, 0.02);
-            border-radius: 14px;
-            padding: 10px 12px;
-            border: 1px solid rgba(0, 240, 255, 0.04);
-            margin: 10px 0;
-            text-align: left;
-        }
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 5px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-            font-size: 12px;
-            color: var(--no-muted);
-        }
-        .feature-item:last-child {
-            border-bottom: none;
-        }
-        .feature-icon {
-            color: var(--no-gold);
-            font-size: 12px;
-            min-width: 18px;
-        }
-        .update-btn {
-            background: linear-gradient(135deg, var(--no-cyan), var(--no-purple));
-            color: #000;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 16px;
-            font-weight: 800;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: var(--no-transition);
-            width: 100%;
-            box-shadow: 0 0 40px rgba(0, 240, 255, 0.12);
-            margin-top: 6px;
-        }
-        .update-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 50px rgba(0, 240, 255, 0.2);
-        }
-        .update-footer {
-            margin-top: 14px;
-            font-size: 10px;
-            color: var(--no-muted);
-            letter-spacing: 2px;
-            opacity: 0.4;
-        }
-
-        /* ================================================================
-           RESPONSIVE
-           ================================================================ */
-        @media (max-width: 480px) {
-            .app-container {
-                padding: 10px;
-            }
-            #hamburger-menu {
-                width: 300px;
-                left: -320px;
-            }
-            .result-popup {
-                padding: 20px 16px 18px;
-            }
-            .control-matrix .btn-matrix {
-                padding: 6px 10px;
-                font-size: 8px;
-            }
-            .platform-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 6px;
-            }
-            .auth-box {
-                padding: 24px 18px;
-            }
-            .auth-box .gyidi-logo .big {
-                font-size: 30px;
-            }
-            .withdraw-card {
-                padding: 28px 20px;
-            }
-        }
-        @media (min-width: 768px) {
-            #scanner-container {
-                max-width: 520px;
-            }
-            .platform-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            #hamburger-menu {
-                width: 380px;
-                left: -400px;
-            }
+        @media (min-width:768px) {
+            #scanner-container { aspect-ratio:1/1; max-width:520px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== UPDATE BANNER (One Time) ===== -->
-    <div id="update-banner">
-        <div class="update-content">
-            <div class="update-title">✨ VERSION 3.0</div>
-            <div class="update-sub">OmniScan + Gyidi Engine</div>
-            <div style="height:2px;background:linear-gradient(90deg,transparent,var(--no-cyan),transparent);margin:8px 0;"></div>
-            <div class="update-features">
-                <div class="feature-item"><span class="feature-icon">📡</span> <span>Fully Offline — No internet required</span></div>
-                <div class="feature-item"><span class="feature-icon">🛡️</span> <span>QR Scanner + Gyidi Ecosystem</span></div>
-                <div class="feature-item"><span class="feature-icon">💾</span> <span>All data saved locally (localStorage)</span></div>
-                <div class="feature-item"><span class="feature-icon">🎯</span> <span>Login, Coins, Tasks, Referrals, Withdrawals</span></div>
-            </div>
-            <button class="update-btn" id="update-now-btn">⚡ CONTINUE TO APP</button>
-            <p class="update-footer">NightOrbit OmniScan • v3.0</p>
-        </div>
-    </div>
-
     <!-- ===== TOAST ===== -->
     <div id="toast"></div>
 
-    <!-- ===== HAMBURGER ICON ===== -->
-    <div id="hamburger-icon" onclick="toggleMenu()">
-        <i class="fa-solid fa-bars"></i>
-    </div>
-    <div id="hamburger-overlay" onclick="toggleMenu()"></div>
-
-    <!-- ===== HAMBURGER MENU ===== -->
-    <div id="hamburger-menu">
-        <button class="menu-close-btn" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
-        <div class="menu-profile-section">
-            <div class="menu-user-name" id="menu-user-name">Guest</div>
-            <div class="menu-user-email" id="menu-user-email">Not logged in</div>
-            <div class="menu-coin-display">
-                🪙 COINS: <span id="menu-user-coins">0</span>
-            </div>
-            <div style="margin-top:6px;">
-                <button class="menu-btn" id="menu-login-btn" onclick="closeMenuAndShowAuth()">
-                    <i class="fa-solid fa-right-to-bracket"></i> Login / Register
-                </button>
-            </div>
-        </div>
-
-        <button class="menu-btn gold" onclick="toggleMenu(); openWithdrawModal();">
-            <i class="fa-solid fa-money-bill-wave"></i> Withdraw Funds
-        </button>
-        <button class="menu-btn" onclick="toggleMenu(); showReferrals();">
-            <i class="fa-solid fa-users"></i> My Referrals
-        </button>
-        <button class="menu-btn" onclick="toggleMenu(); openHelp();">
-            <i class="fa-solid fa-headset"></i> Help Center
-        </button>
-        <button class="menu-btn red" onclick="toggleMenu(); logoutUser();">
-            <i class="fa-solid fa-sign-out-alt"></i> Logout
-        </button>
-    </div>
-
-    <!-- ===== AUTH OVERLAY (Login / Signup) ===== -->
-    <div id="auth-overlay" class="hidden">
-        <div class="auth-box">
-            <div id="login-box">
-                <div class="gyidi-logo">
-                    <span class="big">G</span><span class="small">yidi</span>
-                    <div class="bazar">Bazar &amp; Scanner</div>
-                </div>
-                <div class="input-group">
-                    <input type="email" id="u-email" placeholder="Email Address" />
-                </div>
-                <div class="input-group">
-                    <input type="password" id="u-pass" placeholder="Password" />
-                    <span class="toggle-pw" onclick="togglePass('u-pass', this)"><i class="fa-regular fa-eye"></i></span>
-                </div>
-                <button class="btn-main" id="login-btn">LOGIN</button>
-                <button class="btn-signup" id="goto-signup">CREATE NEW ACCOUNT</button>
-                <button class="btn-help-center" onclick="closeAuth(); openHelp();">HELP CENTER</button>
-            </div>
-            <div id="signup-box">
-                <div class="gyidi-logo">
-                    <span class="big" style="font-size:30px;">G</span><span class="small" style="font-size:16px;">yidi</span>
-                    <div class="bazar" style="font-size:9px;">Register</div>
-                </div>
-                <div class="input-group"><input type="text" id="reg-nick" placeholder="Username (min 3)" /></div>
-                <div class="input-group"><input type="email" id="reg-email" placeholder="Email Address" /></div>
-                <div class="input-group">
-                    <input type="password" id="reg-pass" placeholder="Password (min 6)" />
-                    <span class="toggle-pw" onclick="togglePass('reg-pass', this)"><i class="fa-regular fa-eye"></i></span>
-                </div>
-                <div class="input-group">
-                    <input type="password" id="reg-pass-confirm" placeholder="Confirm Password" />
-                    <span class="toggle-pw" onclick="togglePass('reg-pass-confirm', this)"><i class="fa-regular fa-eye"></i></span>
-                </div>
-                <button class="btn-main" id="signup-btn">CREATE ACCOUNT</button>
-                <button class="btn-signup" id="goto-login">ALREADY HAVE ACCOUNT?</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== HELP CENTER ===== -->
-    <div id="help-container">
-        <div class="help-content">
-            <button class="help-close-btn" onclick="closeHelp()"><i class="fa-solid fa-xmark"></i></button>
-            <div class="help-header">📞 Help Center</div>
-            <div class="help-subtitle">We're here to assist you</div>
-            <div class="help-description">
-                <i class="fa-regular fa-circle-question" style="color:var(--no-cyan);margin-right:8px;"></i>
-                <strong>Need assistance? We're here to help with:</strong><br>
-                🔹 Forgot password or login issues<br>
-                🔹 Account freeze or ban clarification<br>
-                🔹 Withdrawal delays or payment problems<br>
-                🔹 Referral or coin bonus not credited<br>
-                🔹 Any other technical support<br>
-                <span style="color:var(--no-cyan);margin-top:6px;display:block;">📌 Submit your request below.</span>
-            </div>
-            <span class="submit-label"><i class="fa-regular fa-pen-to-square"></i> Submit New Request</span>
-            <div class="input-group"><input type="email" id="h-email" placeholder="Your Email" /></div>
-            <div class="input-group"><textarea id="h-msg" placeholder="Describe your issue..." rows="3" style="width:100%;padding:14px;border-radius:var(--no-radius-sm);border:1.5px solid rgba(0,240,255,0.10);background:rgba(0,240,255,0.04);color:var(--no-text);font-size:14px;font-family:inherit;resize:vertical;"></textarea></div>
-            <button class="btn-main" id="help-submit"><i class="fa-regular fa-paper-plane"></i> SEND TO OWNER</button>
-            <button class="btn-signup" id="help-check-status" style="margin-top:6px;"><i class="fa-solid fa-clock-rotate-left"></i> YOUR REQUEST</button>
-            <button class="btn-signup" id="help-back" style="margin-top:6px;" onclick="closeHelp()"><i class="fa-regular fa-arrow-left"></i> BACK</button>
-        </div>
-    </div>
-
-    <!-- ===== WITHDRAWAL MODAL ===== -->
-    <div id="withdraw-overlay">
-        <div class="withdraw-card">
-            <h3>💳 WITHDRAW</h3>
-            <p style="font-size:12px;color:#888;">10 Coins = 1 PKR</p>
-            <div id="pk-balance-display" style="font-size:22px;font-weight:bold;color:var(--no-cyan);margin:10px 0;">Rs. 0</div>
-            <h4>ENTER AMOUNT</h4>
-            <p style="font-size:12px;color:#888;">Minimum: 1000 coins</p>
-            <input type="number" id="withdraw-amount" placeholder="Enter coins" min="1000" style="width:100%;padding:14px;border-radius:var(--no-radius-sm);border:1.5px solid rgba(0,240,255,0.10);background:rgba(0,240,255,0.04);color:var(--no-text);font-size:18px;text-align:center;" />
-            <button class="btn-main" id="withdraw-submit-btn" style="margin-top:6px;">SUBMIT WITHDRAWAL</button>
-            <button class="btn-cancel" id="withdraw-close">CANCEL</button>
-        </div>
-    </div>
-
-    <!-- ===== RESULT OVERLAY (OmniScan) ===== -->
+    <!-- ===== RESULT OVERLAY ===== -->
     <div id="result-overlay">
         <div class="result-popup">
             <button class="close-popup" onclick="closeResultPopup()"><i class="fa-solid fa-xmark"></i></button>
             <span class="icon-row" id="res-icon">📱</span>
             <div class="title-row" id="res-title">Scan Result</div>
             <div class="sub-row" id="res-sub">Decoded payload</div>
-            <div style="text-align:center;margin-bottom:10px;">
+            <div style="text-align:center; margin-bottom:10px;">
                 <span class="format-badge" id="res-format">QR Code</span>
             </div>
             <div class="data-body" id="res-body"></div>
@@ -1648,9 +368,7 @@
         </div>
     </div>
 
-    <!-- ================================================================
-    MAIN APP CONTAINER
-    ================================================================ -->
+    <!-- ================================================================ MAIN APP ================================================================ -->
     <div class="app-container">
 
         <!-- ===== STATUS BAR ===== -->
@@ -1659,7 +377,7 @@
                 <div class="icon"><i class="fa-solid fa-qrcode"></i></div>
                 <div>
                     <span class="name">NightOrbit</span>
-                    <span class="sub">OmniScan · Gyidi</span>
+                    <span class="sub">OmniScan · Forensic</span>
                 </div>
             </div>
             <div class="status-badge idle" id="status-badge">
@@ -1668,7 +386,7 @@
             </div>
         </div>
 
-        <!-- ===== SCANNER VIEWFINDER ===== -->
+        <!-- ===== SCANNER ===== -->
         <div id="scanner-container">
             <div id="qr-reader"></div>
             <div class="scan-overlay">
@@ -1685,7 +403,7 @@
             </div>
         </div>
 
-        <!-- ===== CONTROL MATRIX ===== -->
+        <!-- ===== CONTROLS ===== -->
         <div class="control-matrix">
             <button class="btn-matrix active" id="btn-camera" onclick="toggleCamera()">
                 <span class="icon"><i class="fa-solid fa-camera"></i></span> Camera
@@ -1700,82 +418,24 @@
             <button class="btn-matrix" id="btn-torch" onclick="toggleTorch()">
                 <span class="icon"><i class="fa-solid fa-lightbulb"></i></span> Torch
             </button>
-            <button class="btn-matrix btn-download" onclick="downloadApp()">
-                <span class="icon"><i class="fa-solid fa-download"></i></span> Download
+            <!-- ===== INSTALL BUTTON (no download) ===== -->
+            <button class="btn-matrix btn-install" id="install-btn" onclick="installApp()">
+                <span class="icon"><i class="fa-solid fa-mobile-screen-button"></i></span> Install
             </button>
-            <button class="btn-matrix" id="install-btn" style="display:none;" onclick="installApp()">
-                <span class="icon"><i class="fa-solid fa-mobile-screen"></i></span> Install
-            </button>
-        </div>
-
-        <!-- ================================================================
-        PLATFORM MENU (OmniScan Ecosystem)
-        ================================================================ -->
-        <div class="platform-menu">
-            <div class="menu-header">
-                <span class="label"><i class="fa-solid fa-th-large"></i> NightOrbit Ecosystem</span>
-                <span class="badge"><i class="fa-solid fa-bolt"></i> 6+ Platforms</span>
-            </div>
-            <div class="platform-grid">
-                <a href="https://mymarketbaazar.web.app/" target="_blank" class="platform-card featured" data-platform="hub">
-                    <span class="p-badge">★ featured</span>
-                    <span class="p-icon">🏪</span>
-                    <span class="p-name">Gyidi Bazar Hub</span>
-                    <span class="p-desc">Earn · Shop · Entertainment</span>
-                    <span class="p-arrow"><i class="fa-solid fa-arrow-right"></i> Start Earning</span>
-                </a>
-                <a href="https://nightorbitaffiliatemarketing.web.app/" target="_blank" class="platform-card" data-platform="affiliate">
-                    <span class="p-badge">affiliate</span>
-                    <span class="p-icon">🤝</span>
-                    <span class="p-name">Gyidi Bazar Affiliate</span>
-                    <span class="p-desc">Refer · Earn · Grow</span>
-                    <span class="p-arrow"><i class="fa-solid fa-arrow-right"></i> Join Now</span>
-                </a>
-                <a href="https://nightorbitlogomaker.web.app/" target="_blank" class="platform-card" data-platform="logo">
-                    <span class="p-badge">free</span>
-                    <span class="p-icon">🎨</span>
-                    <span class="p-name">NightOrbit Logo Maker</span>
-                    <span class="p-desc">Create stunning logos</span>
-                    <span class="p-arrow"><i class="fa-solid fa-arrow-right"></i> Make Free</span>
-                </a>
-                <a href="https://nightorbitbirthdaycard.web.app/" target="_blank" class="platform-card" data-platform="birthday">
-                    <span class="p-badge">free</span>
-                    <span class="p-icon">🎂</span>
-                    <span class="p-name">Birthday Card Maker</span>
-                    <span class="p-desc">Design custom cards</span>
-                    <span class="p-arrow"><i class="fa-solid fa-arrow-right"></i> Design Free</span>
-                </a>
-                <a href="https://nightorbit.store/" target="_blank" class="platform-card" data-platform="store">
-                    <span class="p-badge">store</span>
-                    <span class="p-icon">🛒</span>
-                    <span class="p-name">NightOrbit Store</span>
-                    <span class="p-desc">Shop exclusive merch</span>
-                    <span class="p-arrow"><i class="fa-solid fa-arrow-right"></i> Visit Store</span>
-                </a>
-                <a href="https://nightorbiteducation.com/" target="_blank" class="platform-card" data-platform="edu">
-                    <span class="p-badge">learn</span>
-                    <span class="p-icon">📚</span>
-                    <span class="p-name">NightOrbit Education</span>
-                    <span class="p-desc">Learn &amp; grow skills</span>
-                    <span class="p-arrow"><i class="fa-solid fa-arrow-right"></i> Start Learning</span>
-                </a>
-            </div>
         </div>
 
         <!-- ===== FOOTER ===== -->
-        <div style="text-align:center;padding:10px 0 2px;font-size:7px;color:var(--no-muted);letter-spacing:2px;text-transform:uppercase;opacity:0.25;border-top:1px solid rgba(255,255,255,0.015);margin-top:14px;">
-            <i class="fa-solid fa-shield-halved" style="margin-right:6px;color:var(--no-cyan);"></i>
-            NightOrbit OmniScan · Forensic + Gyidi · v3.0
+        <div style="text-align:center; padding:10px 0 2px; font-size:7px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; opacity:0.25; border-top:1px solid rgba(255,255,255,0.015); margin-top:14px;">
+            <i class="fa-solid fa-shield-halved" style="margin-right:6px; color:var(--cyan);"></i>
+            NightOrbit OmniScan · Forensic Grade · v3.0 · PWA
         </div>
 
     </div>
 
-    <!-- ================================================================
-    JAVASCRIPT — COMPLETE ENGINE (OmniScan + Gyidi Offline)
-    ================================================================ -->
+    <!-- ================================================================ JAVASCRIPT ================================================================ -->
     <script>
         // ============================================================
-        //  🔒 ANTI-TAMPER SHIELD (from OmniScan)
+        //  ANTI-TAMPER SHIELD — FULL HEAVY
         // ============================================================
         (function() {
             'use strict';
@@ -1808,36 +468,26 @@
                 if (e.metaKey && e.altKey && (e.key === 'i' || e.key === 'j' || e.key === 'c' || e.keyCode === 73 || e
                         .keyCode === 74 || e.keyCode === 67)) { e.preventDefault();
                     e.stopPropagation(); return false; }
-                if (e.ctrlKey && e.shiftKey && (e.key === 'p' || e.key === 'P' || e.keyCode === 80)) { e.preventDefault();
-                    e.stopPropagation(); return false; }
-                if (e.ctrlKey && e.shiftKey && (e.key === 'e' || e.key === 'E' || e.keyCode === 69)) { e.preventDefault();
-                    e.stopPropagation(); return false; }
-                if (e.ctrlKey && e.shiftKey && (e.key === 'k' || e.key === 'K' || e.keyCode === 75)) { e.preventDefault();
-                    e.stopPropagation(); return false; }
                 return true;
             }
             document.addEventListener('keydown', blockKey, true);
             window.addEventListener('keydown', blockKey, true);
 
             var noop = function() {};
-            var consoleMethods = ['log', 'warn', 'error', 'info', 'debug', 'trace', 'group', 'groupEnd', 'table', 'clear',
-                'dir', 'dirxml', 'profile', 'profileEnd', 'time', 'timeEnd', 'timeStamp', 'memory', 'assert', 'count',
+            var cm = ['log', 'warn', 'error', 'info', 'debug', 'trace', 'group', 'groupEnd', 'table', 'clear', 'dir',
+                'dirxml', 'profile', 'profileEnd', 'time', 'timeEnd', 'timeStamp', 'memory', 'assert', 'count',
                 'countReset'
             ];
-            for (var i = 0; i < consoleMethods.length; i++) {
-                try { window.console[consoleMethods[i]] = noop; } catch (e) {}
-            }
+            for (var i = 0; i < cm.length; i++) { try { window.console[cm[i]] = noop; } catch (e) {} }
             window.console.clear = noop;
             try { delete window.eval;
                 window.eval = function() { return null; };
                 Object.defineProperty(window, 'eval', { value: function() { return null; }, writable: false,
                     configurable: false }); } catch (e) {}
-            var origSetTimeout = window.setTimeout;
-            window.setTimeout = function(fn, delay) { if (typeof fn === 'string') return; return origSetTimeout(fn,
-                delay); };
-            var origSetInterval = window.setInterval;
-            window.setInterval = function(fn, delay) { if (typeof fn === 'string') return; return origSetInterval(fn,
-                delay); };
+            var ost = window.setTimeout;
+            window.setTimeout = function(fn, d) { if (typeof fn === 'string') return; return ost(fn, d); };
+            var osi = window.setInterval;
+            window.setInterval = function(fn, d) { if (typeof fn === 'string') return; return osi(fn, d); };
             document.addEventListener('dragstart', function(e) { e.preventDefault(); return false; });
             document.addEventListener('selectstart', function(e) {
                 var tag = e.target.tagName.toLowerCase();
@@ -1871,11 +521,21 @@
             }, 500);
             try { document.write = function() { return; };
                 window.print = function() { return; }; } catch (e) {}
-            console.log('✅ All protections active');
+            console.log('✅ Heavy Anti-Tamper Active');
         })();
 
         // ============================================================
-        //  2. TOAST SYSTEM
+        //  HTTPS REDIRECT (SILENT)
+        // ============================================================
+        (function() {
+            if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
+                window.location.replace('https://' + window.location.host + window.location.pathname + window.location
+                    .search);
+            }
+        })();
+
+        // ============================================================
+        //  TOAST
         // ============================================================
         const toastEl = document.getElementById('toast');
         let toastTimer = null;
@@ -1889,821 +549,442 @@
         }
 
         // ============================================================
-        //  3. UPDATE BANNER (ONE TIME)
+        //  OMNISCAN QR ENGINE — FULL HEAVY
         // ============================================================
         (function() {
-            if (!localStorage.getItem('omniscan_gyidi_v3_seen')) {
-                document.getElementById('update-banner').style.display = 'flex';
-                document.getElementById('update-now-btn').addEventListener('click', function() {
-                    localStorage.setItem('omniscan_gyidi_v3_seen', 'true');
-                    document.getElementById('update-banner').style.display = 'none';
-                    showToast('✅ Welcome to OmniScan + Gyidi v3!', 'success');
-                });
-            } else {
-                document.getElementById('update-banner').style.display = 'none';
-            }
-        })();
+            'use strict';
 
-        // ============================================================
-        //  4. LOCAL STORAGE DB (Gyidi Engine)
-        // ============================================================
-        const DB = {
-            get(key, def) { try { const raw = localStorage.getItem('gydb_' + key); return raw ? JSON.parse(raw) :
-                        def; } catch (e) { return def; } },
-            set(key, val) { try { localStorage.setItem('gydb_' + key, JSON.stringify(val)); } catch (e) {} },
-            getAllUsers() { return this.get('users', {}); },
-            getUser(uid) { const users = this.getAllUsers(); return users[uid] || null; },
-            saveUser(uid, data) { const users = this.getAllUsers();
-                users[uid] = { ...users[uid], ...data };
-                this.set('users', users); },
-            deleteUser(uid) { const users = this.getAllUsers(); delete users[uid];
-                this.set('users', users); },
-            getCoins(uid) { const user = this.getUser(uid); return user ? user.coins || 0 : 0; },
-            setCoins(uid, amount) { const user = this.getUser(uid); if (user) { user.coins = Math.max(0, amount);
-                    this.saveUser(uid, user); } },
-            addCoins(uid, amount) { const current = this.getCoins(uid);
-                this.setCoins(uid, current + amount); },
-            getReferrals(uid) { return this.get('refs_' + uid, {}); },
-            addReferral(uid, refEmail, refName) {
-                const refs = this.getReferrals(uid);
-                const id = Date.now() + '_' + Math.random().toString(36).substring(2, 6);
-                refs[id] = { email: refEmail, name: refName, time: new Date().toLocaleString(), timestamp: Date
-                        .now() };
-                this.set('refs_' + uid, refs);
-            },
-            getReferralCount(uid) { const refs = this.getReferrals(uid); return Object.keys(refs).length; },
-            getHelpRequests() { return this.get('help_requests', {}); },
-            addHelpRequest(email, msg) {
-                const reqs = this.getHelpRequests();
-                const id = Date.now() + '_' + Math.random().toString(36).substring(2, 8);
-                reqs[id] = { email, message: msg, status: 'pending', reply: 'Waiting for owner reply...',
-                    time: new Date().toLocaleString(), timestamp: Date.now() };
-                this.set('help_requests', reqs);
-                return id;
-            },
-            getWithdrawals(uid) { return this.get('withdrawals_' + uid, {}); },
-            addWithdrawal(uid, coins) {
-                const w = this.getWithdrawals(uid);
-                const id = Date.now() + '_' + Math.random().toString(36).substring(2, 6);
-                w[id] = { coins, status: 'pending', time: new Date().toLocaleString(), timestamp: Date.now() };
-                this.set('withdrawals_' + uid, w);
-            },
-            getDailyClaim(uid) { return this.get('daily_' + uid, { lastClaim: 0, streak: 0, lastDate: '' }); },
-            setDailyClaim(uid) {
-                const data = this.getDailyClaim(uid);
-                const now = Date.now();
-                const today = new Date().toDateString();
-                const lastDate = data.lastDate || '';
-                if (lastDate === today) return false;
-                if (new Date(data.lastClaim).toDateString() === new Date(now - 86400000).toDateString()) {
-                    data.streak = (data.streak || 0) + 1;
+            let html5QrCode = null;
+            let isScanning = false;
+            let cameraActive = false;
+            let torchOn = false;
+            let scanLog = [];
+            let isProcessingResult = false;
+            let scannerInitialized = false;
+
+            const statusBadge = document.getElementById('status-badge');
+            const statusText = document.getElementById('status-text');
+            const scannerDot = document.getElementById('scanner-dot');
+            const scannerStatusText = document.getElementById('scanner-status-text');
+            const formatHint = document.getElementById('format-hint');
+            const btnCamera = document.getElementById('btn-camera');
+            const btnTorch = document.getElementById('btn-torch');
+
+            const resultOverlay = document.getElementById('result-overlay');
+            const resIcon = document.getElementById('res-icon');
+            const resTitle = document.getElementById('res-title');
+            const resSub = document.getElementById('res-sub');
+            const resFormat = document.getElementById('res-format');
+            const resBody = document.getElementById('res-body');
+            const resActions = document.getElementById('res-actions');
+
+            function setStatus(state, msg) {
+                statusBadge.className = 'status-badge ' + state;
+                if (msg) statusText.textContent = msg;
+                if (state === 'scanning') {
+                    scannerDot.className = 'dot active';
+                    scannerStatusText.textContent = msg || 'Scanning...';
+                } else if (state === 'success') {
+                    scannerDot.className = 'dot';
+                    scannerDot.style.background = '#39ff14';
+                    scannerDot.style.boxShadow = '0 0 16px rgba(57,255,20,0.3)';
+                    scannerStatusText.textContent = msg || 'Detected';
+                } else if (state === 'error') {
+                    scannerDot.className = 'dot';
+                    scannerDot.style.background = '#ff073a';
+                    scannerDot.style.boxShadow = '0 0 16px rgba(255,7,58,0.3)';
+                    scannerStatusText.textContent = msg || 'Error';
                 } else {
-                    data.streak = 1;
-                }
-                data.lastClaim = now;
-                data.lastDate = today;
-                this.set('daily_' + uid, data);
-                return true;
-            },
-            getSpins(uid) {
-                const data = this.get('spins_' + uid, { spins: 5, lastReset: '' });
-                const today = new Date().toDateString();
-                if (data.lastReset !== today) { data.spins = 5;
-                    data.lastReset = today;
-                    this.set('spins_' + uid, data); }
-                return data.spins;
-            },
-            useSpin(uid) {
-                let spins = this.getSpins(uid);
-                if (spins <= 0) return false;
-                spins--;
-                const data = this.get('spins_' + uid, { spins: 5, lastReset: new Date().toDateString() });
-                data.spins = spins;
-                this.set('spins_' + uid, data);
-                return true;
-            }
-        };
-
-        // ============================================================
-        //  5. AUTH SYSTEM (localStorage)
-        // ============================================================
-        let currentUser = null;
-        let currentUserCoins = 0;
-
-        function getCurrentUser() {
-            const uid = localStorage.getItem('gydb_session');
-            if (!uid) return null;
-            const user = DB.getUser(uid);
-            if (user) { currentUser = { uid, ...user }; return currentUser; }
-            return null;
-        }
-
-        function setSession(uid) {
-            localStorage.setItem('gydb_session', uid);
-            currentUser = DB.getUser(uid);
-            if (currentUser) currentUser.uid = uid;
-            updateMenuUI();
-        }
-
-        function clearSession() {
-            localStorage.removeItem('gydb_session');
-            currentUser = null;
-            updateMenuUI();
-        }
-
-        function updateMenuUI() {
-            const user = getCurrentUser();
-            if (user) {
-                document.getElementById('menu-user-name').textContent = user.ownerNick || user.email;
-                document.getElementById('menu-user-email').textContent = user.email;
-                document.getElementById('menu-user-coins').textContent = DB.getCoins(user.uid);
-                document.getElementById('menu-login-btn').innerHTML =
-                    '<i class="fa-solid fa-user"></i> ' + (user.ownerNick || user.email);
-                document.getElementById('menu-login-btn').onclick = function() { toggleMenu();
-                    showToast('👋 Logged in as ' + (user.ownerNick || user.email), 'success'); };
-                document.getElementById('hamburger-icon').style.display = 'block';
-                document.getElementById('auth-overlay').classList.add('hidden');
-            } else {
-                document.getElementById('menu-user-name').textContent = 'Guest';
-                document.getElementById('menu-user-email').textContent = 'Not logged in';
-                document.getElementById('menu-user-coins').textContent = '0';
-                document.getElementById('menu-login-btn').innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Login / Register';
-                document.getElementById('menu-login-btn').onclick = function() { closeMenuAndShowAuth(); };
-                document.getElementById('hamburger-icon').style.display = 'block';
-            }
-            // Update coin display in scanner status? No, separate.
-        }
-
-        function closeMenuAndShowAuth() {
-            toggleMenu();
-            document.getElementById('auth-overlay').classList.remove('hidden');
-            document.getElementById('login-box').style.display = 'block';
-            document.getElementById('signup-box').style.display = 'none';
-        }
-
-        function closeAuth() {
-            document.getElementById('auth-overlay').classList.add('hidden');
-        }
-
-        function togglePass(id, el) {
-            const inp = document.getElementById(id);
-            inp.type = inp.type === 'password' ? 'text' : 'password';
-            el.classList.toggle('fa-eye-slash');
-        }
-
-        // ---- Login ----
-        document.getElementById('login-btn').addEventListener('click', function() {
-            const email = document.getElementById('u-email').value.trim();
-            const pass = document.getElementById('u-pass').value.trim();
-            if (!email || !pass) { showToast('❌ Fill all fields', 'error'); return; }
-            const users = DB.getAllUsers();
-            let found = null;
-            for (let uid in users) {
-                if (users[uid].email === email && users[uid].password === pass) { found = uid; break; }
-            }
-            if (!found) { showToast('❌ Invalid email or password', 'error'); return; }
-            setSession(found);
-            showToast('✅ Welcome back!', 'success');
-            closeAuth();
-            document.getElementById('u-pass').value = '';
-        });
-
-        // ---- Signup ----
-        document.getElementById('signup-btn').addEventListener('click', function() {
-            const nick = document.getElementById('reg-nick').value.trim();
-            const email = document.getElementById('reg-email').value.trim();
-            const pass = document.getElementById('reg-pass').value;
-            const confirm = document.getElementById('reg-pass-confirm').value;
-            if (nick.length < 3) { showToast('❌ Username min 3 characters', 'error'); return; }
-            if (!email || !email.includes('@')) { showToast('❌ Valid email required', 'error'); return; }
-            if (pass.length < 6) { showToast('❌ Password min 6 characters', 'error'); return; }
-            if (pass !== confirm) { showToast('❌ Passwords do not match', 'error'); return; }
-            const users = DB.getAllUsers();
-            for (let uid in users) {
-                if (users[uid].email === email) { showToast('❌ Email already registered', 'error'); return; }
-            }
-            const uid = 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
-            DB.saveUser(uid, {
-                ownerNick: nick,
-                email: email,
-                password: pass,
-                coins: 10,
-                time: new Date().toLocaleString(),
-                registeredAt: Date.now()
-            });
-            setSession(uid);
-            showToast('✅ Account created! 10 bonus coins.', 'success');
-            closeAuth();
-            document.getElementById('reg-nick').value = '';
-            document.getElementById('reg-email').value = '';
-            document.getElementById('reg-pass').value = '';
-            document.getElementById('reg-pass-confirm').value = '';
-        });
-
-        // ---- Toggle Auth forms ----
-        document.getElementById('goto-signup').addEventListener('click', function() {
-            document.getElementById('login-box').style.display = 'none';
-            document.getElementById('signup-box').classList.add('active');
-        });
-        document.getElementById('goto-login').addEventListener('click', function() {
-            document.getElementById('login-box').style.display = 'block';
-            document.getElementById('signup-box').classList.remove('active');
-        });
-
-        // ---- Logout ----
-        function logoutUser() {
-            if (confirm('Logout?')) { clearSession();
-                showToast('👋 Logged out', 'info');
-                closeAuth(); }
-        }
-
-        // ============================================================
-        //  6. HAMBURGER MENU
-        // ============================================================
-        let menuOpen = false;
-
-        function toggleMenu() {
-            menuOpen = !menuOpen;
-            document.getElementById('hamburger-menu').classList.toggle('open', menuOpen);
-            document.getElementById('hamburger-overlay').classList.toggle('active', menuOpen);
-        }
-
-        // ============================================================
-        //  7. HELP CENTER
-        // ============================================================
-        function openHelp() {
-            toggleMenu();
-            document.getElementById('help-container').classList.add('active');
-            document.getElementById('help-container').style.display = 'flex';
-        }
-
-        function closeHelp() {
-            document.getElementById('help-container').classList.remove('active');
-            document.getElementById('help-container').style.display = 'none';
-        }
-
-        document.getElementById('help-submit').addEventListener('click', function() {
-            const email = document.getElementById('h-email').value.trim();
-            const msg = document.getElementById('h-msg').value.trim();
-            if (!email || !msg) { showToast('❌ Fill email and message', 'error'); return; }
-            DB.addHelpRequest(email, msg);
-            showToast('✅ Request sent! Owner will reply soon.', 'success');
-            document.getElementById('h-msg').value = '';
-            localStorage.setItem('gydb_help_email', email);
-        });
-
-        document.getElementById('help-check-status').addEventListener('click', function() {
-            const email = document.getElementById('h-email').value.trim() || localStorage.getItem('gydb_help_email');
-            if (!email) { showToast('❌ Please enter your email', 'error'); return; }
-            const reqs = DB.getHelpRequests();
-            let found = false;
-            let html = '<div style="margin-top:10px;max-height:200px;overflow-y:auto;">';
-            for (let id in reqs) {
-                if (reqs[id].email === email) {
-                    found = true;
-                    const r = reqs[id];
-                    const statusColor = r.status === 'responded' ? '#39ff14' : '#ff8800';
-                    html += `<div style="background:rgba(0,240,255,0.03);border-radius:10px;padding:10px;margin-bottom:8px;border-left:3px solid ${statusColor};">
-                            <div style="font-size:11px;color:#888;">${r.time}</div>
-                            <div style="font-size:12px;color:#ccc;"><b>You:</b> ${r.message}</div>
-                            <div style="font-size:12px;color:${statusColor};margin-top:4px;"><b>${r.status === 'responded' ? '✅ Reply:' : '⏳ Pending:'}</b> ${r.reply}</div>
-                        </div>`;
+                    scannerDot.className = 'dot';
+                    scannerDot.style.background = '';
+                    scannerDot.style.boxShadow = '';
+                    scannerStatusText.textContent = msg || 'Ready';
                 }
             }
-            html += '</div>';
-            if (!found) { showToast('❌ No requests found', 'error'); return; }
-            const overlay = document.createElement('div');
-            overlay.style.cssText =
-                'position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(20px);';
-            overlay.innerHTML =
-                `
-                    <div style="background:rgba(11,11,26,0.95);border-radius:28px;padding:28px 24px;max-width:440px;width:100%;border:1px solid rgba(0,240,255,0.08);max-height:80vh;overflow-y:auto;">
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-                            <h3 style="color:var(--no-cyan);font-family:Orbitron,sans-serif;font-size:18px;">📬 Your Requests</h3>
-                            <button onclick="this.parentElement.parentElement.parentElement.remove()" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--no-muted);width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;">✕</button>
-                        </div>
-                        ${html}
-                        <p style="text-align:center;font-size:10px;color:#444;margin-top:10px;">Owner replies within 24 hours</p>
-                    </div>
-                `;
-            document.body.appendChild(overlay);
-        });
 
-        document.getElementById('help-back').addEventListener('click', closeHelp);
-
-        // ============================================================
-        //  8. REFERRALS
-        // ============================================================
-        function showReferrals() {
-            const user = getCurrentUser();
-            if (!user) { showToast('❌ Please login first', 'error'); return; }
-            const refs = DB.getReferrals(user.uid);
-            const count = Object.keys(refs).length;
-            let msg = '👥 Your Referrals: ' + count + '\n\n';
-            if (count === 0) { msg += 'No referrals yet. Share your link!'; } else {
-                let i = 0;
-                for (let id in refs) { i++;
-                    msg += i + '. ' + refs[id].name + ' (' + refs[id].email + ') - ' + refs[id].time + '\n'; }
-            }
-            msg += '\n📋 Your Referral Link: gyidi://ref/' + user.uid;
-            alert(msg);
-            // Copy link
-            navigator.clipboard.writeText('gyidi://ref/' + user.uid).then(() => {
-                showToast('✅ Referral link copied!', 'success');
-            }).catch(() => {
-                showToast('📋 Link: gyidi://ref/' + user.uid, 'info');
-            });
-        }
-
-        // ============================================================
-        //  9. WITHDRAWAL
-        // ============================================================
-        function openWithdrawModal() {
-            const user = getCurrentUser();
-            if (!user) { showToast('❌ Please login first', 'error'); return; }
-            const coins = DB.getCoins(user.uid);
-            const pkr = (coins / 10).toFixed(2);
-            document.getElementById('pk-balance-display').textContent = 'Rs. ' + pkr;
-            document.getElementById('withdraw-overlay').classList.add('active');
-        }
-
-        document.getElementById('withdraw-close').addEventListener('click', function() {
-            document.getElementById('withdraw-overlay').classList.remove('active');
-        });
-
-        document.getElementById('withdraw-submit-btn').addEventListener('click', function() {
-            const user = getCurrentUser();
-            if (!user) { showToast('❌ Please login', 'error'); return; }
-            const amount = parseInt(document.getElementById('withdraw-amount').value);
-            if (!amount || amount < 1000) { showToast('❌ Minimum 1000 coins', 'error'); return; }
-            const coins = DB.getCoins(user.uid);
-            if (amount > coins) { showToast('❌ Insufficient coins', 'error'); return; }
-            DB.addWithdrawal(user.uid, amount);
-            DB.setCoins(user.uid, coins - amount);
-            showToast('✅ Withdrawal request submitted!', 'success');
-            document.getElementById('withdraw-overlay').classList.remove('active');
-            document.getElementById('withdraw-amount').value = '';
-            updateMenuUI();
-        });
-
-        // ============================================================
-        //  10. DAILY REWARD + WHEEL (Simple UI in menu)
-        // ============================================================
-        // Since we want to keep menu clean, we add a quick action in the menu for daily reward and wheel.
-        // We'll just add it as menu buttons dynamically or keep it simple via alerts.
-        // Adding two buttons in menu via JS.
-        (function addTaskButtons() {
-            const menu = document.getElementById('hamburger-menu');
-            const rewardBtn = document.createElement('button');
-            rewardBtn.className = 'menu-btn';
-            rewardBtn.innerHTML = '<i class="fa-solid fa-calendar-check"></i> Daily Reward (10 coins)';
-            rewardBtn.onclick = function() {
-                const user = getCurrentUser();
-                if (!user) { showToast('❌ Please login', 'error'); return; }
-                const claimed = DB.setDailyClaim(user.uid);
-                if (!claimed) { showToast('⏳ Already claimed today!', 'info'); return; }
-                DB.addCoins(user.uid, 10);
-                showToast('✅ +10 coins! Streak: ' + DB.getDailyClaim(user.uid).streak, 'success');
-                updateMenuUI();
-            };
-            menu.appendChild(rewardBtn);
-
-            const spinBtn = document.createElement('button');
-            spinBtn.className = 'menu-btn gold';
-            spinBtn.innerHTML = '<i class="fa-solid fa-dharmachakra"></i> Spin Wheel (5/day)';
-            spinBtn.onclick = function() {
-                const user = getCurrentUser();
-                if (!user) { showToast('❌ Please login', 'error'); return; }
-                if (!DB.useSpin(user.uid)) { showToast('❌ No spins left today!', 'error'); return; }
-                const prizes = [10, 20, 50, 5, 100, 15];
-                const win = prizes[Math.floor(Math.random() * prizes.length)];
-                DB.addCoins(user.uid, win);
-                showToast('🎡 You won ' + win + ' coins!', 'success');
-                updateMenuUI();
-            };
-            menu.appendChild(spinBtn);
-        })();
-
-        // ============================================================
-        //  11. OMNISCAN QR ENGINE (Original)
-        // ============================================================
-        // (Full OmniScan JS from the original file - slightly trimmed to fit)
-        // I will paste the core scanner logic here.
-        // Note: The original OmniScan JS is ~400 lines. I'll include it fully.
-        // Since the user asked for "full code", I'll embed it here.
-        // (For brevity in this response, I'll include the essential parts, but in the actual
-        //  output I'll give the full JS. Here I'll give the skeleton and key functions.)
-
-        let html5QrCode = null;
-        let isScanning = false;
-        let cameraActive = false;
-        let torchOn = false;
-        let scanLog = [];
-        let isProcessingResult = false;
-        let scannerInitialized = false;
-
-        const statusBadge = document.getElementById('status-badge');
-        const statusText = document.getElementById('status-text');
-        const scannerDot = document.getElementById('scanner-dot');
-        const scannerStatusText = document.getElementById('scanner-status-text');
-        const formatHint = document.getElementById('format-hint');
-        const btnCamera = document.getElementById('btn-camera');
-        const btnTorch = document.getElementById('btn-torch');
-
-        const resultOverlay = document.getElementById('result-overlay');
-        const resIcon = document.getElementById('res-icon');
-        const resTitle = document.getElementById('res-title');
-        const resSub = document.getElementById('res-sub');
-        const resFormat = document.getElementById('res-format');
-        const resBody = document.getElementById('res-body');
-        const resActions = document.getElementById('res-actions');
-
-        function setStatus(state, msg) {
-            statusBadge.className = 'status-badge ' + state;
-            if (msg) statusText.textContent = msg;
-            if (state === 'scanning') {
-                scannerDot.className = 'dot active';
-                scannerStatusText.textContent = msg || 'Scanning...';
-            } else if (state === 'success') {
-                scannerDot.className = 'dot';
-                scannerDot.style.background = '#39ff14';
-                scannerDot.style.boxShadow = '0 0 16px rgba(57,255,20,0.3)';
-                scannerStatusText.textContent = msg || 'Detected';
-            } else if (state === 'error') {
-                scannerDot.className = 'dot';
-                scannerDot.style.background = '#ff073a';
-                scannerDot.style.boxShadow = '0 0 16px rgba(255,7,58,0.3)';
-                scannerStatusText.textContent = msg || 'Error';
-            } else {
-                scannerDot.className = 'dot';
-                scannerDot.style.background = '';
-                scannerDot.style.boxShadow = '';
-                scannerStatusText.textContent = msg || 'Ready';
-            }
-        }
-
-        function initScanner() {
-            if (html5QrCode) { try { html5QrCode.clear(); } catch (e) {} html5QrCode = null;
-                scannerInitialized = false; }
-            try {
-                html5QrCode = new Html5Qrcode('qr-reader');
-                scannerInitialized = true;
-                startCamera();
-            } catch (e) {
-                showToast('❌ Scanner init error: ' + e.message, 4000);
-                setStatus('error', 'Init failed');
-            }
-        }
-
-        function startCamera() {
-            if (!html5QrCode) { initScanner(); return; }
-            if (cameraActive) return;
-            if (!scannerInitialized) { initScanner(); return; }
-            var config = {
-                fps: 30,
-                qrbox: { width: 240, height: 240 },
-                aspectRatio: 1.0,
-                disableFlip: false,
-                formatsToSupport: [
-                    Html5QrcodeSupportedFormats.QR_CODE,
-                    Html5QrcodeSupportedFormats.AZTEC,
-                    Html5QrcodeSupportedFormats.DATA_MATRIX,
-                    Html5QrcodeSupportedFormats.PDF417,
-                    Html5QrcodeSupportedFormats.MAXICODE,
-                    Html5QrcodeSupportedFormats.EAN_13,
-                    Html5QrcodeSupportedFormats.EAN_8,
-                    Html5QrcodeSupportedFormats.UPC_A,
-                    Html5QrcodeSupportedFormats.UPC_E,
-                    Html5QrcodeSupportedFormats.CODE_39,
-                    Html5QrcodeSupportedFormats.CODE_93,
-                    Html5QrcodeSupportedFormats.CODE_128,
-                    Html5QrcodeSupportedFormats.CODABAR,
-                    Html5QrcodeSupportedFormats.ITF,
-                    Html5QrcodeSupportedFormats.RSS_14,
-                    Html5QrcodeSupportedFormats.RSS_EXPANDED
-                ]
-            };
-            html5QrCode.start({ facingMode: 'environment' }, config, onScanSuccess, onScanError)
-                .then(function() {
-                    cameraActive = true;
-                    isScanning = true;
-                    setStatus('scanning', 'Scanning...');
-                    btnCamera.classList.add('active');
-                    btnCamera.innerHTML = '<span class="icon"><i class="fa-solid fa-camera"></i></span> Camera';
-                    formatHint.textContent = 'QR · AZTEC · DM · PDF417 · EAN · UPC · CODE39 · CODE128 · ITF · RSS';
-                    showToast('📷 Multi-format scanner live', 1600);
-                }).catch(function(err) {
-                    showToast('❌ Camera error: ' + err.message, 4000);
-                    setStatus('error', 'Camera unavailable');
-                    cameraActive = false;
-                    isScanning = false;
-                    btnCamera.classList.remove('active');
-                });
-        }
-
-        function stopCamera() {
-            if (html5QrCode && cameraActive) {
-                html5QrCode.stop().then(function() {
-                    cameraActive = false;
-                    isScanning = false;
-                    setStatus('idle', 'Camera stopped');
-                    btnCamera.classList.remove('active');
-                    btnCamera.innerHTML = '<span class="icon"><i class="fa-solid fa-camera"></i></span> Camera';
-                    showToast('📷 Camera stopped', 1200);
-                }).catch(function() {});
-            }
-        }
-
-        window.toggleCamera = function() {
-            if (cameraActive) { stopCamera(); } else { startCamera(); }
-        };
-
-        window.toggleTorch = function() {
-            if (!html5QrCode || !cameraActive) { showToast('⚠️ Start camera first', 1500); return; }
-            torchOn = !torchOn;
-            try {
-                html5QrCode.applyVideoConstraints({ advanced: [{ torch: torchOn }] });
-                btnTorch.classList.toggle('active', torchOn);
-                btnTorch.innerHTML = '<span class="icon"><i class="fa-solid fa-lightbulb"></i></span> ' + (torchOn ?
-                    'On' : 'Torch');
-                showToast(torchOn ? '🔦 Torch on' : '🔦 Torch off', 1000);
-            } catch (e) {
-                showToast('⚠️ Torch not supported', 1500);
-                torchOn = false;
-                btnTorch.classList.remove('active');
-            }
-        };
-
-        window.resetScanner = function() {
-            stopCamera();
-            setTimeout(function() {
+            function initScanner() {
                 if (html5QrCode) { try { html5QrCode.clear(); } catch (e) {} html5QrCode = null;
                     scannerInitialized = false; }
-                document.getElementById('qr-reader').innerHTML = '';
-                closeResultPopup();
-                setTimeout(function() { initScanner();
-                    showToast('🔄 Scanner reset', 1200); }, 400);
-            }, 400);
-        };
+                try {
+                    html5QrCode = new Html5Qrcode('qr-reader');
+                    scannerInitialized = true;
+                    startCamera();
+                } catch (e) {
+                    showToast('❌ Scanner init error: ' + e.message, 4000);
+                    setStatus('error', 'Init failed');
+                }
+            }
 
-        window.handleFileUpload = function(event) {
-            var file = event.target.files[0];
-            if (!file) return;
-            var wasScanning = isScanning;
-            if (wasScanning) stopCamera();
-            showToast('📤 Processing image...', 2000);
-            setStatus('scanning', 'Processing file...');
-            var tempReader = new Html5Qrcode('qr-reader');
-            tempReader.scanFile(file, true)
-                .then(function(decodedText) {
-                    setStatus('success', 'File scanned!');
-                    try { navigator.vibrate && navigator.vibrate(30); } catch (e) {}
-                    forensicParse(decodedText, 'file');
-                    tempReader.clear();
-                    if (wasScanning) {
-                        setTimeout(function() {
-                            if (html5QrCode) { try { html5QrCode.clear(); } catch (e) {} html5QrCode =
-                                    null;
-                                scannerInitialized = false; }
-                            document.getElementById('qr-reader').innerHTML = '';
-                            setTimeout(function() { initScanner();
-                                showToast('🔄 Scanner restarted', 1000); }, 300);
-                        }, 500);
-                    }
-                })
-                .catch(function(err) {
-                    showToast('❌ QR read failed: ' + err.message, 3500);
-                    setStatus('error', 'File scan failed');
-                    tempReader.clear();
-                    if (wasScanning) {
-                        setTimeout(function() {
-                            if (html5QrCode) { try { html5QrCode.clear(); } catch (e) {} html5QrCode =
-                                    null;
-                                scannerInitialized = false; }
-                            document.getElementById('qr-reader').innerHTML = '';
-                            setTimeout(function() { initScanner(); }, 300);
-                        }, 400);
-                    }
-                });
-            event.target.value = '';
-        };
+            function startCamera() {
+                if (!html5QrCode) { initScanner(); return; }
+                if (cameraActive) return;
+                if (!scannerInitialized) { initScanner(); return; }
 
-        function onScanSuccess(decodedText) {
-            if (!isScanning || isProcessingResult) return;
-            isProcessingResult = true;
-            try { navigator.vibrate && navigator.vibrate(30); } catch (e) {}
-            setStatus('success', 'QR detected!');
-            if (html5QrCode && cameraActive) { try { html5QrCode.pause(true); } catch (e) {} }
-            forensicParse(decodedText, 'camera');
-        }
+                var config = {
+                    fps: 30,
+                    qrbox: { width: 240, height: 240 },
+                    aspectRatio: 1.0,
+                    disableFlip: false,
+                    formatsToSupport: [
+                        Html5QrcodeSupportedFormats.QR_CODE,
+                        Html5QrcodeSupportedFormats.AZTEC,
+                        Html5QrcodeSupportedFormats.DATA_MATRIX,
+                        Html5QrcodeSupportedFormats.PDF417,
+                        Html5QrcodeSupportedFormats.MAXICODE,
+                        Html5QrcodeSupportedFormats.EAN_13,
+                        Html5QrcodeSupportedFormats.EAN_8,
+                        Html5QrcodeSupportedFormats.UPC_A,
+                        Html5QrcodeSupportedFormats.UPC_E,
+                        Html5QrcodeSupportedFormats.CODE_39,
+                        Html5QrcodeSupportedFormats.CODE_93,
+                        Html5QrcodeSupportedFormats.CODE_128,
+                        Html5QrcodeSupportedFormats.CODABAR,
+                        Html5QrcodeSupportedFormats.ITF,
+                        Html5QrcodeSupportedFormats.RSS_14,
+                        Html5QrcodeSupportedFormats.RSS_EXPANDED
+                    ]
+                };
 
-        function onScanError() {}
-
-        window.closeResultPopup = function() {
-            resultOverlay.classList.remove('active');
-            isProcessingResult = false;
-            setTimeout(function() {
-                if (html5QrCode && cameraActive) {
-                    try { html5QrCode.resume();
+                html5QrCode.start({ facingMode: 'environment' }, config, onScanSuccess, onScanError)
+                    .then(function() {
+                        cameraActive = true;
                         isScanning = true;
-                        setStatus('scanning', 'Scanning...'); } catch (e) {
-                        try { html5QrCode.clear(); } catch (ex) {}
-                        html5QrCode = null;
-                        scannerInitialized = false;
-                        document.getElementById('qr-reader').innerHTML = '';
-                        setTimeout(function() { initScanner(); }, 400);
-                    }
-                } else if (!cameraActive) { startCamera(); }
-            }, 300);
-        };
-
-        // Forensic Parser (condensed)
-        function forensicParse(raw, source) {
-            var trimmed = raw.trim();
-            var logEntry = { raw: trimmed, source: source || 'unknown', timestamp: Date.now(), type: 'unknown',
-                format: 'Unknown', parsed: null };
-            var detectedFormat = 'Unknown';
-            if (/^WIFI:/i.test(trimmed)) detectedFormat = 'Wi-Fi Profile';
-            else if (/BEGIN:VCARD/i.test(trimmed)) detectedFormat = 'vCard / Contact';
-            else if (/^https?:\/\/[^\s]+/.test(trimmed)) detectedFormat = 'Hyperlink / URL';
-            else if (/^[0-9]{13}$/.test(trimmed)) detectedFormat = 'EAN-13';
-            else if (/^[A-Za-z0-9\+\/=]{20,}$/.test(trimmed)) detectedFormat = 'Base64 / Hash';
-            logEntry.format = detectedFormat;
-
-            // Wi-Fi
-            if (/^WIFI:/i.test(trimmed)) {
-                var ssidMatch = trimmed.match(/S:([^;]*)/i);
-                var passMatch = trimmed.match(/P:([^;]*)/i);
-                var ssid = ssidMatch ? ssidMatch[1] : 'Unknown';
-                var pass = passMatch ? passMatch[1] : '';
-                renderResult('📶', 'Wi-Fi Network', 'SSID: ' + ssid, detectedFormat,
-                    '<span class="label">SSID</span><span class="value cyan">' + ssid + '</span>' +
-                    '<span class="label" style="margin-top:6px;">Password</span><span class="value gold">' + pass +
-                    '</span>',
-                    [{ label: 'Copy Password', primary: true, action: function() { copyText(pass); } },
-                        { label: 'Copy SSID', primary: false, action: function() { copyText(ssid); } }
-                    ]);
-                return;
-            }
-
-            // URL
-            if (/^https?:\/\/[^\s]+/.test(trimmed)) {
-                var isSecure = /^https:\/\//i.test(trimmed);
-                renderResult('🔗', 'Enterprise URL', 'Secure hyperlink', detectedFormat,
-                    '<span class="label">URL</span><span class="value" style="word-break:break-all;color:var(--no-cyan);">' +
-                    trimmed + '</span>' +
-                    (isSecure ?
-                        '<span class="label" style="margin-top:6px;">Protocol</span><span class="value green">✅ HTTPS Secure</span>' :
-                        '<span class="label" style="margin-top:6px;">Protocol</span><span class="value" style="color:var(--no-gold);">⚠️ HTTP (non-secure)</span>'
-                        ),
-                    [{ label: 'Open Link', primary: true, action: function() { window.open(trimmed, '_blank'); } },
-                        { label: 'Copy URL', primary: false, action: function() { copyText(trimmed); } }
-                    ]);
-                return;
-            }
-
-            // Raw
-            renderResult('📄', 'Raw Data', 'Direct text extraction', detectedFormat,
-                '<span class="label">Extracted Text</span><span class="value" style="word-break:break-all;">' +
-                trimmed + '</span>',
-                [{ label: 'Copy Text', primary: true, action: function() { copyText(trimmed); } },
-                    { label: 'Search', primary: false, action: function() { window.open(
-                                'https://www.google.com/search?q=' + encodeURIComponent(trimmed), '_blank'); } }
-                ]);
-        }
-
-        function renderResult(icon, title, sub, format, bodyHTML, actions) {
-            resIcon.textContent = icon || '📱';
-            resTitle.textContent = title || 'Scan Result';
-            resSub.textContent = sub || 'Decoded payload';
-            resFormat.textContent = format || 'Unknown';
-            resBody.innerHTML = bodyHTML || '<span style="color:var(--no-muted);">No data</span>';
-            resActions.innerHTML = '';
-            if (actions && actions.length) {
-                actions.forEach(function(a) {
-                    var btn = document.createElement('button');
-                    btn.className = 'act ' + (a.primary ? 'act-primary' : 'act-secondary');
-                    btn.textContent = a.label;
-                    btn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        if (typeof a.action === 'function') a.action();
-                        closeResultPopup();
+                        setStatus('scanning', 'Scanning...');
+                        btnCamera.classList.add('active');
+                        btnCamera.innerHTML = '<span class="icon"><i class="fa-solid fa-camera"></i></span> Camera';
+                        formatHint.textContent = 'QR · AZTEC · DM · PDF417 · EAN · UPC · CODE39 · CODE128 · ITF · RSS';
+                        showToast('📷 Multi-format scanner live', 1600);
+                    }).catch(function(err) {
+                        showToast('❌ Camera error: ' + err.message, 4000);
+                        setStatus('error', 'Camera unavailable');
+                        cameraActive = false;
+                        isScanning = false;
+                        btnCamera.classList.remove('active');
                     });
-                    resActions.appendChild(btn);
-                });
             }
-            resultOverlay.classList.add('active');
-        }
 
-        function copyText(text) {
-            if (!text) { showToast('⚠️ Nothing to copy', 1500); return; }
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(function() { showToast('✅ Copied!', 1500); }).catch(function() {
-                    fallbackCopy(text); });
-            } else { fallbackCopy(text); }
-        }
-
-        function fallbackCopy(text) {
-            var ta = document.createElement('textarea');
-            ta.value = text;
-            ta.style.position = 'fixed';
-            ta.style.left = '-9999px';
-            ta.style.top = '-9999px';
-            document.body.appendChild(ta);
-            ta.select();
-            try { document.execCommand('copy');
-                showToast('✅ Copied!', 1500); } catch (e) { showToast('⚠️ Copy failed.', 2000); }
-            document.body.removeChild(ta);
-        }
-
-        // ============================================================
-        //  12. DOWNLOAD APP
-        // ============================================================
-        window.downloadApp = function() {
-            try {
-                var doctype = '<!DOCTYPE html>\n';
-                var html = doctype + document.documentElement.outerHTML;
-                var blob = new Blob([html], { type: 'text/html; charset=utf-8' });
-                var url = URL.createObjectURL(blob);
-                var link = document.createElement('a');
-                link.href = url;
-                link.download = 'NightOrbit_OmniScan_Gyidi.html';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                setTimeout(function() { URL.revokeObjectURL(url); }, 150);
-                showToast('✅ App downloaded!', 2000);
-            } catch (e) { showToast('❌ Download failed: ' + e.message, 3000); }
-        };
-
-        // ============================================================
-        //  13. PWA INSTALL
-        // ============================================================
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('install-btn').style.display = 'inline-flex';
-        });
-        window.addEventListener('appinstalled', () => {
-            document.getElementById('install-btn').style.display = 'none';
-            showToast('✅ App installed!', 2000);
-        });
-
-        function installApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') { showToast('✅ App installed!', 2000); } else { showToast(
-                            '❌ Cancelled', 1500); }
-                    deferredPrompt = null;
-                    document.getElementById('install-btn').style.display = 'none';
-                });
-            } else {
-                showToast('📱 Use browser menu → "Add to Home screen"', 2500);
+            function stopCamera() {
+                if (html5QrCode && cameraActive) {
+                    html5QrCode.stop().then(function() {
+                        cameraActive = false;
+                        isScanning = false;
+                        setStatus('idle', 'Camera stopped');
+                        btnCamera.classList.remove('active');
+                        btnCamera.innerHTML = '<span class="icon"><i class="fa-solid fa-camera"></i></span> Camera';
+                        showToast('📷 Camera stopped', 1200);
+                    }).catch(function() {});
+                }
             }
-        }
 
-        // ============================================================
-        //  14. INIT
-        // ============================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check session
-            const user = getCurrentUser();
-            if (user) { updateMenuUI(); } else { updateMenuUI(); }
-            // OmniScan init
-            setStatus('idle', 'Ready');
-            setTimeout(function() { initScanner(); }, 600);
-            document.addEventListener('visibilitychange', function() {
-                if (document.visibilityState === 'visible' && !cameraActive && isScanning) { startCamera(); }
+            window.toggleCamera = function() {
+                if (cameraActive) { stopCamera(); } else { startCamera(); }
+            };
+
+            window.toggleTorch = function() {
+                if (!html5QrCode || !cameraActive) { showToast('⚠️ Start camera first', 1500); return; }
+                torchOn = !torchOn;
+                try {
+                    html5QrCode.applyVideoConstraints({ advanced: [{ torch: torchOn }] });
+                    btnTorch.classList.toggle('active', torchOn);
+                    btnTorch.innerHTML = '<span class="icon"><i class="fa-solid fa-lightbulb"></i></span> ' + (torchOn ?
+                        'On' : 'Torch');
+                    showToast(torchOn ? '🔦 Torch on' : '🔦 Torch off', 1000);
+                } catch (e) {
+                    showToast('⚠️ Torch not supported', 1500);
+                    torchOn = false;
+                    btnTorch.classList.remove('active');
+                }
+            };
+
+            window.resetScanner = function() {
+                stopCamera();
+                setTimeout(function() {
+                    if (html5QrCode) { try { html5QrCode.clear(); } catch (e) {} html5QrCode = null;
+                        scannerInitialized = false; }
+                    document.getElementById('qr-reader').innerHTML = '';
+                    closeResultPopup();
+                    setTimeout(function() { initScanner();
+                        showToast('🔄 Scanner reset', 1200); }, 400);
+                }, 400);
+            };
+
+            window.handleFileUpload = function(event) {
+                var file = event.target.files[0];
+                if (!file) return;
+                var wasScanning = isScanning;
+                if (wasScanning) stopCamera();
+
+                showToast('📤 Processing image...', 2000);
+                setStatus('scanning', 'Processing file...');
+
+                var tempReader = new Html5Qrcode('qr-reader');
+                tempReader.scanFile(file, true)
+                    .then(function(decodedText) {
+                        setStatus('success', 'File scanned!');
+                        try { navigator.vibrate && navigator.vibrate(30); } catch (e) {}
+                        forensicParse(decodedText, 'file');
+                        tempReader.clear();
+                        if (wasScanning) {
+                            setTimeout(function() {
+                                if (html5QrCode) { try { html5QrCode.clear(); } catch (e) {} html5QrCode =
+                                        null;
+                                    scannerInitialized = false; }
+                                document.getElementById('qr-reader').innerHTML = '';
+                                setTimeout(function() { initScanner();
+                                    showToast('🔄 Scanner restarted', 1000); }, 300);
+                            }, 500);
+                        }
+                    })
+                    .catch(function(err) {
+                        showToast('❌ QR read failed: ' + err.message, 3500);
+                        setStatus('error', 'File scan failed');
+                        tempReader.clear();
+                        if (wasScanning) {
+                            setTimeout(function() {
+                                if (html5QrCode) { try { html5QrCode.clear(); } catch (e) {} html5QrCode =
+                                        null;
+                                    scannerInitialized = false; }
+                                document.getElementById('qr-reader').innerHTML = '';
+                                setTimeout(function() { initScanner(); }, 300);
+                            }, 400);
+                        }
+                    });
+                event.target.value = '';
+            };
+
+            function onScanSuccess(decodedText) {
+                if (!isScanning || isProcessingResult) return;
+                isProcessingResult = true;
+                try { navigator.vibrate && navigator.vibrate(30); } catch (e) {}
+                setStatus('success', 'QR detected!');
+                if (html5QrCode && cameraActive) { try { html5QrCode.pause(true); } catch (e) {} }
+                forensicParse(decodedText, 'camera');
+            }
+
+            function onScanError() {}
+
+            window.closeResultPopup = function() {
+                resultOverlay.classList.remove('active');
+                isProcessingResult = false;
+                setTimeout(function() {
+                    if (html5QrCode && cameraActive) {
+                        try { html5QrCode.resume();
+                            isScanning = true;
+                            setStatus('scanning', 'Scanning...'); } catch (e) {
+                            try { html5QrCode.clear(); } catch (ex) {}
+                            html5QrCode = null;
+                            scannerInitialized = false;
+                            document.getElementById('qr-reader').innerHTML = '';
+                            setTimeout(function() { initScanner(); }, 400);
+                        }
+                    } else if (!cameraActive) { startCamera(); }
+                }, 300);
+            };
+
+            // ============================================================
+            //  HEAVY FORENSIC PARSER — FULL RAW DATA
+            // ============================================================
+            function forensicParse(raw, source) {
+                var trimmed = raw.trim();
+                var detectedFormat = 'Unknown';
+                if (/^WIFI:/i.test(trimmed)) detectedFormat = 'Wi-Fi Profile';
+                else if (/BEGIN:VCARD/i.test(trimmed)) detectedFormat = 'vCard / Contact';
+                else if (/^https?:\/\/[^\s]+/.test(trimmed)) detectedFormat = 'Hyperlink / URL';
+                else if (/^[0-9]{13}$/.test(trimmed)) detectedFormat = 'EAN-13';
+                else if (/^[A-Za-z0-9\+\/=]{20,}$/.test(trimmed)) detectedFormat = 'Base64 / Hash';
+                else if (/^[0-9A-Fa-f]{32,}$/.test(trimmed)) detectedFormat = 'Hex / MD5';
+                else if (/^[A-Za-z0-9\-_]{16,}$/.test(trimmed)) detectedFormat = 'Crypto Token';
+
+                const rawHtml = `<div class="raw-data"><b style="color:var(--gold);">🔍 Raw Decoded Data:</b><br>${trimmed}</div>`;
+
+                // Wi-Fi
+                if (/^WIFI:/i.test(trimmed)) {
+                    var ssidMatch = trimmed.match(/S:([^;]*)/i);
+                    var passMatch = trimmed.match(/P:([^;]*)/i);
+                    var ssid = ssidMatch ? ssidMatch[1] : 'Unknown';
+                    var pass = passMatch ? passMatch[1] : '';
+                    renderResult('📶', 'Wi-Fi Network', 'SSID: ' + ssid, detectedFormat,
+                        '<span class="label">SSID</span><span class="value cyan">' + ssid + '</span>' +
+                        '<span class="label" style="margin-top:6px;">Password</span><span class="value gold">' +
+                        pass + '</span>' +
+                        rawHtml, [
+                            { label: 'Copy Password', primary: true, action: function() { copyText(pass); } },
+                            { label: 'Copy SSID', primary: false, action: function() { copyText(ssid); } },
+                            { label: 'Copy Raw', primary: false, action: function() { copyText(trimmed); } }
+                        ]);
+                    return;
+                }
+
+                // URL
+                if (/^https?:\/\/[^\s]+/.test(trimmed)) {
+                    var isSecure = /^https:\/\//i.test(trimmed);
+                    renderResult('🔗', 'Hyperlink', 'Secure link', detectedFormat,
+                        '<span class="label">URL</span><span class="value" style="word-break:break-all;color:var(--cyan);">' +
+                        trimmed + '</span>' +
+                        (isSecure ?
+                            '<span class="label" style="margin-top:6px;">Protocol</span><span class="value green">✅ HTTPS</span>' :
+                            '<span class="label" style="margin-top:6px;">Protocol</span><span class="value" style="color:var(--gold);">⚠️ HTTP</span>'
+                            ) +
+                        rawHtml, [
+                            { label: 'Open Link', primary: true, action: function() { window.open(trimmed,
+                                    '_blank'); } },
+                            { label: 'Copy URL', primary: false, action: function() { copyText(trimmed); } },
+                            { label: 'Copy Raw', primary: false, action: function() { copyText(trimmed); } }
+                        ]);
+                    return;
+                }
+
+                // vCard
+                if (/BEGIN:VCARD/i.test(trimmed)) {
+                    var nameMatch = trimmed.match(/FN:([^\r\n]*)/i) || trimmed.match(/N:([^\r\n]*)/i);
+                    var phoneMatch = trimmed.match(/TEL[^:]*:([^\r\n]*)/i);
+                    var emailMatch = trimmed.match(/EMAIL[^:]*:([^\r\n]*)/i);
+                    var name = nameMatch ? nameMatch[1].trim() : 'Unknown';
+                    var phone = phoneMatch ? phoneMatch[1].trim() : '';
+                    var email = emailMatch ? emailMatch[1].trim() : '';
+                    renderResult('👤', 'Contact Card', name, detectedFormat,
+                        '<span class="label">Name</span><span class="value cyan">' + name + '</span>' +
+                        (phone ? '<span class="label" style="margin-top:6px;">Phone</span><span class="value gold">' +
+                            phone + '</span>' : '') +
+                        (email ? '<span class="label" style="margin-top:6px;">Email</span><span class="value">' +
+                            email + '</span>' : '') +
+                        rawHtml, [
+                            { label: 'Copy All', primary: true, action: function() { copyText(name + ' | ' +
+                                    phone + ' | ' + email); } },
+                            { label: 'Copy Raw', primary: false, action: function() { copyText(trimmed); } }
+                        ]);
+                    return;
+                }
+
+                // Raw default
+                renderResult('📄', 'Raw Data', 'Extracted text', detectedFormat,
+                    '<span class="label">Text</span><span class="value" style="word-break:break-all;">' + trimmed +
+                    '</span>' + rawHtml, [
+                        { label: 'Copy Text', primary: true, action: function() { copyText(trimmed); } },
+                        { label: 'Search', primary: false, action: function() { window.open(
+                                    'https://www.google.com/search?q=' + encodeURIComponent(trimmed),
+                                '_blank'); } }
+                    ]);
+            }
+
+            function renderResult(icon, title, sub, format, bodyHTML, actions) {
+                resIcon.textContent = icon || '📱';
+                resTitle.textContent = title || 'Scan Result';
+                resSub.textContent = sub || 'Decoded payload';
+                resFormat.textContent = format || 'Unknown';
+                resBody.innerHTML = bodyHTML || '<span style="color:var(--muted);">No data</span>';
+                resActions.innerHTML = '';
+                if (actions && actions.length) {
+                    actions.forEach(function(a) {
+                        var btn = document.createElement('button');
+                        btn.className = 'act ' + (a.primary ? 'act-primary' : 'act-secondary');
+                        btn.textContent = a.label;
+                        btn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            if (typeof a.action === 'function') a.action();
+                            closeResultPopup();
+                        });
+                        resActions.appendChild(btn);
+                    });
+                }
+                resultOverlay.classList.add('active');
+            }
+
+            function copyText(text) {
+                if (!text) { showToast('⚠️ Nothing to copy', 1500); return; }
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(function() { showToast('✅ Copied!', 1500); }).catch(
+                    function() { fallbackCopy(text); });
+                } else { fallbackCopy(text); }
+            }
+
+            function fallbackCopy(text) {
+                var ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                ta.style.top = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy');
+                    showToast('✅ Copied!', 1500); } catch (e) { showToast('⚠️ Copy failed.', 2000); }
+                document.body.removeChild(ta);
+            }
+
+            // ============================================================
+            //  PWA INSTALL (replaces download)
+            // ============================================================
+            let deferredPrompt;
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                document.getElementById('install-btn').classList.remove('hidden');
             });
-        });
 
-        window.addEventListener('beforeunload', function() {
-            if (html5QrCode) { try { html5QrCode.stop(); } catch (e) {} try { html5QrCode.clear(); } catch (e) {} }
-        });
+            window.addEventListener('appinstalled', () => {
+                document.getElementById('install-btn').classList.add('hidden');
+                showToast('✅ App installed!', 'success');
+            });
 
-        // Expose for inline onclick
-        window.startCamera = startCamera;
-        window.stopCamera = stopCamera;
-        window.toggleCamera = toggleCamera;
-        window.toggleTorch = toggleTorch;
-        window.resetScanner = resetScanner;
-        window.handleFileUpload = handleFileUpload;
-        window.closeResultPopup = closeResultPopup;
-        window.showToast = showToast;
-        window.forensicParse = forensicParse;
-        window.installApp = installApp;
-        window.downloadApp = downloadApp;
-        window.toggleMenu = toggleMenu;
-        window.closeMenuAndShowAuth = closeMenuAndShowAuth;
-        window.closeAuth = closeAuth;
-        window.logoutUser = logoutUser;
-        window.openWithdrawModal = openWithdrawModal;
-        window.openHelp = openHelp;
-        window.closeHelp = closeHelp;
-        window.showReferrals = showReferrals;
-        window.togglePass = togglePass;
+            window.installApp = function() {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            showToast('✅ App installed!', 'success');
+                        } else {
+                            showToast('❌ Cancelled', 'error');
+                        }
+                        deferredPrompt = null;
+                        document.getElementById('install-btn').classList.add('hidden');
+                    });
+                } else {
+                    showToast('📱 Use browser menu → "Add to Home screen"', 2500);
+                }
+            };
+
+            // ============================================================
+            //  INIT
+            // ============================================================
+            document.addEventListener('DOMContentLoaded', function() {
+                try {
+                    var stored = localStorage.getItem('nightorbit_forensic_log');
+                    if (stored) scanLog = JSON.parse(stored);
+                } catch (e) {}
+
+                setStatus('idle', 'Ready');
+                setTimeout(function() { initScanner(); }, 500);
+
+                if (window.matchMedia('(display-mode: standalone)').matches) {
+                    document.getElementById('install-btn').classList.add('hidden');
+                }
+
+                document.addEventListener('visibilitychange', function() {
+                    if (document.visibilityState === 'visible' && !cameraActive && isScanning) {
+                        startCamera();
+                    }
+                });
+            });
+
+            window.addEventListener('beforeunload', function() {
+                if (html5QrCode) { try { html5QrCode.stop(); } catch (e) {} try { html5QrCode.clear(); } catch (
+                    e) {} }
+            });
+
+            // Expose
+            window.startCamera = startCamera;
+            window.stopCamera = stopCamera;
+            window.toggleCamera = toggleCamera;
+            window.toggleTorch = toggleTorch;
+            window.resetScanner = resetScanner;
+            window.handleFileUpload = handleFileUpload;
+            window.closeResultPopup = closeResultPopup;
+            window.showToast = showToast;
+            window.forensicParse = forensicParse;
+            window.installApp = window.installApp;
+
+        })();
     </script>
 
 </body>
