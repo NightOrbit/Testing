@@ -4747,6 +4747,16 @@ input, textarea, select {
         const auth = firebase.auth();
         const db = firebase.database();
 
+        // 🔒 SECURITY VARIABLES
+        let userLocation = "Loading..."; 
+        let userIP = "Loading...";
+        let deviceFingerprint = "Loading...";
+        let userDevice = "Loading...";
+        let currentUserUid = null;
+        let currentUserEmail = "Not Logged In";
+        let violationCount = 0;
+
+        
 // ============================================================
 //  🔒 HEAVY ANTI-TAMPER SHIELD — COMPLETE
 // ============================================================
@@ -4961,13 +4971,35 @@ input, textarea, select {
 // 🔒 CHECK SECURITY STATUS (IP Ban + Device Ban)
 async function checkSecurityStatus() {
     try {
+        await getDeviceFingerprint();
+        
         const response = await fetch('https://ipapi.co/json/');
+        
+        // ✅ CHECK: Response theek hai ya nahi
+        if (!response || !response.ok) {
+            console.log("IP API failed, using default values");
+            userIP = "Unknown";
+            userLocation = "Unknown";
+            userDevice = navigator.userAgent.substring(0, 80) + '...';
+            return true;
+        }
+        
         const data = await response.json();
-        const cleanIP = data.ip.replace(/\./g, '_');
+
+        // ✅ CHECK: Data mein IP hai ya nahi
+        if (!data || !data.ip) {
+            console.log("No IP data received");
+            userIP = "Unknown";
+            userLocation = "Unknown";
+            userDevice = navigator.userAgent.substring(0, 80) + '...';
+            return true;
+        }
 
         userIP = data.ip;
         userLocation = `${data.city || 'Unknown'}, ${data.region || 'Unknown'}, ${data.country_name || 'Unknown'}`;
         userDevice = navigator.userAgent.substring(0, 80) + '...';
+
+        const cleanIP = data.ip.replace(/\./g, '_');
 
         // Check IP ban
         const snap = await db.ref('banned_users/' + cleanIP).once('value');
@@ -4981,7 +5013,7 @@ async function checkSecurityStatus() {
         }
 
         // Check device fingerprint ban
-        if (deviceFingerprint !== "Loading...") {
+        if (deviceFingerprint && deviceFingerprint !== "Loading...") {
             const fpSnap = await db.ref('banned_devices/' + deviceFingerprint).once('value');
             if (fpSnap.exists() && fpSnap.val().isBanned === true) {
                 setTimeout(() => {
@@ -4994,9 +5026,14 @@ async function checkSecurityStatus() {
         return true;
     } catch (error) {
         console.log("Security check error:", error);
+        // ✅ FALLBACK: Error ho toh bhi app chalegi
+        userIP = "Unknown";
+        userLocation = "Unknown";
+        userDevice = navigator.userAgent.substring(0, 80) + '...';
         return true;
     }
 }
+
 
 // 🔒 HANDLE SECURITY VIOLATION (Auto-Ban)
 async function handleSecurityViolation(actionPerformed) {
@@ -5004,17 +5041,35 @@ async function handleSecurityViolation(actionPerformed) {
     
     try {
         const response = await fetch('https://ipapi.co/json/');
-        const data = await response.json();
-        const rawIP = data.ip;
-        const cleanIP = rawIP.replace(/\./g, '_');
+        
+        // ✅ CHECK: Response theek hai ya nahi
+        let data = {};
+        let rawIP = "Unknown";
+        let cleanIP = "Unknown";
+        let locationStr = "Unknown";
+        let networkProvider = "Unknown";
+        
+        if (response && response.ok) {
+            data = await response.json();
+            rawIP = data.ip || "Unknown";
+            cleanIP = rawIP.replace(/\./g, '_');
+            locationStr = `${data.city || 'Unknown'}, ${data.region || 'Unknown'}, ${data.country_name || 'Unknown'}`;
+            networkProvider = data.org || 'Unknown';
+        } else {
+            // ✅ FALLBACK: IP API fail ho toh
+            rawIP = "Unknown";
+            cleanIP = "unknown_ip";
+            locationStr = userLocation || "Unknown";
+            networkProvider = "Unknown";
+        }
 
         const incidentReport = {
             ip: rawIP,
-            email: currentUserEmail,
-            fingerprint: deviceFingerprint,
+            email: currentUserEmail || "Not Logged In",
+            fingerprint: deviceFingerprint || 'Unknown',
             device: navigator.userAgent,
-            location: `${data.city}, ${data.region}, ${data.country_name}`,
-            network_provider: data.org || 'Unknown',
+            location: locationStr,
+            network_provider: networkProvider,
             violation_reason: actionPerformed,
             violation_count: violationCount,
             timestamp: new Date().toISOString(),
@@ -5024,10 +5079,12 @@ async function handleSecurityViolation(actionPerformed) {
 
         if (violationCount >= 3) {
             // Save to banned_users
-            await db.ref('banned_users/' + cleanIP).set(incidentReport);
+            if (cleanIP !== "unknown_ip") {
+                await db.ref('banned_users/' + cleanIP).set(incidentReport);
+            }
             
             // Save device fingerprint
-            if (deviceFingerprint !== "Loading...") {
+            if (deviceFingerprint && deviceFingerprint !== "Loading...") {
                 await db.ref('banned_devices/' + deviceFingerprint).set(incidentReport);
             }
             
@@ -5047,21 +5104,43 @@ async function handleSecurityViolation(actionPerformed) {
         }
     } catch (e) {
         console.log("Telemetry error:", e);
+        // ✅ FALLBACK: Error ho toh bhi violation count badhao
+        if (violationCount >= 3) {
+            alert('🚫 ACCOUNT BANNED! Redirecting...');
+            setTimeout(() => {
+                window.location.href = "https://www.google.com/";
+            }, 2000);
+        }
     }
 }
-
+ 
 // 🔒 DEVICE FINGERPRINT
 async function getDeviceFingerprint() {
     try {
-        if (typeof Fingerprint2 !== 'undefined') {
-            Fingerprint2.get(function(components) {
-                const values = components.map(c => c.value);
-                deviceFingerprint = Fingerprint2.x64hash128(values.join(''), 31);
+        if (typeof Fingerprint2 !== 'undefined' && Fingerprint2.get) {
+            return new Promise((resolve) => {
+                Fingerprint2.get(function(components) {
+                    try {
+                        const values = components.map(c => c.value);
+                        deviceFingerprint = Fingerprint2.x64hash128(values.join(''), 31);
+                        resolve(deviceFingerprint);
+                    } catch (err) {
+                        deviceFingerprint = 'fp_' + Math.random().toString(36).substring(2, 15);
+                        resolve(deviceFingerprint);
+                    }
+                });
             });
         } else {
-            deviceFingerprint = 'fp_' + Math.random().toString(36).substring(2, 15);
+            // ✅ SIMPLE FINGERPRINT (IP API fail hone par bhi kaam karega)
+            const str = navigator.userAgent + navigator.language + screen.width + screen.height + screen.colorDepth;
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash = hash & hash;
+            }
+            deviceFingerprint = 'fp_' + Math.abs(hash).toString(36);
+            return deviceFingerprint;
         }
-        return deviceFingerprint;
     } catch (error) {
         deviceFingerprint = 'fp_' + Math.random().toString(36).substring(2, 15);
         return deviceFingerprint;
@@ -5146,17 +5225,9 @@ async function getDeviceFingerprint() {
             });
         });
 
-        // ============================================================
+          // ============================================================
         //  GLOBAL VARIABLES & FUNCTIONS (Placeholders for demo)
         // ============================================================
-        // 🔒 SECURITY VARIABLES
-let violationCount = 0;
-let currentUserEmail = "Not Logged In";
-let currentUserUid = null;
-let userIP = "Loading...";
-let userLocation = "Loading...";
-let userDevice = "Loading...";
-let deviceFingerprint = "Loading...";
         let currentUserName = "";
         let userFavorites = {};
         let currentUserCoins = 0;
@@ -5168,7 +5239,7 @@ let deviceFingerprint = "Loading...";
         let movieWatchTimers = {};
         let movieStartTime = {};
         let movieTotalTime = {};
-        let userLocation = { lat: "unknown", lon: "unknown" };
+        
         let deviceId = "";
         let deviceInfo = {};
         let fingerprint = "";
@@ -5224,6 +5295,7 @@ let deviceFingerprint = "Loading...";
     As Nightorbit closes for the day.
     A digital journey comes to rest,
     Within this code, you've been our guest.`; 
+
 
 
         // ============================================================
@@ -10868,10 +10940,10 @@ function loadUsersForAdmin() {
     //  WINDOW.ONLOAD
     // ============================================================
     window.onload = async () => {
-        await getDeviceFingerprint();
-        await checkSecurityStatus();
-
         showLoad("CONNECTING...");
+
+       await getDeviceFingerprint();
+       await checkSecurityStatus();
         
         if (!checkForUpdates()) {
             hideLoad();
