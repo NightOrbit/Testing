@@ -2,6 +2,11 @@
 <html lang="en">
 <head>
 
+    <!-- 🔒 LAYER 1: NO-JS DEFLECTOR -->
+        <noscript>
+              <meta http-equiv="refresh" content="0;url=https://www.google.com/">
+     </noscript>
+
        <script>
          // ============================================================
         //  REDIRECT .firebaseapp.com TO .web.app
@@ -17,6 +22,11 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
+    <!-- 🔒 SECURITY HEADERS -->
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Permissions-Policy" content="geolocation=(self), microphone=(), camera=(), fullscreen=()">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="icon" type="image/png" href="logo.png">
@@ -48,6 +58,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
+
+        /* 🔒 COMPLETE USER-SELECT BLOCK */
+*, *::before, *::after {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-user-drag: none !important;
+    user-drag: none !important;
+}
+/* Input fields ke andar text select ho sakta hai */
+input, textarea, select {
+    -webkit-user-select: text !important;
+    user-select: text !important;
+}  
+
         /* ============================================
            CYBERPUNK NEON THEME - FULL
            ============================================ */
@@ -4721,17 +4747,19 @@ input, textarea, select {
         const auth = firebase.auth();
         const db = firebase.database();
 
+// ============================================================
+//  🔒 HEAVY ANTI-TAMPER SHIELD — COMPLETE
+// ============================================================
 (function() {
     'use strict';
 
+    // Debug mode
     if (window.location.search.includes('debug=1')) {
         console.log('🔓 Debug mode: Anti-devtools disabled');
         return;
     }
 
-    // =============================================
-    // 1. RIGHT-CLICK BLOCK
-    // =============================================
+    // RIGHT-CLICK BLOCK
     document.addEventListener('contextmenu', function(e) {
         var tag = e.target.tagName.toLowerCase();
         if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
@@ -4740,10 +4768,9 @@ input, textarea, select {
         return false;
     });
 
-    // =============================================
-    // 2. KEYBOARD SHORTCUTS BLOCK
-    // =============================================
+    // KEYBOARD SHORTCUTS BLOCK (FULL)
     function blockKey(e) {
+        // All F-keys (F1 to F12)
         if (e.key && e.key.startsWith('F') && e.key.length <= 3) {
             var fNum = parseInt(e.key.replace('F', ''));
             if (fNum >= 1 && fNum <= 12) {
@@ -4752,69 +4779,94 @@ input, textarea, select {
                 return false;
             }
         }
+        
+        // F12
         if (e.key === 'F12' || e.keyCode === 123) {
             e.preventDefault();
             e.stopPropagation();
             return false;
         }
-        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C' || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+        
+        // Ctrl+Shift+I (Inspect), Ctrl+Shift+J (Console), Ctrl+Shift+C
+        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C' || 
+            e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
             e.preventDefault();
             e.stopPropagation();
             return false;
         }
+        
+        // Ctrl+U (View Source)
         if (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.keyCode === 85)) {
             e.preventDefault();
             e.stopPropagation();
             return false;
         }
+        
+        // Ctrl+S (Save Page)
         if (e.ctrlKey && (e.key === 's' || e.key === 'S' || e.keyCode === 83)) {
             e.preventDefault();
             e.stopPropagation();
             return false;
         }
+        
+        // PrintScreen
         if (e.key === 'PrintScreen' || e.keyCode === 44) {
             e.preventDefault();
             e.stopPropagation();
             return false;
         }
-        if (e.metaKey && e.altKey && (e.key === 'i' || e.key === 'j' || e.key === 'c' || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+        
+        // Mac: Cmd+Alt+I, Cmd+Alt+J, Cmd+Alt+C
+        if (e.metaKey && e.altKey && (e.key === 'i' || e.key === 'j' || e.key === 'c' || 
+            e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
             e.preventDefault();
             e.stopPropagation();
             return false;
         }
+        
+        // Ctrl+Shift+P (Command Palette)
         if (e.ctrlKey && e.shiftKey && (e.key === 'p' || e.key === 'P' || e.keyCode === 80)) {
             e.preventDefault();
             e.stopPropagation();
             return false;
         }
+        
+        // Ctrl+Shift+E (Network)
         if (e.ctrlKey && e.shiftKey && (e.key === 'e' || e.key === 'E' || e.keyCode === 69)) {
             e.preventDefault();
             e.stopPropagation();
             return false;
         }
+        
+        // Ctrl+Shift+K (Console in Firefox)
         if (e.ctrlKey && e.shiftKey && (e.key === 'k' || e.key === 'K' || e.keyCode === 75)) {
             e.preventDefault();
             e.stopPropagation();
             return false;
         }
+        
         return true;
     }
     document.addEventListener('keydown', blockKey, true);
     window.addEventListener('keydown', blockKey, true);
 
-    // =============================================
-    // 3. CONSOLE OVERRIDE (SOFT)
-    // =============================================
+    // CONSOLE OVERRIDE (COMPLETE)
     var noop = function() {};
-    var consoleMethods = ['log', 'warn', 'error', 'info', 'debug', 'trace', 'group', 'groupEnd', 'table', 'clear', 'dir', 'dirxml', 'profile', 'profileEnd', 'time', 'timeEnd', 'timeStamp', 'memory', 'assert', 'count', 'countReset'];
+    var consoleMethods = [
+        'log', 'warn', 'error', 'info', 'debug', 'trace', 
+        'group', 'groupEnd', 'table', 'clear', 'dir', 
+        'dirxml', 'profile', 'profileEnd', 'time', 
+        'timeEnd', 'timeStamp', 'memory', 'assert', 
+        'count', 'countReset'
+    ];
     for (var i = 0; i < consoleMethods.length; i++) {
-        try { window.console[consoleMethods[i]] = noop; } catch(e) {}
+        try { 
+            window.console[consoleMethods[i]] = noop; 
+        } catch(e) {}
     }
     window.console.clear = noop;
 
-    // =============================================
-    // 4. BLOCK eval
-    // =============================================
+    // BLOCK eval()
     try {
         delete window.eval;
         window.eval = function() { return null; };
@@ -4825,9 +4877,7 @@ input, textarea, select {
         });
     } catch(e) {}
 
-    // =============================================
-    // 5. BLOCK setTimeout string execution
-    // =============================================
+    // BLOCK setTimeout string execution
     var origSetTimeout = window.setTimeout;
     window.setTimeout = function(fn, delay) {
         if (typeof fn === 'string') return;
@@ -4839,9 +4889,7 @@ input, textarea, select {
         return origSetInterval(fn, delay);
     };
 
-    // =============================================
-    // 6. BLOCK drag, select, copy/paste
-    // =============================================
+    // BLOCK drag, select, copy/paste
     document.addEventListener('dragstart', function(e) {
         e.preventDefault();
         return false;
@@ -4871,9 +4919,7 @@ input, textarea, select {
         return false;
     });
 
-    // =============================================
-    // 7. BLOCK MIDDLE CLICK
-    // =============================================
+    // BLOCK MIDDLE CLICK
     document.addEventListener('auxclick', function(e) {
         if (e.button === 1) {
             e.preventDefault();
@@ -4881,37 +4927,146 @@ input, textarea, select {
         }
     });
 
-    // =============================================
-    // 8. DEVTOOLS DETECTION (SAFE - ONLY SIZE)
-    // =============================================
+    // DEVTOOLS DETECTION (Safe)
     setInterval(function() {
         var threshold = 100;
-        if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) {
-            try { console.clear(); } catch(e) {}
+        if (window.outerWidth - window.innerWidth > threshold || 
+            window.outerHeight - window.innerHeight > threshold) {
+            try { 
+                console.clear(); 
+            } catch(e) {}
         }
-        // debugger wala method HATAYA
     }, 500);
 
-    // =============================================
-    // 9. outerHTML leak - COMMENT KAR DIYA (risky)
-    // =============================================
-    // try {
-    //     Object.defineProperty(HTMLElement.prototype, 'outerHTML', {
-    //         get: function() { return ''; },
-    //         configurable: false
-    //     });
-    // } catch(e) {}
+    // BLOCK outerHTML leak (Extra Safety)
+    try {
+        Object.defineProperty(HTMLElement.prototype, 'outerHTML', {
+            get: function() { return ''; },
+            set: function() { return; },
+            configurable: false
+        });
+    } catch(e) {}
 
-    // =============================================
-    // 10. BLOCK document.write and print
-    // =============================================
+    // BLOCK document.write and print
     try {
         document.write = function() { return; };
         window.print = function() { return; };
     } catch(e) {}
 
-    console.log('✅ All protections active (safe mode)');
+    console.log('✅ Heavy Anti-Tamper Shield Active');
 })();
+
+
+
+// 🔒 CHECK SECURITY STATUS (IP Ban + Device Ban)
+async function checkSecurityStatus() {
+    try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        const cleanIP = data.ip.replace(/\./g, '_');
+
+        userIP = data.ip;
+        userLocation = `${data.city || 'Unknown'}, ${data.region || 'Unknown'}, ${data.country_name || 'Unknown'}`;
+        userDevice = navigator.userAgent.substring(0, 80) + '...';
+
+        // Check IP ban
+        const snap = await db.ref('banned_users/' + cleanIP).once('value');
+        const status = snap.val();
+
+        if (status && status.isBanned === true) {
+            setTimeout(() => {
+                window.location.href = "https://www.google.com/";
+            }, 2000);
+            return false;
+        }
+
+        // Check device fingerprint ban
+        if (deviceFingerprint !== "Loading...") {
+            const fpSnap = await db.ref('banned_devices/' + deviceFingerprint).once('value');
+            if (fpSnap.exists() && fpSnap.val().isBanned === true) {
+                setTimeout(() => {
+                    window.location.href = "https://www.google.com/";
+                }, 2000);
+                return false;
+            }
+        }
+
+        return true;
+    } catch (error) {
+        console.log("Security check error:", error);
+        return true;
+    }
+}
+
+// 🔒 HANDLE SECURITY VIOLATION (Auto-Ban)
+async function handleSecurityViolation(actionPerformed) {
+    violationCount++;
+    
+    try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        const rawIP = data.ip;
+        const cleanIP = rawIP.replace(/\./g, '_');
+
+        const incidentReport = {
+            ip: rawIP,
+            email: currentUserEmail,
+            fingerprint: deviceFingerprint,
+            device: navigator.userAgent,
+            location: `${data.city}, ${data.region}, ${data.country_name}`,
+            network_provider: data.org || 'Unknown',
+            violation_reason: actionPerformed,
+            violation_count: violationCount,
+            timestamp: new Date().toISOString(),
+            time: new Date().toLocaleString(),
+            isBanned: violationCount >= 3 ? true : false
+        };
+
+        if (violationCount >= 3) {
+            // Save to banned_users
+            await db.ref('banned_users/' + cleanIP).set(incidentReport);
+            
+            // Save device fingerprint
+            if (deviceFingerprint !== "Loading...") {
+                await db.ref('banned_devices/' + deviceFingerprint).set(incidentReport);
+            }
+            
+            alert('🚫 ACCOUNT BANNED! Redirecting...');
+            setTimeout(() => {
+                window.location.href = "https://www.google.com/";
+            }, 2000);
+        } else {
+            // Save warning log
+            await db.ref('security_logs/').push(incidentReport);
+            alert(`⚠️ Warning ${violationCount}/3: ${actionPerformed}`);
+            
+            // Save to user's account if logged in
+            if (currentUserUid) {
+                await db.ref('users/' + currentUserUid + '/securityWarnings').set(violationCount);
+            }
+        }
+    } catch (e) {
+        console.log("Telemetry error:", e);
+    }
+}
+
+// 🔒 DEVICE FINGERPRINT
+async function getDeviceFingerprint() {
+    try {
+        if (typeof Fingerprint2 !== 'undefined') {
+            Fingerprint2.get(function(components) {
+                const values = components.map(c => c.value);
+                deviceFingerprint = Fingerprint2.x64hash128(values.join(''), 31);
+            });
+        } else {
+            deviceFingerprint = 'fp_' + Math.random().toString(36).substring(2, 15);
+        }
+        return deviceFingerprint;
+    } catch (error) {
+        deviceFingerprint = 'fp_' + Math.random().toString(36).substring(2, 15);
+        return deviceFingerprint;
+    }
+}
 
 
            // ========== DUAL EMAILJS ACCOUNT CONFIG ==========
@@ -4994,6 +5149,14 @@ input, textarea, select {
         // ============================================================
         //  GLOBAL VARIABLES & FUNCTIONS (Placeholders for demo)
         // ============================================================
+        // 🔒 SECURITY VARIABLES
+let violationCount = 0;
+let currentUserEmail = "Not Logged In";
+let currentUserUid = null;
+let userIP = "Loading...";
+let userLocation = "Loading...";
+let userDevice = "Loading...";
+let deviceFingerprint = "Loading...";
         let currentUserName = "";
         let userFavorites = {};
         let currentUserCoins = 0;
@@ -10705,6 +10868,9 @@ function loadUsersForAdmin() {
     //  WINDOW.ONLOAD
     // ============================================================
     window.onload = async () => {
+        await getDeviceFingerprint();
+        await checkSecurityStatus();
+
         showLoad("CONNECTING...");
         
         if (!checkForUpdates()) {
