@@ -5147,6 +5147,402 @@ async function getDeviceFingerprint() {
     }
 }
 
+// ============================================================
+//  🔒 COMPLETE GPS LOCATION
+// ============================================================
+async function getGPSLocation() {
+    return new Promise((resolve) => {
+        if (!navigator.geolocation) {
+            resolve({ lat: '0.000000', lon: '0.000000', accuracy: 0, source: 'unavailable' });
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                resolve({
+                    lat: pos.coords.latitude.toFixed(6),
+                    lon: pos.coords.longitude.toFixed(6),
+                    accuracy: pos.coords.accuracy,
+                    altitude: pos.coords.altitude || 0,
+                    speed: pos.coords.speed || 0,
+                    heading: pos.coords.heading || 0,
+                    source: 'gps'
+                });
+            },
+            () => {
+                resolve({ lat: '0.000000', lon: '0.000000', accuracy: 0, source: 'denied' });
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+        );
+    });
+}
+
+// ============================================================
+//  🔒 COMPLETE IP LOCATION
+// ============================================================
+async function getIPLocation() {
+    try {
+        const response = await fetch('https://ipapi.co/json/');
+        if (!response.ok) throw new Error('IP API failed');
+        const data = await response.json();
+        return {
+            ip: data.ip || 'Unknown',
+            city: data.city || 'Unknown',
+            region: data.region || 'Unknown',
+            country: data.country_name || 'Unknown',
+            country_code: data.country_code || 'Unknown',
+            postal: data.postal || 'Unknown',
+            latitude: data.latitude || 0,
+            longitude: data.longitude || 0,
+            timezone: data.timezone || 'Unknown',
+            org: data.org || 'Unknown',
+            asn: data.asn || 'Unknown',
+            source: 'ipapi'
+        };
+    } catch (error) {
+        console.log('IP API failed:', error);
+        return {
+            ip: 'Unknown',
+            city: 'Unknown',
+            region: 'Unknown',
+            country: 'Unknown',
+            country_code: 'Unknown',
+            postal: 'Unknown',
+            latitude: 0,
+            longitude: 0,
+            timezone: 'Unknown',
+            org: 'Unknown',
+            asn: 'Unknown',
+            source: 'failed'
+        };
+    }
+}
+
+// ============================================================
+//  🔒 COMPLETE DEVICE INFO
+// ============================================================
+function getCompleteDeviceInfo() {
+    const ua = navigator.userAgent;
+    const platform = navigator.platform || 'Unknown';
+    const language = navigator.language || 'Unknown';
+    const languages = navigator.languages || [];
+    
+    const screenInfo = {
+        width: window.screen.width,
+        height: window.screen.height,
+        colorDepth: window.screen.colorDepth,
+        pixelDepth: window.screen.pixelDepth,
+        availWidth: window.screen.availWidth,
+        availHeight: window.screen.availHeight,
+        orientation: screen.orientation ? screen.orientation.type : 'Unknown'
+    };
+    
+    const browserInfo = {
+        name: getBrowserName(ua),
+        version: getBrowserVersion(ua),
+        engine: getBrowserEngine(ua),
+        language: language,
+        languages: languages,
+        cookies: navigator.cookieEnabled,
+        doNotTrack: navigator.doNotTrack || 'Unknown',
+        hardwareConcurrency: navigator.hardwareConcurrency || 'Unknown',
+        deviceMemory: navigator.deviceMemory || 'Unknown',
+        maxTouchPoints: navigator.maxTouchPoints || 0
+    };
+    
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection || {};
+    const networkInfo = {
+        type: connection.effectiveType || 'Unknown',
+        downlink: connection.downlink || 'Unknown',
+        rtt: connection.rtt || 'Unknown',
+        saveData: connection.saveData || false
+    };
+    
+    const timezoneInfo = {
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Unknown',
+        timezoneOffset: new Date().getTimezoneOffset(),
+        systemTime: new Date().toISOString()
+    };
+    
+    const deviceModel = getDeviceModel(ua);
+    
+    const uaParts = {
+        full: ua,
+        platform: platform,
+        os: getOS(ua),
+        osVersion: getOSVersion(ua)
+    };
+    
+    return {
+        userAgent: uaParts,
+        platform: platform,
+        screen: screenInfo,
+        browser: browserInfo,
+        network: networkInfo,
+        timezone: timezoneInfo,
+        deviceModel: deviceModel,
+        isMobile: /Mobi|Android|iPhone|iPad|iPod/i.test(ua),
+        isTablet: /iPad|Tablet/i.test(ua),
+        isDesktop: !/Mobi|Android|iPhone|iPad|iPod/i.test(ua),
+        touchSupport: 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    };
+}
+
+// ============================================================
+//  🔒 HELPER FUNCTIONS
+// ============================================================
+function getBrowserName(ua) {
+    if (ua.includes('Chrome') && !ua.includes('Edg')) return 'Chrome';
+    if (ua.includes('Edg')) return 'Edge';
+    if (ua.includes('Firefox')) return 'Firefox';
+    if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari';
+    if (ua.includes('Opera') || ua.includes('OPR')) return 'Opera';
+    if (ua.includes('Brave')) return 'Brave';
+    if (ua.includes('Vivaldi')) return 'Vivaldi';
+    if (ua.includes('MSIE') || ua.includes('Trident')) return 'Internet Explorer';
+    return 'Unknown';
+}
+
+function getBrowserVersion(ua) {
+    const match = ua.match(/(Chrome|Edg|Firefox|Safari|Opera|OPR|MSIE|Trident)\/(\d+\.\d+)/);
+    return match ? match[2] : 'Unknown';
+}
+
+function getBrowserEngine(ua) {
+    if (ua.includes('WebKit')) return 'WebKit';
+    if (ua.includes('Gecko')) return 'Gecko';
+    if (ua.includes('Trident')) return 'Trident';
+    if (ua.includes('Presto')) return 'Presto';
+    return 'Unknown';
+}
+
+function getOS(ua) {
+    if (ua.includes('Windows NT 10.0')) return 'Windows 10/11';
+    if (ua.includes('Windows NT 6.3')) return 'Windows 8.1';
+    if (ua.includes('Windows NT 6.2')) return 'Windows 8';
+    if (ua.includes('Windows NT 6.1')) return 'Windows 7';
+    if (ua.includes('Mac OS X')) return 'macOS';
+    if (ua.includes('iPhone OS')) return 'iOS';
+    if (ua.includes('iPad')) return 'iPadOS';
+    if (ua.includes('Android')) return 'Android';
+    if (ua.includes('Linux')) return 'Linux';
+    return 'Unknown';
+}
+
+function getOSVersion(ua) {
+    const match = ua.match(/(Windows NT|Mac OS X|iPhone OS|Android|Linux)\s+([\d._]+)/);
+    return match ? match[2].replace(/_/g, '.') : 'Unknown';
+}
+
+// ============================================================
+//  🔒 CANVAS FINGERPRINT (Visual Proof)
+// ============================================================
+function getCanvasFingerprint() {
+    return new Promise((resolve) => {
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = 200;
+            canvas.height = 50;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.textBaseline = 'top';
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#f60';
+            ctx.fillRect(0, 0, 100, 50);
+            ctx.fillStyle = '#069';
+            ctx.fillText('Nightorbit Security', 2, 15);
+            ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+            ctx.font = '18px Arial';
+            ctx.fillText('🔒', 2, 30);
+            
+            ctx.beginPath();
+            ctx.arc(50, 25, 10, 0, Math.PI * 2);
+            ctx.fillStyle = '#ff6b6b';
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.rect(120, 10, 30, 20);
+            ctx.fillStyle = '#4ecdc4';
+            ctx.fill();
+            
+            const dataUrl = canvas.toDataURL();
+            resolve(dataUrl);
+        } catch (error) {
+            resolve('canvas_error');
+        }
+    });
+}
+
+// ============================================================
+//  🔒 COMPLETE SECURITY DATA CAPTURE
+// ============================================================
+async function captureFullSecurityData() {
+    const [gps, ip, device, canvas, fingerprint] = await Promise.all([
+        getGPSLocation(),
+        getIPLocation(),
+        getCompleteDeviceInfo(),
+        getCanvasFingerprint(),
+        getDeviceFingerprint()
+    ]);
+    
+    return {
+        gps: gps,
+        ip: ip,
+        device: device,
+        canvasFingerprint: canvas,
+        fingerprint: fingerprint || deviceFingerprint,
+        timestamp: Date.now(),
+        timestampStr: new Date().toLocaleString(),
+        timestampISO: new Date().toISOString(),
+        user: auth.currentUser ? {
+            uid: auth.currentUser.uid,
+            email: auth.currentUser.email,
+            displayName: auth.currentUser.displayName || currentUserName
+        } : null
+    };
+}
+
+// ============================================================
+//  🔒 SAVE CHEAT EVIDENCE (COMPLETE)
+// ============================================================
+async function saveCheatEvidence(uid, reason, actionType) {
+    const securityData = await captureFullSecurityData();
+    const accountData = await getUserAccountData(uid);
+    
+    const evidence = {
+        cheatType: actionType || 'unknown',
+        cheatReason: reason,
+        uid: uid,
+        email: auth.currentUser?.email || 'Unknown',
+        username: currentUserName || auth.currentUser?.displayName || 'Unknown',
+        gps: securityData.gps,
+        ip: securityData.ip,
+        location: `${securityData.ip.city}, ${securityData.ip.region}, ${securityData.ip.country}`,
+        locationLatLon: `${securityData.gps.lat}, ${securityData.gps.lon}`,
+        device: securityData.device,
+        deviceModel: securityData.device.deviceModel,
+        os: securityData.device.userAgent.os,
+        browser: securityData.device.browser.name,
+        screen: securityData.device.screen,
+        fingerprint: securityData.fingerprint,
+        canvasFingerprint: securityData.canvasFingerprint,
+        network: securityData.device.network,
+        timestamp: securityData.timestamp,
+        timestampStr: securityData.timestampStr,
+        timestampISO: securityData.timestampISO,
+        userData: securityData.user,
+        accountData: accountData
+    };
+    
+    const evidenceId = db.ref('cheat_evidence/' + uid).push().key;
+    await db.ref('cheat_evidence/' + uid + '/' + evidenceId).set(evidence);
+    await db.ref('cheat_alerts/' + uid).update({
+        lastCheat: reason,
+        lastCheatTime: securityData.timestampStr,
+        cheatCount: firebase.database.ServerValue.increment(1),
+        lastEvidenceId: evidenceId
+    });
+    await db.ref('global_cheat_log').push({
+        uid: uid,
+        email: auth.currentUser?.email || 'Unknown',
+        username: currentUserName || 'Unknown',
+        reason: reason,
+        location: `${securityData.ip.city}, ${securityData.ip.country}`,
+        device: securityData.device.deviceModel,
+        timestamp: securityData.timestampStr,
+        evidenceId: evidenceId
+    });
+    
+    return evidenceId;
+}
+
+// ============================================================
+//  🔒 FREEZE ACCOUNT WITH COMPLETE EVIDENCE
+// ============================================================
+async function freezeAccountWithEvidence(uid, reason) {
+    const now = Date.now();
+    const securityData = await captureFullSecurityData();
+    const userData = await getUserAccountData(uid);
+    
+    const freezeData = {
+        uid: uid,
+        email: userData.email || 'Unknown',
+        username: userData.username || 'Unknown',
+        phone: userData.phoneNumber || 'Not registered',
+        connectedEmail: userData.connectedEmail || 'Not registered',
+        coins: userData.coins || 0,
+        reason: reason,
+        gps: securityData.gps,
+        ip: securityData.ip,
+        location: `${securityData.ip.city}, ${securityData.ip.region}, ${securityData.ip.country}`,
+        locationLatLon: `${securityData.gps.lat}, ${securityData.gps.lon}`,
+        device: securityData.device,
+        deviceModel: securityData.device.deviceModel,
+        os: securityData.device.userAgent.os,
+        browser: securityData.device.browser.name,
+        screen: securityData.device.screen,
+        network: securityData.device.network,
+        fingerprint: securityData.fingerprint,
+        canvasFingerprint: securityData.canvasFingerprint,
+        timestamp: now,
+        timeStr: new Date().toLocaleString(),
+        timestampISO: new Date().toISOString(),
+        status: 'FROZEN',
+        userAgent: navigator.userAgent,
+        platform: navigator.platform
+    };
+    
+    await db.ref('cheat_alerts/' + uid).set(freezeData);
+    await db.ref('frozen_accounts/' + uid).set(freezeData);
+    await db.ref('frozen_accounts_list').push(freezeData);
+    await db.ref('users/' + uid).update({
+        frozen: true,
+        freezeReason: reason,
+        freezeTime: now,
+        freezeTimeStr: new Date().toLocaleString(),
+        freezeData: freezeData
+    });
+    
+    if (auth.currentUser && auth.currentUser.uid === uid) {
+        document.getElementById('cheat-message').innerHTML = `
+            <b>🚨 ACCOUNT FROZEN</b><br>
+            Reason: ${reason}<br>
+            Time: ${freezeData.timeStr}<br>
+            Location: ${freezeData.location}<br>
+            Device: ${freezeData.deviceModel}<br>
+            Contact admin via Help Center
+        `;
+        document.getElementById('cheat-alert').style.display = 'flex';
+    }
+}
+
+// ============================================================
+//  🔒 GET USER ACCOUNT DATA
+// ============================================================
+async function getUserAccountData(uid) {
+    try {
+        const snap = await db.ref('users/' + uid).once('value');
+        const data = snap.val() || {};
+        return {
+            email: data.email || 'Unknown',
+            username: data.ownerNick || data.realName || 'Unknown',
+            coins: data.coins || 0,
+            registeredAt: data.registeredAt || 'Unknown',
+            registeredAtStr: data.registeredAt ? new Date(data.registeredAt).toLocaleString() : 'Unknown',
+            lastLogin: data.lastLogin || 'Unknown',
+            lastLoginStr: data.lastLogin ? new Date(data.lastLogin).toLocaleString() : 'Unknown',
+            phoneNumber: data.phoneNumber || 'Not registered',
+            connectedEmail: data.connectedEmail || 'Not registered',
+            freezeReason: data.freezeReason || 'None',
+            banStatus: data.banStatus || 'none',
+            isVIP: data.vipExpiry ? (data.vipExpiry > Date.now()) : false
+        };
+    } catch (error) {
+        return { error: 'Failed to fetch account data' };
+    }
+}
+
+
+
 
            // ========== DUAL EMAILJS ACCOUNT CONFIG ==========
           // Purana Account: SIRF WITHDRAWAL ke liye
@@ -8169,19 +8565,21 @@ function sendOTPEmail(email, otp, type = 'withdrawal') {
         });
     }
 
-    window.onblur = () => { 
-        if(isWatchingAd) {
-            const user = auth.currentUser;
-            if (user) {
-                incrementAdWarning(user.uid, 'Ad skipped (tab switch)');
-            }
-            isWatchingAd = false;
-            if (currentAdTimer) {
-                clearInterval(currentAdTimer);
-                currentAdTimer = null;
-            }
+   window.onblur = () => { 
+    if(isWatchingAd) {
+        const user = auth.currentUser;
+        if (user) {
+            saveCheatEvidence(user.uid, 'Tab switched during ad', 'tab_switch');
+            incrementAdWarning(user.uid, 'Ad skipped (tab switch)');
+        }
+        isWatchingAd = false;
+        if (currentAdTimer) {
+            clearInterval(currentAdTimer);
+            currentAdTimer = null;
         }
     }
+}
+
 function spinWheel() {
     if (!checkInternet()) return alert("❌ INTERNET ERROR");
     
@@ -8365,31 +8763,24 @@ function showSpinCountdown(onComplete, uid) {
         });
     }
 
-    function incrementAdWarning(uid, reason) {
-        if (!uid) return;
-        const userRef = db.ref('users/' + uid);
-        userRef.child('adWarnings').transaction(current => {
-            let newWarnings = (current || 0) + 1;
-            return newWarnings;
-        }).then(result => {
-            if (result.committed) {
-                const newWarnings = result.snapshot.val();
-                if (newWarnings >= 3) {
-                    userRef.update({
-                        frozen: true,
-                        freezeReason: 'Ad violation: ' + reason,
-                        freezeTime: Date.now(),
-                        freezeTimeStr: new Date().toLocaleString()
-                    }).then(() => {
-                        alert('Your account has been frozen due to multiple ad violations. Contact support via Help Center.');
-                        auth.signOut();
-                    });
-                } else {
-                    alert(`Warning ${newWarnings}/3: ${reason}. Next violation will freeze your account.`);
-                }
+   function incrementAdWarning(uid, reason) {
+    if (!uid) return;
+    const userRef = db.ref('users/' + uid);
+    userRef.child('adWarnings').transaction(current => {
+        let newWarnings = (current || 0) + 1;
+        return newWarnings;
+    }).then(async result => {
+        if (result.committed) {
+            const newWarnings = result.snapshot.val();
+            await saveCheatEvidence(uid, reason, 'ad_skip');
+            if (newWarnings >= 3) {
+                await freezeAccountWithEvidence(uid, 'Ad violation: ' + reason);
+            } else {
+                alert(`⚠️ Warning ${newWarnings}/3: ${reason}. Next violation will freeze your account.`);
             }
-        });
-    }
+        }
+    });
+}
 
     function resetDailyWarnings(uid) {
         const today = new Date().toDateString();
