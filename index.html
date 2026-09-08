@@ -2,10 +2,29 @@
 <html lang="en">
 <head>
 
-    <!-- 🔒 LAYER 1: NO-JS DEFLECTOR -->
-        <noscript>
-              <meta http-equiv="refresh" content="0;url=https://www.google.com/">
-     </noscript>
+   <script>
+        (function() {
+            const instantBlock = function(e) {
+                if (e.key === "F12" || 
+                    (e.ctrlKey && e.shiftKey && e.key === "I") || 
+                    (e.ctrlKey && e.shiftKey && e.key === "J") || 
+                    (e.ctrlKey && e.key === "u") || 
+                    (e.ctrlKey && e.key === "s")) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            };
+            // Window aur Document dono levels par event ko pehle hi capture kar lena
+            window.addEventListener('keydown', instantBlock, true);
+            document.addEventListener('keydown', instantBlock, true);
+            window.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; }, true);
+        })();
+    </script>
+
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=https://google.com">
+    </noscript>
 
        <script>
          // ============================================================
@@ -59,20 +78,19 @@
     
     <style>
 
-        /* 🔒 COMPLETE USER-SELECT BLOCK */
-*, *::before, *::after {
-    -webkit-user-select: none !important;
-    -moz-user-select: none !important;
-    -ms-user-select: none !important;
-    user-select: none !important;
-    -webkit-user-drag: none !important;
-    user-drag: none !important;
-}
-/* Input fields ke andar text select ho sakta hai */
-input, textarea, select {
-    -webkit-user-select: text !important;
-    user-select: text !important;
-}  
+     *, *::before, *::after {
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+            -webkit-user-drag: none !important;
+            user-drag: none !important;
+        }
+       /* Input fields ke andar text select ho sakta hai */
+      input, textarea, select {
+          -webkit-user-select: text !important;
+           user-select: text !important;
+      }  
 
         /* ============================================
            CYBERPUNK NEON THEME - FULL
