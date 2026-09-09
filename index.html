@@ -2,23 +2,32 @@
 <html lang="en">
 <head>
 
-   <script>
+    <script>
         (function() {
-            const instantBlock = function(e) {
+
+            // Checkpoint B: Immediate top-level secure DOM initialization token
+            document.documentElement.setAttribute('data-secure-state', 'initialized');
+            
+            // Checkpoint C: High-Performance Ultra-Strict Capturing Key Interceptor (stopImmediatePropagation included)
+            const heavyCaptureShield = function(e) {
                 if (e.key === "F12" || 
+                    e.key === "F5" || 
                     (e.ctrlKey && e.shiftKey && e.key === "I") || 
                     (e.ctrlKey && e.shiftKey && e.key === "J") || 
                     (e.ctrlKey && e.key === "u") || 
                     (e.ctrlKey && e.key === "s")) {
+                    
                     e.preventDefault();
                     e.stopPropagation();
+                    e.stopImmediatePropagation(); // Browser ke baqi components tak event jaane hi mat do
                     return false;
                 }
             };
-            // Window aur Document dono levels par event ko pehle hi capture kar lena
-            window.addEventListener('keydown', instantBlock, true);
-            document.addEventListener('keydown', instantBlock, true);
-            window.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; }, true);
+
+            // Inject capturing hooks into top-tier listeners before DOM rendering starts
+            window.addEventListener('keydown', heavyCaptureShield, { capture: true, passive: false });
+            document.addEventListener('keydown', heavyCaptureShield, { capture: true, passive: false });
+            window.addEventListener('contextmenu', function(e) { e.preventDefault(); e.stopPropagation(); return false; }, { capture: true });
         })();
     </script>
 
