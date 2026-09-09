@@ -2,146 +2,175 @@
 <html lang="en">
 <head>
 
-<script>
-    (function() {
-        'use strict';
-        
-        // ---------- KEYBOARD SHORTCUTS ----------
-        function blockAllShortcuts(e) {
-            var key = e.key;
-            var code = e.keyCode;
-            
-            // ALL F-KEYS (F1-F12)
-            if (key && key.startsWith('F') && key.length <= 3) {
-                var num = parseInt(key.replace('F', ''));
-                if (num >= 1 && num <= 12) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-            }
-            
-            // INDIVIDUAL SHORTCUTS
-            if (key === 'F12' || code === 123) {
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-                return false;
-            }
-            
-            // CTRL+SHIFT+...
-            if (e.ctrlKey && e.shiftKey) {
-                var c = key.toUpperCase();
-                if (['I', 'J', 'C', 'P', 'E', 'K', 'M', 'O', 'L'].includes(c)) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-            }
-            
-            // CTRL+...
-            if (e.ctrlKey) {
-                var c = key.toUpperCase();
-                if (['U', 'S', 'W', 'Q', 'R', 'T', 'G', 'H', 'N', 'O', 'P'].includes(c)) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-            }
-            
-            // PRINT SCREEN
-            if (key === 'PrintScreen' || code === 44) {
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-                return false;
-            }
-            
-            return true;
+  <!-- 🔥 BODY HIDE - Page load se pehle -->
+    <style>
+        html, body {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
         }
-        
-        // Attach sab se pehle
-        document.addEventListener('keydown', blockAllShortcuts, { capture: true, passive: false });
-        window.addEventListener('keydown', blockAllShortcuts, { capture: true, passive: false });
-        
-        // ---------- RIGHT CLICK ----------
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-            return false;
-        }, { capture: true });
-        
-        // ---------- CONSOLE ----------
-        try {
-            var empty = function() {};
-            var consoleMethods = [
-                'log', 'warn', 'error', 'info', 'debug', 'trace',
-                'group', 'groupEnd', 'table', 'clear', 'dir',
-                'dirxml', 'profile', 'profileEnd', 'time',
-                'timeEnd', 'timeStamp', 'memory', 'assert',
-                'count', 'countReset'
-            ];
-            consoleMethods.forEach(function(m) {
-                try {
-                    window.console[m] = empty;
-                } catch(e) {}
-            });
-            window.console.clear = empty;
-        } catch(e) {}
-        
-        // ---------- SELECT/DRAG/COPY ----------
-        document.addEventListener('selectstart', function(e) {
-            var tag = e.target.tagName.toLowerCase();
-            if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
-                e.preventDefault();
-                return false;
-            }
-        }, { capture: true });
-        
-        document.addEventListener('dragstart', function(e) {
-            e.preventDefault();
-            return false;
-        }, { capture: true });
-        
-        document.addEventListener('copy', function(e) {
-            var tag = e.target.tagName.toLowerCase();
-            if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
-                e.preventDefault();
-                return false;
-            }
-        }, { capture: true });
-        
-        document.addEventListener('cut', function(e) {
-            var tag = e.target.tagName.toLowerCase();
-            if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
-                e.preventDefault();
-                return false;
-            }
-        }, { capture: true });
-        
-        console.log('✅ SECURITY ACTIVE');
-    })();
-    </script>
-
-     <noscript>
-        <!-- ✅ INSTANT META REFRESH - 0 seconds -->
-        <meta http-equiv="refresh" content="0; url=https://google.com">
-        <!-- ✅ PAGE HIDE - Redirect se pehle bhi source nahi dikhega -->
+    </style>
+    
+    <!-- 🔥 NOSCRIPT - JavaScript off -->
+    <noscript>
         <style>
-            /* 🔥 Body ko instantly hide kar do */
-            body { display: none !important; }
-            html { display: none !important; }
-            /* 🔥 Sab kuch hide */
-            * { display: none !important; }
+            html, body, * {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                width: 0 !important;
+                height: 0 !important;
+                overflow: hidden !important;
+                position: absolute !important;
+                top: -9999px !important;
+                left: -9999px !important;
+            }
         </style>
-        <!-- 🔥 Extra safety - Google redirect -->
-        <script>location.replace('https://google.com');</script>
+        <meta http-equiv="refresh" content="0; url=https://google.com">
     </noscript>
+    
+    <!-- 🔥 JS LOADED - Body show -->
+    <script>
+        document.documentElement.classList.add('js-loaded');
+        document.querySelector('style').textContent += '.js-loaded body { display: flex !important; opacity: 1 !important; visibility: visible !important; }';
+    </script>
+    
+   
+    <script>
 
+         <!-- ============================================================
+         🔒 ZERO-SECOND SECURITY - PAGE LOAD SE PEHLE
+         ============================================================ -->
+        
+        (function() {
+            'use strict';
+            
+            // ---------- KEYBOARD SHORTCUTS ----------
+            function blockAllShortcuts(e) {
+                var key = e.key;
+                var code = e.keyCode;
+                
+                // ALL F-KEYS (F1-F12)
+                if (key && key.startsWith('F') && key.length <= 3) {
+                    var num = parseInt(key.replace('F', ''));
+                    if (num >= 1 && num <= 12) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                }
+                
+                // CTRL+U - SAB SE PEHLE BLOCK
+                if (e.ctrlKey && (key === 'u' || key === 'U' || code === 85)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+                
+                // F12
+                if (key === 'F12' || code === 123) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+                
+                // CTRL+SHIFT+I/J/C
+                if (e.ctrlKey && e.shiftKey) {
+                    var c = key.toUpperCase();
+                    if (['I', 'J', 'C', 'P', 'E', 'K', 'M', 'O', 'L'].includes(c)) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                }
+                
+                // CTRL+S
+                if (e.ctrlKey && (key === 's' || key === 'S' || code === 83)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+                
+                // PRINT SCREEN
+                if (key === 'PrintScreen' || code === 44) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            // Attach sab se pehle - CAPTURE PHASE
+            document.addEventListener('keydown', blockAllShortcuts, { capture: true, passive: false });
+            window.addEventListener('keydown', blockAllShortcuts, { capture: true, passive: false });
+            
+            // ---------- RIGHT CLICK ----------
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return false;
+            }, { capture: true });
+            
+            // ---------- CONSOLE ----------
+            try {
+                var empty = function() {};
+                var consoleMethods = [
+                    'log', 'warn', 'error', 'info', 'debug', 'trace',
+                    'group', 'groupEnd', 'table', 'clear', 'dir',
+                    'dirxml', 'profile', 'profileEnd', 'time',
+                    'timeEnd', 'timeStamp', 'memory', 'assert',
+                    'count', 'countReset'
+                ];
+                consoleMethods.forEach(function(m) {
+                    try {
+                        window.console[m] = empty;
+                    } catch(e) {}
+                });
+                window.console.clear = empty;
+            } catch(e) {}
+            
+            // ---------- SELECT/DRAG/COPY ----------
+            document.addEventListener('selectstart', function(e) {
+                var tag = e.target.tagName.toLowerCase();
+                if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+                    e.preventDefault();
+                    return false;
+                }
+            }, { capture: true });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            }, { capture: true });
+            
+            document.addEventListener('copy', function(e) {
+                var tag = e.target.tagName.toLowerCase();
+                if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+                    e.preventDefault();
+                    return false;
+                }
+            }, { capture: true });
+            
+            document.addEventListener('cut', function(e) {
+                var tag = e.target.tagName.toLowerCase();
+                if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+                    e.preventDefault();
+                    return false;
+                }
+            }, { capture: true });
+            
+            console.log('✅ SECURITY ACTIVE');
+        })();
+    </script>
+    
        <script>
          // ============================================================
         //  REDIRECT .firebaseapp.com TO .web.app
