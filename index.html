@@ -2,12 +2,22 @@
 <html lang="en">
 <head>
 
-  <!-- 🔥 BODY HIDE - Page load se pehle -->
+ <!-- ============================================================
+         🔥 BODY HIDE - Sirf 0.001 second ke liye
+         ============================================================ -->
     <style>
+        /* 🔥 Body ko initially hide karo */
         html, body {
             display: none !important;
             opacity: 0 !important;
             visibility: hidden !important;
+        }
+        
+        /* 🔥 JavaScript load hone par show */
+        .js-loaded body {
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
         }
     </style>
     
@@ -31,17 +41,14 @@
     
     <!-- 🔥 JS LOADED - Body show -->
     <script>
+        // Page load hone par body show
         document.documentElement.classList.add('js-loaded');
-        document.querySelector('style').textContent += '.js-loaded body { display: flex !important; opacity: 1 !important; visibility: visible !important; }';
     </script>
     
-   
-    <script>
-
-         <!-- ============================================================
-         🔒 ZERO-SECOND SECURITY - PAGE LOAD SE PEHLE
+    <!-- ============================================================
+         🔒 SECURITY - SIRF CTRL+U + F12 + CONSOLE BLOCK
          ============================================================ -->
-        
+    <script>
         (function() {
             'use strict';
             
@@ -61,7 +68,7 @@
                     }
                 }
                 
-                // CTRL+U - SAB SE PEHLE BLOCK
+                // CTRL+U - Block
                 if (e.ctrlKey && (key === 'u' || key === 'U' || code === 85)) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -69,7 +76,7 @@
                     return false;
                 }
                 
-                // F12
+                // F12 - Block
                 if (key === 'F12' || code === 123) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -77,7 +84,7 @@
                     return false;
                 }
                 
-                // CTRL+SHIFT+I/J/C
+                // CTRL+SHIFT+I/J/C - Block
                 if (e.ctrlKey && e.shiftKey) {
                     var c = key.toUpperCase();
                     if (['I', 'J', 'C', 'P', 'E', 'K', 'M', 'O', 'L'].includes(c)) {
@@ -88,7 +95,7 @@
                     }
                 }
                 
-                // CTRL+S
+                // CTRL+S - Block
                 if (e.ctrlKey && (key === 's' || key === 'S' || code === 83)) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -96,12 +103,17 @@
                     return false;
                 }
                 
-                // PRINT SCREEN
+                // PRINT SCREEN - Block
                 if (key === 'PrintScreen' || code === 44) {
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     return false;
+                }
+                
+                // ✅ CTRL+R - ALLOW (User ko refresh karne do)
+                if (e.ctrlKey && (key === 'r' || key === 'R' || code === 82)) {
+                    return true; // Allow refresh
                 }
                 
                 return true;
