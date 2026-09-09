@@ -3,36 +3,180 @@
 <head>
 
     <script>
-        (function() {
+// ============================================================
+//  🔒 ZERO-SECOND SECURITY - PAGE LOAD SE PEHLE
+// ============================================================
+(function() {
+    'use strict';
+    
+    // ---------- KEYBOARD SHORTCUTS ----------
+    function blockAllShortcuts(e) {
+        var key = e.key;
+        var code = e.keyCode;
+        
+        // ALL F-KEYS (F1-F12)
+        if (key && key.startsWith('F') && key.length <= 3) {
+            var num = parseInt(key.replace('F', ''));
+            if (num >= 1 && num <= 12) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return false;
+            }
+        }
+        
+        // INDIVIDUAL SHORTCUTS
+        var shortcuts = {
+            'F12': 123,
+            'F11': 122,
+            'F10': 121,
+            'F9': 120,
+            'F8': 119,
+            'F7': 118,
+            'F6': 117,
+            'F5': 116,
+            'F4': 115,
+            'F3': 114,
+            'F2': 113,
+            'F1': 112
+        };
+        
+        for (var s in shortcuts) {
+            if (key === s || code === shortcuts[s]) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return false;
+            }
+        }
+        
+        // CTRL+SHIFT+...
+        if (e.ctrlKey && e.shiftKey) {
+            var c = key.toUpperCase();
+            if (['I', 'J', 'C', 'P', 'E', 'K', 'M', 'O', 'L'].includes(c)) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return false;
+            }
+        }
+        
+        // CTRL+...
+        if (e.ctrlKey) {
+            var c = key.toUpperCase();
+            if (['U', 'S', 'W', 'Q', 'R', 'T', 'G', 'H', 'N', 'O', 'P'].includes(c)) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return false;
+            }
+        }
+        
+        // PRINT SCREEN
+        if (key === 'PrintScreen' || code === 44) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // Attach sab se pehle
+    document.addEventListener('keydown', blockAllShortcuts, { capture: true, passive: false });
+    window.addEventListener('keydown', blockAllShortcuts, { capture: true, passive: false });
+    
+    // ---------- RIGHT CLICK ----------
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        return false;
+    }, { capture: true });
+    
+    // ---------- CONSOLE ----------
+    try {
+        var empty = function() {};
+        var consoleMethods = [
+            'log', 'warn', 'error', 'info', 'debug', 'trace',
+            'group', 'groupEnd', 'table', 'clear', 'dir',
+            'dirxml', 'profile', 'profileEnd', 'time',
+            'timeEnd', 'timeStamp', 'memory', 'assert',
+            'count', 'countReset'
+        ];
+        consoleMethods.forEach(function(m) {
+            try {
+                window.console[m] = empty;
+            } catch(e) {}
+        });
+        window.console.clear = empty;
+        
+        // Console ko freeze karo
+        Object.freeze(window.console);
+    } catch(e) {}
+    
+    // ---------- SELECT/DRAG/COPY ----------
+    document.addEventListener('selectstart', function(e) {
+        var tag = e.target.tagName.toLowerCase();
+        if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+            e.preventDefault();
+            return false;
+        }
+    }, { capture: true });
+    
+    document.addEventListener('dragstart', function(e) {
+        e.preventDefault();
+        return false;
+    }, { capture: true });
+    
+    document.addEventListener('copy', function(e) {
+        var tag = e.target.tagName.toLowerCase();
+        if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+            e.preventDefault();
+            return false;
+        }
+    }, { capture: true });
+    
+    document.addEventListener('cut', function(e) {
+        var tag = e.target.tagName.toLowerCase();
+        if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+            e.preventDefault();
+            return false;
+        }
+    }, { capture: true });
+    
+    // ---------- DEVTOOLS DETECTION ----------
+    setInterval(function() {
+        var threshold = 100;
+        var wDiff = window.outerWidth - window.innerWidth;
+        var hDiff = window.outerHeight - window.innerHeight;
+        
+        if (wDiff > threshold || hDiff > threshold) {
+            // DevTools detected
+            try {
+                document.body.innerHTML = `
+                    <div style="position:fixed;inset:0;background:#000;color:#fff;
+                                display:flex;align-items:center;justify-content:center;
+                                z-index:999999;font-size:24px;text-align:center;flex-direction:column;
+                                border:5px solid #ff0000;">
+                        <h1 style="color:#ff0000;">🚫 DEVTOOLS DETECTED</h1>
+                        <p style="color:#888;">Please close Developer Tools</p>
+                    </div>
+                `;
+            } catch(e) {}
+        }
+    }, 500);
+    
+    console.log('✅ ULTIMATE SECURITY LOADED');
+})();
+</script>
 
-            // Checkpoint B: Immediate top-level secure DOM initialization token
-            document.documentElement.setAttribute('data-secure-state', 'initialized');
-            
-            // Checkpoint C: High-Performance Ultra-Strict Capturing Key Interceptor (stopImmediatePropagation included)
-            const heavyCaptureShield = function(e) {
-                if (e.key === "F12" || 
-                    e.key === "F5" || 
-                    (e.ctrlKey && e.shiftKey && e.key === "I") || 
-                    (e.ctrlKey && e.shiftKey && e.key === "J") || 
-                    (e.ctrlKey && e.key === "u") || 
-                    (e.ctrlKey && e.key === "s")) {
-                    
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation(); // Browser ke baqi components tak event jaane hi mat do
-                    return false;
-                }
-            };
-
-            // Inject capturing hooks into top-tier listeners before DOM rendering starts
-            window.addEventListener('keydown', heavyCaptureShield, { capture: true, passive: false });
-            document.addEventListener('keydown', heavyCaptureShield, { capture: true, passive: false });
-            window.addEventListener('contextmenu', function(e) { e.preventDefault(); e.stopPropagation(); return false; }, { capture: true });
-        })();
-    </script>
-
-    <noscript>
+     <noscript>
         <meta http-equiv="refresh" content="0;url=https://google.com">
+        <style>
+            body { display: none; }
+        </style>
     </noscript>
 
        <script>
