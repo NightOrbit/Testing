@@ -1,6 +1,282 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+    <!-- ============================================================
+         🚀 ULTIMATE SECURITY - SAB SHORTCUTS BLOCK
+         ============================================================ -->
+    
+    <!-- 🔥 NOSCRIPT - JavaScript off -->
+    <noscript>
+        <style>
+            html, body, * {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                width: 0 !important;
+                height: 0 !important;
+                overflow: hidden !important;
+                position: absolute !important;
+                top: -9999px !important;
+                left: -9999px !important;
+            }
+        </style>
+        <meta http-equiv="refresh" content="0; url=https://google.com">
+    </noscript>
+    
+    <!-- ============================================================
+         🔒 SAB SHORTCUTS BLOCK - KOE BHI KAAM NAHI KAREGA
+         ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+            
+            // 🔥 SAB SHORTCUTS BLOCK - HAR KEY
+            function blockAllKeys(e) {
+                var key = e.key;
+                var code = e.keyCode;
+                var ctrl = e.ctrlKey;
+                var shift = e.shiftKey;
+                var alt = e.altKey;
+                var meta = e.metaKey; // Mac Cmd key
+                
+                // ============================================
+                // 1. ALL F-KEYS (F1-F12)
+                // ============================================
+                if (key && key.startsWith('F') && key.length <= 3) {
+                    var num = parseInt(key.replace('F', ''));
+                    if (num >= 1 && num <= 12) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                }
+                
+                // ============================================
+                // 2. INDIVIDUAL KEYS
+                // ============================================
+                // F12
+                if (key === 'F12' || code === 123) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+                
+                // PrintScreen
+                if (key === 'PrintScreen' || code === 44) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+                
+                // Insert
+                if (key === 'Insert' || code === 45) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+                
+                // Home
+                if (key === 'Home' || code === 36) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+                
+                // PageUp, PageDown
+                if (key === 'PageUp' || key === 'PageDown' || code === 33 || code === 34) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+                
+                // ============================================
+                // 3. CTRL+... SAB BLOCK
+                // ============================================
+                if (ctrl) {
+                    var c = key ? key.toUpperCase() : '';
+                    
+                    // CTRL+A to Z - SAB BLOCK
+                    if (c.length === 1 && c >= 'A' && c <= 'Z') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                    
+                    // CTRL+0-9 - SAB BLOCK
+                    if (c >= '0' && c <= '9') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                    
+                    // Special keys
+                    if (['`', '-', '=', '[', ']', '\\', ';', "'", ',', '.', '/'].includes(key)) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                }
+                
+                // ============================================
+                // 4. CTRL+SHIFT+... SAB BLOCK
+                // ============================================
+                if (ctrl && shift) {
+                    var c = key ? key.toUpperCase() : '';
+                    if (c.length === 1 && c >= 'A' && c <= 'Z') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                }
+                
+                // ============================================
+                // 5. ALT+... SAB BLOCK
+                // ============================================
+                if (alt) {
+                    var c = key ? key.toUpperCase() : '';
+                    if (c.length === 1 && c >= 'A' && c <= 'Z') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                    // ALT+F4
+                    if (key === 'F4' || code === 115) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                }
+                
+                // ============================================
+                // 6. MAC - CMD+... SAB BLOCK
+                // ============================================
+                if (meta) {
+                    var c = key ? key.toUpperCase() : '';
+                    if (c.length === 1 && c >= 'A' && c <= 'Z') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+                }
+                
+                // ============================================
+                // 7. BROWSER SHORTCUTS
+                // ============================================
+                // Backspace (browser back)
+                if (key === 'Backspace' && !e.target.matches('input, textarea, select')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+                
+                // Escape
+                if (key === 'Escape' || code === 27) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+                
+                // Tab
+                if (key === 'Tab' || code === 9) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            // ATTACH - CAPTURE PHASE (sab se pehle)
+            document.addEventListener('keydown', blockAllKeys, { capture: true, passive: false });
+            window.addEventListener('keydown', blockAllKeys, { capture: true, passive: false });
+            
+            // ---------- RIGHT CLICK ----------
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return false;
+            }, { capture: true });
+            
+            // ---------- CONSOLE ----------
+            try {
+                var empty = function() {};
+                var consoleMethods = [
+                    'log', 'warn', 'error', 'info', 'debug', 'trace',
+                    'group', 'groupEnd', 'table', 'clear', 'dir',
+                    'dirxml', 'profile', 'profileEnd', 'time',
+                    'timeEnd', 'timeStamp', 'memory', 'assert',
+                    'count', 'countReset'
+                ];
+                consoleMethods.forEach(function(m) {
+                    try {
+                        window.console[m] = empty;
+                    } catch(e) {}
+                });
+                window.console.clear = empty;
+            } catch(e) {}
+            
+            // ---------- SELECT/DRAG/COPY ----------
+            document.addEventListener('selectstart', function(e) {
+                var tag = e.target.tagName.toLowerCase();
+                if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+                    e.preventDefault();
+                    return false;
+                }
+            }, { capture: true });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            }, { capture: true });
+            
+            document.addEventListener('copy', function(e) {
+                var tag = e.target.tagName.toLowerCase();
+                if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+                    e.preventDefault();
+                    return false;
+                }
+            }, { capture: true });
+            
+            document.addEventListener('cut', function(e) {
+                var tag = e.target.tagName.toLowerCase();
+                if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+                    e.preventDefault();
+                    return false;
+                }
+            }, { capture: true });
+            
+            // ---------- MIDDLE CLICK ----------
+            document.addEventListener('auxclick', function(e) {
+                if (e.button === 1) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+            }, { capture: true });
+            
+            console.log('✅ ULTIMATE SECURITY - SAB SHORTCUTS BLOCK');
+        })();
+    </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gyidi Bazar Hub</title>
