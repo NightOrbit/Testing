@@ -605,10 +605,10 @@ textarea[readonly] {
     <div class="card">
         <div class="guide-box">
             <strong>📌 4 Simple Steps:</strong><br>
-            1️⃣ <b>Config Mode</b> chuno — Demo / Your Config / No Config<br>
-            2️⃣ <b>HTML, CSS, JS</b> daalo (ya pura code daal kar auto-detect karo)<br>
-            3️⃣ <b>"PARSE & SEPARATE CODE"</b> dabao — HTML, CSS, JS alag ho jayenge<br>
-            4️⃣ <b>"CONVERT TO JSON"</b> dabao — <code>code.json</code> ready!
+            1️⃣ <b>Config Mode</b> — choose Demo / Your Config / No Config<br>
+            2️⃣ <b>Paste your code</b> (HTML + CSS + JS together)<br>
+            3️⃣ Click <b>"PARSE & SEPARATE CODE"</b> — HTML, CSS, JS will be separated<br>
+            4️⃣ Click <b>"CONVERT TO JSON"</b> — your <code>code.json</code> is ready!
         </div>
     </div>
 
@@ -616,10 +616,10 @@ textarea[readonly] {
         <h3>🔥 STEP 1 — Config Setup <span class="badge" id="configModeBadge">DEMO</span></h3>
 
         <div class="guide-box">
-            <strong>📌 Config Mode Chuno:</strong><br>
-            • <b>Demo Config</b> — Placeholder values (testing ke liye)<br>
-            • <b>Your Config</b> — Apna Firebase config daalo (real app ke liye)<br>
-            • <b>No Config</b> — Bina Firebase ke static app (config: null)
+            <strong>📌 Choose Config Mode:</strong><br>
+            • <b>Demo Config</b> — Placeholder values (for testing)<br>
+            • <b>Your Config</b> — Paste your own Firebase config (for real app)<br>
+            • <b>No Config</b> — Static app without Firebase (config: null)
         </div>
 
         <div class="mode-toggle">
@@ -637,7 +637,7 @@ textarea[readonly] {
                 <span class="badge gold">PLACEHOLDER VALUES</span>
             </div>
             <div class="guide-box">
-                Ye demo config hai — placeholder values ke saath. Real Firebase chahiye toh <strong>"YOUR CONFIG"</strong> chuno.
+                This is a demo config with placeholder values. For real Firebase, choose <strong>"YOUR CONFIG"</strong>.
             </div>
             <textarea id="demoConfigArea" readonly>{
   "config": {
@@ -667,7 +667,7 @@ textarea[readonly] {
                 <span class="badge" id="customConfigBadge">EMPTY</span>
             </div>
             <div class="guide-box">
-                Apna Firebase config yahan paste karo. Agar config nahi hai toh <strong>"NO CONFIG (NULL)"</strong> chuno.
+                Paste your Firebase config here. If you don't have a config, choose <strong>"NO CONFIG (NULL)"</strong>.
             </div>
             <textarea id="customConfigArea" class="tall" placeholder='{
   "apiKey": "AIzaSy...",
@@ -695,7 +695,7 @@ textarea[readonly] {
                 <span class="badge danger">STATIC APP</span>
             </div>
             <div class="guide-box">
-                Is mode mein <code>"config": null</code> set hoga. App <strong>bina Firebase ke</strong> chalega.
+                In this mode, <code>"config": null</code> will be set. The app will run <strong>without Firebase</strong>.
             </div>
         </div>
 
@@ -703,17 +703,17 @@ textarea[readonly] {
     </div>
 
     <div class="card" id="codeSection">
-        <h3>📝 STEP 2 — Apna Code Daalo <span class="badge pink">AUTO-DETECT</span></h3>
+        <h3>📝 STEP 2 — Paste Your Code <span class="badge pink">AUTO-DETECT</span></h3>
 
         <div class="guide-box">
-            <strong>📌 Yahan apna pura code paste karo:</strong><br>
-            • Aap <b>HTML + CSS + JS</b> teeno ek saath daal sakte ho<br>
-            • Ya <b>sirf HTML</b>, ya <b>sirf CSS</b>, ya <b>sirf JS</b><br>
-            • Button dabao — system <b>automatically</b> HTML, CSS, JS alag kar dega<br>
-            • <b>⚠️ Aapka code ek bhi line change nahi hoga</b> — sirf separate hoga
+            <strong>📌 Paste your code here:</strong><br>
+            • You can paste <b>HTML + CSS + JS</b> together<br>
+            • Or just <b>HTML</b>, just <b>CSS</b>, or just <b>JS</b><br>
+            • The system will <b>automatically</b> separate HTML, CSS, JS<br>
+            • <b>⚠️ Your code will NOT change at all</b> — only separated
         </div>
 
-        <textarea id="fullCodeArea" class="huge" placeholder="Yahan apna pura code paste karo..."></textarea>
+        <textarea id="fullCodeArea" class="huge" placeholder="Paste your full code here..."></textarea>
 
         <div class="btn-row">
             <button class="mini-btn gold" onclick="parseFullCode()">🔍 PARSE & SEPARATE CODE</button>
@@ -729,9 +729,9 @@ textarea[readonly] {
         <div class="card" id="htmlSection">
             <h3>📄 HTML <span class="badge" id="htmlBadge">EMPTY</span></h3>
             <div class="guide-box">
-                <strong>HTML section</strong> — Ye alag kiya gaya HTML code hai. Aap isse edit kar sakte ho.
+                <strong>HTML section</strong> — This is the separated HTML code. You can edit it.
             </div>
-            <textarea id="htmlArea" class="tall" placeholder="HTML yahan aayega..."></textarea>
+            <textarea id="htmlArea" class="tall" placeholder="HTML will appear here..."></textarea>
             <div class="btn-row">
                 <button class="mini-btn" onclick="copyHtml()">📋 COPY</button>
                 <button class="mini-btn pink" onclick="clearHtml()">🗑️ CLEAR</button>
@@ -741,9 +741,9 @@ textarea[readonly] {
         <div class="card" id="cssSection">
             <h3>🎨 CSS <span class="badge" id="cssBadge">EMPTY</span></h3>
             <div class="guide-box">
-                <strong>CSS section</strong> — Ye alag kiya gaya CSS code hai.
+                <strong>CSS section</strong> — This is the separated CSS code.
             </div>
-            <textarea id="cssArea" class="tall" placeholder="CSS yahan aayega..."></textarea>
+            <textarea id="cssArea" class="tall" placeholder="CSS will appear here..."></textarea>
             <div class="btn-row">
                 <button class="mini-btn" onclick="copyCss()">📋 COPY</button>
                 <button class="mini-btn pink" onclick="clearCss()">🗑️ CLEAR</button>
@@ -753,9 +753,9 @@ textarea[readonly] {
         <div class="card" id="jsSection">
             <h3>⚙️ JavaScript <span class="badge" id="jsBadge">EMPTY</span></h3>
             <div class="guide-box">
-                <strong>JS section</strong> — Ye alag kiya gaya JavaScript code hai.
+                <strong>JS section</strong> — This is the separated JavaScript code.
             </div>
-            <textarea id="jsArea" class="tall" placeholder="JS yahan aayega..."></textarea>
+            <textarea id="jsArea" class="tall" placeholder="JS will appear here..."></textarea>
             <div class="btn-row">
                 <button class="mini-btn" onclick="copyJs()">📋 COPY</button>
                 <button class="mini-btn pink" onclick="clearJs()">🗑️ CLEAR</button>
@@ -768,11 +768,11 @@ textarea[readonly] {
         <h3>📦 STEP 3 — Convert to JSON <span class="badge gold">FINAL</span></h3>
 
         <div class="guide-box">
-            <strong>📌 Ab sab kuch JSON mein convert karo:</strong><br>
-            • Config mode ke hisaab se config set hoga<br>
-            • HTML, CSS, JS fields as-is rahenge<br>
-            • <b>⚠️ Aapka code ek bhi line change nahi hoga</b><br>
-            • Download ya Copy karo
+            <strong>📌 Now convert everything to JSON:</strong><br>
+            • Config will be set based on your mode<br>
+            • HTML, CSS, JS fields will stay as-is<br>
+            • <b>⚠️ Your code will NOT change at all</b><br>
+            • Download or Copy
         </div>
 
         <button class="btn full gold" id="convertBtn" style="margin-bottom:12px;">⚡ CONVERT TO JSON</button>
@@ -806,7 +806,7 @@ textarea[readonly] {
 </div>
 
 <!-- ============================================================ -->
-<!--  MAIN SCRIPT — SAFE (no </script> in regex)                 -->
+<!--  MAIN SCRIPT — SAFE (no </script> in regex)                  -->
 <!-- ============================================================ -->
 <script>
 (function() {
@@ -814,7 +814,7 @@ textarea[readonly] {
 
     // ============================================================
     //  🔥 CRITICAL — Build closing tag strings safely
-    //  (browser HTML parser se bachne ke liye)
+    //  (to avoid browser HTML parser breaking the script)
     // ============================================================
     var TAG_OPEN_SCRIPT  = '<' + 'script';
     var TAG_CLOSE_SCRIPT = '<' + '/script>';
@@ -858,7 +858,7 @@ textarea[readonly] {
     }
 
     // ============================================================
-    //  ESCAPE FOR JSON — Kisi bhi closing tag ko escape karo
+    //  ESCAPE FOR JSON — escape any closing tag
     // ============================================================
     function escapeForJson(str) {
         if (!str) return '';
@@ -947,7 +947,7 @@ textarea[readonly] {
     window.parseFullCode = function() {
         var fullCode = document.getElementById('fullCodeArea').value;
         if (!fullCode.trim()) {
-            showStatus('statusFullCode', 'error', '❌ Code empty hai! Pehle code daalo.');
+            showStatus('statusFullCode', 'error', '❌ Code is empty! Please paste your code first.');
             return;
         }
 
@@ -957,7 +957,7 @@ textarea[readonly] {
         var css = '';
         var js = '';
 
-        // 🔥 SAFE REGEX — closing tags ko split strings se banao
+        // 🔥 SAFE REGEX — build closing tags from split strings
         var escStyle  = escapeRegex(TAG_CLOSE_STYLE);
         var escScript = escapeRegex(TAG_CLOSE_SCRIPT);
 
@@ -1030,7 +1030,7 @@ textarea[readonly] {
             '📄 HTML: ' + bytes(new Blob([html]).size) + '\n' +
             '🎨 CSS: ' + bytes(new Blob([css]).size) + '\n' +
             '⚙️ JS: ' + bytes(new Blob([js]).size) + '\n\n' +
-            'Ab neeche scroll karo aur "CONVERT TO JSON" dabao.'
+            'Now scroll down and click "CONVERT TO JSON".'
         );
 
         setTimeout(function() {
@@ -1144,8 +1144,8 @@ textarea[readonly] {
                 if (!raw) {
                     showStatus('statusConvert', 'error',
                         '❌ CONFIG REQUIRED!\n\n' +
-                        'Aapne "YOUR CONFIG" mode select kiya hai lekin config empty hai.\n' +
-                        'Kripya apna Firebase config paste karo, ya "NO CONFIG (NULL)" mode chuno.'
+                        'You selected "YOUR CONFIG" mode but the config is empty.\n' +
+                        'Please paste your Firebase config, or choose "NO CONFIG (NULL)" mode.'
                     );
                     return;
                 }
@@ -1211,7 +1211,7 @@ textarea[readonly] {
                 '🎨 CSS: ' + bytes(new Blob([cssEsc]).size) + '\n' +
                 '⚙️ JS: ' + bytes(new Blob([jsEsc]).size) + '\n' +
                 '📦 Total: ' + bytes(new Blob([state.outputJson]).size) + '\n\n' +
-                'Neeche Download ya Copy karo!'
+                'Download or Copy below!'
             );
 
         } catch (e) {
