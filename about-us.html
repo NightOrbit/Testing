@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us — Nightorbit · Gyidi Bazar</title>
+    <meta name="description" content="Nightorbit International — FBR Registered Global Technology Company. Building Gyidi Bazar, affiliate networks, and enterprise-grade digital ecosystems." />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="About Us — Nightorbit · Gyidi Bazar" />
+    <meta property="og:description" content="FBR Registered · 50K+ Users · 300+ Brands · 12+ Countries" />
+    <meta property="og:url" content="https://nightorbittech.web.app/about" />
+    <meta property="og:type" content="website" />
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        /* ============================================================
+           ROOT — ENTERPRISE DARK (Company Profile Style)
+           ============================================================ */
+        :root {
+            --bg-primary: #06060f;
+            --bg-secondary: #0a0d1a;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --bg-card-hover: rgba(108, 43, 217, 0.06);
+            --text-white: #ffffff;
+            --text-light: #f0f4ff;
+            --text-secondary: #c8d6ed;
+            --text-muted: #8a9ab8;
+            --gold: #ffd700;
+            --gold-glow: rgba(255, 215, 0, 0.40);
+            --cyan: #00e5ff;
+            --cyan-glow: rgba(0, 229, 255, 0.30);
+            --purple: #6C2BD9;
+            --purple-glow: rgba(108, 43, 217, 0.30);
+            --neon-green: #22c55e;
+            --neon-pink: #ff2d55;
+            --border-light: rgba(255, 255, 255, 0.06);
+            --border-gold: rgba(255, 215, 0, 0.12);
+            --shadow-heavy: 0 30px 80px rgba(0, 0, 0, 0.8);
+            --shadow-gold: 0 0 100px rgba(255, 215, 0, 0.05);
+            --radius: 18px;
+            --radius-sm: 12px;
+            --font-heading: 'Orbitron', 'Inter', sans-serif;
+            --font-body: 'Inter', 'Segoe UI', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-white);
+            min-height: 100vh;
+            line-height: 1.8;
+            font-weight: 400;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--purple), var(--cyan));
+            border-radius: 10px;
+        }
+
+        /* ============================================================
+           TEXT UTILITIES
+           ============================================================ */
+        .text-gold {
+            color: var(--gold);
+            text-shadow: 0 0 40px var(--gold-glow);
+        }
+        .text-cyan {
+            color: var(--cyan);
+            text-shadow: 0 0 40px var(--cyan-glow);
+        }
+        .text-purple {
+            color: var(--purple);
+            text-shadow: 0 0 40px var(--purple-glow);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, var(--gold), var(--purple), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 40px;
+            border-radius: 60px;
+            background: linear-gradient(135deg, var(--gold), #f5c400);
+            color: #0d0d1a;
+            font-weight: 700;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 40px rgba(255, 215, 0, 0.25);
+            font-family: var(--font-body);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .btn-primary:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 12px 50px rgba(255, 215, 0, 0.45);
+        }
+
+        .btn-cyan {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 40px;
+            border-radius: 60px;
+            background: linear-gradient(135deg, var(--cyan), #0099bb);
+            color: #0d0d1a;
+            font-weight: 700;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 40px rgba(0, 229, 255, 0.2);
+            font-family: var(--font-body);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .btn-cyan:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 12px 50px rgba(0, 229, 255, 0.4);
+        }
+
+        .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 40px;
+            border-radius: 60px;
+            background: transparent;
+            color: var(--text-white);
+            font-weight: 600;
+            font-size: 14px;
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            font-family: var(--font-body);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-4px);
+            border-color: var(--gold);
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.06);
+        }
+
+        .btn-sm {
+            padding: 12px 28px;
+            font-size: 12px;
+        }
+
+        /* ============================================================
+           NAVBAR
+           ============================================================ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(6, 6, 15, 0.92);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-bottom: 1px solid var(--border-light);
+            padding: 14px 0;
+        }
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .navbar .logo {
+            font-family: var(--font-heading);
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .navbar .logo a {
+            color: var(--text-white);
+        }
+        .navbar .logo span {
+            color: var(--gold);
+        }
+        .navbar .logo .dot {
+            color: var(--cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 4px;
+            list-style: none;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .nav-links li a {
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: 0.3s;
+            border: 1px solid transparent;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .nav-links li a:hover,
+        .nav-links li a.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--border-light);
+        }
+        .nav-links li a.active {
+            color: var(--gold);
+            border-color: var(--border-gold);
+        }
+        .nav-cta-btn {
+            padding: 8px 22px !important;
+            border-radius: 30px !important;
+            background: linear-gradient(135deg, var(--gold), #f5c400) !important;
+            color: #0d0d1a !important;
+            font-weight: 700 !important;
+            border: none !important;
+        }
+        .nav-cta-btn:hover {
+            transform: scale(1.04);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
+        }
+        .hamburger {
+            display: none;
+            font-size: 28px;
+            color: #fff;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .hamburger:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* ============================================================
+           HERO — Company Profile Style
+           ============================================================ */
+        .page-hero {
+            padding: 120px 0 50px;
+            background: var(--bg-primary);
+            position: relative;
+            overflow: hidden;
+        }
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 20% 30%, rgba(108, 43, 217, 0.08), transparent 50%),
+                        radial-gradient(ellipse at 80% 70%, rgba(0, 229, 255, 0.04), transparent 50%);
+            pointer-events: none;
+        }
+        .page-hero .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .hero-content .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 215, 0, 0.06);
+            border: 1px solid rgba(255, 215, 0, 0.10);
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gold);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+        }
+        .hero-content .hero-badge i {
+            color: var(--cyan);
+            font-size: 12px;
+        }
+        .hero-content h1 {
+            font-family: var(--font-heading);
+            font-size: clamp(36px, 6vw, 64px);
+            font-weight: 700;
+            line-height: 1.04;
+            color: var(--text-white);
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+        .hero-content h1 .gold {
+            color: var(--gold);
+            text-shadow: 0 0 60px var(--gold-glow);
+        }
+        .hero-content h1 .cyan {
+            color: var(--cyan);
+            text-shadow: 0 0 60px var(--cyan-glow);
+        }
+        .hero-content .sub {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 680px;
+            margin: 0 auto;
+            line-height: 1.9;
+            font-weight: 400;
+        }
+        .hero-content .sub strong {
+            color: var(--text-white);
+            font-weight: 600;
+        }
+        .hero-content .trust-marquee {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0 28px;
+        }
+        .hero-content .trust-marquee .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 4px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--border-light);
+        }
+        .hero-content .trust-marquee .trust-item i {
+            color: var(--neon-green);
+            font-size: 13px;
+        }
+        .hero-content .trust-marquee .trust-item .gold-icon {
+            color: var(--gold);
+        }
+        .hero-content .hero-cta {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* ============================================================
+           SECTION — Company Profile Style
+           ============================================================ */
+        .section {
+            padding: 60px 0 50px;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .section:last-child {
+            border-bottom: none;
+        }
+        .section-alt {
+            background: var(--bg-secondary);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .section-header .section-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--gold);
+            margin-bottom: 6px;
+            background: rgba(255, 215, 0, 0.04);
+            padding: 4px 20px;
+            border-radius: 30px;
+            border: 1px solid var(--border-gold);
+        }
+        .section-header .section-tag i {
+            margin-right: 6px;
+            color: var(--cyan);
+        }
+        .section-header h2 {
+            font-family: var(--font-heading);
+            font-size: clamp(28px, 4vw, 40px);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-white);
+        }
+        .section-header h2 .gold {
+            color: var(--gold);
+            text-shadow: 0 0 40px var(--gold-glow);
+        }
+        .section-header h2 .cyan {
+            color: var(--cyan);
+            text-shadow: 0 0 40px var(--cyan-glow);
+        }
+        .section-header h2 .purple {
+            color: var(--purple);
+            text-shadow: 0 0 40px var(--purple-glow);
+        }
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            max-width: 680px;
+            margin: 6px auto 0;
+            line-height: 1.8;
+        }
+
+        .glass-card {
+            background: rgba(10, 13, 26, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            padding: 32px 28px;
+            box-shadow: var(--shadow-heavy);
+            transition: all 0.4s ease;
+        }
+        .glass-card:hover {
+            border-color: var(--border-gold);
+            box-shadow: var(--shadow-heavy), var(--shadow-gold);
+        }
+        .glass-card.gold-border {
+            border-left: 3px solid var(--gold);
+        }
+        .glass-card.cyan-border {
+            border-left: 3px solid var(--cyan);
+        }
+        .glass-card.purple-border {
+            border-left: 3px solid var(--purple);
+        }
+        .glass-card.green-border {
+            border-left: 3px solid var(--neon-green);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+        }
+        .card-title i {
+            color: var(--gold);
+            font-size: 16px;
+            width: 22px;
+            text-align: center;
+        }
+
+        /* ============================================================
+           STATS
+           ============================================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .stat-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: 24px 16px;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .stat-item:hover {
+            border-color: var(--gold);
+            box-shadow: var(--shadow-gold);
+        }
+        .stat-item .number {
+            font-family: var(--font-heading);
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            letter-spacing: 1px;
+            line-height: 1.1;
+        }
+        .stat-item .number.purple {
+            background: linear-gradient(135deg, var(--purple), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-item .label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        /* ============================================================
+           GRID
+           ============================================================ */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 24px;
+        }
+
+        /* ============================================================
+           INFO GRID
+           ============================================================ */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 30px;
+            margin: 10px 0;
+        }
+        .info-grid .label {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .info-grid .value {
+            color: var(--text-white);
+            font-size: 14px;
+        }
+        .info-grid .value a {
+            color: var(--cyan);
+            transition: 0.3s;
+        }
+        .info-grid .value a:hover {
+            color: var(--gold);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            padding: 5px 0;
+            padding-left: 22px;
+            position: relative;
+            font-size: 13px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        }
+        ul li:last-child {
+            border-bottom: none;
+        }
+        ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--cyan);
+            font-weight: bold;
+        }
+        ul li .hl {
+            color: var(--gold);
+            font-weight: 600;
+        }
+        ul li .hl-cyan {
+            color: var(--cyan);
+            font-weight: 600;
+        }
+        ul li .hl-green {
+            color: var(--neon-green);
+            font-weight: 600;
+        }
+
+        /* ============================================================
+           BADGES
+           ============================================================ */
+        .badge-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 8px 0 4px;
+        }
+        .badge-row .badge {
+            padding: 3px 14px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-muted);
+        }
+        .badge-row .badge.gold {
+            color: var(--gold);
+            border-color: rgba(255, 215, 0, 0.08);
+        }
+        .badge-row .badge.cyan {
+            color: var(--cyan);
+            border-color: rgba(0, 229, 255, 0.08);
+        }
+        .badge-row .badge.green {
+            color: var(--neon-green);
+            border-color: rgba(34, 197, 94, 0.05);
+        }
+        .badge-row .badge.pink {
+            color: var(--neon-pink);
+            border-color: rgba(255, 45, 85, 0.05);
+        }
+        .badge-row .badge.purple {
+            color: var(--purple);
+            border-color: rgba(108, 43, 217, 0.05);
+        }
+
+        /* ============================================================
+           NOTE BOXES
+           ============================================================ */
+        .note-box {
+            background: rgba(0, 229, 255, 0.03);
+            border-left: 3px solid var(--cyan);
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .note-box strong {
+            color: var(--text-white);
+        }
+        .note-box .gold {
+            color: var(--gold);
+        }
+        .note-box-gold {
+            background: rgba(255, 215, 0, 0.03);
+            border-left: 3px solid var(--gold);
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .note-box-gold strong {
+            color: var(--text-white);
+        }
+
+        /* ============================================================
+           DOMAIN TAG
+           ============================================================ */
+        .domain-tag {
+            display: inline-block;
+            background: rgba(0, 229, 255, 0.04);
+            border: 1px solid rgba(0, 229, 255, 0.06);
+            border-radius: 6px;
+            padding: 2px 12px;
+            font-size: 10px;
+            color: var(--cyan);
+            margin: 2px 4px 2px 0;
+            font-family: monospace;
+        }
+
+        /* ============================================================
+           PROFILE BOX
+           ============================================================ */
+        .profile-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            background: rgba(255, 215, 0, 0.02);
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.04);
+            margin-bottom: 12px;
+        }
+        .profile-box .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--gold);
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-muted);
+        }
+        .profile-box .name {
+            font-weight: 700;
+            color: #fff;
+            font-size: 15px;
+        }
+        .profile-box .role {
+            font-size: 11px;
+            color: var(--gold);
+        }
+        .profile-box .org {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+        .profile-box .v-badge {
+            margin-left: auto;
+            font-size: 8px;
+            background: var(--gold);
+            color: #000;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        /* ============================================================
+           SOCIAL LINKS
+           ============================================================ */
+        .social-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 8px 0;
+        }
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .social-links a.ig {
+            background: linear-gradient(135deg, #f09433, #dc2743, #bc1888);
+            color: #fff;
+        }
+        .social-links a.ig:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(220, 39, 67, 0.3);
+        }
+        .social-links a.web {
+            background: rgba(0, 229, 255, 0.04);
+            color: var(--cyan);
+            border-color: rgba(0, 229, 255, 0.08);
+        }
+        .social-links a.web:hover {
+            background: rgba(0, 229, 255, 0.08);
+            transform: translateY(-2px);
+        }
+        .social-links a.aff {
+            background: rgba(255, 215, 0, 0.04);
+            color: var(--gold);
+            border-color: rgba(255, 215, 0, 0.08);
+        }
+        .social-links a.aff:hover {
+            background: rgba(255, 215, 0, 0.08);
+            transform: translateY(-2px);
+        }
+        .social-links a.email {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--text-secondary);
+            border-color: rgba(255, 255, 255, 0.04);
+        }
+        .social-links a.email:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            transform: translateY(-2px);
+        }
+
+        /* ============================================================
+           FOOTER
+           ============================================================ */
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-light);
+            padding: 50px 0 30px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+        .footer-brand .logo-text {
+            font-family: var(--font-heading);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-white);
+            margin-bottom: 6px;
+        }
+        .footer-brand .logo-text span {
+            color: var(--gold);
+        }
+        .footer-brand p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            max-width: 280px;
+            line-height: 1.7;
+        }
+        .footer-brand .trust-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .footer-brand .trust-badges .badge {
+            font-size: 8px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-light);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .footer-brand .trust-badges .badge i {
+            color: var(--neon-green);
+            margin-right: 4px;
+        }
+        .footer-col h5 {
+            font-family: var(--font-heading);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-white);
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-col ul li {
+            padding: 4px 0;
+            border-bottom: none;
+        }
+        .footer-col ul li::before {
+            display: none;
+        }
+        .footer-col ul li a {
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: 0.3s;
+        }
+        .footer-col ul li a:hover {
+            color: var(--gold);
+        }
+        .footer-bottom {
+            padding-top: 20px;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .footer-bottom p {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .footer-bottom .social-links {
+            display: flex;
+            gap: 14px;
+            margin: 0;
+        }
+        .footer-bottom .social-links a {
+            color: var(--text-muted);
+            font-size: 16px;
+            transition: 0.3s;
+            border: none;
+            padding: 0;
+        }
+        .footer-bottom .social-links a:hover {
+            color: var(--gold);
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .grid-3 {
+                grid-template-columns: 1fr 1fr;
+                gap: 18px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 24px;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+            .page-hero {
+                padding: 100px 0 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                padding: 16px 0;
+                gap: 4px;
+                background: var(--bg-primary);
+                border-top: 1px solid var(--border-light);
+                align-items: stretch;
+            }
+            .nav-links.open {
+                display: flex;
+            }
+            .navbar .container {
+                flex-wrap: wrap;
+            }
+            .navbar .logo {
+                font-size: 18px;
+            }
+            .nav-links li a {
+                font-size: 10px;
+                padding: 8px 14px;
+                text-align: center;
+            }
+
+            .page-hero {
+                padding: 90px 0 30px;
+            }
+            .hero-content h1 {
+                font-size: 28px;
+            }
+            .hero-content .sub {
+                font-size: 15px;
+            }
+            .hero-content .trust-marquee {
+                gap: 10px;
+            }
+            .hero-content .trust-marquee .trust-item {
+                font-size: 10px;
+                padding: 3px 12px;
+            }
+
+            .container {
+                padding: 0 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .stat-item .number {
+                font-size: 28px;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .grid-3 {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            .footer-brand p {
+                max-width: 100%;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .glass-card {
+                padding: 24px 18px;
+            }
+
+            .section {
+                padding: 40px 0 34px;
+            }
+            .section-header h2 {
+                font-size: 24px;
+            }
+            .section-header p {
+                font-size: 14px;
+            }
+
+            .profile-box {
+                flex-direction: column;
+                text-align: center;
+            }
+            .profile-box .v-badge {
+                margin-left: 0;
+            }
+
+            .btn-primary,
+            .btn-cyan,
+            .btn-outline {
+                width: 100%;
+                justify-content: center;
+                padding: 14px 24px;
+                font-size: 13px;
+            }
+            .btn-sm {
+                padding: 10px 20px;
+                font-size: 11px;
+                width: auto;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 {
+                font-size: 24px;
+            }
+            .hero-content .sub {
+                font-size: 14px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .stat-item {
+                padding: 16px 12px;
+            }
+            .stat-item .number {
+                font-size: 24px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .glass-card {
+                padding: 18px 14px;
+            }
+            .container {
+                padding: 0 12px;
+            }
+            .section-header h2 {
+                font-size: 20px;
+            }
+            .section-header p {
+                font-size: 13px;
+            }
+            .section-header .section-tag {
+                font-size: 9px;
+                padding: 3px 14px;
+                letter-spacing: 2px;
+            }
+            .profile-box .avatar {
+                width: 48px;
+                height: 48px;
+                font-size: 18px;
+            }
+            .profile-box .name {
+                font-size: 14px;
+            }
+            .btn-primary,
+            .btn-cyan,
+            .btn-outline {
+                padding: 12px 20px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .hero-content h1 {
+                font-size: 20px;
+            }
+            .stat-item .number {
+                font-size: 20px;
+            }
+            .section-header h2 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+         NAVBAR
+         ============================================================ -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="https://nightorbittech.web.app/">NIGHT<span>ORBIT</span><span class="dot">.</span></a>
+            </div>
+            <div class="hamburger" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="https://nightorbittech.web.app/">Home</a></li>
+                <li><a href="https://nightorbittech.web.app/projects">Projects</a></li>
+                <li><a href="https://nightorbittech.web.app/work">Work</a></li>
+                <li><a href="https://nightorbittech.web.app/team">Team</a></li>
+                <li><a href="https://nightorbittech.web.app/authority">Authority</a></li>
+                <li><a href="https://nightorbitaffiliatemarketing.web.app/" class="nav-cta-btn">Affiliate</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ============================================================
+         HERO — Company Profile
+         ============================================================ -->
+    <section class="page-hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-building"></i> FBR Registered · Pakistan
+                </div>
+                <h1>
+                    About <span class="gold">Nightorbit</span>
+                    <br>
+                    <span class="cyan">(Gyidi)</span>
+                </h1>
+                <p class="sub">
+                    A <strong>Pakistan-based global technology company</strong> building
+                    <strong>high-performance international platforms</strong>,
+                    <strong>affiliate systems</strong>, and <strong>utility tools</strong>
+                    for audiences across <strong>12+ countries</strong>.
+                </p>
+                <div class="trust-marquee">
+                    <span class="trust-item"><i class="fas fa-check-circle"></i> 50K+ Users</span>
+                    <span class="trust-item"><i class="fas fa-globe"></i> 12+ Countries</span>
+                    <span class="trust-item"><i class="fas fa-handshake"></i> 300+ Brands</span>
+                    <span class="trust-item"><i class="fas fa-shield-halved gold-icon"></i> Enterprise Security</span>
+                    <span class="trust-item"><i class="fas fa-building gold-icon"></i> FBR Registered</span>
+                </div>
+                <div class="hero-cta">
+                    <a href="https://nightorbitaffiliatemarketing.web.app/" class="btn-primary"><i class="fas fa-link"></i> Affiliate Program</a>
+                    <a href="https://nightorbittech.web.app/projects" class="btn-cyan"><i class="fas fa-rocket"></i> Our Projects</a>
+                    <a href="https://nightorbittech.web.app/team" class="btn-outline"><i class="fas fa-users"></i> Meet the Team</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 1: STATS
+         ============================================================ -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag"><i class="fas fa-chart-simple"></i> At a Glance</span>
+                <h2>Company <span class="gold">Statistics</span></h2>
+                <p>Real numbers from a globally recognized digital ecosystem.</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="number">50K+</span>
+                    <span class="label">Active Users</span>
+                </div>
+                <div class="stat-item">
+                    <span class="number purple">12+</span>
+                    <span class="label">Countries</span>
+                </div>
+                <div class="stat-item">
+                    <span class="number">300+</span>
+                    <span class="label">Global Brands</span>
+                </div>
+                <div class="stat-item">
+                    <span class="number purple">5.9M+</span>
+                    <span class="label">Coins Earned</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 2: ABOUT GYIDI BAZAR — Company Profile Style
+         ============================================================ -->
+    <section class="section section-alt">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag"><i class="fas fa-store"></i> Flagship Platform</span>
+                <h2>About <span class="gold">Gyidi Bazar</span></h2>
+                <p>A complete digital earning and entertainment ecosystem trusted across <strong class="text-gold">12+ countries</strong> with <strong class="text-cyan">50K+ active users</strong> and <strong class="text-gold">300+ global brands</strong>.</p>
+            </div>
+
+            <div class="glass-card gold-border">
+                <div class="card-title">
+                    <i class="fas fa-crown"></i> Gyidi Bazar Hub — Company Profile
+                </div>
+
+                <div style="background:rgba(255,215,0,0.04); border:1px solid rgba(255,215,0,0.08); border-radius:10px; padding:16px 20px; margin-bottom:16px;">
+                    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px;">
+                        <span style="font-size:28px; font-weight:900; color:var(--gold);">🌍</span>
+                        <span style="font-size:13px; color:var(--text-secondary);"><span class="hl">USD / PKR</span> — Multi-Currency Withdrawals</span>
+                        <span style="margin-left:auto; font-size:11px; background:var(--gold); color:#000; padding:4px 16px; border-radius:20px; font-weight:700;">LIVE</span>
+                    </div>
+                </div>
+
+                <p style="font-size:14px; color:var(--text-secondary); line-height:1.9; margin-bottom:12px;">
+                    <strong style="color:var(--text-white);">Gyidi Bazar</strong> is a complete digital earning and entertainment ecosystem that combines <span class="hl">e-commerce</span>, <span class="hl-cyan">food delivery</span>, <span class="hl-green">digital tools</span>, and <span class="hl">cinema entertainment</span> into one seamless platform. Users earn coins through <span class="hl">referrals</span>, <span class="hl-cyan">daily tasks</span>, <span class="hl-green">ad watching</span>, <span class="hl">wheel spins</span>, and <span class="hl-cyan">real purchase verification</span>.
+                </p>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin:12px 0;">
+                    <div style="background:rgba(255,215,0,0.03); border-radius:10px; padding:12px; text-align:center; border:1px solid rgba(255,215,0,0.06);">
+                        <div style="font-size:28px; font-weight:900; color:var(--gold);">15+</div>
+                        <div style="font-size:11px; color:var(--text-muted);">Entertainment Platforms</div>
+                    </div>
+                    <div style="background:rgba(0,229,255,0.03); border-radius:10px; padding:12px; text-align:center; border:1px solid rgba(0,229,255,0.06);">
+                        <div style="font-size:28px; font-weight:900; color:var(--cyan);">300+</div>
+                        <div style="font-size:11px; color:var(--text-muted);">Global Brands</div>
+                    </div>
+                    <div style="background:rgba(34,197,94,0.03); border-radius:10px; padding:12px; text-align:center; border:1px solid rgba(34,197,94,0.06);">
+                        <div style="font-size:28px; font-weight:900; color:var(--neon-green);">5.9M+</div>
+                        <div style="font-size:11px; color:var(--text-muted);">Coins Earned</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:12px;">
+                    <div style="font-weight:600; color:var(--gold); font-size:13px; margin-bottom:4px;">📋 Platform Categories</div>
+                    <ul>
+                        <li><span class="hl">🎬 Entertainment:</span> 15+ platforms — Netflix, YouTube, Prime Video, Disney+, Hulu, Hotstar, HBO Max, MX Player, Zee5, Twitch, Crunchyroll, TED Talks, Vimeo, Plex, Dailymotion.</li>
+                        <li><span class="hl-cyan">🛒 Shopping:</span> 300+ global brands — Banggood, Taobao, Lightinthebox, Alibaba, KKday, StackSocial, Udemy, and more.</li>
+                        <li><span class="hl-green">🛠️ Tools &amp; Software:</span> 18+ tools — Proton VPN, WPS Software, MacPaw, Hide Me VPN, iMobie, Wegic AI, Homestyler, LightPDF, GOM Lab, and more.</li>
+                        <li><span class="hl">📚 Education:</span> 3+ learning platforms — Preply, SkillUp, International Open Academy.</li>
+                    </ul>
+                </div>
+
+                <div style="margin-top:12px;">
+                    <div style="font-weight:600; color:var(--gold); font-size:13px; margin-bottom:4px;">💰 Earning Methods</div>
+                    <ul>
+                        <li><span class="hl">📅 Daily Streaks:</span> +10 Coins/Day — Complete your 7-day streak and earn 10 coins daily.</li>
+                        <li><span class="hl-cyan">📺 Watch Ads:</span> +50 Coins — Watch 5 ads (10 seconds each) and earn 50 coins.</li>
+                        <li><span class="hl-green">🎡 Luck Wheel:</span> 5-100 Coins — Spin the wheel and win 5 to 100 coins. 5 spins per day.</li>
+                        <li><span class="hl">👥 Referrals:</span> +10/Referral — Invite friends using your referral link. Earn 10 coins per referral. Reach 5 referrals and earn an additional 200 coins bonus!</li>
+                        <li><span class="hl-cyan">🛒 Purchase Verification:</span> Up to 10% Cashback — Make a purchase on any partner platform, upload your receipt, and earn up to 10% of your purchase amount as coins.</li>
+                    </ul>
+                </div>
+
+                <div class="note-box-gold">
+                    <strong>🔗 Learn More:</strong>
+                    <a href="https://nightorbittech.web.app/MyMarket/info" target="_blank" style="color:var(--gold); text-decoration:underline;">nightorbittech.web.app/MyMarket/info</a>
+                    <br>
+                    Explore all features, categories, and earning opportunities in detail.
+                </div>
+
+                <div style="text-align:center; margin-top:16px;">
+                    <a href="https://nightorbittech.web.app/MyMarket/info" target="_blank" class="btn-primary"><i class="fas fa-arrow-right"></i> Explore Gyidi Bazar</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 3: AFFILIATE PROGRAM — Company Profile Style
+         ============================================================ -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag"><i class="fas fa-link"></i> Affiliate</span>
+                <h2>Nightorbit <span class="gold">Affiliate Program</span></h2>
+                <p>Earn <strong class="text-gold">up to 20% lifetime commission</strong> in PKR &amp; USD on every user you refer to <strong class="text-cyan">300+ global brands</strong> across <strong class="text-gold">12+ countries</strong>.</p>
+            </div>
+
+            <div class="glass-card gold-border">
+                <div class="card-title">
+                    <i class="fas fa-handshake"></i> Affiliate Program Overview
+                </div>
+
+                <div style="background:rgba(255,215,0,0.04); border:1px solid rgba(255,215,0,0.08); border-radius:10px; padding:16px 20px; margin-bottom:16px;">
+                    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px;">
+                        <span style="font-size:28px; font-weight:900; color:var(--gold);">20%</span>
+                        <span style="font-size:13px; color:var(--text-secondary);">Lifetime Commission · <span class="hl">PKR &amp; USD</span></span>
+                        <span style="margin-left:auto; font-size:11px; background:var(--gold); color:#000; padding:4px 16px; border-radius:20px; font-weight:700;">ACTIVE</span>
+                    </div>
+                </div>
+
+                <p style="font-size:14px; color:var(--text-secondary); line-height:1.9; margin-bottom:12px;">
+                    <strong style="color:var(--text-white);">Join the Nightorbit affiliate network</strong> and earn <span class="hl">lifetime commissions</span> on every user you refer. Access <span class="hl-cyan">300+ international brands</span> across <span class="hl-green">12+ countries</span>. Once you become an affiliate, you are <strong style="color:var(--gold);">permanently linked</strong> to every user you bring in — <strong style="color:var(--text-white);">for life</strong>.
+                </p>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin:12px 0;">
+                    <div style="background:rgba(255,215,0,0.03); border-radius:10px; padding:12px; text-align:center; border:1px solid rgba(255,215,0,0.06);">
+                        <div style="font-size:28px; font-weight:900; color:var(--gold);">20%</div>
+                        <div style="font-size:11px; color:var(--text-muted);">Lifetime Commission</div>
+                    </div>
+                    <div style="background:rgba(0,229,255,0.03); border-radius:10px; padding:12px; text-align:center; border:1px solid rgba(0,229,255,0.06);">
+                        <div style="font-size:28px; font-weight:900; color:var(--cyan);">300+</div>
+                        <div style="font-size:11px; color:var(--text-muted);">Global Brands</div>
+                    </div>
+                    <div style="background:rgba(34,197,94,0.03); border-radius:10px; padding:12px; text-align:center; border:1px solid rgba(34,197,94,0.06);">
+                        <div style="font-size:28px; font-weight:900; color:var(--neon-green);">12+</div>
+                        <div style="font-size:11px; color:var(--text-muted);">Countries</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:12px;">
+                    <div style="font-weight:600; color:var(--gold); font-size:13px; margin-bottom:4px;">📋 How It Works</div>
+                    <ul>
+                        <li><span class="hl">🔗 Lifetime Tracking:</span> Once a user registers through your affiliate link, they are permanently linked to you. You earn commission on every purchase they make — <strong style="color:var(--gold);">for life</strong>.</li>
+                        <li><span class="hl-cyan">🌍 300+ Global Brands:</span> Access to 300+ international brands across shopping, food, education, tools, fashion, travel, and more.</li>
+                        <li><span class="hl-green">💳 Auto-Payment:</span> Payments are automatically sent to your verified account via JazzCash, EasyPaisa, Bank Transfer, or International Wire.</li>
+                        <li><span class="hl">📊 Real-Time Analytics:</span> Track your earnings, referrals, and performance in real-time through your affiliate dashboard.</li>
+                        <li><span class="hl-cyan">🛡️ Enterprise Security:</span> Your earnings and data are protected by bank-level encryption, OTP verification, and strict zero-tolerance security policies.</li>
+                        <li><span class="hl-green">🤝 Goodwill Policy:</span> New affiliates earning $18+ get partial payment if below the $30 minimum — because we value genuine effort.</li>
+                    </ul>
+                </div>
+
+                <div class="note-box-gold">
+                    <strong>🔗 Affiliate Portal:</strong>
+                    <a href="https://nightorbitaffiliatemarketing.web.app/" target="_blank" style="color:var(--gold); text-decoration:underline;">nightorbitaffiliatemarketing.web.app</a>
+                    <br>
+                    Manage your links, track commissions, and view real-time analytics.
+                </div>
+
+                <div class="note-box" style="border-left-color:var(--gold); background:rgba(255,215,0,0.02);">
+                    <strong>📌 More Information:</strong>
+                    <span style="color:var(--text-secondary);">For detailed commission structures, payment terms, and full program guidelines,</span>
+                    <a href="https://nightorbittech.web.app/NightOrbitAffiliateDashboard/info" target="_blank" style="color:var(--gold); text-decoration:underline; display:inline-block;">visit the Affiliate Info Page →</a>
+                </div>
+
+                <div style="text-align:center; margin-top:16px; display:flex; flex-wrap:wrap; gap:12px; justify-content:center;">
+                    <a href="https://nightorbitaffiliatemarketing.web.app/" class="btn-primary"><i class="fas fa-rocket"></i> Join Affiliate Program</a>
+                    <a href="https://nightorbittech.web.app/NightOrbitAffiliateDashboard/info" target="_blank" class="btn-cyan"><i class="fas fa-info-circle"></i> More About Affiliate</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 3: FOUNDER & LEADERSHIP
+         ============================================================ -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag"><i class="fas fa-users"></i> Leadership</span>
+                <h2>Meet the <span class="gold">Team</span></h2>
+                <p>The people behind Nightorbit — engineering, security, operations, and growth.</p>
+            </div>
+
+            <div class="grid-2">
+                <!-- Anas Farooq -->
+                <div class="glass-card gold-border">
+                    <div class="profile-box">
+                        <div class="avatar">👤</div>
+                        <div>
+                            <div class="name">Anas Farooq</div>
+                            <div class="role">CEO &amp; Founder · Lead Systems Architect</div>
+                            <div class="org">10+ Years Experience</div>
+                        </div>
+                        <span class="v-badge">⭐ VERIFIED</span>
+                    </div>
+                    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:0;">
+                        <strong style="color:var(--gold);">Chief Executive Officer</strong> — Visionary leader, systems architect,
+                        driving force behind Nightorbit's technical supremacy with 10+ years experience.
+                    </p>
+                    <div style="margin-top:8px;">
+                        <a href="https://nightorbittech.web.app/AnasFarooq/CEO.html" class="btn-cyan btn-sm">Learn More →</a>
+                    </div>
+                </div>
+
+                <!-- Abdul Rafe -->
+                <div class="glass-card cyan-border">
+                    <div class="profile-box">
+                        <div class="avatar">🔒</div>
+                        <div>
+                            <div class="name">Abdul Rafe</div>
+                            <div class="role">CIO & Security Lead</div>
+                            <div class="org">Enterprise Security</div>
+                        </div>
+                        <span class="v-badge">⭐ VERIFIED</span>
+                    </div>
+                    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:0;">
+                        <strong style="color:var(--cyan);">Chief Information Officer & Security Lead</strong> — Handles Security Team 24/7,
+                        monitors platforms, handles attacks, ensures enterprise-grade protection.
+                    </p>
+                    <div style="margin-top:8px;">
+                        <a href="https://nightorbittech.web.app/AbdulRafe/CIO.html" class="btn-cyan btn-sm">Learn More →</a>
+                    </div>
+                </div>
+
+                <!-- Zain Butt -->
+                <div class="glass-card green-border">
+                    <div class="profile-box">
+                        <div class="avatar">🧪</div>
+                        <div>
+                            <div class="name">Zain Butt</div>
+                            <div class="role">COO, CTO & Board Member</div>
+                            <div class="org">QA &amp; Operations</div>
+                        </div>
+                        <span class="v-badge">⭐ VERIFIED</span>
+                    </div>
+                    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:0;">
+                        <strong style="color:var(--neon-green);">Chief Operating Officer & Chief Technology Officer — Board Member </strong> — Leads Testing &amp; QA Team,
+                        ensures bug-free production-ready platforms with strict quality assurance.
+                    </p>
+                    <div style="margin-top:8px;">
+                        <a href="https://nightorbittech.web.app/ZainButt/COO&CTO.html" class="btn-cyan btn-sm">Learn More →</a>
+                    </div>
+                </div>
+
+                <!-- Haziq Shees -->
+                <div class="glass-card purple-border">
+                    <div class="profile-box">
+                        <div class="avatar">📢</div>
+                        <div>
+                            <div class="name">Haziq Shees</div>
+                            <div class="role">CMO — Growth & Affiliate Operations</div>
+                            <div class="org">Brand &amp; Growth</div>
+                        </div>
+                        <span class="v-badge">⭐ VERIFIED</span>
+                    </div>
+                    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:0;">
+                        <strong style="color:var(--purple);">Chief Marketing Officer — Growth & Affiliate Operations</strong> — Digital marketing, brand awareness,
+                        user acquisition, and community engagement across all platforms.
+                    </p>
+                    <div style="margin-top:8px;">
+                        <a href="https://nightorbittech.web.app/HaziqShees/CMO.html" class="btn-cyan btn-sm">Learn More →</a>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:20px;">
+                <a href="https://nightorbittech.web.app/team" class="btn-primary"><i class="fas fa-arrow-right"></i> View Full Team</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 5: CONTACT
+         ============================================================ -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag"><i class="fas fa-address-card"></i> Connect</span>
+                <h2>Get in <span class="gold">Touch</span></h2>
+                <p>Reach out to us for support, partnerships, or general inquiries.</p>
+            </div>
+
+            <div class="glass-card gold-border">
+                <div class="card-title">
+                    <i class="fas fa-envelope"></i> Contact &amp; Social Presence
+                </div>
+
+                <div class="social-links">
+                    <a href="https://www.instagram.com/nightorbit.official" target="_blank" class="ig">
+                        <i class="fa-brands fa-instagram"></i> @nightorbit.official
+                    </a>
+                    <a href="https://nightorbitaffiliatemarketing.web.app/" target="_blank" class="aff">
+                        <i class="fa-solid fa-link"></i> Affiliate Portal
+                    </a>
+                    <a href="https://nightorbittech.web.app/" target="_blank" class="web">
+                        <i class="fa-regular fa-folder"></i> Official Website
+                    </a>
+                    <a href="mailto:nightorbit.official@gmail.com" class="email">
+                        <i class="fa-regular fa-envelope"></i> nightorbit.official@gmail.com
+                    </a>
+                </div>
+
+                <div style="margin-top:10px;">
+                    <div class="info-grid">
+                        <div><span class="label">📧 Security Team</span><br><span class="value"><a href="mailto:securityalertsystem9@gmail.com">securityalertsystem9@gmail.com</a></span></div>
+                        <div><span class="label">📧 CEO Email</span><br><span class="value"><a href="mailto:anas.nightorbit.ceo@gmail.com">anas.nightorbit.ceo@gmail.com</a></span></div>
+                        <div><span class="label">🕐 Response Time</span><br><span class="value" style="color:var(--neon-green);">Within 24 Hours</span></div>
+                        <div><span class="label">📍 Headquarters</span><br><span class="value">Lahore, Pakistan (Global Operations)</span></div>
+                    </div>
+                </div>
+
+                <div class="note-box">
+                    <strong>🕐 Office Hours:</strong> Monday – Friday · 9:00 AM – 9:00 PM (PKT)
+                    <br>
+                    <span style="color:#555;font-size:10px;">Emergency support available via Instagram DM.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         FOOTER
+         ============================================================ -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo-text">NIGHT<span>ORBIT</span></div>
+                    <p>Building international digital ecosystems with enterprise-grade security and global reach.</p>
+                    <div class="trust-badges">
+                        <span class="badge"><i class="fas fa-shield-halved"></i> SOC2</span>
+                        <span class="badge"><i class="fas fa-lock"></i> ISO 27001</span>
+                        <span class="badge"><i class="fas fa-credit-card"></i> PCI-DSS</span>
+                        <span class="badge"><i class="fas fa-check-circle"></i> PECA 2016</span>
+                        <span class="badge"><i class="fas fa-building"></i> FBR</span>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h5>Company</h5>
+                    <ul>
+                        <li><a href="https://nightorbittech.web.app/">Home</a></li>
+                        <li><a href="https://nightorbittech.web.app/projects">Projects</a></li>
+                        <li><a href="https://nightorbittech.web.app/work">Work</a></li>
+                        <li><a href="https://nightorbittech.web.app/team">Team</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>Resources</h5>
+                    <ul>
+                        <li><a href="https://nightorbittech.web.app/infrastructure">Infrastructure</a></li>
+                        <li><a href="https://nightorbittech.web.app/security">Security</a></li>
+                        <li><a href="https://nightorbittech.web.app/authority">Authority</a></li>
+                        <li><a href="https://nightorbitaffiliatemarketing.web.app/">Affiliate</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>Connect</h5>
+                    <ul>
+                        <li><a href="mailto:nightorbit.official@gmail.com">Support</a></li>
+                        <li><a href="mailto:securityalertsystem9@gmail.com">Security Team</a></li>
+                        <li><a href="mailto:anas.nightorbit.ceo@gmail.com">CEO</a></li>
+                        <li><span style="color:var(--text-muted);">FBR: 3520222320637</span></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>Legal</h5>
+                    <ul>
+                        <li><a href="https://nightorbittech.web.app/Cookie">Cookie Policy</a></li>
+                        <li><a href="https://nightorbittech.web.app/terms">Terms of Service</a></li>
+                        <li><a href="https://nightorbittech.web.app/privacy">Privacy Policy</a></li>
+                        <li><a href="https://nightorbittech.web.app/security">Security</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Nightorbit International (Pvt.) Ltd. · All Rights Reserved</p>
+                <div class="social-links">
+                    <a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="#" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a href="#" target="_blank"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============================================================
+         SCRIPTS
+         ============================================================ -->
+    <script>
+        function toggleMenu() {
+            const nav = document.getElementById('navLinks');
+            if (nav) nav.classList.toggle('open');
+        }
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', function() {
+                const nav = document.getElementById('navLinks');
+                if (nav && window.innerWidth <= 768) nav.classList.remove('open');
+            });
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -40px 0px'
+        };
+
+        const animateElements = document.querySelectorAll('.stat-item, .glass-card');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        animateElements.forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            observer.observe(el);
+        });
+
+        console.log('🏛️ Nightorbit (Gyidi) — About Us (Company Profile Style)');
+        console.log('📊 FBR Registered: 3520222320637');
+        console.log('🌍 12+ Countries · 50K+ Users · 300+ Brands');
+        console.log('🔒 Enterprise Security · PECA 2016 Compliant');
+        console.log('📱 Fully Responsive — Every Screen Size Fixed');
+    </script>
+
+</body>
+</html>
