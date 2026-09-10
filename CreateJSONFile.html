@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0b0b1a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="robots" content="noindex, nofollow">
+<title>Create JSON File — NightOrbit CodeForge</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+
+<noscript>
+    <div style="color:#fff;text-align:center;padding:50px;font-family:sans-serif;background:#0b0b1a;min-height:100vh;">
+        <h1 style="color:#00f0ff;">⚠️ JavaScript Required</h1>
+        <p style="color:#b0b0d0;">Please enable JavaScript to use NightOrbit CodeForge.</p>
+    </div>
+</noscript>
+
+<!-- ============================================================ -->
+<!--  SMART BLOCKING — Firebase-safe                              -->
+<!-- ============================================================ -->
+<script>
+(function() {
+    'use strict';
+
+    function isEditableElement(el) {
+        if (!el || !el.tagName) return false;
+        var tag = el.tagName.toLowerCase();
+        return tag === 'input' || tag === 'textarea' || tag === 'select' || el.isContentEditable;
+    }
+
+    function blockKey(e) {
+        var key = e.key, code = e.keyCode;
+        var ctrl = e.ctrlKey, shift = e.shiftKey, alt = e.altKey, meta = e.metaKey;
+        var editable = isEditableElement(e.target);
+
+        if (key && key.startsWith('F') && key.length <= 3) {
+            var num = parseInt(key.replace('F', ''));
+            if (num >= 1 && num <= 12) { e.preventDefault(); e.stopPropagation(); return false; }
+        }
+        if (key === 'F12' || code === 123) { e.preventDefault(); e.stopPropagation(); return false; }
+        if (key === 'PrintScreen' || code === 44) { e.preventDefault(); e.stopPropagation(); return false; }
+        if (key === 'Insert' || code === 45) { e.preventDefault(); e.stopPropagation(); return false; }
+        if (key === 'Home' || code === 36) { e.preventDefault(); e.stopPropagation(); return false; }
+        if (key === 'PageUp' || key === 'PageDown' || code === 33 || code === 34) { e.preventDefault(); e.stopPropagation(); return false; }
+
+        if (ctrl) {
+            var c = key ? key.toUpperCase() : '';
+            if (editable && ['V','C','A','X','Z','Y'].includes(c)) return true;
+            if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); return false; }
+            if (c >= '0' && c <= '9') { e.preventDefault(); e.stopPropagation(); return false; }
+            if (['`','-','=','[',']','\\',';',"'",',','.','/'].includes(key)) { e.preventDefault(); e.stopPropagation(); return false; }
+        }
+        if (ctrl && shift) {
+            var c = key ? key.toUpperCase() : '';
+            if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); return false; }
+        }
+        if (alt) {
+            var c = key ? key.toUpperCase() : '';
+            if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); return false; }
+            if (key === 'F4' || code === 115) { e.preventDefault(); e.stopPropagation(); return false; }
+        }
+        if (meta) {
+            var c = key ? key.toUpperCase() : '';
+            if (editable && ['V','C','A','X','Z'].includes(c)) return true;
+            if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); return false; }
+        }
+        if (key === 'Backspace' && !editable) { e.preventDefault(); e.stopPropagation(); return false; }
+        if (key === 'Tab' && !editable) { e.preventDefault(); e.stopPropagation(); return false; }
+        return true;
+    }
+
+    document.addEventListener('keydown', blockKey, { capture: true, passive: false });
+    window.addEventListener('keydown', blockKey, { capture: true, passive: false });
+
+    document.addEventListener('contextmenu', function(e) {
+        if (isEditableElement(e.target)) return true;
+        e.preventDefault(); e.stopPropagation();
+    }, { capture: true });
+
+    try { window.console.clear = function() {}; } catch(e) {}
+
+    document.addEventListener('selectstart', function(e) {
+        if (isEditableElement(e.target)) return true;
+        e.preventDefault();
+    }, { capture: true });
+
+    document.addEventListener('dragstart', function(e) {
+        if (isEditableElement(e.target)) return true;
+        e.preventDefault();
+    }, { capture: true });
+
+    document.addEventListener('copy', function(e) {
+        if (isEditableElement(e.target)) return true;
+        e.preventDefault();
+    }, { capture: true });
+
+    document.addEventListener('cut', function(e) {
+        if (isEditableElement(e.target)) return true;
+        e.preventDefault();
+    }, { capture: true });
+
+    document.addEventListener('auxclick', function(e) {
+        if (e.button === 1) { e.preventDefault(); e.stopPropagation(); }
+    }, { capture: true });
+})();
+</script>
+
+<!-- ============================================================ -->
+<!--  FIREBASE SDKs                                               -->
+<!-- ============================================================ -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+<!-- 🔒 AUTH GUARD — Login check -->
+<script src="auth-guard.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+:root {
+    --neon-cyan: #00f0ff;
+    --neon-pink: #ff2d95;
+    --neon-purple: #b400ff;
+    --neon-gold: #ffd700;
+    --neon-green: #00ff64;
+    --bg: #05050f;
+    --card: rgba(11, 11, 26, 0.94);
+    --border: rgba(0, 240, 255, 0.22);
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0d0;
+    --text-muted: #6a6a8a;
+}
+
+html, body {
+    width: 100%;
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 20%, #0b0b1a 0%, #000 100%);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-primary);
+    overflow-x: hidden;
+    line-height: 1.5;
+}
+
+body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+        radial-gradient(circle at 15% 10%, rgba(0,240,255,0.06), transparent 40%),
+        radial-gradient(circle at 85% 90%, rgba(180,0,255,0.06), transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.app {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================================ */
+/*  HEADER                                                       */
+/* ============================================================ */
+.header {
+    background: rgba(11, 11, 26, 0.95);
+    border: 2px solid var(--neon-cyan);
+    border-radius: 18px;
+    padding: 18px 22px;
+    margin-bottom: 15px;
+    box-shadow: 0 0 50px rgba(0, 240, 255, 0.15);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.header::before {
+    content: '';
+    position: absolute; inset: -2px;
+    border-radius: 18px;
+    padding: 2px;
+    background: conic-gradient(from 0deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple), var(--neon-cyan));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: borderSpin 6s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes borderSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 3px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* ============================================================ */
+/*  TOP ACTIONS                                                  */
+/* ============================================================ */
+.top-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 14px 0;
+    flex-wrap: wrap;
+}
+
+.top-btn {
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+    color: #000;
+    border: 2px solid #fff;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 900;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.4s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 30px rgba(0,240,255,0.3);
+    font-family: inherit;
+}
+
+.top-btn:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 0 50px rgba(0,240,255,0.6);
+}
+
+.top-btn.gold { background: linear-gradient(135deg, #ffd700, #ff6b00); }
+.top-btn.green { background: linear-gradient(135deg, #00ff88, #00b85c); }
+.top-btn.pink { background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple)); color: #fff; }
+
+/* ============================================================ */
+/*  CARD                                                         */
+/* ============================================================ */
+.card {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 0 40px rgba(0, 240, 255, 0.08);
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.card::before {
+    content: '';
+    position: absolute; top: 0; left: 20px; right: 20px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+    opacity: 0.6;
+}
+
+h2, h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--neon-cyan);
+    font-size: 13px;
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.badge {
+    background: rgba(0, 240, 255, 0.15);
+    color: var(--neon-cyan);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border: 1px solid rgba(0,240,255,0.3);
+    font-family: 'Inter', sans-serif;
+}
+
+.badge.success { background: rgba(0, 255, 100, 0.15); color: #00ff64; border-color: rgba(0,255,100,0.3); }
+.badge.gold { background: rgba(255, 215, 0, 0.15); color: var(--neon-gold); border-color: rgba(255,215,0,0.3); }
+.badge.danger { background: rgba(255, 0, 100, 0.15); color: #ff0064; border-color: rgba(255,0,100,0.3); }
+.badge.pink { background: rgba(255, 45, 149, 0.15); color: var(--neon-pink); border-color: rgba(255,45,149,0.3); }
+
+/* ============================================================ */
+/*  SECTION BLOCK                                                */
+/* ============================================================ */
+.section-block {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1.5px solid rgba(0, 240, 255, 0.15);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 14px;
+    transition: 0.3s;
+}
+
+.section-block.active {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 30px rgba(0,240,255,0.15);
+    background: rgba(0, 240, 255, 0.03);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--neon-cyan);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.section-title .icon { font-size: 18px; }
+
+/* ============================================================ */
+/*  GUIDE BOX                                                    */
+/* ============================================================ */
+.guide-box {
+    background: rgba(0, 240, 255, 0.05);
+    border-left: 3px solid var(--neon-cyan);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    font-size: 11px;
+    color: #ccc;
+    line-height: 1.7;
+}
+
+.guide-box strong { color: var(--neon-cyan); }
+
+.guide-box code {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--neon-gold);
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* ============================================================ */
+/*  TEXTAREA                                                     */
+/* ============================================================ */
+textarea, input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(0, 0, 0, 0.65);
+    border: 1.5px solid rgba(0, 240, 255, 0.15);
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 12px;
+    resize: vertical;
+    line-height: 1.6;
+    transition: 0.3s;
+}
+
+textarea { min-height: 140px; max-height: 400px; }
+textarea.tall { min-height: 220px; }
+textarea.huge { min-height: 320px; }
+
+textarea:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+    background: rgba(0, 240, 255, 0.03);
+}
+
+textarea::placeholder, input::placeholder { color: #444; font-size: 11px; }
+
+textarea[readonly] {
+    background: rgba(0, 0, 0, 0.4);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+}
+
+/* ============================================================ */
+/*  BUTTONS                                                      */
+/* ============================================================ */
+.mini-btn {
+    background: rgba(0, 240, 255, 0.08);
+    border: 1.5px solid rgba(0, 240, 255, 0.25);
+    color: var(--neon-cyan);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: inherit;
+}
+
+.mini-btn:hover {
+    background: rgba(0, 240, 255, 0.18);
+    border-color: var(--neon-cyan);
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(0,240,255,0.2);
+}
+
+.mini-btn.gold { color: var(--neon-gold); border-color: rgba(255,215,0,0.25); background: rgba(255,215,0,0.06); }
+.mini-btn.gold:hover { background: rgba(255,215,0,0.15); border-color: var(--neon-gold); }
+.mini-btn.pink { color: var(--neon-pink); border-color: rgba(255,45,149,0.25); background: rgba(255,45,149,0.06); }
+.mini-btn.pink:hover { background: rgba(255,45,149,0.15); border-color: var(--neon-pink); }
+.mini-btn.green { color: #00ff64; border-color: rgba(0,255,100,0.25); background: rgba(0,255,100,0.06); }
+.mini-btn.green:hover { background: rgba(0,255,100,0.15); border-color: #00ff64; }
+
+.btn {
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+    color: #000;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-weight: 900;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 35px rgba(0, 240, 255, 0.45);
+}
+
+.btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn.full { width: 100%; }
+.btn.gold { background: linear-gradient(135deg, var(--neon-gold), #ff8c00); color: #000; }
+.btn.green { background: linear-gradient(135deg, #00ff88, #00b85c); color: #000; }
+.btn.red { background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple)); color: #fff; }
+.btn.secondary { background: rgba(0, 240, 255, 0.1); border: 1.5px solid rgba(0, 240, 255, 0.35); color: var(--neon-cyan); }
+
+.btn-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+/* ============================================================ */
+/*  MODE TOGGLE                                                  */
+/* ============================================================ */
+.mode-toggle {
+    display: flex;
+    gap: 8px;
+    background: rgba(0,0,0,0.4);
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid rgba(0,240,255,0.15);
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.mode-btn {
+    flex: 1;
+    min-width: 140px;
+    padding: 12px 14px;
+    background: transparent;
+    border: 1.5px solid transparent;
+    border-radius: 8px;
+    color: #666;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: bold;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-family: inherit;
+}
+
+.mode-btn.active {
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+    color: #000;
+    box-shadow: 0 0 20px rgba(0,240,255,0.3);
+}
+
+.mode-btn:hover:not(.active) {
+    background: rgba(0,240,255,0.08);
+    color: var(--neon-cyan);
+}
+
+/* ============================================================ */
+/*  STATUS                                                       */
+/* ============================================================ */
+.status {
+    padding: 12px 15px;
+    border-radius: 10px;
+    margin-top: 12px;
+    font-size: 11px;
+    display: none;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.status.show { display: block; }
+.status.success { background: rgba(0, 255, 100, 0.08); border: 1.5px solid #00ff64; color: #00ff64; }
+.status.error { background: rgba(255, 0, 100, 0.08); border: 1.5px solid #ff0064; color: #ff0064; }
+.status.loading { background: rgba(255, 215, 0, 0.08); border: 1.5px solid var(--neon-gold); color: var(--neon-gold); }
+.status.info { background: rgba(0, 240, 255, 0.08); border: 1.5px solid var(--neon-cyan); color: var(--neon-cyan); }
+
+/* ============================================================ */
+/*  INFO BOX                                                     */
+/* ============================================================ */
+.info-box {
+    background: rgba(255, 215, 0, 0.05);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 11px;
+    color: #aaa;
+    line-height: 1.7;
+    margin-top: 12px;
+}
+
+.info-box strong { color: var(--neon-gold); }
+.info-box code {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--neon-cyan);
+    font-size: 10px;
+}
+
+/* ============================================================ */
+/*  PREVIEW BOX                                                  */
+/* ============================================================ */
+.preview-box {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1.5px solid rgba(0, 240, 255, 0.2);
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 12px;
+}
+
+.preview-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    color: var(--neon-gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.preview-code {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(0, 240, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #00ff64;
+    max-height: 250px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.5;
+}
+
+.preview-code.empty {
+    color: #444;
+    font-style: italic;
+}
+
+/* ============================================================ */
+/*  RESPONSIVE                                                   */
+/* ============================================================ */
+@media (max-width: 768px) {
+    .app { padding: 10px; }
+    h1 { font-size: 18px; letter-spacing: 2px; }
+    .subtitle { font-size: 9px; letter-spacing: 1.5px; }
+    .card { padding: 14px; }
+    .mode-toggle { flex-direction: column; }
+    .mode-btn { min-width: auto; }
+    .top-actions { flex-direction: column; }
+    .top-btn { justify-content: center; }
+    textarea { font-size: 11px; }
+    .btn { font-size: 11px; padding: 12px 18px; }
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 15px; }
+    .subtitle { font-size: 8px; }
+    .card { padding: 12px; }
+    h2, h3 { font-size: 11px; }
+    .section-title { font-size: 10px; }
+    .btn { font-size: 10px; padding: 10px 14px; letter-spacing: 1px; }
+    .mini-btn { font-size: 9px; padding: 5px 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ============================================================ -->
+    <!--  HEADER                                                      -->
+    <!-- ============================================================ -->
+    <div class="header">
+        <h1>⚡ Create JSON File</h1>
+        <div class="subtitle">NightOrbit CodeForge · Combine · Convert · Export</div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!--  TOP ACTIONS                                                 -->
+    <!-- ============================================================ -->
+    <div class="top-actions">
+        <a href="dashboard.html" class="top-btn gold">⬅ BACK TO DASHBOARD</a>
+        <button class="top-btn pink" onclick="scrollToSection('convertSection')">📦 GO TO CONVERT</button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!--  GUIDE BOX                                                   -->
+    <!-- ============================================================ -->
+    <div class="card">
+        <div class="guide-box">
+            <strong>📌 4 Simple Steps:</strong><br>
+            1️⃣ <b>Config Mode</b> chuno — Demo / Your Config / No Config<br>
+            2️⃣ <b>HTML, CSS, JS</b> daalo (ya pura code daal kar auto-detect karo)<br>
+            3️⃣ <b>"PARSE & SEPARATE CODE"</b> dabao — HTML, CSS, JS alag ho jayenge<br>
+            4️⃣ <b>"CONVERT TO JSON"</b> dabao — <code>code.json</code> ready!
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!--  STEP 1: CONFIG MODE                                         -->
+    <!-- ============================================================ -->
+    <div class="card" id="configSection">
+        <h3>🔥 STEP 1 — Config Setup <span class="badge" id="configModeBadge">DEMO</span></h3>
+
+        <div class="guide-box">
+            <strong>📌 Config Mode Chuno:</strong><br>
+            • <b>Demo Config</b> — Placeholder values (testing ke liye)<br>
+            • <b>Your Config</b> — Apna Firebase config daalo (real app ke liye)<br>
+            • <b>No Config</b> — Bina Firebase ke static app (config: null)
+        </div>
+
+        <div class="mode-toggle">
+            <button class="mode-btn active" data-mode="demo" onclick="setConfigMode('demo')">🎭 DEMO CONFIG</button>
+            <button class="mode-btn" data-mode="custom" onclick="setConfigMode('custom')">🔑 YOUR CONFIG</button>
+            <button class="mode-btn" data-mode="null" onclick="setConfigMode('null')">🚫 NO CONFIG (NULL)</button>
+        </div>
+
+        <!-- DEMO CONFIG PREVIEW -->
+        <div id="demoConfigPreview" class="section-block">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="icon">🎭</span>
+                    <span>DEMO CONFIG (Preview)</span>
+                </div>
+                <span class="badge gold">PLACEHOLDER VALUES</span>
+            </div>
+            <div class="guide-box">
+                Ye demo config hai — placeholder values ke saath. Real Firebase chahiye toh <strong>"YOUR CONFIG"</strong> chuno.
+            </div>
+            <textarea id="demoConfigArea" readonly>{
+  "config": {
+    "firebase": {
+      "apiKey": "your-api-key",
+      "authDomain": "your-auth-domain.firebaseapp.com",
+      "databaseURL": "https://your-project-default-rtdb.firebaseio.com",
+      "projectId": "your-project-id",
+      "storageBucket": "your-project.appspot.com",
+      "messagingSenderId": "your-sender-id",
+      "appId": "your-app-id",
+      "measurementId": "G-XXXXXXXXXX"
+    }
+  },
+  "html": "",
+  "css": "",
+  "js": ""
+}</textarea>
+        </div>
+
+        <!-- CUSTOM CONFIG -->
+        <div id="customConfigSection" class="section-block" style="display:none;">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="icon">🔑</span>
+                    <span>YOUR FIREBASE CONFIG</span>
+                </div>
+                <span class="badge" id="customConfigBadge">EMPTY</span>
+            </div>
+            <div class="guide-box">
+                Apna Firebase config yahan paste karo. Agar config nahi hai toh <strong>"NO CONFIG (NULL)"</strong> chuno.
+            </div>
+            <textarea id="customConfigArea" class="tall" placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "your-app.firebaseapp.com",
+  "databaseURL": "https://your-app.firebaseio.com",
+  "projectId": "your-project-id",
+  "storageBucket": "your-app.appspot.com",
+  "messagingSenderId": "123456789",
+  "appId": "1:123:web:abc",
+  "measurementId": "G-XXXXXX"
+}'></textarea>
+            <div class="btn-row">
+                <button class="mini-btn" onclick="copyCustomConfig()">📋 COPY</button>
+                <button class="mini-btn gold" onclick="compactCustomConfig()">🗜️ COMPACT</button>
+                <button class="mini-btn pink" onclick="clearCustomConfig()">🗑️ CLEAR</button>
+            </div>
+        </div>
+
+        <!-- NULL CONFIG INFO -->
+        <div id="nullConfigInfo" class="section-block" style="display:none;">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="icon">🚫</span>
+                    <span>NO CONFIG MODE</span>
+                </div>
+                <span class="badge danger">STATIC APP</span>
+            </div>
+            <div class="guide-box">
+                Is mode mein <code>"config": null</code> set hoga. App <strong>bina Firebase ke</strong> chalega.
+            </div>
+        </div>
+
+        <div class="status" id="statusConfig"></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!--  STEP 2: CODE INPUT                                          -->
+    <!-- ============================================================ -->
+    <div class="card" id="codeSection">
+        <h3>📝 STEP 2 — Apna Code Daalo <span class="badge pink">AUTO-DETECT</span></h3>
+
+        <div class="guide-box">
+            <strong>📌 Yahan apna pura code paste karo:</strong><br>
+            • Aap <b>HTML + CSS + JS</b> teeno ek saath daal sakte ho<br>
+            • Ya <b>sirf HTML</b>, ya <b>sirf CSS</b>, ya <b>sirf JS</b><br>
+            • Button dabao — system <b>automatically</b> HTML, CSS, JS alag kar dega<br>
+            • <b>⚠️ Aapka code ek bhi line change nahi hoga</b> — sirf separate hoga
+        </div>
+
+        <textarea id="fullCodeArea" class="huge" placeholder="<!-- Yahan apna pura code paste karo -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { background: #000; }
+    </style>
+</head>
+<body>
+    <h1>Hello World</h1>
+    <script>
+        console.log('Hi');
+    </script>
+</body>
+</html>"></textarea>
+
+        <div class="btn-row">
+            <button class="mini-btn gold" onclick="parseFullCode()">🔍 PARSE & SEPARATE CODE</button>
+            <button class="mini-btn" onclick="copyFullCode()">📋 COPY</button>
+            <button class="mini-btn pink" onclick="clearFullCode()">🗑️ CLEAR</button>
+        </div>
+
+        <div class="status" id="statusFullCode"></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!--  STEP 3: SEPARATED SECTIONS                                  -->
+    <!-- ============================================================ -->
+    <div id="sectionsContainer" style="display:none;">
+
+        <!-- HTML SECTION -->
+        <div class="card" id="htmlSection">
+            <h3>📄 HTML <span class="badge" id="htmlBadge">EMPTY</span></h3>
+            <div class="guide-box">
+                <strong>HTML section</strong> — Ye alag kiya gaya HTML code hai. Aap isse edit kar sakte ho.
+            </div>
+            <textarea id="htmlArea" class="tall" placeholder="<!-- HTML yahan aayega -->"></textarea>
+            <div class="btn-row">
+                <button class="mini-btn" onclick="copyHtml()">📋 COPY</button>
+                <button class="mini-btn pink" onclick="clearHtml()">🗑️ CLEAR</button>
+            </div>
+        </div>
+
+        <!-- CSS SECTION -->
+        <div class="card" id="cssSection">
+            <h3>🎨 CSS <span class="badge" id="cssBadge">EMPTY</span></h3>
+            <div class="guide-box">
+                <strong>CSS section</strong> — Ye alag kiya gaya CSS code hai.
+            </div>
+            <textarea id="cssArea" class="tall" placeholder="/* CSS yahan aayega */"></textarea>
+            <div class="btn-row">
+                <button class="mini-btn" onclick="copyCss()">📋 COPY</button>
+                <button class="mini-btn pink" onclick="clearCss()">🗑️ CLEAR</button>
+            </div>
+        </div>
+
+        <!-- JS SECTION -->
+        <div class="card" id="jsSection">
+            <h3>⚙️ JavaScript <span class="badge" id="jsBadge">EMPTY</span></h3>
+            <div class="guide-box">
+                <strong>JS section</strong> — Ye alag kiya gaya JavaScript code hai.
+            </div>
+            <textarea id="jsArea" class="tall" placeholder="// JS yahan aayega"></textarea>
+            <div class="btn-row">
+                <button class="mini-btn" onclick="copyJs()">📋 COPY</button>
+                <button class="mini-btn pink" onclick="clearJs()">🗑️ CLEAR</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!--  STEP 4: CONVERT TO JSON                                     -->
+    <!-- ============================================================ -->
+    <div class="card" id="convertSection">
+        <h3>📦 STEP 3 — Convert to JSON <span class="badge gold">FINAL</span></h3>
+
+        <div class="guide-box">
+            <strong>📌 Ab sab kuch JSON mein convert karo:</strong><br>
+            • Config mode ke hisaab se config set hoga<br>
+            • HTML, CSS, JS fields as-is rahenge<br>
+            • <b>⚠️ Aapka code ek bhi line change nahi hoga</b><br>
+            • Download ya Copy karo
+        </div>
+
+        <button class="btn full gold" id="convertBtn" style="margin-bottom:12px;">⚡ CONVERT TO JSON</button>
+
+        <div class="status" id="statusConvert"></div>
+
+        <h3 style="margin-top:16px;">📦 code.json <span class="badge success" id="jsonBadge">NOT READY</span></h3>
+
+        <div class="preview-box">
+            <div class="preview-title">
+                <i class="fa-solid fa-file-code"></i>
+                JSON Preview
+            </div>
+            <div class="preview-code empty" id="jsonPreview">Click "CONVERT TO JSON" to generate...</div>
+        </div>
+
+        <textarea id="outputJson" class="tall" placeholder="Click CONVERT TO JSON..." readonly style="margin-top:12px;"></textarea>
+
+        <div class="btn-row">
+            <button class="btn green" id="downloadJsonBtn" disabled>⬇ DOWNLOAD CODE.JSON</button>
+            <button class="btn secondary" id="copyJsonBtn" disabled>📋 COPY JSON</button>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!--  FOOTER                                                      -->
+    <!-- ============================================================ -->
+    <div class="card" style="text-align:center;">
+        <div style="font-size:11px;color:#444;letter-spacing:2px;line-height:1.8;">
+            Powered by <b style="color:var(--neon-cyan);">NightOrbit</b> · Owner: <b style="color:var(--neon-cyan);">Anas Farooq</b>
+        </div>
+    </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!--  MAIN SCRIPT                                                 -->
+<!-- ============================================================ -->
+<script>
+(function() {
+    'use strict';
+
+    // ============================================================
+    //  STATE
+    // ============================================================
+    var state = {
+        configMode: 'demo',           // demo | custom | null
+        customConfig: '',
+        fullCode: '',
+        html: '',
+        css: '',
+        js: '',
+        outputJson: null
+    };
+
+    // ============================================================
+    //  UTILITIES
+    // ============================================================
+    function bytes(n) {
+        if (n < 1024) return n + ' B';
+        if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+        return (n / 1024 / 1024).toFixed(2) + ' MB';
+    }
+
+    function showStatus(id, type, text) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.className = 'status show ' + type;
+        el.textContent = text;
+    }
+
+    function escapeForJson(str) {
+        if (!str) return '';
+        return String(str)
+            // </script> ko escape karo
+            .replace(/<\/script>/gi, '<\\/script>')
+            .replace(/<\/style>/gi, '<\\/style>')
+            .replace(/<\/html>/gi, '<\\/html>')
+            .replace(/<\/body>/gi, '<\\/body>')
+            .replace(/<\/head>/gi, '<\\/head>');
+    }
+
+    // ============================================================
+    //  CONFIG MODE
+    // ============================================================
+    window.setConfigMode = function(mode) {
+        state.configMode = mode;
+
+        document.querySelectorAll('.mode-btn').forEach(function(btn) {
+            btn.classList.toggle('active', btn.dataset.mode === mode);
+        });
+
+        var badge = document.getElementById('configModeBadge');
+        var demoPreview = document.getElementById('demoConfigPreview');
+        var customSection = document.getElementById('customConfigSection');
+        var nullInfo = document.getElementById('nullConfigInfo');
+
+        demoPreview.style.display = 'none';
+        customSection.style.display = 'none';
+        nullInfo.style.display = 'none';
+
+        if (mode === 'demo') {
+            badge.textContent = 'DEMO';
+            badge.className = 'badge gold';
+            demoPreview.style.display = 'block';
+        } else if (mode === 'custom') {
+            badge.textContent = 'YOUR CONFIG';
+            badge.className = 'badge success';
+            customSection.style.display = 'block';
+        } else if (mode === 'null') {
+            badge.textContent = 'NULL';
+            badge.className = 'badge danger';
+            nullInfo.style.display = 'block';
+        }
+    };
+
+    // ============================================================
+    //  CUSTOM CONFIG
+    // ============================================================
+    window.copyCustomConfig = function() {
+        var val = document.getElementById('customConfigArea').value;
+        if (!val) { alert('❌ Config empty!'); return; }
+        navigator.clipboard.writeText(val);
+        alert('✅ Copied!');
+    };
+
+    window.compactCustomConfig = function() {
+        var area = document.getElementById('customConfigArea');
+        if (!area.value) { alert('❌ Empty!'); return; }
+        area.value = area.value.replace(/\s+/g, ' ').trim();
+        updateCustomConfigState();
+    };
+
+    window.clearCustomConfig = function() {
+        document.getElementById('customConfigArea').value = '';
+        updateCustomConfigState();
+    };
+
+    function updateCustomConfigState() {
+        var val = document.getElementById('customConfigArea').value.trim();
+        var badge = document.getElementById('customConfigBadge');
+        if (val) {
+            badge.textContent = 'READY';
+            badge.className = 'badge success';
+        } else {
+            badge.textContent = 'EMPTY';
+            badge.className = 'badge danger';
+        }
+        state.customConfig = val;
+    }
+
+    document.getElementById('customConfigArea').addEventListener('input', updateCustomConfigState);
+
+    // ============================================================
+    //  PARSE FULL CODE — AUTO DETECT HTML / CSS / JS
+    // ============================================================
+    window.parseFullCode = function() {
+        var fullCode = document.getElementById('fullCodeArea').value;
+        if (!fullCode.trim()) {
+            showStatus('statusFullCode', 'error', '❌ Code empty hai! Pehle code daalo.');
+            return;
+        }
+
+        state.fullCode = fullCode;
+
+        var html = fullCode;
+        var css = '';
+        var js = '';
+
+        // ---- CSS Extract ----
+        // <style>...</style> blocks
+        var styleRegex = /<style[^>]*>([\s\S]*?)<\/style>/gi;
+        var styleMatch;
+        while ((styleMatch = styleRegex.exec(fullCode)) !== null) {
+            if (css) css += '\n\n';
+            css += styleMatch[1].trim();
+        }
+
+        // ---- JS Extract ----
+        // <script>...</script> blocks (but NOT <script src="...">)
+        var scriptRegex = /<script(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script>/gi;
+        var scriptMatch;
+        while ((scriptMatch = scriptRegex.exec(fullCode)) !== null) {
+            if (js) js += '\n\n';
+            js += scriptMatch[1].trim();
+        }
+
+        // ---- HTML Extract ----
+        // Remove <style>...</style> and <script>...</script> blocks
+        html = html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+        html = html.replace(/<script(?![^>]*\bsrc\s*=)[^>]*>[\s\S]*?<\/script>/gi, '');
+
+        // If input was pure CSS/JS (no HTML tags), detect
+        var hasHtmlTags = /<[a-z][\s\S]*>/i.test(fullCode);
+
+        if (!hasHtmlTags) {
+            // Pure code — check if CSS or JS
+            if (fullCode.indexOf('function') !== -1 || fullCode.indexOf('const ') !== -1 ||
+                fullCode.indexOf('let ') !== -1 || fullCode.indexOf('var ') !== -1 ||
+                fullCode.indexOf('=>') !== -1) {
+                js = fullCode.trim();
+                html = '';
+                css = '';
+            } else if (fullCode.indexOf('{') !== -1 && fullCode.indexOf('}') !== -1 &&
+                       (fullCode.indexOf(':') !== -1 || fullCode.indexOf(';') !== -1)) {
+                css = fullCode.trim();
+                html = '';
+                js = '';
+            }
+        }
+
+        state.html = html;
+        state.css = css;
+        state.js = js;
+
+        // Populate textareas
+        document.getElementById('htmlArea').value = html;
+        document.getElementById('cssArea').value = css;
+        document.getElementById('jsArea').value = js;
+
+        // Update badges
+        updateHtmlBadge();
+        updateCssBadge();
+        updateJsBadge();
+
+        // Show sections
+        document.getElementById('sectionsContainer').style.display = 'block';
+
+        showStatus('statusFullCode', 'success',
+            '✅ Code parsed successfully!\n\n' +
+            '📄 HTML: ' + bytes(new Blob([html]).size) + '\n' +
+            '🎨 CSS: ' + bytes(new Blob([css]).size) + '\n' +
+            '⚙️ JS: ' + bytes(new Blob([js]).size) + '\n\n' +
+            'Ab neeche scroll karo aur "CONVERT TO JSON" dabao.'
+        );
+
+        // Scroll to HTML section
+        setTimeout(function() {
+            var el = document.getElementById('htmlSection');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
+    };
+
+    window.copyFullCode = function() {
+        var v = document.getElementById('fullCodeArea').value;
+        if (!v) { alert('❌ Empty!'); return; }
+        navigator.clipboard.writeText(v);
+        alert('✅ Copied!');
+    };
+
+    window.clearFullCode = function() {
+        document.getElementById('fullCodeArea').value = '';
+        state.fullCode = '';
+        showStatus('statusFullCode', 'info', '🗑️ Cleared');
+    };
+
+    // ============================================================
+    //  HTML / CSS / JS ACTIONS
+    // ============================================================
+    function updateHtmlBadge() {
+        var v = document.getElementById('htmlArea').value;
+        state.html = v;
+        var b = document.getElementById('htmlBadge');
+        b.textContent = v ? bytes(new Blob([v]).size) : 'EMPTY';
+        b.className = v ? 'badge success' : 'badge';
+    }
+
+    function updateCssBadge() {
+        var v = document.getElementById('cssArea').value;
+        state.css = v;
+        var b = document.getElementById('cssBadge');
+        b.textContent = v ? bytes(new Blob([v]).size) : 'EMPTY';
+        b.className = v ? 'badge success' : 'badge';
+    }
+
+    function updateJsBadge() {
+        var v = document.getElementById('jsArea').value;
+        state.js = v;
+        var b = document.getElementById('jsBadge');
+        b.textContent = v ? bytes(new Blob([v]).size) : 'EMPTY';
+        b.className = v ? 'badge success' : 'badge';
+    }
+
+    window.copyHtml = function() {
+        var v = document.getElementById('htmlArea').value;
+        if (!v) { alert('❌ Empty!'); return; }
+        navigator.clipboard.writeText(v);
+        alert('✅ HTML Copied!');
+    };
+
+    window.clearHtml = function() {
+        document.getElementById('htmlArea').value = '';
+        updateHtmlBadge();
+    };
+
+    window.copyCss = function() {
+        var v = document.getElementById('cssArea').value;
+        if (!v) { alert('❌ Empty!'); return; }
+        navigator.clipboard.writeText(v);
+        alert('✅ CSS Copied!');
+    };
+
+    window.clearCss = function() {
+        document.getElementById('cssArea').value = '';
+        updateCssBadge();
+    };
+
+    window.copyJs = function() {
+        var v = document.getElementById('jsArea').value;
+        if (!v) { alert('❌ Empty!'); return; }
+        navigator.clipboard.writeText(v);
+        alert('✅ JS Copied!');
+    };
+
+    window.clearJs = function() {
+        document.getElementById('jsArea').value = '';
+        updateJsBadge();
+    };
+
+    // Textarea listeners
+    document.getElementById('htmlArea').addEventListener('input', updateHtmlBadge);
+    document.getElementById('cssArea').addEventListener('input', updateCssBadge);
+    document.getElementById('jsArea').addEventListener('input', updateJsBadge);
+
+    // ============================================================
+    //  CONVERT TO JSON
+    // ============================================================
+    document.getElementById('convertBtn').addEventListener('click', function() {
+        try {
+            // ---- Build config based on mode ----
+            var configValue = null;
+
+            if (state.configMode === 'demo') {
+                configValue = {
+                    firebase: {
+                        apiKey: "your-api-key",
+                        authDomain: "your-auth-domain.firebaseapp.com",
+                        databaseURL: "https://your-project-default-rtdb.firebaseio.com",
+                        projectId: "your-project-id",
+                        storageBucket: "your-project.appspot.com",
+                        messagingSenderId: "your-sender-id",
+                        appId: "your-app-id",
+                        measurementId: "G-XXXXXXXXXX"
+                    }
+                };
+            } else if (state.configMode === 'custom') {
+                var raw = (state.customConfig || '').trim();
+                if (!raw) {
+                    showStatus('statusConvert', 'error',
+                        '❌ CONFIG REQUIRED!\n\n' +
+                        'Aapne "YOUR CONFIG" mode select kiya hai lekin config empty hai.\n' +
+                        'Kripya apna Firebase config paste karo, ya "NO CONFIG (NULL)" mode chuno.'
+                    );
+                    return;
+                }
+                // Auto-detect: kya user ne poora object diya ya sirf firebase config
+                var parsed = null;
+                try {
+                    parsed = JSON.parse(raw);
+                } catch (e) {
+                    showStatus('statusConvert', 'error',
+                        '❌ INVALID JSON in config!\n\n' + e.message
+                    );
+                    return;
+                }
+
+                // Agar user ne {"firebase": {...}} diya toh as-is use karo
+                // Agar user ne {"apiKey": ...} diya toh wrap karo
+                if (parsed.firebase) {
+                    configValue = parsed;
+                } else {
+                    configValue = { firebase: parsed };
+                }
+            } else if (state.configMode === 'null') {
+                configValue = null;
+            }
+
+            // ---- Escape HTML/CSS/JS for JSON ----
+            var htmlEsc = escapeForJson(state.html || '');
+            var cssEsc = escapeForJson(state.css || '');
+            var jsEsc = escapeForJson(state.js || '');
+
+            // ---- Build final object ----
+            var finalObj = {
+                config: configValue,
+                html: htmlEsc,
+                css: cssEsc,
+                js: jsEsc
+            };
+
+            // ---- Stringify ----
+            state.outputJson = JSON.stringify(finalObj, null, 2);
+
+            // ---- Validate ----
+            try {
+                JSON.parse(state.outputJson);
+            } catch (e) {
+                showStatus('statusConvert', 'error',
+                    '❌ Generated JSON is invalid!\n\n' + e.message
+                );
+                return;
+            }
+
+            // ---- Display ----
+            document.getElementById('outputJson').value = state.outputJson;
+
+            var preview = document.getElementById('jsonPreview');
+            preview.textContent = state.outputJson;
+            preview.classList.remove('empty');
+
+            var badge = document.getElementById('jsonBadge');
+            badge.textContent = 'READY (' + state.configMode.toUpperCase() + ')';
+            badge.className = 'badge success';
+
+            document.getElementById('downloadJsonBtn').disabled = false;
+            document.getElementById('copyJsonBtn').disabled = false;
+
+            showStatus('statusConvert', 'success',
+                '✅ CONVERTED TO JSON!\n\n' +
+                '🎯 Config Mode: ' + state.configMode.toUpperCase() + '\n' +
+                '🔥 Config: ' + (configValue ? 'SET' : 'NULL') + '\n' +
+                '📄 HTML: ' + bytes(new Blob([htmlEsc]).size) + '\n' +
+                '🎨 CSS: ' + bytes(new Blob([cssEsc]).size) + '\n' +
+                '⚙️ JS: ' + bytes(new Blob([jsEsc]).size) + '\n' +
+                '📦 Total: ' + bytes(new Blob([state.outputJson]).size) + '\n\n' +
+                'Neeche Download ya Copy karo!'
+            );
+
+        } catch (e) {
+            showStatus('statusConvert', 'error', '❌ Error: ' + e.message);
+        }
+    });
+
+    // ============================================================
+    //  DOWNLOAD / COPY JSON
+    // ============================================================
+    document.getElementById('downloadJsonBtn').addEventListener('click', function() {
+        if (!state.outputJson) return;
+        var blob = new Blob([state.outputJson], { type: 'application/json;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'code.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showStatus('statusConvert', 'success', '✅ Downloaded code.json!');
+    });
+
+    document.getElementById('copyJsonBtn').addEventListener('click', function() {
+        if (!state.outputJson) return;
+        navigator.clipboard.writeText(state.outputJson);
+        alert('✅ JSON copied to clipboard!');
+        showStatus('statusConvert', 'success', '✅ JSON copied!');
+    });
+
+    // ============================================================
+    //  SCROLL HELPER
+    // ============================================================
+    window.scrollToSection = function(id) {
+        var el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    // ============================================================
+    //  INIT
+    // ============================================================
+    setConfigMode('demo');
+    updateCustomConfigState();
+    updateHtmlBadge();
+    updateCssBadge();
+    updateJsBadge();
+
+})();
+</script>
+
+</body>
+</html>
