@@ -1,347 +1,850 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-    <!-- ============================================================
-         🚀 ULTIMATE SECURITY - SAB SHORTCUTS BLOCK
-         ============================================================ -->
-    
-    <!-- 🔥 NOSCRIPT - JavaScript off -->
-    <noscript>
-        <style>
-            html, body, * {
-                display: none !important;
-                visibility: hidden !important;
-                opacity: 0 !important;
-                width: 0 !important;
-                height: 0 !important;
-                overflow: hidden !important;
-                position: absolute !important;
-                top: -9999px !important;
-                left: -9999px !important;
-            }
-        </style>
-        <meta http-equiv="refresh" content="0; url=https://google.com">
-    </noscript>
-    
-    <!-- ============================================================
-         🔒 SAB SHORTCUTS BLOCK - KOE BHI KAAM NAHI KAREGA
-         ============================================================ -->
-    <script>
-        (function() {
-            'use strict';
-            
-            // 🔥 SAB SHORTCUTS BLOCK - HAR KEY
-            function blockAllKeys(e) {
-                var key = e.key;
-                var code = e.keyCode;
-                var ctrl = e.ctrlKey;
-                var shift = e.shiftKey;
-                var alt = e.altKey;
-                var meta = e.metaKey; // Mac Cmd key
-                
-                // ============================================
-                // 1. ALL F-KEYS (F1-F12)
-                // ============================================
-                if (key && key.startsWith('F') && key.length <= 3) {
-                    var num = parseInt(key.replace('F', ''));
-                    if (num >= 1 && num <= 12) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                }
-                
-                // ============================================
-                // 2. INDIVIDUAL KEYS
-                // ============================================
-                // F12
-                if (key === 'F12' || code === 123) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                
-                // PrintScreen
-                if (key === 'PrintScreen' || code === 44) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                
-                // Insert
-                if (key === 'Insert' || code === 45) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                
-                // Home
-                if (key === 'Home' || code === 36) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                
-                // PageUp, PageDown
-                if (key === 'PageUp' || key === 'PageDown' || code === 33 || code === 34) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                
-                // ============================================
-                // 3. CTRL+... SAB BLOCK
-                // ============================================
-                if (ctrl) {
-                    var c = key ? key.toUpperCase() : '';
-                    
-                    // CTRL+A to Z - SAB BLOCK
-                    if (c.length === 1 && c >= 'A' && c <= 'Z') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                    
-                    // CTRL+0-9 - SAB BLOCK
-                    if (c >= '0' && c <= '9') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                    
-                    // Special keys
-                    if (['`', '-', '=', '[', ']', '\\', ';', "'", ',', '.', '/'].includes(key)) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                }
-                
-                // ============================================
-                // 4. CTRL+SHIFT+... SAB BLOCK
-                // ============================================
-                if (ctrl && shift) {
-                    var c = key ? key.toUpperCase() : '';
-                    if (c.length === 1 && c >= 'A' && c <= 'Z') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                }
-                
-                // ============================================
-                // 5. ALT+... SAB BLOCK
-                // ============================================
-                if (alt) {
-                    var c = key ? key.toUpperCase() : '';
-                    if (c.length === 1 && c >= 'A' && c <= 'Z') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                    // ALT+F4
-                    if (key === 'F4' || code === 115) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                }
-                
-                // ============================================
-                // 6. MAC - CMD+... SAB BLOCK
-                // ============================================
-                if (meta) {
-                    var c = key ? key.toUpperCase() : '';
-                    if (c.length === 1 && c >= 'A' && c <= 'Z') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                }
-                
-                // ============================================
-                // 7. BROWSER SHORTCUTS
-                // ============================================
-                // Backspace (browser back)
-                if (key === 'Backspace' && !e.target.matches('input, textarea, select')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                
-                // Escape
-                if (key === 'Escape' || code === 27) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                
-                // Tab
-                if (key === 'Tab' || code === 9) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                
-                return true;
-            }
-            
-            // ATTACH - CAPTURE PHASE (sab se pehle)
-            document.addEventListener('keydown', blockAllKeys, { capture: true, passive: false });
-            window.addEventListener('keydown', blockAllKeys, { capture: true, passive: false });
-            
-            // ---------- RIGHT CLICK ----------
-            document.addEventListener('contextmenu', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-                return false;
-            }, { capture: true });
-            
-            // ---------- CONSOLE ----------
-            try {
-                var empty = function() {};
-                var consoleMethods = [
-                    'log', 'warn', 'error', 'info', 'debug', 'trace',
-                    'group', 'groupEnd', 'table', 'clear', 'dir',
-                    'dirxml', 'profile', 'profileEnd', 'time',
-                    'timeEnd', 'timeStamp', 'memory', 'assert',
-                    'count', 'countReset'
-                ];
-                consoleMethods.forEach(function(m) {
-                    try {
-                        window.console[m] = empty;
-                    } catch(e) {}
-                });
-                window.console.clear = empty;
-            } catch(e) {}
-            
-            // ---------- SELECT/DRAG/COPY ----------
-            document.addEventListener('selectstart', function(e) {
-                var tag = e.target.tagName.toLowerCase();
-                if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
-                    e.preventDefault();
-                    return false;
-                }
-            }, { capture: true });
-            
-            document.addEventListener('dragstart', function(e) {
-                e.preventDefault();
-                return false;
-            }, { capture: true });
-            
-            document.addEventListener('copy', function(e) {
-                var tag = e.target.tagName.toLowerCase();
-                if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
-                    e.preventDefault();
-                    return false;
-                }
-            }, { capture: true });
-            
-            document.addEventListener('cut', function(e) {
-                var tag = e.target.tagName.toLowerCase();
-                if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
-                    e.preventDefault();
-                    return false;
-                }
-            }, { capture: true });
-            
-            // ---------- MIDDLE CLICK ----------
-            document.addEventListener('auxclick', function(e) {
-                if (e.button === 1) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-            }, { capture: true });
-            
-            console.log('✅ ULTIMATE SECURITY - SAB SHORTCUTS BLOCK');
-        })();
-    </script>
-    
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gyidi Bazar Hub</title>
-    
-    <!-- Firebase SDK -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0b0b1a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="NightOrbit CodeForge — Sign in to continue">
+    <title>NightOrbit CodeForge — Login</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+
+    <noscript>
+        <div style="color:#fff;text-align:center;padding:50px;font-family:sans-serif;background:#0b0b1a;min-height:100vh;">
+            <h1 style="color:#00f0ff;">⚠️ JavaScript Required</h1>
+            <p style="color:#b0b0d0;">Please enable JavaScript to use NightOrbit CodeForge.</p>
+        </div>
+    </noscript>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ============================================================
+        //  SMART BLOCKING — Firebase-safe (V14)
+        // ============================================================
+
+        function isEditableElement(el) {
+            if (!el || !el.tagName) return false;
+            var tag = el.tagName.toLowerCase();
+            return tag === 'input' || tag === 'textarea' || tag === 'select' || el.isContentEditable;
+        }
+
+        function blockKey(e) {
+            var key = e.key;
+            var code = e.keyCode;
+            var ctrl = e.ctrlKey;
+            var shift = e.shiftKey;
+            var alt = e.altKey;
+            var meta = e.metaKey;
+            var editable = isEditableElement(e.target);
+
+            // ---- F-KEYS (F1-F12) ----
+            if (key && key.startsWith('F') && key.length <= 3) {
+                var num = parseInt(key.replace('F', ''));
+                if (num >= 1 && num <= 12) {
+                    e.preventDefault(); e.stopPropagation();
+                    return false;
+                }
+            }
+
+            // ---- DEVTOOLS ----
+            if (key === 'F12' || code === 123) {
+                e.preventDefault(); e.stopPropagation();
+                return false;
+            }
+
+            // ---- PRINT SCREEN ----
+            if (key === 'PrintScreen' || code === 44) {
+                e.preventDefault(); e.stopPropagation();
+                return false;
+            }
+
+            // ---- INSERT, HOME, PAGE UP/DOWN ----
+            if (key === 'Insert' || code === 45) {
+                e.preventDefault(); e.stopPropagation();
+                return false;
+            }
+            if (key === 'Home' || code === 36) {
+                e.preventDefault(); e.stopPropagation();
+                return false;
+            }
+            if (key === 'PageUp' || key === 'PageDown' || code === 33 || code === 34) {
+                e.preventDefault(); e.stopPropagation();
+                return false;
+            }
+
+            // ---- CTRL COMBOS ----
+            if (ctrl) {
+                var c = key ? key.toUpperCase() : '';
+
+                // Input mein paste/copy/select/cut/undo ALLOW karo
+                if (editable && ['V', 'C', 'A', 'X', 'Z', 'Y'].includes(c)) {
+                    return true;
+                }
+
+                if (c.length === 1 && c >= 'A' && c <= 'Z') {
+                    e.preventDefault(); e.stopPropagation();
+                    return false;
+                }
+                if (c >= '0' && c <= '9') {
+                    e.preventDefault(); e.stopPropagation();
+                    return false;
+                }
+                if (['`', '-', '=', '[', ']', '\\', ';', "'", ',', '.', '/'].includes(key)) {
+                    e.preventDefault(); e.stopPropagation();
+                    return false;
+                }
+            }
+
+            // ---- CTRL + SHIFT ----
+            if (ctrl && shift) {
+                var c = key ? key.toUpperCase() : '';
+                if (c.length === 1 && c >= 'A' && c <= 'Z') {
+                    e.preventDefault(); e.stopPropagation();
+                    return false;
+                }
+            }
+
+            // ---- ALT COMBOS ----
+            if (alt) {
+                var c = key ? key.toUpperCase() : '';
+                if (c.length === 1 && c >= 'A' && c <= 'Z') {
+                    e.preventDefault(); e.stopPropagation();
+                    return false;
+                }
+                if (key === 'F4' || code === 115) {
+                    e.preventDefault(); e.stopPropagation();
+                    return false;
+                }
+            }
+
+            // ---- META (Mac) ----
+            if (meta) {
+                var c = key ? key.toUpperCase() : '';
+                // Input mein paste/copy/select/cut ALLOW karo
+                if (editable && ['V', 'C', 'A', 'X', 'Z'].includes(c)) {
+                    return true;
+                }
+                if (c.length === 1 && c >= 'A' && c <= 'Z') {
+                    e.preventDefault(); e.stopPropagation();
+                    return false;
+                }
+            }
+
+            // ---- BACKSPACE (sirf non-input mein block) ----
+            if (key === 'Backspace' && !editable) {
+                e.preventDefault(); e.stopPropagation();
+                return false;
+            }
+
+            // ---- TAB (sirf non-input mein block) ----
+            if (key === 'Tab' && !editable) {
+                e.preventDefault(); e.stopPropagation();
+                return false;
+            }
+
+            // ---- ESCAPE — ALLOW (Google popup close ke liye zaroori) ----
+            // Escape ko block NAHI karo
+
+            return true;
+        }
+
+        document.addEventListener('keydown', blockKey, { capture: true, passive: false });
+        window.addEventListener('keydown', blockKey, { capture: true, passive: false });
+
+        // ---- CONTEXT MENU (sirf non-input par block) ----
+        document.addEventListener('contextmenu', function(e) {
+            if (isEditableElement(e.target)) return true;
+            e.preventDefault(); e.stopPropagation();
+            return false;
+        }, { capture: true });
+
+        // ---- CONSOLE — SIRF CLEAR BLOCK KARO ----
+        // Firebase ko error/warn/log chahiye — inhe block mat karo
+        try {
+            window.console.clear = function() {};
+        } catch(e) {}
+
+        // ---- SELECT START ----
+        document.addEventListener('selectstart', function(e) {
+            if (isEditableElement(e.target)) return true;
+            e.preventDefault();
+            return false;
+        }, { capture: true });
+
+        // ---- DRAG START ----
+        document.addEventListener('dragstart', function(e) {
+            if (isEditableElement(e.target)) return true;
+            e.preventDefault();
+            return false;
+        }, { capture: true });
+
+        // ---- COPY / CUT (sirf non-input par block) ----
+        document.addEventListener('copy', function(e) {
+            if (isEditableElement(e.target)) return true;
+            e.preventDefault();
+            return false;
+        }, { capture: true });
+
+        document.addEventListener('cut', function(e) {
+            if (isEditableElement(e.target)) return true;
+            e.preventDefault();
+            return false;
+        }, { capture: true });
+
+        // ---- MIDDLE CLICK ----
+        document.addEventListener('auxclick', function(e) {
+            if (e.button === 1) {
+                e.preventDefault(); e.stopPropagation();
+                return false;
+            }
+        }, { capture: true });
+    })();
+    </script>
+
+    <script>
+    (function() {
+        if (window.location.hostname.includes('firebaseapp.com')) {
+            var newUrl = window.location.href.replace('firebaseapp.com', 'web.app');
+            window.location.replace(newUrl);
+        }
+    })();
+    </script>
+
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+    *, *::before, *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+        --neon-cyan: #00f0ff;
+        --neon-pink: #ff2d95;
+        --neon-purple: #b400ff;
+        --neon-gold: #ffd700;
+        --dark-bg: #0b0b1a;
+        --card-bg: rgba(11, 11, 26, 0.88);
+        --glass-border: rgba(0, 240, 255, 0.15);
+        --text-primary: #ffffff;
+        --text-secondary: #b0b0d0;
+        --text-muted: #6a6a8a;
+        --radius-xl: 30px;
+        --radius-lg: 22px;
+        --radius-md: 16px;
+        --radius-sm: 10px;
+    }
+
+    html, body {
+        width: 100%;
+        min-height: 100vh;
+        background: radial-gradient(circle at 50% 30%, #0b0b1a 0%, #000 100%);
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+        color: var(--text-primary);
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    #particles-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .page-wrapper {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        align-items: stretch;
+        justify-content: stretch;
+        padding: 0;
+    }
+
+    .login-card {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+        background: var(--card-bg);
+        backdrop-filter: blur(40px) saturate(1.6);
+        -webkit-backdrop-filter: blur(40px) saturate(1.6);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 40px;
+        gap: 40px;
+    }
+
+    .login-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+        background-size: 50px 50px;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .login-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(circle at 15% 20%, rgba(0, 240, 255, 0.06), transparent 40%),
+            radial-gradient(circle at 85% 80%, rgba(180, 0, 255, 0.06), transparent 40%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .card-left {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 800px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card-right {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 500px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .logo-wrap {
+        text-align: center;
+        margin-bottom: 25px;
+        animation: floatY 6s ease-in-out infinite;
+    }
+
+    @keyframes floatY {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+    }
+
+    .logo-box {
+        width: 110px;
+        height: 110px;
+        margin: 0 auto 20px;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+        border-radius: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 54px;
+        font-weight: 900;
+        color: #000;
+        font-family: 'Orbitron', sans-serif;
+        box-shadow: 0 0 60px rgba(0,240,255,0.4), inset 0 0 30px rgba(255,255,255,0.1);
+        animation: logoPulse 3s ease-in-out infinite;
+        position: relative;
+    }
+
+    .logo-box::after {
+        content: '✦';
+        position: absolute;
+        top: -12px;
+        right: -12px;
+        font-size: 26px;
+        color: var(--neon-gold);
+        animation: sparkle 2s ease-in-out infinite;
+    }
+
+    @keyframes logoPulse {
+        0%, 100% { box-shadow: 0 0 60px rgba(0,240,255,0.4), inset 0 0 30px rgba(255,255,255,0.1); }
+        50% { box-shadow: 0 0 100px rgba(0,240,255,0.7), inset 0 0 40px rgba(255,255,255,0.15); }
+    }
+
+    @keyframes sparkle {
+        0%, 100% { opacity: 0.3; transform: scale(0.8) rotate(0deg); }
+        50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+    }
+
+    .brand-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 46px;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: 8px;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        filter: drop-shadow(0 0 30px rgba(0,240,255,0.3));
+    }
+
+    .brand-subtitle {
+        font-size: 12px;
+        color: var(--text-muted);
+        letter-spacing: 8px;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    .feature-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        width: 100%;
+        max-width: 800px;
+        margin-top: 15px;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 20px;
+        background: rgba(0, 240, 255, 0.04);
+        border-radius: var(--radius-md);
+        border-left: 3px solid var(--neon-cyan);
+        font-size: 13px;
+        color: var(--text-secondary);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .feature-item:hover {
+        background: rgba(0, 240, 255, 0.08);
+        transform: translateX(6px);
+        box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
+    }
+
+    .feature-item i {
+        color: var(--neon-cyan);
+        font-size: 18px;
+        width: 24px;
+        text-align: center;
+        flex-shrink: 0;
+    }
+
+    .login-panel {
+        width: 100%;
+        text-align: center;
+    }
+
+    .panel-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 32px;
+        font-weight: 900;
+        color: var(--neon-gold);
+        letter-spacing: 5px;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+    }
+
+    .panel-subtitle {
+        font-size: 12px;
+        color: var(--text-muted);
+        letter-spacing: 5px;
+        margin-bottom: 35px;
+        text-transform: uppercase;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 18px 24px;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        border: none;
+        font-family: inherit;
+        margin-bottom: 14px;
+        position: relative;
+        text-decoration: none;
+    }
+
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+    .btn-google {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        color: #fff;
+        backdrop-filter: blur(10px);
+        font-size: 15px;
+        padding: 20px 24px;
+    }
+
+    .btn-google:hover {
+        background: rgba(0, 240, 255, 0.08);
+        border-color: var(--neon-cyan);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 40px rgba(0, 240, 255, 0.3);
+    }
+
+    .btn-google img { width: 24px; height: 24px; flex-shrink: 0; }
+
+    .btn-about {
+        background: rgba(255, 215, 0, 0.06);
+        border: 1.5px solid rgba(255, 215, 0, 0.25);
+        color: var(--neon-gold);
+    }
+
+    .btn-about:hover {
+        background: rgba(255, 215, 0, 0.12);
+        border-color: var(--neon-gold);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 40px rgba(255, 215, 0, 0.2);
+    }
+
+    .btn-how {
+        background: rgba(180, 0, 255, 0.06);
+        border: 1.5px solid rgba(180, 0, 255, 0.25);
+        color: var(--neon-purple);
+    }
+
+    .btn-how:hover {
+        background: rgba(180, 0, 255, 0.12);
+        border-color: var(--neon-purple);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 40px rgba(180, 0, 255, 0.2);
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin: 22px 0;
+    }
+
+    .divider-line {
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(0,240,255,0.2), transparent);
+    }
+
+    .divider-icon {
+        color: var(--neon-cyan);
+        font-size: 12px;
+        opacity: 0.5;
+    }
+
+    .status-box {
+        margin-top: 18px;
+        padding: 14px 18px;
+        border-radius: var(--radius-sm);
+        font-size: 12px;
+        text-align: center;
+        display: none;
+        font-family: 'Courier New', monospace;
+        line-height: 1.5;
+    }
+
+    .status-box.show { display: block; animation: statusIn 0.3s ease; }
+
+    @keyframes statusIn {
+        0% { opacity: 0; transform: translateY(-10px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .status-box.success {
+        background: rgba(0, 255, 100, 0.08);
+        border: 1.5px solid #00ff64;
+        color: #00ff64;
+    }
+
+    .status-box.error {
+        background: rgba(255, 0, 100, 0.08);
+        border: 1.5px solid #ff0064;
+        color: #ff0064;
+    }
+
+    .status-box.loading {
+        background: rgba(255, 215, 0, 0.08);
+        border: 1.5px solid var(--neon-gold);
+        color: var(--neon-gold);
+    }
+
+    .loader {
+        width: 44px;
+        height: 44px;
+        border: 4px solid rgba(0,240,255,0.15);
+        border-top: 4px solid var(--neon-cyan);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+        display: none;
+        box-shadow: 0 0 30px rgba(0,240,255,0.3);
+    }
+
+    .loader.show { display: block; }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .user-info {
+        display: none;
+        margin-top: 22px;
+        padding: 20px;
+        background: rgba(0, 240, 255, 0.04);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(0,240,255,0.15);
+        text-align: left;
+        animation: statusIn 0.4s ease;
+    }
+
+    .user-info.show { display: block; }
+
+    .user-info .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+        font-size: 12px;
+    }
+
+    .user-info .row:last-child { border-bottom: none; }
+
+    .user-info .label {
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 10px;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .user-info .value {
+        color: var(--neon-cyan);
+        font-weight: 600;
+        text-align: right;
+        word-break: break-all;
+        font-size: 11px;
+    }
+
+    .footer {
+        text-align: center;
+        margin-top: 40px;
+        font-size: 11px;
+        color: #444;
+        letter-spacing: 3px;
+        line-height: 1.8;
+    }
+
+    .footer b { color: var(--neon-cyan); }
+
+    @media (max-width: 768px) {
+        .login-card {
+            padding: 40px 20px;
+            gap: 30px;
+        }
+        .brand-title { font-size: 32px; letter-spacing: 5px; }
+        .brand-subtitle { font-size: 10px; letter-spacing: 5px; }
+        .logo-box {
+            width: 90px;
+            height: 90px;
+            font-size: 44px;
+            border-radius: 24px;
+        }
+        .feature-list {
+            grid-template-columns: 1fr;
+        }
+        .panel-title { font-size: 26px; letter-spacing: 4px; }
+        .panel-subtitle { font-size: 11px; letter-spacing: 4px; margin-bottom: 28px; }
+        .btn { padding: 16px 20px; font-size: 13px; }
+        .btn-google { padding: 18px 20px; font-size: 14px; }
+        .btn-google img { width: 22px; height: 22px; }
+        .feature-item { padding: 14px 18px; font-size: 12px; }
+    }
+
+    @media (max-width: 480px) {
+        .login-card {
+            padding: 30px 16px;
+            gap: 25px;
+        }
+        .brand-title { font-size: 26px; letter-spacing: 3px; }
+        .brand-subtitle { font-size: 9px; letter-spacing: 4px; }
+        .logo-box {
+            width: 80px;
+            height: 80px;
+            font-size: 38px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+        }
+        .panel-title { font-size: 22px; letter-spacing: 3px; }
+        .panel-subtitle { font-size: 10px; letter-spacing: 3px; margin-bottom: 24px; }
+        .btn { padding: 14px 18px; font-size: 12px; }
+        .btn-google { padding: 16px 18px; font-size: 13px; }
+        .btn-google img { width: 20px; height: 20px; }
+        .feature-item { padding: 12px 16px; font-size: 11px; gap: 12px; }
+        .feature-item i { font-size: 16px; width: 20px; }
+        .user-info { padding: 16px; }
+        .user-info .row { font-size: 11px; }
+        .user-info .label { font-size: 9px; }
+        .user-info .value { font-size: 10px; }
+        .footer { font-size: 9px; letter-spacing: 2px; margin-top: 30px; }
+    }
+
+    @media (max-width: 360px) {
+        .brand-title { font-size: 22px; letter-spacing: 2px; }
+        .brand-subtitle { font-size: 8px; letter-spacing: 3px; }
+        .logo-box {
+            width: 70px;
+            height: 70px;
+            font-size: 32px;
+            border-radius: 18px;
+        }
+        .panel-title { font-size: 18px; letter-spacing: 2px; }
+        .panel-subtitle { font-size: 9px; }
+        .btn { padding: 12px 16px; font-size: 11px; }
+        .btn-google { padding: 14px 16px; font-size: 12px; }
+        .btn-google img { width: 18px; height: 18px; }
+        .feature-item { padding: 10px 14px; font-size: 10px; gap: 10px; }
+        .feature-item i { font-size: 14px; width: 18px; }
+    }
+
+    @supports (padding: max(0px)) {
+        .login-card {
+            padding-top: max(40px, env(safe-area-inset-top));
+            padding-bottom: max(40px, env(safe-area-inset-bottom));
+            padding-left: max(20px, env(safe-area-inset-left));
+            padding-right: max(20px, env(safe-area-inset-right));
+        }
+    }
+    </style>
 </head>
 <body>
-    <div id="loading-overlay" style="position:fixed;inset:0;background:#0b0b1a;display:flex;align-items:center;justify-content:center;z-index:999999;">
-        <div style="text-align:center;">
-            <div style="width:50px;height:50px;border:5px solid #333;border-top:5px solid #00f0ff;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 15px;"></div>
-            <div style="font-size:12px;color:#00f0ff;letter-spacing:2px;font-weight:bold;" id="loader-status-text">LOADING...</div>
+
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="page-wrapper">
+        <div class="login-card">
+
+            <div class="card-left">
+                <div class="logo-wrap">
+                    <div class="logo-box">N</div>
+                    <div class="brand-title">CodeForge</div>
+                    <div class="brand-subtitle">NightOrbit</div>
+                </div>
+
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Enterprise-grade security shield</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>Lightning fast performance</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>End-to-end encrypted data</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fa-solid fa-gem"></i>
+                        <span>Premium cyberpunk experience</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-right">
+                <div class="login-panel">
+                    <div class="panel-title">Welcome</div>
+                    <div class="panel-subtitle">Sign in to continue</div>
+
+                    <div class="loader" id="loader"></div>
+
+                    <button class="btn btn-google" id="googleLoginBtn">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23FFC107' d='M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z'/%3E%3Cpath fill='%23e53935' d='M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z'/%3E%3Cpath fill='%234caf50' d='M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z'/%3E%3Cpath fill='%231565c0' d='M43.611,20.083L43.595,20L24,20v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C40.483,35.58,44,30.2,44,24C44,22.659,43.862,21.35,43.611,20.083z'/%3E%3C/svg%3E" alt="Google">
+                        SIGN IN WITH GOOGLE
+                    </button>
+
+                    <div class="divider">
+                        <span class="divider-line"></span>
+                        <span class="divider-icon">⬡</span>
+                        <span class="divider-line"></span>
+                    </div>
+
+                    <a href="about-us.html" class="btn btn-about">
+                        <i class="fa-solid fa-circle-info"></i>
+                        ABOUT US
+                    </a>
+
+                    <a href="how-to-work.html" class="btn btn-how">
+                        <i class="fa-solid fa-book-open"></i>
+                        HOW TO WORK
+                    </a>
+
+                    <div class="status-box" id="statusBox"></div>
+
+                    <div class="user-info" id="userInfo">
+                        <div class="row">
+                            <span class="label">Email</span>
+                            <span class="value" id="infoEmail">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Username</span>
+                            <span class="value" id="infoUsername">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Device</span>
+                            <span class="value" id="infoDevice">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">First Login</span>
+                            <span class="value" id="infoFirstLogin">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Last Login</span>
+                            <span class="value" id="infoLastLogin">--</span>
+                        </div>
+                    </div>
+
+                    <div class="footer">
+                        Powered by <b>NightOrbit</b> • Owner: <b>Anas Farooq</b>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
-    
-    <style>
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { background:#0b0b1a; font-family:'Inter',sans-serif; color:#fff; }
-    </style>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("🚀 Loading code.json...");
-            
-            fetch('code.json')
-                .then(response => {
-                    if (!response.ok) throw new Error('code.json not found');
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("✅ code.json loaded!");
-                    
-                    // ===== FIREBASE INIT =====
-                    firebase.initializeApp(data.config.firebase);
-                    
-                    // ===== LOADING HATAAO =====
-                    document.getElementById('loading-overlay').style.display = 'none';
-                    
-                    // ===== HTML INJECT =====
-                    document.body.innerHTML = data.html;
-                    
-                    // ===== CSS INJECT =====
-                    const style = document.createElement('style');
-                    style.textContent = data.css;
-                    document.head.appendChild(style);
-                    
-                    // ===== JS EXECUTE =====
-                    eval(data.js);
-                    
-                    console.log("🎉 App Loaded!");
-                })
-                .catch(err => {
-                    console.error("❌ Error:", err);
-                    document.getElementById('loading-overlay').innerHTML = `
-                        <div style="text-align:center;color:#ff4444;padding:20px;">
-                            <div style="font-size:40px;">⚠️</div>
-                            <div style="font-size:14px;margin-top:10px;">${err.message}</div>
-                            <button onclick="location.reload()" style="margin-top:15px;padding:10px 30px;background:#00f0ff;color:#000;border:none;border-radius:10px;font-weight:bold;cursor:pointer;">RETRY</button>
-                        </div>
-                    `;
-                });
-        });
-    </script>
+
+    <script src="script.js"></script>
 </body>
 </html>
