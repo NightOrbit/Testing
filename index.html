@@ -1,347 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- 🔒 SECURITY HEADERS -->
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta name="referrer" content="strict-origin-when-cross-origin">
-    <meta http-equiv="Permissions-Policy" content="geolocation=(self), microphone=(), camera=(), fullscreen=()">
-    <link rel="icon" type="image/png" href="logo.png">
-    <title>Gyidi Bazar Hub V8</title>
-    
-    <!-- ============================================================
-         🔒 ULTIMATE SECURITY - SAB SHORTCUTS BLOCK
-         ============================================================ -->
-    <script>
-        (function() {
-            'use strict';
-            
-            function blockAllKeys(e) {
-                var key = e.key;
-                var code = e.keyCode;
-                var ctrl = e.ctrlKey;
-                var shift = e.shiftKey;
-                var alt = e.altKey;
-                var meta = e.metaKey;
-                
-                // ALL F-KEYS
-                if (key && key.startsWith('F') && key.length <= 3) {
-                    var num = parseInt(key.replace('F', ''));
-                    if (num >= 1 && num <= 12) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                }
-                
-                // F12
-                if (key === 'F12' || code === 123) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                
-                // PrintScreen, Insert, Home, PageUp, PageDown
-                if (key === 'PrintScreen' || code === 44 ||
-                    key === 'Insert' || code === 45 ||
-                    key === 'Home' || code === 36 ||
-                    key === 'PageUp' || key === 'PageDown' || code === 33 || code === 34) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                
-                // CTRL+...
-                if (ctrl) {
-                    var c = key ? key.toUpperCase() : '';
-                    if (c.length === 1 && c >= 'A' && c <= 'Z') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                    if (c >= '0' && c <= '9') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                    if (c === 'U' || c === 'S') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                }
-                
-                // CTRL+SHIFT+...
-                if (ctrl && shift) {
-                    var c = key ? key.toUpperCase() : '';
-                    if (c === 'I' || c === 'J' || c === 'C' || c === 'P' || c === 'E' || c === 'K') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                    if (c.length === 1 && c >= 'A' && c <= 'Z') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                }
-                
-                // ALT+...
-                if (alt) {
-                    var c = key ? key.toUpperCase() : '';
-                    if (c.length === 1 && c >= 'A' && c <= 'Z') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                    if (key === 'F4' || code === 115) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                }
-                
-                // MAC CMD+...
-                if (meta) {
-                    var c = key ? key.toUpperCase() : '';
-                    if (c.length === 1 && c >= 'A' && c <= 'Z') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                    if (alt && (c === 'I' || c === 'J' || c === 'C')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                }
-                
-                // BACKSPACE, ESCAPE, TAB
-                if (key === 'Backspace' && !e.target.matches('input, textarea, select')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                if (key === 'Escape' || code === 27 || key === 'Tab' || code === 9) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                
-                return true;
-            }
-            
-            document.addEventListener('keydown', blockAllKeys, { capture: true, passive: false });
-            window.addEventListener('keydown', blockAllKeys, { capture: true, passive: false });
-            
-            // RIGHT CLICK BLOCK
-            document.addEventListener('contextmenu', function(e) {
-                var tag = e.target.tagName.toLowerCase();
-                if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-                return false;
-            }, { capture: true });
-            
-            // CONSOLE BLOCK
-            try {
-                var empty = function() {};
-                var consoleMethods = [
-                    'log', 'warn', 'error', 'info', 'debug', 'trace',
-                    'group', 'groupEnd', 'table', 'clear', 'dir',
-                    'dirxml', 'profile', 'profileEnd', 'time',
-                    'timeEnd', 'timeStamp', 'memory', 'assert',
-                    'count', 'countReset'
-                ];
-                consoleMethods.forEach(function(m) {
-                    try { window.console[m] = empty; } catch(e) {}
-                });
-                window.console.clear = empty;
-            } catch(e) {}
-            
-            // SELECT/DRAG/COPY BLOCK
-            document.addEventListener('selectstart', function(e) {
-                var tag = e.target.tagName.toLowerCase();
-                if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
-                    e.preventDefault();
-                    return false;
-                }
-            }, { capture: true });
-            
-            document.addEventListener('dragstart', function(e) {
-                e.preventDefault();
-                return false;
-            }, { capture: true });
-            
-            document.addEventListener('copy', function(e) {
-                var tag = e.target.tagName.toLowerCase();
-                if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
-                    e.preventDefault();
-                    return false;
-                }
-            }, { capture: true });
-            
-            document.addEventListener('cut', function(e) {
-                var tag = e.target.tagName.toLowerCase();
-                if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
-                    e.preventDefault();
-                    return false;
-                }
-            }, { capture: true });
-            
-            document.addEventListener('paste', function(e) {
-                var tag = e.target.tagName.toLowerCase();
-                if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
-                    e.preventDefault();
-                    return false;
-                }
-            }, { capture: true });
-            
-            // MIDDLE CLICK BLOCK
-            document.addEventListener('auxclick', function(e) {
-                if (e.button === 1) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-            }, { capture: true });
-            
-            // DEVTOOLS DETECTION
-            setInterval(function() {
-                var threshold = 100;
-                if (window.outerWidth - window.innerWidth > threshold || 
-                    window.outerHeight - window.innerHeight > threshold) {
-                    try { console.clear(); } catch(e) {}
-                }
-            }, 500);
-            
-            // BLOCK document.write and print
-            try {
-                document.write = function() { return; };
-                window.print = function() { return; };
-            } catch(e) {}
-            
-            console.log('✅ ULTIMATE V8 SECURITY ACTIVE');
-        })();
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gyidi Bazar Hub</title>
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    
-    <!-- EmailJS -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    
-    <!-- Fingerprint -->
-    <script src="https://cdn.jsdelivr.net/npm/fingerprintjs@2/dist/fingerprint2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ua-parser-js@1.0.2/dist/ua-parser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- ============================================================
-         🔥 LOADING OVERLAY
-         ============================================================ -->
     <div id="loading-overlay" style="position:fixed;inset:0;background:#0b0b1a;display:flex;align-items:center;justify-content:center;z-index:999999;">
         <div style="text-align:center;">
             <div style="width:50px;height:50px;border:5px solid #333;border-top:5px solid #00f0ff;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 15px;"></div>
-            <div style="font-size:12px;color:#00f0ff;letter-spacing:2px;font-weight:bold;text-transform:uppercase;" id="loader-status-text">🚀 INITIALIZING V8...</div>
+            <div style="font-size:12px;color:#00f0ff;letter-spacing:2px;font-weight:bold;" id="loader-status-text">LOADING...</div>
         </div>
     </div>
     
     <style>
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         * { margin:0; padding:0; box-sizing:border-box; }
-        body { background:#0b0b1a; font-family:'Inter',sans-serif; color:#fff; min-height:100vh; }
-        #loading-overlay { display:flex; }
+        body { background:#0b0b1a; font-family:'Inter',sans-serif; color:#fff; }
     </style>
     
-    <!-- ============================================================
-         🔥 DIRECT INLINE - NO FETCH, NO CLOUD FUNCTION
-         ============================================================ -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("🚀 V8 Direct Loading Starting...");
+            console.log("🚀 Loading code.json...");
             
-            // ===== ✅ FIREBASE CONFIG =====
-            const firebaseConfig = {
-                apiKey: "AIzaSyC7kZON-2obr2-X_jC93a6oFg7FnxY6foc",
-                authDomain: "mymarketbaazar.firebaseapp.com",
-                databaseURL: "https://mymarketbaazar-default-rtdb.firebaseio.com",
-                projectId: "mymarketbaazar",
-                storageBucket: "mymarketbaazar.firebasestorage.app",
-                messagingSenderId: "922160804079",
-                appId: "1:922160804079:web:9f9ea945503af9ee436b1a",
-                measurementId: "G-5EJ35H1TJ1"
-            };
-            
-            // ===== ✅ FIREBASE INIT =====
-            firebase.initializeApp(firebaseConfig);
-            const auth = firebase.auth();
-            const db = firebase.database();
-            console.log("✅ Firebase Connected!");
-            
-            // ===== ✅ LOADING HATAAO =====
-            const loader = document.getElementById('loading-overlay');
-            if (loader) {
-                loader.style.display = 'none';
-            }
-            
-            // ============================================================
-            //  🔥 HTML INJECT (TUMHARA POORA HTML YAHAN)
-            // ============================================================
-            document.body.innerHTML = `
-            <!-- YAHAN TUMHARA POORA HTML PASTE KARO -->
-            <!-- code.json ka "html" field yahan copy karo -->
-            `;
-            
-            // ============================================================
-            //  🔥 CSS INJECT (TUMHARI POORI CSS YAHAN)
-            // ============================================================
-            const dynamicStyle = document.createElement('style');
-            dynamicStyle.textContent = `
-            /* YAHAN TUMHARI POORI CSS PASTE KARO */
-            /* code.json ka "css" field yahan copy karo */
-            `;
-            document.head.appendChild(dynamicStyle);
-            
-            // ============================================================
-            //  🔥 JS EXECUTE (TUMHARA POORA JS YAHAN)
-            // ============================================================
-            eval(`
-            /* YAHAN TUMHARA POORA JAVASCRIPT PASTE KARO */
-            /* code.json ka "js" field yahan copy karo */
-            `);
-            
-            console.log("🎉 V8 App Loaded Successfully!");
+            fetch('code.json')
+                .then(response => {
+                    if (!response.ok) throw new Error('code.json not found');
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("✅ code.json loaded!");
+                    
+                    // ===== FIREBASE INIT =====
+                    firebase.initializeApp(data.config.firebase);
+                    
+                    // ===== LOADING HATAAO =====
+                    document.getElementById('loading-overlay').style.display = 'none';
+                    
+                    // ===== HTML INJECT =====
+                    document.body.innerHTML = data.html;
+                    
+                    // ===== CSS INJECT =====
+                    const style = document.createElement('style');
+                    style.textContent = data.css;
+                    document.head.appendChild(style);
+                    
+                    // ===== JS EXECUTE =====
+                    eval(data.js);
+                    
+                    console.log("🎉 App Loaded!");
+                })
+                .catch(err => {
+                    console.error("❌ Error:", err);
+                    document.getElementById('loading-overlay').innerHTML = `
+                        <div style="text-align:center;color:#ff4444;padding:20px;">
+                            <div style="font-size:40px;">⚠️</div>
+                            <div style="font-size:14px;margin-top:10px;">${err.message}</div>
+                            <button onclick="location.reload()" style="margin-top:15px;padding:10px 30px;background:#00f0ff;color:#000;border:none;border-radius:10px;font-weight:bold;cursor:pointer;">RETRY</button>
+                        </div>
+                    `;
+                });
         });
     </script>
 </body>
