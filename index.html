@@ -13,7 +13,7 @@
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta http-equiv="Permissions-Policy" content="geolocation=(self), microphone=(), camera=(), fullscreen=()">
     <link rel="icon" type="image/png" href="logo.png">
-    <title>Gyidi Bazar Hub V8 - Secure</title>
+    <title>Gyidi Bazar Hub V8</title>
     
     <!-- ============================================================
          🔒 ULTIMATE SECURITY - SAB SHORTCUTS BLOCK
@@ -237,17 +237,6 @@
                 }
             }, 500);
             
-            // BLOCK eval()
-            try {
-                delete window.eval;
-                window.eval = function() { return null; };
-                Object.defineProperty(window, 'eval', {
-                    value: function() { return null; },
-                    writable: false,
-                    configurable: false
-                });
-            } catch(e) {}
-            
             // BLOCK document.write and print
             try {
                 document.write = function() { return; };
@@ -296,69 +285,63 @@
     </style>
     
     <!-- ============================================================
-         🔥 SECURE HYDRATION - CLOUD FUNCTION SE DATA LE KAR INJECT
+         🔥 DIRECT INLINE - NO FETCH, NO CLOUD FUNCTION
          ============================================================ -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("🚀 V8 Secure Hydration Starting...");
+            console.log("🚀 V8 Direct Loading Starting...");
             
-            // ===== CLOUD FUNCTION SE ENCRYPTED DATA FETCH =====
-            const CLOUD_FUNCTION_URL = 'https://us-central1-mymarketbaazar.cloudfunctions.net/getSecurePayload';
+            // ===== ✅ FIREBASE CONFIG =====
+            const firebaseConfig = {
+                apiKey: "AIzaSyC7kZON-2obr2-X_jC93a6oFg7FnxY6foc",
+                authDomain: "mymarketbaazar.firebaseapp.com",
+                databaseURL: "https://mymarketbaazar-default-rtdb.firebaseio.com",
+                projectId: "mymarketbaazar",
+                storageBucket: "mymarketbaazar.firebasestorage.app",
+                messagingSenderId: "922160804079",
+                appId: "1:922160804079:web:9f9ea945503af9ee436b1a",
+                measurementId: "G-5EJ35H1TJ1"
+            };
             
-            fetch(CLOUD_FUNCTION_URL)
-                .then(response => {
-                    if (!response.ok) throw new Error('Security Handshake Failed: ' + response.status);
-                    return response.json();
-                })
-                .then(payload => {
-                    console.log("✅ Secure payload received!");
-                    document.getElementById('loader-status-text').textContent = '🔓 DECRYPTING...';
-                    
-                    // ===== BASE64 DECODING =====
-                    const rawGarbageStream = payload.secure_stream;
-                    const decodedJSON = atob(rawGarbageStream);
-                    const cleanData = JSON.parse(decodedJSON);
-                    
-                    console.log("✅ Data decrypted successfully!");
-                    document.getElementById('loader-status-text').textContent = '📥 INJECTING HTML...';
-                    
-                    // ===== HTML INJECT =====
-                    document.body.innerHTML = cleanData.html;
-                    
-                    // ===== CSS INJECT =====
-                    const dynamicStyle = document.createElement('style');
-                    dynamicStyle.textContent = cleanData.css;
-                    document.head.appendChild(dynamicStyle);
-                    
-                    document.getElementById('loader-status-text').textContent = '⚡ EXECUTING LOGIC...';
-                    
-                    // ===== JS EXECUTE =====
-                    eval(cleanData.js);
-                    
-                    // ===== LOADING HATAAO =====
-                    const loader = document.getElementById('loading-overlay');
-                    if (loader) {
-                        setTimeout(() => {
-                            loader.style.display = 'none';
-                        }, 500);
-                    }
-                    
-                    console.log("🎉 V8 App Loaded Successfully!");
-                    console.log("🔒 Secure Stream Active!");
-                })
-                .catch(err => {
-                    console.error("❌ Security Breach Detected:", err);
-                    document.getElementById('loader-status-text').textContent = '❌ ERROR';
-                    document.getElementById('loading-overlay').innerHTML = `
-                        <div style="text-align:center;color:#ff4444;max-width:400px;padding:20px;">
-                            <div style="font-size:48px;margin-bottom:15px;">🔒</div>
-                            <div style="font-size:16px;font-weight:bold;margin-bottom:10px;">403: Critical Handshake Failure</div>
-                            <div style="font-size:13px;color:#888;margin-bottom:8px;">${err.message}</div>
-                            <div style="font-size:11px;color:#555;">Please try again later</div>
-                            <button onclick="location.reload()" style="margin-top:15px;padding:10px 30px;background:#00f0ff;color:#000;border:none;border-radius:10px;font-weight:bold;cursor:pointer;">RETRY</button>
-                        </div>
-                    `;
-                });
+            // ===== ✅ FIREBASE INIT =====
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.database();
+            console.log("✅ Firebase Connected!");
+            
+            // ===== ✅ LOADING HATAAO =====
+            const loader = document.getElementById('loading-overlay');
+            if (loader) {
+                loader.style.display = 'none';
+            }
+            
+            // ============================================================
+            //  🔥 HTML INJECT (TUMHARA POORA HTML YAHAN)
+            // ============================================================
+            document.body.innerHTML = `
+            <!-- YAHAN TUMHARA POORA HTML PASTE KARO -->
+            <!-- code.json ka "html" field yahan copy karo -->
+            `;
+            
+            // ============================================================
+            //  🔥 CSS INJECT (TUMHARI POORI CSS YAHAN)
+            // ============================================================
+            const dynamicStyle = document.createElement('style');
+            dynamicStyle.textContent = `
+            /* YAHAN TUMHARI POORI CSS PASTE KARO */
+            /* code.json ka "css" field yahan copy karo */
+            `;
+            document.head.appendChild(dynamicStyle);
+            
+            // ============================================================
+            //  🔥 JS EXECUTE (TUMHARA POORA JS YAHAN)
+            // ============================================================
+            eval(`
+            /* YAHAN TUMHARA POORA JAVASCRIPT PASTE KARO */
+            /* code.json ka "js" field yahan copy karo */
+            `);
+            
+            console.log("🎉 V8 App Loaded Successfully!");
         });
     </script>
 </body>
