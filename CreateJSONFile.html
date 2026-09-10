@@ -115,7 +115,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
-<!-- 🔒 AUTH GUARD — Login check -->
+<!-- 🔒 AUTH GUARD -->
 <script src="auth-guard.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -168,9 +168,6 @@ body::before {
     z-index: 1;
 }
 
-/* ============================================================ */
-/*  HEADER                                                       */
-/* ============================================================ */
 .header {
     background: rgba(11, 11, 26, 0.95);
     border: 2px solid var(--neon-cyan);
@@ -221,9 +218,6 @@ h1 {
     text-transform: uppercase;
 }
 
-/* ============================================================ */
-/*  TOP ACTIONS                                                  */
-/* ============================================================ */
 .top-actions {
     display: flex;
     justify-content: center;
@@ -261,9 +255,6 @@ h1 {
 .top-btn.green { background: linear-gradient(135deg, #00ff88, #00b85c); }
 .top-btn.pink { background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple)); color: #fff; }
 
-/* ============================================================ */
-/*  CARD                                                         */
-/* ============================================================ */
 .card {
     background: var(--card);
     border: 2px solid var(--border);
@@ -312,9 +303,6 @@ h2, h3 {
 .badge.danger { background: rgba(255, 0, 100, 0.15); color: #ff0064; border-color: rgba(255,0,100,0.3); }
 .badge.pink { background: rgba(255, 45, 149, 0.15); color: var(--neon-pink); border-color: rgba(255,45,149,0.3); }
 
-/* ============================================================ */
-/*  SECTION BLOCK                                                */
-/* ============================================================ */
 .section-block {
     background: rgba(0, 0, 0, 0.3);
     border: 1.5px solid rgba(0, 240, 255, 0.15);
@@ -353,9 +341,6 @@ h2, h3 {
 
 .section-title .icon { font-size: 18px; }
 
-/* ============================================================ */
-/*  GUIDE BOX                                                    */
-/* ============================================================ */
 .guide-box {
     background: rgba(0, 240, 255, 0.05);
     border-left: 3px solid var(--neon-cyan);
@@ -378,9 +363,6 @@ h2, h3 {
     font-family: 'JetBrains Mono', monospace;
 }
 
-/* ============================================================ */
-/*  TEXTAREA                                                     */
-/* ============================================================ */
 textarea, input[type="text"] {
     width: 100%;
     padding: 12px 14px;
@@ -414,9 +396,6 @@ textarea[readonly] {
     cursor: not-allowed;
 }
 
-/* ============================================================ */
-/*  BUTTONS                                                      */
-/* ============================================================ */
 .mini-btn {
     background: rgba(0, 240, 255, 0.08);
     border: 1.5px solid rgba(0, 240, 255, 0.25);
@@ -487,9 +466,6 @@ textarea[readonly] {
     margin-top: 8px;
 }
 
-/* ============================================================ */
-/*  MODE TOGGLE                                                  */
-/* ============================================================ */
 .mode-toggle {
     display: flex;
     gap: 8px;
@@ -529,9 +505,6 @@ textarea[readonly] {
     color: var(--neon-cyan);
 }
 
-/* ============================================================ */
-/*  STATUS                                                       */
-/* ============================================================ */
 .status {
     padding: 12px 15px;
     border-radius: 10px;
@@ -551,32 +524,6 @@ textarea[readonly] {
 .status.loading { background: rgba(255, 215, 0, 0.08); border: 1.5px solid var(--neon-gold); color: var(--neon-gold); }
 .status.info { background: rgba(0, 240, 255, 0.08); border: 1.5px solid var(--neon-cyan); color: var(--neon-cyan); }
 
-/* ============================================================ */
-/*  INFO BOX                                                     */
-/* ============================================================ */
-.info-box {
-    background: rgba(255, 215, 0, 0.05);
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    border-radius: 12px;
-    padding: 12px;
-    font-size: 11px;
-    color: #aaa;
-    line-height: 1.7;
-    margin-top: 12px;
-}
-
-.info-box strong { color: var(--neon-gold); }
-.info-box code {
-    background: rgba(0, 0, 0, 0.5);
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: var(--neon-cyan);
-    font-size: 10px;
-}
-
-/* ============================================================ */
-/*  PREVIEW BOX                                                  */
-/* ============================================================ */
 .preview-box {
     background: rgba(0, 0, 0, 0.5);
     border: 1.5px solid rgba(0, 240, 255, 0.2);
@@ -617,9 +564,6 @@ textarea[readonly] {
     font-style: italic;
 }
 
-/* ============================================================ */
-/*  RESPONSIVE                                                   */
-/* ============================================================ */
 @media (max-width: 768px) {
     .app { padding: 10px; }
     h1 { font-size: 18px; letter-spacing: 2px; }
@@ -648,25 +592,16 @@ textarea[readonly] {
 
 <div class="app">
 
-    <!-- ============================================================ -->
-    <!--  HEADER                                                      -->
-    <!-- ============================================================ -->
     <div class="header">
         <h1>⚡ Create JSON File</h1>
         <div class="subtitle">NightOrbit CodeForge · Combine · Convert · Export</div>
     </div>
 
-    <!-- ============================================================ -->
-    <!--  TOP ACTIONS                                                 -->
-    <!-- ============================================================ -->
     <div class="top-actions">
         <a href="dashboard.html" class="top-btn gold">⬅ BACK TO DASHBOARD</a>
         <button class="top-btn pink" onclick="scrollToSection('convertSection')">📦 GO TO CONVERT</button>
     </div>
 
-    <!-- ============================================================ -->
-    <!--  GUIDE BOX                                                   -->
-    <!-- ============================================================ -->
     <div class="card">
         <div class="guide-box">
             <strong>📌 4 Simple Steps:</strong><br>
@@ -677,9 +612,6 @@ textarea[readonly] {
         </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!--  STEP 1: CONFIG MODE                                         -->
-    <!-- ============================================================ -->
     <div class="card" id="configSection">
         <h3>🔥 STEP 1 — Config Setup <span class="badge" id="configModeBadge">DEMO</span></h3>
 
@@ -696,7 +628,6 @@ textarea[readonly] {
             <button class="mode-btn" data-mode="null" onclick="setConfigMode('null')">🚫 NO CONFIG (NULL)</button>
         </div>
 
-        <!-- DEMO CONFIG PREVIEW -->
         <div id="demoConfigPreview" class="section-block">
             <div class="section-header">
                 <div class="section-title">
@@ -727,7 +658,6 @@ textarea[readonly] {
 }</textarea>
         </div>
 
-        <!-- CUSTOM CONFIG -->
         <div id="customConfigSection" class="section-block" style="display:none;">
             <div class="section-header">
                 <div class="section-title">
@@ -756,7 +686,6 @@ textarea[readonly] {
             </div>
         </div>
 
-        <!-- NULL CONFIG INFO -->
         <div id="nullConfigInfo" class="section-block" style="display:none;">
             <div class="section-header">
                 <div class="section-title">
@@ -773,9 +702,6 @@ textarea[readonly] {
         <div class="status" id="statusConfig"></div>
     </div>
 
-    <!-- ============================================================ -->
-    <!--  STEP 2: CODE INPUT                                          -->
-    <!-- ============================================================ -->
     <div class="card" id="codeSection">
         <h3>📝 STEP 2 — Apna Code Daalo <span class="badge pink">AUTO-DETECT</span></h3>
 
@@ -787,22 +713,7 @@ textarea[readonly] {
             • <b>⚠️ Aapka code ek bhi line change nahi hoga</b> — sirf separate hoga
         </div>
 
-        <textarea id="fullCodeArea" class="huge" placeholder="<!-- Yahan apna pura code paste karo -->
-
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body { background: #000; }
-    </style>
-</head>
-<body>
-    <h1>Hello World</h1>
-    <script>
-        console.log('Hi');
-    </script>
-</body>
-</html>"></textarea>
+        <textarea id="fullCodeArea" class="huge" placeholder="Yahan apna pura code paste karo..."></textarea>
 
         <div class="btn-row">
             <button class="mini-btn gold" onclick="parseFullCode()">🔍 PARSE & SEPARATE CODE</button>
@@ -813,44 +724,38 @@ textarea[readonly] {
         <div class="status" id="statusFullCode"></div>
     </div>
 
-    <!-- ============================================================ -->
-    <!--  STEP 3: SEPARATED SECTIONS                                  -->
-    <!-- ============================================================ -->
     <div id="sectionsContainer" style="display:none;">
 
-        <!-- HTML SECTION -->
         <div class="card" id="htmlSection">
             <h3>📄 HTML <span class="badge" id="htmlBadge">EMPTY</span></h3>
             <div class="guide-box">
                 <strong>HTML section</strong> — Ye alag kiya gaya HTML code hai. Aap isse edit kar sakte ho.
             </div>
-            <textarea id="htmlArea" class="tall" placeholder="<!-- HTML yahan aayega -->"></textarea>
+            <textarea id="htmlArea" class="tall" placeholder="HTML yahan aayega..."></textarea>
             <div class="btn-row">
                 <button class="mini-btn" onclick="copyHtml()">📋 COPY</button>
                 <button class="mini-btn pink" onclick="clearHtml()">🗑️ CLEAR</button>
             </div>
         </div>
 
-        <!-- CSS SECTION -->
         <div class="card" id="cssSection">
             <h3>🎨 CSS <span class="badge" id="cssBadge">EMPTY</span></h3>
             <div class="guide-box">
                 <strong>CSS section</strong> — Ye alag kiya gaya CSS code hai.
             </div>
-            <textarea id="cssArea" class="tall" placeholder="/* CSS yahan aayega */"></textarea>
+            <textarea id="cssArea" class="tall" placeholder="CSS yahan aayega..."></textarea>
             <div class="btn-row">
                 <button class="mini-btn" onclick="copyCss()">📋 COPY</button>
                 <button class="mini-btn pink" onclick="clearCss()">🗑️ CLEAR</button>
             </div>
         </div>
 
-        <!-- JS SECTION -->
         <div class="card" id="jsSection">
             <h3>⚙️ JavaScript <span class="badge" id="jsBadge">EMPTY</span></h3>
             <div class="guide-box">
                 <strong>JS section</strong> — Ye alag kiya gaya JavaScript code hai.
             </div>
-            <textarea id="jsArea" class="tall" placeholder="// JS yahan aayega"></textarea>
+            <textarea id="jsArea" class="tall" placeholder="JS yahan aayega..."></textarea>
             <div class="btn-row">
                 <button class="mini-btn" onclick="copyJs()">📋 COPY</button>
                 <button class="mini-btn pink" onclick="clearJs()">🗑️ CLEAR</button>
@@ -859,9 +764,6 @@ textarea[readonly] {
 
     </div>
 
-    <!-- ============================================================ -->
-    <!--  STEP 4: CONVERT TO JSON                                     -->
-    <!-- ============================================================ -->
     <div class="card" id="convertSection">
         <h3>📦 STEP 3 — Convert to JSON <span class="badge gold">FINAL</span></h3>
 
@@ -895,9 +797,6 @@ textarea[readonly] {
         </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!--  FOOTER                                                      -->
-    <!-- ============================================================ -->
     <div class="card" style="text-align:center;">
         <div style="font-size:11px;color:#444;letter-spacing:2px;line-height:1.8;">
             Powered by <b style="color:var(--neon-cyan);">NightOrbit</b> · Owner: <b style="color:var(--neon-cyan);">Anas Farooq</b>
@@ -907,17 +806,29 @@ textarea[readonly] {
 </div>
 
 <!-- ============================================================ -->
-<!--  MAIN SCRIPT                                                 -->
+<!--  MAIN SCRIPT — SAFE (no </script> in regex)                 -->
 <!-- ============================================================ -->
 <script>
 (function() {
     'use strict';
 
     // ============================================================
+    //  🔥 CRITICAL — Build closing tag strings safely
+    //  (browser HTML parser se bachne ke liye)
+    // ============================================================
+    var TAG_OPEN_SCRIPT  = '<' + 'script';
+    var TAG_CLOSE_SCRIPT = '<' + '/script>';
+    var TAG_OPEN_STYLE   = '<' + 'style';
+    var TAG_CLOSE_STYLE  = '<' + '/style>';
+    var TAG_CLOSE_HTML   = '<' + '/html>';
+    var TAG_CLOSE_BODY   = '<' + '/body>';
+    var TAG_CLOSE_HEAD   = '<' + '/head>';
+
+    // ============================================================
     //  STATE
     // ============================================================
     var state = {
-        configMode: 'demo',           // demo | custom | null
+        configMode: 'demo',
         customConfig: '',
         fullCode: '',
         html: '',
@@ -942,21 +853,22 @@ textarea[readonly] {
         el.textContent = text;
     }
 
-   function escapeForJson(str) {
-    if (!str) return '';
-    var CLOSE_SCRIPT = '<' + '/script>';
-    var CLOSE_STYLE  = '<' + '/style>';
-    var CLOSE_HTML   = '<' + '/html>';
-    var CLOSE_BODY   = '<' + '/body>';
-    var CLOSE_HEAD   = '<' + '/head>';
-    
-    return String(str)
-        .split(CLOSE_SCRIPT).join('<\\/script>')
-        .split(CLOSE_STYLE).join('<\\/style>')
-        .split(CLOSE_HTML).join('<\\/html>')
-        .split(CLOSE_BODY).join('<\\/body>')
-        .split(CLOSE_HEAD).join('<\\/head>');
-}
+    function escapeRegex(str) {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    // ============================================================
+    //  ESCAPE FOR JSON — Kisi bhi closing tag ko escape karo
+    // ============================================================
+    function escapeForJson(str) {
+        if (!str) return '';
+        return String(str)
+            .split(TAG_CLOSE_SCRIPT).join('<\\/script>')
+            .split(TAG_CLOSE_STYLE).join('<\\/style>')
+            .split(TAG_CLOSE_HTML).join('<\\/html>')
+            .split(TAG_CLOSE_BODY).join('<\\/body>')
+            .split(TAG_CLOSE_HEAD).join('<\\/head>');
+    }
 
     // ============================================================
     //  CONFIG MODE
@@ -1030,7 +942,7 @@ textarea[readonly] {
     document.getElementById('customConfigArea').addEventListener('input', updateCustomConfigState);
 
     // ============================================================
-    //  PARSE FULL CODE — AUTO DETECT HTML / CSS / JS
+    //  PARSE FULL CODE — SAFE REGEX
     // ============================================================
     window.parseFullCode = function() {
         var fullCode = document.getElementById('fullCodeArea').value;
@@ -1045,18 +957,26 @@ textarea[readonly] {
         var css = '';
         var js = '';
 
+        // 🔥 SAFE REGEX — closing tags ko split strings se banao
+        var escStyle  = escapeRegex(TAG_CLOSE_STYLE);
+        var escScript = escapeRegex(TAG_CLOSE_SCRIPT);
+
         // ---- CSS Extract ----
-        // <style>...</style> blocks
-        var styleRegex = /<style[^>]*>([\s\S]*?)<\/style>/gi;
+        var styleRegex = new RegExp(
+            TAG_OPEN_STYLE + '[^>]*>([\\s\\S]*?)' + escStyle,
+            'gi'
+        );
         var styleMatch;
         while ((styleMatch = styleRegex.exec(fullCode)) !== null) {
             if (css) css += '\n\n';
             css += styleMatch[1].trim();
         }
 
-        // ---- JS Extract ----
-        // <script>...</script> blocks (but NOT <script src="...">)
-        var scriptRegex = /<script(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script>/gi;
+        // ---- JS Extract (skip <script src="...">) ----
+        var scriptRegex = new RegExp(
+            TAG_OPEN_SCRIPT + '(?![^>]*\\bsrc\\s*=)[^>]*>([\\s\\S]*?)' + escScript,
+            'gi'
+        );
         var scriptMatch;
         while ((scriptMatch = scriptRegex.exec(fullCode)) !== null) {
             if (js) js += '\n\n';
@@ -1064,15 +984,19 @@ textarea[readonly] {
         }
 
         // ---- HTML Extract ----
-        // Remove <style>...</style> and <script>...</script> blocks
-        html = html.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
-        html = html.replace(/<script(?![^>]*\bsrc\s*=)[^>]*>[\s\S]*?<\/script>/gi, '');
+        html = html.replace(
+            new RegExp(TAG_OPEN_STYLE + '[^>]*>[\\s\\S]*?' + escStyle, 'gi'),
+            ''
+        );
+        html = html.replace(
+            new RegExp(TAG_OPEN_SCRIPT + '(?![^>]*\\bsrc\\s*=)[^>]*>[\\s\\S]*?' + escScript, 'gi'),
+            ''
+        );
 
-        // If input was pure CSS/JS (no HTML tags), detect
+        // ---- Pure CSS/JS Detect ----
         var hasHtmlTags = /<[a-z][\s\S]*>/i.test(fullCode);
 
         if (!hasHtmlTags) {
-            // Pure code — check if CSS or JS
             if (fullCode.indexOf('function') !== -1 || fullCode.indexOf('const ') !== -1 ||
                 fullCode.indexOf('let ') !== -1 || fullCode.indexOf('var ') !== -1 ||
                 fullCode.indexOf('=>') !== -1) {
@@ -1091,17 +1015,14 @@ textarea[readonly] {
         state.css = css;
         state.js = js;
 
-        // Populate textareas
         document.getElementById('htmlArea').value = html;
         document.getElementById('cssArea').value = css;
         document.getElementById('jsArea').value = js;
 
-        // Update badges
         updateHtmlBadge();
         updateCssBadge();
         updateJsBadge();
 
-        // Show sections
         document.getElementById('sectionsContainer').style.display = 'block';
 
         showStatus('statusFullCode', 'success',
@@ -1112,7 +1033,6 @@ textarea[readonly] {
             'Ab neeche scroll karo aur "CONVERT TO JSON" dabao.'
         );
 
-        // Scroll to HTML section
         setTimeout(function() {
             var el = document.getElementById('htmlSection');
             if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1195,7 +1115,6 @@ textarea[readonly] {
         updateJsBadge();
     };
 
-    // Textarea listeners
     document.getElementById('htmlArea').addEventListener('input', updateHtmlBadge);
     document.getElementById('cssArea').addEventListener('input', updateCssBadge);
     document.getElementById('jsArea').addEventListener('input', updateJsBadge);
@@ -1205,7 +1124,6 @@ textarea[readonly] {
     // ============================================================
     document.getElementById('convertBtn').addEventListener('click', function() {
         try {
-            // ---- Build config based on mode ----
             var configValue = null;
 
             if (state.configMode === 'demo') {
@@ -1231,7 +1149,6 @@ textarea[readonly] {
                     );
                     return;
                 }
-                // Auto-detect: kya user ne poora object diya ya sirf firebase config
                 var parsed = null;
                 try {
                     parsed = JSON.parse(raw);
@@ -1242,8 +1159,6 @@ textarea[readonly] {
                     return;
                 }
 
-                // Agar user ne {"firebase": {...}} diya toh as-is use karo
-                // Agar user ne {"apiKey": ...} diya toh wrap karo
                 if (parsed.firebase) {
                     configValue = parsed;
                 } else {
@@ -1253,12 +1168,10 @@ textarea[readonly] {
                 configValue = null;
             }
 
-            // ---- Escape HTML/CSS/JS for JSON ----
             var htmlEsc = escapeForJson(state.html || '');
             var cssEsc = escapeForJson(state.css || '');
             var jsEsc = escapeForJson(state.js || '');
 
-            // ---- Build final object ----
             var finalObj = {
                 config: configValue,
                 html: htmlEsc,
@@ -1266,10 +1179,8 @@ textarea[readonly] {
                 js: jsEsc
             };
 
-            // ---- Stringify ----
             state.outputJson = JSON.stringify(finalObj, null, 2);
 
-            // ---- Validate ----
             try {
                 JSON.parse(state.outputJson);
             } catch (e) {
@@ -1279,7 +1190,6 @@ textarea[readonly] {
                 return;
             }
 
-            // ---- Display ----
             document.getElementById('outputJson').value = state.outputJson;
 
             var preview = document.getElementById('jsonPreview');
