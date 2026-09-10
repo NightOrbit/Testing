@@ -3,18 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gyidi Bazar Hub</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- 🔒 SECURITY HEADERS -->
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Permissions-Policy" content="geolocation=(self), microphone=(), camera=(), fullscreen=()">
+    <link rel="icon" type="image/png" href="logo.png">
+    <title>Gyidi Bazar Hub V8 - Secure</title>
     
     <!-- ============================================================
-         🔒 ULTIMATE SHORTCUTS BLOCK - KOE BHI KAAM NAHI KAREGA
+         🔒 ULTIMATE SECURITY - SAB SHORTCUTS BLOCK
          ============================================================ -->
     <script>
         (function() {
             'use strict';
             
-            // ============================================
-            // 🔥 SAB SHORTCUTS BLOCK - HAR KEY
-            // ============================================
             function blockAllKeys(e) {
                 var key = e.key;
                 var code = e.keyCode;
@@ -23,7 +30,7 @@
                 var alt = e.altKey;
                 var meta = e.metaKey;
                 
-                // ===== ALL F-KEYS (F1-F12) =====
+                // ALL F-KEYS
                 if (key && key.startsWith('F') && key.length <= 3) {
                     var num = parseInt(key.replace('F', ''));
                     if (num >= 1 && num <= 12) {
@@ -34,7 +41,7 @@
                     }
                 }
                 
-                // ===== INDIVIDUAL KEYS =====
+                // F12
                 if (key === 'F12' || code === 123) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -42,72 +49,33 @@
                     return false;
                 }
                 
-                if (key === 'PrintScreen' || code === 44) {
+                // PrintScreen, Insert, Home, PageUp, PageDown
+                if (key === 'PrintScreen' || code === 44 ||
+                    key === 'Insert' || code === 45 ||
+                    key === 'Home' || code === 36 ||
+                    key === 'PageUp' || key === 'PageDown' || code === 33 || code === 34) {
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     return false;
                 }
                 
-                if (key === 'Insert' || code === 45) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                
-                if (key === 'Home' || code === 36) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                
-                if (key === 'PageUp' || key === 'PageDown' || code === 33 || code === 34) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                
-                // ===== CTRL+... SAB BLOCK =====
+                // CTRL+...
                 if (ctrl) {
                     var c = key ? key.toUpperCase() : '';
-                    
-                    // CTRL+A to Z - SAB BLOCK
                     if (c.length === 1 && c >= 'A' && c <= 'Z') {
                         e.preventDefault();
                         e.stopPropagation();
                         e.stopImmediatePropagation();
                         return false;
                     }
-                    
-                    // CTRL+0-9 - SAB BLOCK
                     if (c >= '0' && c <= '9') {
                         e.preventDefault();
                         e.stopPropagation();
                         e.stopImmediatePropagation();
                         return false;
                     }
-                    
-                    // CTRL+U (View Source)
-                    if (c === 'U') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                    
-                    // CTRL+S (Save Page)
-                    if (c === 'S') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                    
-                    // Special keys
-                    if (['`', '-', '=', '[', ']', '\\', ';', "'", ',', '.', '/'].includes(key)) {
+                    if (c === 'U' || c === 'S') {
                         e.preventDefault();
                         e.stopPropagation();
                         e.stopImmediatePropagation();
@@ -115,43 +83,15 @@
                     }
                 }
                 
-                // ===== CTRL+SHIFT+... SAB BLOCK =====
+                // CTRL+SHIFT+...
                 if (ctrl && shift) {
                     var c = key ? key.toUpperCase() : '';
-                    
-                    // CTRL+SHIFT+I (Inspect), CTRL+SHIFT+J (Console), CTRL+SHIFT+C
-                    if (c === 'I' || c === 'J' || c === 'C') {
+                    if (c === 'I' || c === 'J' || c === 'C' || c === 'P' || c === 'E' || c === 'K') {
                         e.preventDefault();
                         e.stopPropagation();
                         e.stopImmediatePropagation();
                         return false;
                     }
-                    
-                    // CTRL+SHIFT+P (Command Palette)
-                    if (c === 'P') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                    
-                    // CTRL+SHIFT+E (Network)
-                    if (c === 'E') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                    
-                    // CTRL+SHIFT+K (Console Firefox)
-                    if (c === 'K') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        return false;
-                    }
-                    
-                    // CTRL+SHIFT+A-Z - SAB BLOCK
                     if (c.length === 1 && c >= 'A' && c <= 'Z') {
                         e.preventDefault();
                         e.stopPropagation();
@@ -160,18 +100,15 @@
                     }
                 }
                 
-                // ===== ALT+... SAB BLOCK =====
+                // ALT+...
                 if (alt) {
                     var c = key ? key.toUpperCase() : '';
-                    
                     if (c.length === 1 && c >= 'A' && c <= 'Z') {
                         e.preventDefault();
                         e.stopPropagation();
                         e.stopImmediatePropagation();
                         return false;
                     }
-                    
-                    // ALT+F4
                     if (key === 'F4' || code === 115) {
                         e.preventDefault();
                         e.stopPropagation();
@@ -180,18 +117,15 @@
                     }
                 }
                 
-                // ===== MAC - CMD+... SAB BLOCK =====
+                // MAC CMD+...
                 if (meta) {
                     var c = key ? key.toUpperCase() : '';
-                    
                     if (c.length === 1 && c >= 'A' && c <= 'Z') {
                         e.preventDefault();
                         e.stopPropagation();
                         e.stopImmediatePropagation();
                         return false;
                     }
-                    
-                    // Mac: Cmd+Alt+I, Cmd+Alt+J, Cmd+Alt+C
                     if (alt && (c === 'I' || c === 'J' || c === 'C')) {
                         e.preventDefault();
                         e.stopPropagation();
@@ -200,25 +134,14 @@
                     }
                 }
                 
-                // ===== BROWSER SHORTCUTS =====
-                // Backspace (browser back)
+                // BACKSPACE, ESCAPE, TAB
                 if (key === 'Backspace' && !e.target.matches('input, textarea, select')) {
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     return false;
                 }
-                
-                // Escape
-                if (key === 'Escape' || code === 27) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
-                    return false;
-                }
-                
-                // Tab
-                if (key === 'Tab' || code === 9) {
+                if (key === 'Escape' || code === 27 || key === 'Tab' || code === 9) {
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
@@ -228,11 +151,10 @@
                 return true;
             }
             
-            // ===== ATTACH - CAPTURE PHASE (sab se pehle) =====
             document.addEventListener('keydown', blockAllKeys, { capture: true, passive: false });
             window.addEventListener('keydown', blockAllKeys, { capture: true, passive: false });
             
-            // ===== RIGHT CLICK BLOCK =====
+            // RIGHT CLICK BLOCK
             document.addEventListener('contextmenu', function(e) {
                 var tag = e.target.tagName.toLowerCase();
                 if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
@@ -242,7 +164,7 @@
                 return false;
             }, { capture: true });
             
-            // ===== CONSOLE BLOCK =====
+            // CONSOLE BLOCK
             try {
                 var empty = function() {};
                 var consoleMethods = [
@@ -253,14 +175,12 @@
                     'count', 'countReset'
                 ];
                 consoleMethods.forEach(function(m) {
-                    try {
-                        window.console[m] = empty;
-                    } catch(e) {}
+                    try { window.console[m] = empty; } catch(e) {}
                 });
                 window.console.clear = empty;
             } catch(e) {}
             
-            // ===== SELECT/DRAG/COPY BLOCK =====
+            // SELECT/DRAG/COPY BLOCK
             document.addEventListener('selectstart', function(e) {
                 var tag = e.target.tagName.toLowerCase();
                 if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
@@ -298,7 +218,7 @@
                 }
             }, { capture: true });
             
-            // ===== MIDDLE CLICK BLOCK =====
+            // MIDDLE CLICK BLOCK
             document.addEventListener('auxclick', function(e) {
                 if (e.button === 1) {
                     e.preventDefault();
@@ -308,18 +228,16 @@
                 }
             }, { capture: true });
             
-            // ===== DEVTOOLS DETECTION =====
+            // DEVTOOLS DETECTION
             setInterval(function() {
                 var threshold = 100;
                 if (window.outerWidth - window.innerWidth > threshold || 
                     window.outerHeight - window.innerHeight > threshold) {
-                    try { 
-                        console.clear(); 
-                    } catch(e) {}
+                    try { console.clear(); } catch(e) {}
                 }
             }, 500);
             
-            // ===== BLOCK eval() =====
+            // BLOCK eval()
             try {
                 delete window.eval;
                 window.eval = function() { return null; };
@@ -330,34 +248,34 @@
                 });
             } catch(e) {}
             
-            // ===== BLOCK document.write and print =====
+            // BLOCK document.write and print
             try {
                 document.write = function() { return; };
                 window.print = function() { return; };
             } catch(e) {}
             
-            console.log('✅ ULTIMATE SECURITY - SAB SHORTCUTS BLOCK ACTIVE');
+            console.log('✅ ULTIMATE V8 SECURITY ACTIVE');
         })();
     </script>
     
-    <!-- ============================================================
-         🔥 FIREBASE SDK
-         ============================================================ -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     
-    <!-- ============================================================
-         🔥 EMAILJS
-         ============================================================ -->
+    <!-- EmailJS -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     
-    <!-- ============================================================
-         🔥 FINGERPRINT
-         ============================================================ -->
+    <!-- Fingerprint -->
     <script src="https://cdn.jsdelivr.net/npm/fingerprintjs@2/dist/fingerprint2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ua-parser-js@1.0.2/dist/ua-parser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- ============================================================
@@ -366,7 +284,7 @@
     <div id="loading-overlay" style="position:fixed;inset:0;background:#0b0b1a;display:flex;align-items:center;justify-content:center;z-index:999999;">
         <div style="text-align:center;">
             <div style="width:50px;height:50px;border:5px solid #333;border-top:5px solid #00f0ff;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 15px;"></div>
-            <div style="font-size:12px;color:#00f0ff;letter-spacing:2px;font-weight:bold;text-transform:uppercase;" id="loader-status-text">INITIALIZING...</div>
+            <div style="font-size:12px;color:#00f0ff;letter-spacing:2px;font-weight:bold;text-transform:uppercase;" id="loader-status-text">🚀 INITIALIZING V8...</div>
         </div>
     </div>
     
@@ -378,87 +296,68 @@
     </style>
     
     <!-- ============================================================
-         🔥 MAIN LOADER - code.json SE SAB LOAD KAREGA
+         🔥 SECURE HYDRATION - CLOUD FUNCTION SE DATA LE KAR INJECT
          ============================================================ -->
     <script>
-        // ============================================================
-        //  🔥 LOAD CODE.JSON
-        // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("🚀 Loading code.json...");
+            console.log("🚀 V8 Secure Hydration Starting...");
             
-            // Loading status update
-            document.getElementById('loader-status-text').textContent = 'LOADING...';
+            // ===== CLOUD FUNCTION SE ENCRYPTED DATA FETCH =====
+            const CLOUD_FUNCTION_URL = 'https://us-central1-mymarketbaazar.cloudfunctions.net/getSecurePayload';
             
-            fetch('code.json')
+            fetch(CLOUD_FUNCTION_URL)
                 .then(response => {
-                    console.log("📡 Response status:", response.status);
-                    if (!response.ok) {
-                        throw new Error('HTTP ' + response.status + ' - code.json not found');
-                    }
+                    if (!response.ok) throw new Error('Security Handshake Failed: ' + response.status);
                     return response.json();
                 })
-                .then(data => {
-                    console.log("✅ code.json loaded successfully!");
-                    document.getElementById('loader-status-text').textContent = 'INITIALIZING FIREBASE...';
+                .then(payload => {
+                    console.log("✅ Secure payload received!");
+                    document.getElementById('loader-status-text').textContent = '🔓 DECRYPTING...';
                     
-                    // ============================================================
-                    //  🔥 FIREBASE INITIALIZE
-                    // ============================================================
-                    const firebaseConfig = data.config.firebase;
-                    firebase.initializeApp(firebaseConfig);
-                    console.log("✅ Firebase initialized!");
-                    document.getElementById('loader-status-text').textContent = 'INJECTING HTML...';
+                    // ===== BASE64 DECODING =====
+                    const rawGarbageStream = payload.secure_stream;
+                    const decodedJSON = atob(rawGarbageStream);
+                    const cleanData = JSON.parse(decodedJSON);
                     
-                    // ============================================================
-                    //  🔥 HTML INJECT
-                    // ============================================================
-                    document.body.innerHTML = data.html;
-                    console.log("✅ HTML injected!");
-                    document.getElementById('loader-status-text').textContent = 'INJECTING CSS...';
+                    console.log("✅ Data decrypted successfully!");
+                    document.getElementById('loader-status-text').textContent = '📥 INJECTING HTML...';
                     
-                    // ============================================================
-                    //  🔥 CSS INJECT
-                    // ============================================================
-                    const styleTag = document.createElement('style');
-                    styleTag.textContent = data.css;
-                    document.head.appendChild(styleTag);
-                    console.log("✅ CSS injected!");
-                    document.getElementById('loader-status-text').textContent = 'EXECUTING JS...';
+                    // ===== HTML INJECT =====
+                    document.body.innerHTML = cleanData.html;
                     
-                    // ============================================================
-                    //  🔥 JS EXECUTE
-                    // ============================================================
-                    eval(data.js);
-                    console.log("✅ JavaScript executed!");
-                    console.log("🎉 App Loaded Successfully!");
+                    // ===== CSS INJECT =====
+                    const dynamicStyle = document.createElement('style');
+                    dynamicStyle.textContent = cleanData.css;
+                    document.head.appendChild(dynamicStyle);
                     
-                    // ============================================================
-                    //  🔥 LOADING HATAAO (waise bhi JS mein hide ho jayega)
-                    // ============================================================
-                    setTimeout(function() {
-                        var loading = document.getElementById('loading-overlay');
-                        if (loading) {
-                            loading.style.display = 'none';
-                        }
-                    }, 500);
+                    document.getElementById('loader-status-text').textContent = '⚡ EXECUTING LOGIC...';
+                    
+                    // ===== JS EXECUTE =====
+                    eval(cleanData.js);
+                    
+                    // ===== LOADING HATAAO =====
+                    const loader = document.getElementById('loading-overlay');
+                    if (loader) {
+                        setTimeout(() => {
+                            loader.style.display = 'none';
+                        }, 500);
+                    }
+                    
+                    console.log("🎉 V8 App Loaded Successfully!");
+                    console.log("🔒 Secure Stream Active!");
                 })
                 .catch(err => {
-                    console.error("❌ Error loading app:", err);
-                    document.getElementById('loader-status-text').textContent = 'ERROR';
-                    
-                    var loading = document.getElementById('loading-overlay');
-                    if (loading) {
-                        loading.innerHTML = `
-                            <div style="text-align:center;color:#ff4444;max-width:400px;padding:20px;">
-                                <div style="font-size:48px;margin-bottom:15px;">⚠️</div>
-                                <div style="font-size:16px;font-weight:bold;margin-bottom:10px;">Loading Error</div>
-                                <div style="font-size:13px;color:#888;margin-bottom:8px;">${err.message}</div>
-                                <div style="font-size:11px;color:#555;">Try refreshing the page</div>
-                                <button onclick="location.reload()" style="margin-top:15px;padding:10px 30px;background:#00f0ff;color:#000;border:none;border-radius:10px;font-weight:bold;cursor:pointer;">REFRESH</button>
-                            </div>
-                        `;
-                    }
+                    console.error("❌ Security Breach Detected:", err);
+                    document.getElementById('loader-status-text').textContent = '❌ ERROR';
+                    document.getElementById('loading-overlay').innerHTML = `
+                        <div style="text-align:center;color:#ff4444;max-width:400px;padding:20px;">
+                            <div style="font-size:48px;margin-bottom:15px;">🔒</div>
+                            <div style="font-size:16px;font-weight:bold;margin-bottom:10px;">403: Critical Handshake Failure</div>
+                            <div style="font-size:13px;color:#888;margin-bottom:8px;">${err.message}</div>
+                            <div style="font-size:11px;color:#555;">Please try again later</div>
+                            <button onclick="location.reload()" style="margin-top:15px;padding:10px 30px;background:#00f0ff;color:#000;border:none;border-radius:10px;font-weight:bold;cursor:pointer;">RETRY</button>
+                        </div>
+                    `;
                 });
         });
     </script>
