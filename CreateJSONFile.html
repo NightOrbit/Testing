@@ -942,16 +942,21 @@ textarea[readonly] {
         el.textContent = text;
     }
 
-    function escapeForJson(str) {
-        if (!str) return '';
-        return String(str)
-            // </script> ko escape karo
-            .replace(/<\/script>/gi, '<\\/script>')
-            .replace(/<\/style>/gi, '<\\/style>')
-            .replace(/<\/html>/gi, '<\\/html>')
-            .replace(/<\/body>/gi, '<\\/body>')
-            .replace(/<\/head>/gi, '<\\/head>');
-    }
+   function escapeForJson(str) {
+    if (!str) return '';
+    var CLOSE_SCRIPT = '<' + '/script>';
+    var CLOSE_STYLE  = '<' + '/style>';
+    var CLOSE_HTML   = '<' + '/html>';
+    var CLOSE_BODY   = '<' + '/body>';
+    var CLOSE_HEAD   = '<' + '/head>';
+    
+    return String(str)
+        .split(CLOSE_SCRIPT).join('<\\/script>')
+        .split(CLOSE_STYLE).join('<\\/style>')
+        .split(CLOSE_HTML).join('<\\/html>')
+        .split(CLOSE_BODY).join('<\\/body>')
+        .split(CLOSE_HEAD).join('<\\/head>');
+}
 
     // ============================================================
     //  CONFIG MODE
