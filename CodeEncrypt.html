@@ -1,1843 +1,1044 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0b0b1a">
-<title>Universal Code Encrypt — NightOrbit</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0b0b1a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Dashboard - NightOrbit CoreForge</title>
+    <link rel="icon" type="image/png" href="logo.png">
 
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-<script src="auth-guard.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <noscript>
+        <style>
+            html, body, * {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                width: 0 !important;
+                height: 0 !important;
+                overflow: hidden !important;
+                position: absolute !important;
+                top: -9999px !important;
+                left: -9999px !important;
+            }
+        </style>
+        <meta http-equiv="refresh" content="0; url=https://google.com">
+    </noscript>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+    (function() {
+        'use strict';
+        function blockAllKeys(e) {
+            var key = e.key, code = e.keyCode, ctrl = e.ctrlKey, shift = e.shiftKey, alt = e.altKey, meta = e.metaKey;
+            if (key && key.startsWith('F') && key.length <= 3) { var num = parseInt(key.replace('F', '')); if (num >= 1 && num <= 12) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } }
+            if (key === 'F12' || code === 123) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
+            if (key === 'PrintScreen' || code === 44) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
+            if (key === 'Insert' || code === 45) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
+            if (key === 'Home' || code === 36) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
+            if (key === 'PageUp' || key === 'PageDown' || code === 33 || code === 34) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
+            if (ctrl) { var c = key ? key.toUpperCase() : ''; if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } if (c >= '0' && c <= '9') { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } if (['`','-','=','[',']','\\',';',"'",',','.','/'].includes(key)) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } }
+            if (ctrl && shift) { var c = key ? key.toUpperCase() : ''; if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } }
+            if (alt) { var c = key ? key.toUpperCase() : ''; if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } if (key === 'F4' || code === 115) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } }
+            if (meta) { var c = key ? key.toUpperCase() : ''; if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } }
+            if (key === 'Backspace' && !e.target.matches('input, textarea, select')) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
+            if (key === 'Escape' || code === 27) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
+            if (key === 'Tab' || code === 9) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
+            return true;
+        }
+        document.addEventListener('keydown', blockAllKeys, { capture: true, passive: false });
+        window.addEventListener('keydown', blockAllKeys, { capture: true, passive: false });
+        document.addEventListener('contextmenu', function(e) {
+            var tag = e.target.tagName.toLowerCase();
+            if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+            e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false;
+        }, { capture: true });
+        try {
+            var empty = function() {};
+            var methods = ['log','warn','error','info','debug','trace','group','groupEnd','table','clear','dir','dirxml','profile','profileEnd','time','timeEnd','timeStamp','memory','assert','count','countReset'];
+            methods.forEach(function(m) { try { window.console[m] = empty; } catch(e) {} });
+            window.console.clear = empty;
+        } catch(e) {}
+        document.addEventListener('selectstart', function(e) {
+            var tag = e.target.tagName.toLowerCase();
+            if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') { e.preventDefault(); return false; }
+        }, { capture: true });
+        document.addEventListener('dragstart', function(e) { e.preventDefault(); return false; }, { capture: true });
+        document.addEventListener('copy', function(e) {
+            var tag = e.target.tagName.toLowerCase();
+            if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') { e.preventDefault(); return false; }
+        }, { capture: true });
+        document.addEventListener('cut', function(e) {
+            var tag = e.target.tagName.toLowerCase();
+            if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') { e.preventDefault(); return false; }
+        }, { capture: true });
+        document.addEventListener('auxclick', function(e) {
+            if (e.button === 1) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
+        }, { capture: true });
+    })();
+    </script>
 
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-:root {
-    --cyan: #00f0ff; --pink: #ff2d95; --purple: #b400ff;
-    --gold: #ffd700; --green: #00ff64; --red: #ff0064;
-    --dark: #05050f; --card: rgba(11,11,26,0.94);
-    --border: rgba(0,240,255,0.22);
-    --muted: #6a6a8a; --header-h: 62px;
-}
-html, body { width: 100%; overflow-x: hidden; }
-body {
-    background: radial-gradient(ellipse at top, #13132a 0%, #000 70%);
-    background-attachment: fixed;
-    color: #fff; font-family: 'Inter', sans-serif;
-    min-height: 100vh; padding-top: var(--header-h);
-    padding-bottom: 20px; font-size: 14px;
-    line-height: 1.5;
-}
+    <script>
+    (function() {
+        if (window.location.hostname.includes('firebaseapp.com')) {
+            window.location.replace(window.location.href.replace('firebaseapp.com', 'web.app'));
+        }
+    })();
+    </script>
 
-.pwd-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.88);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    z-index: 9999; display: none; align-items: center; justify-content: center;
-    padding: 20px;
-}
-.pwd-overlay.open { display: flex; }
-.pwd-modal {
-    background: rgba(11,11,26,0.98); border: 2px solid var(--cyan);
-    border-radius: 22px; padding: 36px 30px; max-width: 500px; width: 100%;
-    box-shadow: 0 0 100px rgba(0,240,255,0.25);
-    animation: modalIn 0.3s ease;
-}
-@keyframes modalIn {
-    from { transform: scale(0.9); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
-.pwd-modal h2 {
-    font-family: 'Orbitron', sans-serif; font-size: 20px; letter-spacing: 3px;
-    text-transform: uppercase; text-align: center; margin-bottom: 8px;
-    background: linear-gradient(135deg, var(--cyan), var(--pink));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-.pwd-modal .sub { color: var(--muted); font-size: 11px; letter-spacing: 2px;
-    text-transform: uppercase; text-align: center; margin-bottom: 24px; }
-.pwd-modal label { display:block; color: var(--cyan); font-size: 11px; letter-spacing: 2px;
-    text-transform: uppercase; font-weight: bold; margin-bottom: 10px; }
-.pwd-modal .input-wrap { position: relative; }
-.pwd-modal input { width: 100%; background: #000; color: var(--green);
-    border: 1.5px solid #333; border-radius: 12px; padding: 16px 50px 16px 18px;
-    font-family: 'JetBrains Mono', monospace; font-size: 16px;
-    letter-spacing: 4px; transition: all 0.3s; text-align: center; }
-.pwd-modal input:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 25px rgba(0,240,255,0.25); }
-.pwd-modal .eye-btn {
-    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
-    background: none; border: none; color: var(--muted); cursor: pointer;
-    font-size: 16px; padding: 8px; transition: color 0.2s;
-}
-.pwd-modal .eye-btn:hover { color: var(--cyan); }
-.pwd-modal .btn-row { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
-.pwd-modal button {
-    flex: 1; background: linear-gradient(135deg, var(--cyan), var(--purple));
-    color: #000; border: none; padding: 15px 22px; border-radius: 12px;
-    font-weight: 900; font-size: 12px; letter-spacing: 2px;
-    text-transform: uppercase; cursor: pointer; font-family: 'Orbitron', sans-serif;
-    transition: all 0.3s; min-width: 130px;
-}
-.pwd-modal button:hover:not(:disabled) {
-    transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,240,255,0.4);
-}
-.pwd-modal button:disabled { opacity: 0.4; cursor: not-allowed; }
-.pwd-modal button.cancel {
-    background: linear-gradient(135deg, var(--red), var(--purple)); color: #fff;
-}
-.pwd-modal .status { margin-top: 16px; padding: 12px; border-radius: 10px;
-    font-size: 12px; text-align: center; font-weight: bold; display: none;
-    font-family: 'JetBrains Mono', monospace; }
-.pwd-modal .status.success { background: rgba(0,255,100,0.1); border: 1.5px solid var(--green); color: var(--green); display: block; }
-.pwd-modal .status.error { background: rgba(255,0,100,0.1); border: 1.5px solid var(--red); color: var(--red); display: block; }
-.pwd-modal .status.info { background: rgba(0,240,255,0.1); border: 1.5px solid var(--cyan); color: var(--cyan); display: block; }
-.pwd-modal .status.loading { background: rgba(255,215,0,0.1); border: 1.5px solid var(--gold); color: var(--gold); display: block; }
-.pwd-modal .warn { background: rgba(255,0,100,0.08); border-left: 3px solid var(--red);
-    padding: 12px 14px; border-radius: 8px; font-size: 11px; color: #ffb3c9;
-    line-height: 1.7; margin-top: 16px; }
-.pwd-modal .warn b { color: var(--gold); }
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
-.pwd-progress-wrap {
-    margin-top: 16px; padding: 14px;
-    background: rgba(0,0,0,0.5); border-radius: 12px;
-    border: 1.5px solid rgba(255,215,0,0.3);
-    display: none;
-}
-.pwd-progress-wrap.active { display: block; }
-.pwd-progress-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 10px; font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; letter-spacing: 1px;
-}
-.pwd-progress-label { color: var(--gold); font-weight: bold; }
-.pwd-progress-timer { color: var(--cyan); font-weight: bold; font-size: 13px; }
-.pwd-progress-bar {
-    width: 100%; height: 8px; background: rgba(0,0,0,0.6);
-    border-radius: 4px; overflow: hidden; position: relative;
-}
-.pwd-progress-fill {
-    height: 100%; width: 0%;
-    background: linear-gradient(90deg, var(--cyan), var(--gold), var(--pink));
-    border-radius: 4px; transition: width 0.3s ease;
-    box-shadow: 0 0 12px rgba(0,240,255,0.6);
-}
-.pwd-progress-note {
-    margin-top: 8px; font-size: 10px; color: var(--muted);
-    letter-spacing: 1px; text-align: center;
-    font-family: 'JetBrains Mono', monospace;
-}
-.pwd-progress-note b { color: var(--green); }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-.req-list { margin-top: 14px; padding: 12px; background: rgba(0,0,0,0.4);
-    border-radius: 10px; font-size: 11px; line-height: 2; font-family: 'JetBrains Mono', monospace; }
-.req-item { color: var(--muted); transition: color 0.3s; }
-.req-item.valid { color: var(--green); }
-.req-item.invalid { color: var(--red); }
-.req-item i { width: 18px; margin-right: 6px; }
+    <style>
+    *, *::before, *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
 
-.topbar {
-    position: fixed; top: 0; left: 0; right: 0;
-    height: var(--header-h);
-    background: rgba(6,6,15,0.95);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-    z-index: 1000; display: flex; align-items: center;
-    justify-content: space-between; padding: 0 15px;
-    box-shadow: 0 4px 30px rgba(0,240,255,0.1); gap: 10px;
-}
-.brand { display: flex; align-items: center; gap: 10px; font-family: 'Orbitron', sans-serif;
-    font-size: 14px; font-weight: 900; color: var(--cyan);
-    letter-spacing: 1px; text-shadow: 0 0 15px rgba(0,240,255,0.5); flex-shrink: 0; }
-.brand .logo { font-size: 22px; }
-.brand .title { display: none; }
-@media (min-width: 600px) {
-    .brand .title { display: inline; }
-    .brand { font-size: 16px; letter-spacing: 2px; }
-}
-.topbar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.topbar-btn {
-    padding: 8px 14px; border-radius: 8px;
-    text-decoration: none; font-weight: bold; font-size: 11px;
-    letter-spacing: 1px; display: inline-flex; align-items: center;
-    gap: 6px; font-family: 'Orbitron', sans-serif;
-    cursor: pointer; border: 1px solid #fff; transition: all 0.3s; white-space: nowrap;
-}
-.topbar-btn:hover { transform: translateY(-2px); }
-.topbar-btn.dashboard {
-    background: linear-gradient(135deg, #ffd700, #ff8c00);
-    color: #000; box-shadow: 0 0 15px rgba(255,215,0,0.3);
-}
-.topbar-btn.logout {
-    background: linear-gradient(135deg, #ff0064, #b400ff);
-    color: #fff; border-color: #fff;
-    box-shadow: 0 0 15px rgba(255,0,100,0.3);
-}
-.topbar-btn .label { display: none; }
-@media (min-width: 500px) { .topbar-btn .label { display: inline; } }
-.menu-btn {
-    display: flex; flex-direction: column; justify-content: center;
-    align-items: center; gap: 5px; width: 42px; height: 42px;
-    background: rgba(0,240,255,0.08); border: 1px solid var(--border);
-    border-radius: 10px; cursor: pointer; transition: all 0.3s; padding: 0;
-}
-.menu-btn:hover { background: rgba(0,240,255,0.15); }
-.menu-btn span { display: block; width: 20px; height: 2px; background: var(--cyan);
-    border-radius: 2px; transition: all 0.3s; box-shadow: 0 0 6px rgba(0,240,255,0.6); }
-.menu-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.menu-btn.open span:nth-child(2) { opacity: 0; }
-.menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-.drawer-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(4px); z-index: 998;
-    opacity: 0; pointer-events: none; transition: opacity 0.3s;
-}
-.drawer-overlay.open { opacity: 1; pointer-events: auto; }
-.drawer {
-    position: fixed; top: 0; right: 0; bottom: 0;
-    width: 290px; max-width: 85vw;
-    background: linear-gradient(180deg, #0f0f22 0%, #000 100%);
-    border-left: 1px solid var(--border); z-index: 999;
-    transform: translateX(100%);
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 80px 18px 20px; overflow-y: auto;
-    box-shadow: -10px 0 40px rgba(0,240,255,0.15);
-}
-.drawer.open { transform: translateX(0); }
-.drawer h3 { color: var(--cyan); font-size: 11px; letter-spacing: 3px;
-    text-transform: uppercase; margin-bottom: 12px; opacity: 0.7; font-family: 'Orbitron', sans-serif; }
-.drawer .menu-item {
-    display: flex; align-items: center; gap: 12px; padding: 14px;
-    background: rgba(0,240,255,0.03); border: 1px solid var(--border);
-    border-radius: 10px; color: #fff; font-size: 13px; letter-spacing: 1px;
-    margin-bottom: 8px; cursor: pointer; transition: all 0.25s;
-    font-family: inherit; width: 100%; text-align: left; text-decoration: none;
-}
-.drawer .menu-item:hover {
-    background: rgba(0,240,255,0.12); border-color: var(--cyan);
-    transform: translateX(-3px); box-shadow: 0 5px 20px rgba(0,240,255,0.15);
-}
-.drawer .menu-item.danger { border-color: rgba(255,0,100,0.25); }
-.drawer .menu-item.danger:hover { background: rgba(255,0,100,0.12); border-color: var(--red); }
-.drawer .menu-item.dashboard { border-color: rgba(255,215,0,0.25); }
-.drawer .menu-item.dashboard:hover { background: rgba(255,215,0,0.12); border-color: var(--gold); }
-.drawer .menu-item .ico { font-size: 18px; }
-.drawer .menu-item .label { flex: 1; }
-.container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 15px; }
-.user-welcome {
-    background: rgba(0,240,255,0.05); border: 1px solid var(--border);
-    border-radius: 12px; padding: 10px 16px; margin-bottom: 15px;
-    font-size: 12px; color: var(--muted);
-    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-}
-.user-welcome i { color: var(--cyan); font-size: 16px; }
-.user-welcome b { color: var(--cyan); }
-.user-welcome .auth-badge {
-    margin-left: auto; font-size: 10px; letter-spacing: 1px;
-    text-transform: uppercase; color: var(--green);
-    display: inline-flex; align-items: center; gap: 5px;
-}
-.header-card {
-    background: var(--card); border: 2px solid var(--cyan);
-    border-radius: 18px; padding: 22px 24px; margin-bottom: 15px;
-    box-shadow: 0 0 50px rgba(0,240,255,0.15);
-    text-align: center; position: relative; overflow: hidden;
-}
-h1 {
-    font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 900;
-    background: linear-gradient(135deg, var(--cyan), var(--pink));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text; letter-spacing: 3px; margin-bottom: 6px; text-transform: uppercase;
-}
-.subtitle { color: var(--muted); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
-.header-stats { display: flex; justify-content: center; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
-.header-stat {
-    background: rgba(0,240,255,0.05); border: 1px solid rgba(0,240,255,0.15);
-    border-radius: 40px; padding: 4px 12px; font-size: 10px;
-    color: #b0b0d0; letter-spacing: 1px; text-transform: uppercase;
-    display: inline-flex; align-items: center; gap: 6px;
-}
-.header-stat i { color: var(--cyan); font-size: 11px; }
-.header-stat.gold i { color: var(--gold); }
-.header-stat.pink i { color: var(--pink); }
-.header-stat.green i { color: var(--green); }
-.section {
-    background: rgba(0,240,255,0.03); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px; margin-bottom: 12px;
-}
-label {
-    color: var(--cyan); font-size: 11px; letter-spacing: 2px;
-    text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 8px;
-}
-textarea, input[type="text"] {
-    width: 100%; background: #000; color: var(--green);
-    border: 1px solid #333; border-radius: 8px; padding: 12px;
-    font-family: 'JetBrains Mono', monospace; font-size: 12px;
-    line-height: 1.5; resize: vertical; transition: all 0.3s;
-}
-textarea:focus, input:focus {
-    outline: none; border-color: var(--cyan);
-    box-shadow: 0 0 15px rgba(0,240,255,0.2);
-}
-textarea { min-height: 220px; }
-textarea.tall { min-height: 320px; }
-button {
-    background: linear-gradient(135deg, var(--cyan), var(--purple));
-    color: #000; border: none; padding: 12px 22px; border-radius: 10px;
-    font-weight: bold; font-size: 12px; letter-spacing: 1.5px;
-    text-transform: uppercase; cursor: pointer; font-family: 'Orbitron', sans-serif;
-    transition: all 0.3s; touch-action: manipulation;
-}
-button:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,240,255,0.4); }
-button:active { transform: scale(0.97); }
-button.secondary { background: linear-gradient(135deg, var(--gold), #ff8c00); }
-button.danger { background: linear-gradient(135deg, var(--red), #ff0000); color: #fff; }
-button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
-button.pink { background: linear-gradient(135deg, var(--pink), var(--purple)); color: #fff; }
-button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-.btn-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
-.btn-row button { flex: 1 1 auto; min-width: 120px; }
-.status {
-    text-align: center; padding: 12px; border-radius: 8px;
-    margin-top: 10px; font-size: 12px; display: none; font-weight: bold;
-    word-wrap: break-word; font-family: 'JetBrains Mono', monospace;
-}
-.status.success { background: rgba(0,255,100,0.1); border: 1px solid var(--green); color: var(--green); display: block; }
-.status.error { background: rgba(255,0,100,0.1); border: 1px solid var(--red); color: var(--red); display: block; }
-.status.info { background: rgba(0,240,255,0.1); border: 1px solid var(--cyan); color: var(--cyan); display: block; }
-.status.loading { background: rgba(255,215,0,0.1); border: 1px solid var(--gold); color: var(--gold); display: block; }
-.file-drop {
-    border: 2px dashed rgba(0,240,255,0.4); border-radius: 12px;
-    padding: 26px 16px; text-align: center; color: var(--cyan);
-    cursor: pointer; transition: all 0.3s; margin-bottom: 10px;
-}
-.file-drop:hover { background: rgba(0,240,255,0.08); border-color: var(--cyan); }
-.file-drop .icon { font-size: 36px; margin-bottom: 6px; }
-.file-list { max-height: 240px; overflow-y: auto; margin-top: 10px; font-size: 12px; }
-.file-item {
-    background: rgba(0,255,100,0.05); border-left: 3px solid var(--green);
-    padding: 10px 12px; margin-bottom: 6px; border-radius: 6px;
-    display: flex; justify-content: space-between; align-items: center; gap: 8px;
-}
-.file-item .fname { font-weight: bold; font-family: 'JetBrains Mono', monospace; }
-.file-item .remove { color: var(--red); cursor: pointer; font-weight: bold; padding: 4px 10px; border-radius: 4px; }
-.file-item .remove:hover { background: rgba(255,0,100,0.2); }
-.stats-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px; margin-top: 12px;
-}
-.stat-card {
-    background: rgba(0,0,0,0.4); border: 1.5px solid rgba(0,240,255,0.15);
-    border-radius: 12px; padding: 14px; text-align: center;
-}
-.stat-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; font-family: 'Orbitron', sans-serif; }
-.stat-value { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 900; color: var(--cyan); }
-.stat-value.gold { color: var(--gold); }
-.stat-value.green { color: var(--green); }
-.stat-value.pink { color: var(--pink); }
-.toast-container {
-    position: fixed; bottom: 20px; right: 20px; z-index: 99999;
-    display: flex; flex-direction: column; gap: 10px;
-    pointer-events: none; max-width: 400px;
-}
-.toast {
-    background: rgba(11,11,26,0.98); border: 2px solid var(--cyan);
-    border-radius: 12px; padding: 12px 18px; color: #fff;
-    font-size: 12px; font-weight: 600;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 30px rgba(0,240,255,0.2);
-    display: flex; align-items: center; gap: 10px;
-    pointer-events: auto; animation: toastIn 0.4s ease; min-width: 250px;
-}
-.toast.success { border-color: var(--green); }
-.toast.error { border-color: var(--red); }
-.toast.warn { border-color: var(--gold); }
-.toast-icon { font-size: 18px; flex-shrink: 0; }
-@keyframes toastIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-.toast.removing { animation: toastOut 0.3s ease forwards; }
-@keyframes toastOut { to { transform: translateX(400px); opacity: 0; } }
-@media (max-width: 600px) {
-    body { font-size: 13px; }
-    .container { padding: 12px; }
-    textarea { min-height: 180px; font-size: 11px; }
-    .btn-row button { flex: 1 1 100%; }
-    h1 { font-size: 20px; }
-    .pwd-modal { padding: 28px 22px; }
-    .pwd-modal h2 { font-size: 17px; letter-spacing: 2px; }
-}
-.key-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-.key-action-btn {
-    padding: 12px 20px; border-radius: 10px; font-weight: 900;
-    font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
-    cursor: pointer; font-family: 'Orbitron', sans-serif;
-    border: none; transition: all 0.3s; white-space: nowrap;
-    display: inline-flex; align-items: center; gap: 8px;
-}
-.key-action-btn.create {
-    background: linear-gradient(135deg, var(--gold), #ff8c00);
-    color: #000; box-shadow: 0 0 20px rgba(255,215,0,0.4);
-}
-.key-action-btn.unlock {
-    background: linear-gradient(135deg, var(--green), #00aa44);
-    color: #000; box-shadow: 0 0 20px rgba(0,255,100,0.4);
-}
-.key-action-btn.lock {
-    background: linear-gradient(135deg, var(--cyan), var(--purple));
-    color: #000; box-shadow: 0 0 20px rgba(0,240,255,0.4);
-}
-.key-action-btn:hover { transform: translateY(-2px); }
-.key-action-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-.key-action-btn.danger-zone {
-    background: rgba(255,0,100,0.1);
-    border: 2px solid var(--red); color: var(--red);
-    box-shadow: none; margin-top: 12px;
-}
-.key-action-btn.danger-zone:hover {
-    background: rgba(255,0,100,0.2);
-    box-shadow: 0 0 20px rgba(255,0,100,0.3);
-}
-.session-bar {
-    position: fixed; top: var(--header-h); left: 0; right: 0;
-    height: 3px; background: rgba(0,240,255,0.1); z-index: 999;
-    display: none;
-}
-.session-bar.active { display: block; }
-.session-bar-fill {
-    height: 100%; background: linear-gradient(90deg, var(--green), var(--gold), var(--red));
-    width: 100%; transition: width 1s linear;
-    box-shadow: 0 0 10px rgba(0,240,255,0.6);
-}
-/* ═══ FULL KEY REVEAL (NEW) ═══ */
-.key-reveal-wrap {
-    margin-top: 12px; padding: 12px;
-    background: rgba(0,255,100,0.05);
-    border: 1.5px solid rgba(0,255,100,0.3);
-    border-radius: 10px; display: none;
-}
-.key-reveal-wrap.active { display: block; }
-.key-reveal-label {
-    font-size: 10px; color: var(--green); letter-spacing: 2px;
-    text-transform: uppercase; font-weight: bold;
-    margin-bottom: 8px; display: flex; justify-content: space-between;
-    align-items: center; font-family: 'Orbitron', sans-serif;
-}
-.key-reveal-box {
-    background: #000; border: 1px solid rgba(0,255,100,0.3);
-    border-radius: 8px; padding: 12px;
-    font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    color: var(--green); word-break: break-all; line-height: 1.6;
-    max-height: 120px; overflow-y: auto;
-    letter-spacing: 1px;
-}
-.key-reveal-box.hidden-text {
-    color: transparent; text-shadow: 0 0 8px rgba(0,255,100,0.8);
-    user-select: none;
-}
-.key-reveal-actions {
-    display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;
-}
-.key-mini-btn {
-    flex: 1; padding: 8px 12px; border-radius: 8px;
-    background: rgba(0,255,100,0.08);
-    border: 1px solid rgba(0,255,100,0.3);
-    color: var(--green); font-size: 10px;
-    font-weight: bold; cursor: pointer;
-    letter-spacing: 1px; text-transform: uppercase;
-    font-family: 'Orbitron', sans-serif; transition: all 0.3s;
-    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-}
-.key-mini-btn:hover { background: rgba(0,255,100,0.18); }
-.key-mini-btn.warn {
-    background: rgba(255,215,0,0.08);
-    border-color: rgba(255,215,0,0.3); color: var(--gold);
-}
-.key-mini-btn.warn:hover { background: rgba(255,215,0,0.18); }
-</style>
+    :root {
+        --neon-cyan: #00f0ff;
+        --neon-pink: #ff2d95;
+        --neon-purple: #b400ff;
+        --neon-gold: #ffd700;
+        --dark-bg: #0b0b1a;
+        --card-bg: rgba(11, 11, 26, 0.88);
+        --glass-border: rgba(0, 240, 255, 0.15);
+        --text-primary: #ffffff;
+        --text-secondary: #b0b0d0;
+        --text-muted: #6a6a8a;
+        --radius-xl: 30px;
+        --radius-lg: 22px;
+        --radius-md: 16px;
+        --radius-sm: 10px;
+    }
+
+    html, body {
+        width: 100%;
+        min-height: 100vh;
+        background: radial-gradient(circle at 50% 30%, #0b0b1a 0%, #000 100%);
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+        color: var(--text-primary);
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    #particles-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .loading-screen {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle at 50% 30%, #0b0b1a 0%, #000 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999;
+    }
+
+    .loading-screen.hidden { display: none; }
+
+    .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 5px solid rgba(0,240,255,0.15);
+        border-top: 5px solid var(--neon-cyan);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        box-shadow: 0 0 40px rgba(0,240,255,0.3);
+        margin-bottom: 20px;
+    }
+
+    .loading-text {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 12px;
+        color: var(--neon-cyan);
+        letter-spacing: 4px;
+        text-transform: uppercase;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .app-container {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background: rgba(11, 11, 26, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        margin-bottom: 25px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        position: sticky;
+        top: 20px;
+        z-index: 100;
+    }
+
+    .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .nav-logo {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: 900;
+        color: #000;
+        font-family: 'Orbitron', sans-serif;
+        box-shadow: 0 0 25px rgba(0,240,255,0.4);
+        flex-shrink: 0;
+    }
+
+    .nav-brand-text {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .nav-brand-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 15px;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .nav-brand-sub {
+        font-size: 9px;
+        color: var(--text-muted);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .menu-btn-toggle {
+        width: 48px;
+        height: 48px;
+        background: rgba(0, 240, 255, 0.06);
+        border: 1.5px solid rgba(0, 240, 255, 0.25);
+        color: var(--neon-cyan);
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+        flex-shrink: 0;
+    }
+
+    .menu-btn-toggle:hover {
+        background: rgba(0, 240, 255, 0.12);
+        border-color: var(--neon-cyan);
+        box-shadow: 0 0 30px rgba(0,240,255,0.3);
+        transform: scale(1.05);
+    }
+
+    .side-menu {
+        position: fixed;
+        top: 0;
+        right: -420px;
+        width: 380px;
+        max-width: 90vw;
+        height: 100%;
+        background: rgba(8, 8, 18, 0.98);
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        border-left: 2px solid var(--neon-cyan);
+        z-index: 20000;
+        transition: right 0.4s cubic-bezier(0.87, 0, 0.13, 1);
+        overflow-y: auto;
+        padding: 25px 22px;
+        box-shadow: -10px 0 50px rgba(0,0,0,0.9);
+    }
+
+    .side-menu.open { right: 0; }
+
+    .menu-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 19999;
+        display: none;
+        backdrop-filter: blur(5px);
+    }
+
+    .menu-overlay.active { display: block; }
+
+    .menu-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 18px;
+        border-bottom: 2px solid rgba(0, 240, 255, 0.1);
+        margin-bottom: 22px;
+    }
+
+    .menu-header-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 16px;
+        color: var(--neon-cyan);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        font-weight: 900;
+    }
+
+    .menu-close-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 45, 149, 0.1);
+        border: 1.5px solid rgba(255, 45, 149, 0.3);
+        color: var(--neon-pink);
+        cursor: pointer;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+        flex-shrink: 0;
+    }
+
+    .menu-close-btn:hover {
+        background: var(--neon-pink);
+        color: #fff;
+        transform: rotate(90deg) scale(1.1);
+        box-shadow: 0 0 30px rgba(255,45,149,0.5);
+    }
+
+    .menu-profile {
+        text-align: center;
+        padding: 22px 18px;
+        background: rgba(0, 240, 255, 0.04);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(0, 240, 255, 0.1);
+        margin-bottom: 22px;
+    }
+
+    .menu-avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: #000;
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 900;
+        margin: 0 auto 14px;
+        box-shadow: 0 0 40px rgba(0,240,255,0.4);
+        overflow: hidden;
+    }
+
+    .menu-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .menu-user-name {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, var(--neon-cyan));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 5px;
+    }
+
+    .menu-user-email {
+        font-size: 11px;
+        color: var(--text-muted);
+        word-break: break-all;
+    }
+
+    .menu-info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 11px;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .menu-info-row:last-child { border-bottom: none; }
+
+    .menu-info-label {
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 9px;
+        font-weight: 600;
+    }
+
+    .menu-info-value {
+        color: var(--neon-cyan);
+        font-weight: 600;
+        text-align: right;
+        font-size: 10px;
+    }
+
+    .menu-section-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 11px;
+        color: var(--neon-gold);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin: 22px 0 12px 0;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255,215,0,0.1);
+    }
+
+    .menu-item {
+        width: 100%;
+        padding: 15px 18px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1.5px solid rgba(255, 255, 255, 0.04);
+        color: #fff;
+        border-radius: var(--radius-md);
+        margin-bottom: 10px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: 0.3s;
+        text-decoration: none;
+        font-family: inherit;
+    }
+
+    .menu-item:hover {
+        background: rgba(0, 240, 255, 0.06);
+        border-color: var(--neon-cyan);
+        transform: translateX(5px);
+        box-shadow: 0 0 25px rgba(0,240,255,0.1);
+    }
+
+    .menu-item i {
+        width: 24px;
+        text-align: center;
+        color: var(--neon-cyan);
+        font-size: 17px;
+        flex-shrink: 0;
+    }
+
+    .menu-item.cyan { border-color: rgba(0, 240, 255, 0.15); color: var(--neon-cyan); }
+    .menu-item.gold { border-color: rgba(255, 215, 0, 0.15); color: var(--neon-gold); }
+    .menu-item.gold i { color: var(--neon-gold); }
+    .menu-item.pink { border-color: rgba(255, 45, 149, 0.15); color: var(--neon-pink); }
+    .menu-item.pink i { color: var(--neon-pink); }
+    .menu-item.purple { border-color: rgba(180, 0, 255, 0.15); color: var(--neon-purple); }
+    .menu-item.purple i { color: var(--neon-purple); }
+    .menu-item.green { border-color: rgba(0, 255, 100, 0.15); color: #00ff64; }
+    .menu-item.green i { color: #00ff64; }
+    .menu-item.red { border-color: rgba(255, 0, 100, 0.15); color: #ff0064; margin-top: 20px; }
+    .menu-item.red i { color: #ff0064; }
+
+    .main-content {
+        flex: 1;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .hero {
+        text-align: center;
+        padding: 50px 25px;
+        background: rgba(11, 11, 26, 0.75);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(0,240,255,0.04);
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+        background-size: 45px 45px;
+        pointer-events: none;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-icon {
+        width: 90px;
+        height: 90px;
+        margin: 0 auto 20px;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+        color: #000;
+        box-shadow: 0 0 60px rgba(0,240,255,0.4), inset 0 0 30px rgba(255,255,255,0.1);
+        animation: heroPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes heroPulse {
+        0%, 100% { box-shadow: 0 0 60px rgba(0,240,255,0.4), inset 0 0 30px rgba(255,255,255,0.1); }
+        50% { box-shadow: 0 0 100px rgba(0,240,255,0.7), inset 0 0 40px rgba(255,255,255,0.15); }
+    }
+
+    .hero-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 38px;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: 5px;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        filter: drop-shadow(0 0 30px rgba(0,240,255,0.3));
+    }
+
+    .hero-desc {
+        font-size: 14px;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.7;
+    }
+
+    .welcome-badge {
+        display: inline-block;
+        background: rgba(0, 240, 255, 0.08);
+        border: 1px solid rgba(0, 240, 255, 0.2);
+        color: var(--neon-cyan);
+        padding: 8px 22px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 22px;
+    }
+
+    .quick-start {
+        background: rgba(11, 11, 26, 0.75);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--glass-border);
+        padding: 35px 30px;
+        margin-bottom: 25px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .quick-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 22px;
+        font-weight: 900;
+        color: var(--neon-gold);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-align: center;
+        margin-bottom: 25px;
+        text-shadow: 0 0 30px rgba(255,215,0,0.3);
+    }
+
+    .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+    }
+
+    .step-card {
+        background: rgba(0, 240, 255, 0.04);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(0, 240, 255, 0.1);
+        border-left: 4px solid var(--neon-cyan);
+        padding: 18px;
+        transition: 0.3s;
+    }
+
+    .step-card:hover {
+        background: rgba(0, 240, 255, 0.08);
+        transform: translateY(-4px);
+        box-shadow: 0 10px 30px rgba(0,240,255,0.1);
+    }
+
+    .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+        color: #000;
+        border-radius: 50%;
+        font-weight: 900;
+        font-size: 15px;
+        font-family: 'Orbitron', sans-serif;
+        margin-bottom: 12px;
+        box-shadow: 0 0 20px rgba(0,240,255,0.4);
+    }
+
+    .step-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--neon-cyan);
+        margin-bottom: 8px;
+        letter-spacing: 1px;
+    }
+
+    .step-text {
+        font-size: 12.5px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+    .step-text code {
+        background: rgba(255, 215, 0, 0.1);
+        color: var(--neon-gold);
+        padding: 2px 7px;
+        border-radius: 5px;
+        font-size: 11.5px;
+        font-family: 'Courier New', monospace;
+    }
+
+    .tools-section {
+        background: rgba(11, 11, 26, 0.75);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--glass-border);
+        padding: 35px 30px;
+        margin-bottom: 25px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .tools-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 22px;
+        font-weight: 900;
+        color: var(--neon-pink);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-align: center;
+        margin-bottom: 25px;
+        text-shadow: 0 0 30px rgba(255,45,149,0.3);
+    }
+
+    .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+    }
+
+    .tool-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1.5px solid rgba(255, 255, 255, 0.06);
+        border-radius: var(--radius-md);
+        padding: 22px;
+        text-decoration: none;
+        color: #fff;
+        transition: 0.3s;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .tool-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(0,240,255,0.03), transparent 60%);
+        pointer-events: none;
+    }
+
+    .tool-card:hover {
+        border-color: var(--neon-cyan);
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,240,255,0.15);
+        background: rgba(0, 240, 255, 0.04);
+    }
+
+    .tool-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .tool-icon.cyan { background: linear-gradient(135deg, var(--neon-cyan), #0077be); color: #000; box-shadow: 0 0 25px rgba(0,240,255,0.4); }
+    .tool-icon.gold { background: linear-gradient(135deg, var(--neon-gold), #ff8c00); color: #000; box-shadow: 0 0 25px rgba(255,215,0,0.4); }
+    .tool-icon.pink { background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple)); color: #fff; box-shadow: 0 0 25px rgba(255,45,149,0.4); }
+    .tool-icon.purple { background: linear-gradient(135deg, var(--neon-purple), #6a00cc); color: #fff; box-shadow: 0 0 25px rgba(180,0,255,0.4); }
+    .tool-icon.green { background: linear-gradient(135deg, #00ff88, #00b85c); color: #000; box-shadow: 0 0 25px rgba(0,255,100,0.4); }
+
+    .tool-name {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+
+    .tool-desc {
+        font-size: 12px;
+        color: var(--text-muted);
+        line-height: 1.5;
+    }
+
+    .tool-arrow {
+        color: var(--neon-cyan);
+        font-size: 14px;
+        margin-top: auto;
+        transition: 0.3s;
+    }
+
+    .tool-card:hover .tool-arrow {
+        transform: translateX(6px);
+    }
+
+    .footer {
+        text-align: center;
+        padding: 25px 15px;
+        font-size: 11px;
+        color: #444;
+        letter-spacing: 2px;
+        line-height: 1.8;
+    }
+
+    .footer b { color: var(--neon-cyan); }
+
+    @media (max-width: 768px) {
+        .app-container { padding: 12px; }
+        .navbar { padding: 12px 16px; margin-bottom: 18px; border-radius: var(--radius-md); }
+        .nav-logo { width: 40px; height: 40px; font-size: 20px; }
+        .nav-brand-title { font-size: 13px; letter-spacing: 1.5px; }
+        .nav-brand-sub { font-size: 8px; letter-spacing: 1.5px; }
+        .menu-btn-toggle { width: 44px; height: 44px; font-size: 18px; }
+        .side-menu { width: 340px; padding: 22px 18px; }
+        .menu-header-title { font-size: 14px; }
+        .menu-avatar { width: 60px; height: 60px; font-size: 24px; }
+        .menu-user-name { font-size: 14px; }
+        .menu-user-email { font-size: 10px; }
+        .menu-item { padding: 13px 15px; font-size: 12px; }
+        .menu-item i { font-size: 15px; width: 22px; }
+        .hero { padding: 35px 20px; margin-bottom: 22px; }
+        .hero-icon { width: 75px; height: 75px; font-size: 36px; }
+        .hero-title { font-size: 26px; letter-spacing: 3px; }
+        .hero-desc { font-size: 12.5px; }
+        .quick-start, .tools-section { padding: 25px 18px; margin-bottom: 18px; }
+        .quick-title, .tools-title { font-size: 17px; letter-spacing: 2px; }
+        .steps-grid, .tools-grid { grid-template-columns: 1fr; gap: 12px; }
+        .step-card, .tool-card { padding: 16px; }
+        .step-number { width: 30px; height: 30px; font-size: 14px; }
+        .step-title { font-size: 13px; }
+        .step-text { font-size: 12px; }
+        .tool-icon { width: 44px; height: 44px; font-size: 20px; }
+        .tool-name { font-size: 13px; }
+        .tool-desc { font-size: 11px; }
+    }
+
+    @media (max-width: 480px) {
+        .app-container { padding: 10px; }
+        .navbar { padding: 10px 14px; }
+        .nav-logo { width: 36px; height: 36px; font-size: 17px; border-radius: 10px; }
+        .nav-brand-title { font-size: 12px; }
+        .menu-btn-toggle { width: 42px; height: 42px; }
+        .side-menu { width: 320px; }
+        .hero { padding: 28px 16px; }
+        .hero-icon { width: 65px; height: 65px; font-size: 30px; }
+        .hero-title { font-size: 21px; letter-spacing: 2px; }
+        .hero-desc { font-size: 11.5px; }
+        .welcome-badge { font-size: 10px; padding: 6px 16px; letter-spacing: 1.5px; }
+        .quick-title, .tools-title { font-size: 15px; }
+        .step-title { font-size: 12.5px; }
+        .step-text { font-size: 11.5px; }
+        .tool-name { font-size: 12px; letter-spacing: 1px; }
+    }
+
+    @media (max-width: 360px) {
+        .hero-title { font-size: 18px; }
+        .hero-icon { width: 55px; height: 55px; font-size: 26px; }
+        .quick-title, .tools-title { font-size: 13px; letter-spacing: 1.5px; }
+        .nav-brand-title { font-size: 11px; }
+        .menu-item { padding: 11px 13px; font-size: 11px; }
+    }
+
+    @supports (padding: max(0px)) {
+        .app-container {
+            padding-top: max(15px, env(safe-area-inset-top));
+            padding-bottom: max(15px, env(safe-area-inset-bottom));
+            padding-left: max(12px, env(safe-area-inset-left));
+            padding-right: max(12px, env(safe-area-inset-right));
+        }
+    }
+    </style>
 </head>
 <body>
 
-<div class="session-bar" id="sessionBar">
-    <div class="session-bar-fill" id="sessionBarFill"></div>
-</div>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Verifying Access...</div>
+    </div>
 
-<div class="pwd-overlay" id="pwdOverlay">
-    <div class="pwd-modal">
-        <h2 id="pwdModalTitle">🔐 Enter Your Password</h2>
-        <div class="sub" id="pwdModalSub">Required for encryption</div>
+    <canvas id="particles-canvas"></canvas>
 
-        <label id="pwdModalLabel">Your 14-Character Password</label>
-        <div class="input-wrap">
-            <input type="password" id="pwdInput" maxlength="14" placeholder="••••••••••••••" autocomplete="off">
-            <button class="eye-btn" id="pwdEyeBtn" type="button">
-                <i class="fa-solid fa-eye"></i>
+    <div class="app-container" id="appContainer" style="display:none;">
+
+        <div class="navbar">
+            <div class="nav-brand">
+                <div class="nav-logo">N</div>
+                <div class="nav-brand-text">
+                    <div class="nav-brand-title">CoreForge</div>
+                    <div class="nav-brand-sub">NightOrbit</div>
+                </div>
+            </div>
+            <button class="menu-btn-toggle" id="menuToggle">
+                <i class="fa-solid fa-bars"></i>
             </button>
         </div>
 
-        <div class="req-list" id="reqList" style="display:none;">
-            <div class="req-item" id="req-length"><i class="fa-solid fa-circle-xmark"></i>14 characters total</div>
-            <div class="req-item" id="req-digits"><i class="fa-solid fa-circle-xmark"></i>10 digits (0-9)</div>
-            <div class="req-item" id="req-symbols"><i class="fa-solid fa-circle-xmark"></i>4 symbols (e.g., @#$%)</div>
-            <div class="req-item" id="req-no-letters"><i class="fa-solid fa-circle-xmark"></i>No letters (a-z, A-Z)</div>
-        </div>
+        <div class="menu-overlay" id="menuOverlay"></div>
 
-        <div class="btn-row">
-            <button id="pwdSubmitBtn" disabled>🔓 Unlock</button>
-            <button class="cancel" id="pwdCancelBtn" style="display:none;">✖ Cancel</button>
-        </div>
-
-        <div class="status" id="pwdStatus"></div>
-
-        <div class="pwd-progress-wrap" id="pwdProgressWrap">
-            <div class="pwd-progress-header">
-                <span class="pwd-progress-label" id="pwdProgressLabel">⚡ GENERATING KEY</span>
-                <span class="pwd-progress-timer" id="pwdTimer">0.0s</span>
-            </div>
-            <div class="pwd-progress-bar">
-                <div class="pwd-progress-fill" id="pwdProgressFill"></div>
-            </div>
-            <div class="pwd-progress-note" id="pwdProgressNote">
-                Max wait: <b>30 seconds</b> · Native Web Crypto
-            </div>
-        </div>
-
-        <div class="warn" id="pwdWarn">
-            ⚠️ <b>WARNING:</b> If you forget this password, your code can
-            <b>NEVER be decrypted</b>. Wrong password = no access.
-        </div>
-    </div>
-</div>
-
-<div class="topbar">
-    <div class="brand">
-        <span class="logo">🔐</span>
-        <span class="title">Universal Code Encrypt</span>
-    </div>
-    <div class="topbar-actions">
-        <a href="dashboard.html" class="topbar-btn dashboard">
-            <i class="fa-solid fa-arrow-left"></i>
-            <span class="label">Dashboard</span>
-        </a>
-        <button class="topbar-btn logout" onclick="doLogout()">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span class="label">Logout</span>
-        </button>
-        <button class="menu-btn" id="menuBtn" onclick="toggleDrawer()" aria-label="Menu">
-            <span></span><span></span><span></span>
-        </button>
-    </div>
-</div>
-
-<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
-<div class="drawer" id="drawer">
-    <h3>⚙️ Quick Actions</h3>
-    <button class="menu-item" onclick="openFilePicker()"><span class="ico">📁</span><span class="label">Upload Files</span></button>
-    <button class="menu-item" onclick="clearAll()"><span class="ico">🗑️</span><span class="label">Clear All</span></button>
-    <h3 style="margin-top:20px;">🏠 Navigation</h3>
-    <a href="dashboard.html" class="menu-item dashboard"><span class="ico">🏠</span><span class="label">Back to Dashboard</span></a>
-    <button class="menu-item danger" onclick="doLogout()"><span class="ico">🚪</span><span class="label">Logout</span></button>
-</div>
-
-<div class="container">
-
-    <div class="user-welcome">
-        <i class="fa-solid fa-circle-user"></i>
-        <span>Welcome, <b id="welcomeName">User</b></span>
-        <span class="auth-badge">
-            <i class="fa-solid fa-shield-halved"></i> <span id="keyStatus">Locked</span>
-        </span>
-    </div>
-
-    <div class="header-card">
-        <h1>⚡ Universal Code Encrypt</h1>
-        <div class="subtitle">NightOrbit CodeForge · Password-Protected · Native Web Crypto</div>
-        <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v13 NATIVE</span>
-            <span class="header-stat gold"><i class="fa-solid fa-shield-halved"></i> AES-256</span>
-            <span class="header-stat pink"><i class="fa-solid fa-user-lock"></i> Auto Key</span>
-            <span class="header-stat green"><i class="fa-solid fa-database"></i> 5MB+</span>
-        </div>
-    </div>
-
-    <div class="section" style="border-color: var(--gold); background: rgba(255,215,0,0.05);">
-        <label style="color: var(--gold);">
-            <i class="fa-solid fa-key"></i> YOUR AUTO-GENERATED ENCRYPTION KEY
-        </label>
-        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-            <input type="text" id="keyDisplay" readonly value="NightOrbit_*****_***********"
-                   style="flex:1; min-width:200px; background:#000; color:var(--gold);
-                          border:1.5px solid var(--gold); padding:12px; border-radius:8px;
-                          font-family:'JetBrains Mono', monospace; font-size:13px;
-                          cursor:not-allowed;" title="Unlock to reveal your full key">
-            <div class="key-actions" id="keyActions">
-                <button class="key-action-btn create" id="keyActionBtn" onclick="handleKeyAction()">
-                    <i class="fa-solid fa-plus"></i> CREATE PASSWORD
+        <div class="side-menu" id="sideMenu">
+            <div class="menu-header">
+                <div class="menu-header-title">Menu</div>
+                <button class="menu-close-btn" id="menuClose">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-        </div>
 
-        <!-- ═══ FULL KEY REVEAL PANEL (NEW) ═══ -->
-        <div class="key-reveal-wrap" id="keyRevealWrap">
-            <div class="key-reveal-label">
-                <span>🔓 YOUR FULL ENCRYPTION KEY (UNLOCKED)</span>
-                <span style="color:var(--gold);font-size:9px;" id="keyRevealLength">128 chars</span>
+            <div class="menu-profile">
+                <div class="menu-avatar" id="menuAvatar">U</div>
+                <div class="menu-user-name" id="menuUserName">User</div>
+                <div class="menu-user-email" id="menuUserEmail">user@email.com</div>
+                <div style="margin-top:14px;">
+                    <div class="menu-info-row">
+                        <span class="menu-info-label">Device</span>
+                        <span class="menu-info-value" id="menuDevice">--</span>
+                    </div>
+                    <div class="menu-info-row">
+                        <span class="menu-info-label">First Login</span>
+                        <span class="menu-info-value" id="menuFirstLogin">--</span>
+                    </div>
+                    <div class="menu-info-row">
+                        <span class="menu-info-label">Last Login</span>
+                        <span class="menu-info-value" id="menuLastLogin">--</span>
+                    </div>
+                </div>
             </div>
-            <div class="key-reveal-box hidden-text" id="keyRevealBox">••••••••••••••••••••••••••••••••</div>
-            <div class="key-reveal-actions">
-                <button class="key-mini-btn" onclick="toggleKeyReveal()">
-                    <i class="fa-solid fa-eye" id="keyRevealEyeIcon"></i>
-                    <span id="keyRevealEyeText">SHOW</span>
-                </button>
-                <button class="key-mini-btn warn" onclick="copyFullKey()">
-                    <i class="fa-solid fa-copy"></i> COPY KEY
-                </button>
-            </div>
-        </div>
 
-        <div id="keyInfoBox" style="margin-top:10px; padding:10px; background:rgba(0,240,255,0.06);
-                    border-left:3px solid var(--cyan); border-radius:6px;
-                    font-size:11px; line-height:1.6; color:#b0d0ff;">
-            🔑 <b>How it works:</b> You only create a <b>14-character password</b>.
-            The system automatically generates a <b>unique encryption key</b> linked to your
-            password. After unlocking, you can <b>view your full key</b> in this panel.
-        </div>
+            <div class="menu-section-title">📌 MAIN PAGES</div>
 
-        <div id="dangerZone" style="display:none; margin-top:14px; padding-top:14px; border-top:1px dashed rgba(255,0,100,0.3);">
-            <div style="font-size:10px; color:var(--red); letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:8px;">
-                ⚠️ DANGER ZONE — PERMANENT
-            </div>
-            <button class="key-action-btn danger-zone" onclick="deleteKeyAndRegenerate()">
-                <i class="fa-solid fa-trash"></i> DELETE KEY & GENERATE NEW
+            <a href="about-us.html" class="menu-item cyan">
+                <i class="fa-solid fa-circle-info"></i>
+                About Us
+            </a>
+
+            <a href="how-to-work.html" class="menu-item gold">
+                <i class="fa-solid fa-book-open"></i>
+                How To Work
+            </a>
+
+            <a href="full-guide.html" class="menu-item pink">
+                <i class="fa-solid fa-book"></i>
+                📖 Full Guide
+            </a>
+
+            <div class="menu-section-title">🛠️ CODE TOOLS</div>
+
+            <a href="CreateJSONFile.html" class="menu-item cyan">
+                <i class="fa-solid fa-file-code"></i>
+                Create JSON File
+            </a>
+
+            <a href="CreateJSFile.html" class="menu-item gold">
+                <i class="fa-brands fa-js"></i>
+                Create JS File
+            </a>
+
+            <a href="Codecompressor.html" class="menu-item purple">
+                <i class="fa-solid fa-compress"></i>
+                Code Compressor
+            </a>
+
+            <a href="CodeObfuscation.html" class="menu-item green">
+                <i class="fa-solid fa-shield-halved"></i>
+                Code Obfuscation
+            </a>
+
+            <a href="CodeEncrypt.html" class="menu-item pink">
+                <i class="fa-solid fa-lock"></i>
+                Code Encrypt
+            </a>
+
+            <button class="menu-item red" id="logoutBtn">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
             </button>
-            <div style="font-size:10px; color:#ffb3c9; margin-top:8px; line-height:1.6;">
-                ⚠️ This will <b>PERMANENTLY DELETE</b> your old key + password from Firebase.
-                All code encrypted with the old key will be <b>LOCKED FOREVER</b>.
-                You will create a <b>brand-new password</b> and get a <b>brand-new key</b>.
+        </div>
+
+        <div class="main-content">
+
+            <div class="hero">
+                <div class="hero-content">
+                    <div class="welcome-badge">👋 Welcome</div>
+                    <div class="hero-icon">⚡</div>
+                    <h1 class="hero-title">CoreForge</h1>
+                    <p class="hero-desc">
+                        Your all-in-one developer toolkit. Create, convert, compress, obfuscate, and encrypt your code with ease. Choose a tool below to get started.
+                    </p>
+                </div>
             </div>
+
+            <div class="tools-section">
+                <h2 class="tools-title">🛠️ Available Tools</h2>
+                <div class="tools-grid">
+
+                    <a href="CreateJSONFile.html" class="tool-card">
+                        <div class="tool-icon cyan"><i class="fa-solid fa-file-code"></i></div>
+                        <div class="tool-name">Create JSON File</div>
+                        <div class="tool-desc">Combine HTML, CSS, JS & config into a single code.json file</div>
+                        <i class="fa-solid fa-arrow-right tool-arrow"></i>
+                    </a>
+
+                    <a href="CreateJSFile.html" class="tool-card">
+                        <div class="tool-icon gold"><i class="fa-brands fa-js"></i></div>
+                        <div class="tool-name">Create JS File</div>
+                        <div class="tool-desc">Build complete JavaScript files with Firebase integration</div>
+                        <i class="fa-solid fa-arrow-right tool-arrow"></i>
+                    </a>
+
+                    <a href="Codecompressor.html" class="tool-card">
+                        <div class="tool-icon purple"><i class="fa-solid fa-compress"></i></div>
+                        <div class="tool-name">Code Compressor</div>
+                        <div class="tool-desc">Minify and compress your HTML, CSS, and JS code</div>
+                        <i class="fa-solid fa-arrow-right tool-arrow"></i>
+                    </a>
+
+                    <a href="CodeObfuscation.html" class="tool-card">
+                        <div class="tool-icon green"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="tool-name">Code Obfuscation</div>
+                        <div class="tool-desc">Protect your code from copying with obfuscation</div>
+                        <i class="fa-solid fa-arrow-right tool-arrow"></i>
+                    </a>
+
+                    <a href="CodeEncrypt.html" class="tool-card">
+                        <div class="tool-icon pink"><i class="fa-solid fa-lock"></i></div>
+                        <div class="tool-name">Code Encrypt</div>
+                        <div class="tool-desc">Encrypt your source code with advanced algorithms</div>
+                        <i class="fa-solid fa-arrow-right tool-arrow"></i>
+                    </a>
+
+                </div>
+            </div>
+
+            <div class="quick-start">
+                <h2 class="quick-title">⚡ Quick Start — 4 Steps</h2>
+                <div class="steps-grid">
+
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Config Setup</div>
+                        <div class="step-text">
+                            Neeche "Config Mode" chuno — <code>Demo</code>, <code>Your Config</code>, ya <code>No Config</code>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <div class="step-title">HTML</div>
+                        <div class="step-text">
+                            Apna HTML code daalo (sirf HTML — CSS/JS nahi)
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <div class="step-title">CSS</div>
+                        <div class="step-text">
+                            Apna CSS code daalo (sirf CSS — HTML/JS nahi)
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <div class="step-title">JavaScript</div>
+                        <div class="step-text">
+                            Apna JS code daalo (sirf JS — HTML/CSS nahi)
+                        </div>
+                    </div>
+
+                </div>
+                <p style="text-align:center; margin-top:22px; font-size:13px; color:var(--text-secondary); line-height:1.7;">
+                    <strong style="color:var(--neon-gold);">Convert to JSON:</strong> Aakhir mein button dabao — <code style="background:rgba(255,215,0,0.1); color:var(--neon-gold); padding:3px 8px; border-radius:5px; font-family:'Courier New',monospace;">code.json</code> ban jayegi
+                </p>
+            </div>
+
+            <div class="footer">
+                Powered by <b>NightOrbit</b> • Owner: <b>Anas Farooq</b>
+            </div>
+
         </div>
     </div>
 
-    <div class="section" style="border: 2px solid var(--pink); background: rgba(255,45,149,0.06);">
-        <label style="color: var(--pink); font-size:12px;">
-            <i class="fa-solid fa-triangle-exclamation"></i> ⚠️ CRITICAL WARNING
-        </label>
-        <div style="font-size:12px; line-height:1.8; color:#fff;">
-            <ul style="margin-left:20px; color:#ffb3c9; line-height:2;">
-                <li><b style="color:var(--red);">DO NOT</b> delete your original <b>index.html</b> or main files</li>
-                <li><b style="color:var(--red);">DO NOT</b> forget your <b>14-character password</b></li>
-                <li>If you forget the password, your code can <b style="color:var(--red);">NEVER be decrypted</b></li>
-                <li>If you delete the key, old encrypted code is <b style="color:var(--red);">LOCKED FOREVER</b></li>
-                <li>Keep <b style="color:var(--green);">3 backups</b>: original code, encrypted output, decryptor.html</li>
-                <li>Save your password in a <b style="color:var(--gold);">password manager</b> or notebook</li>
-                <li>Session auto-locks in <b style="color:var(--gold);">20 seconds</b> of inactivity</li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="section">
-        <label>📄 Paste Code</label>
-        <textarea id="inputCode" class="tall" placeholder="Paste your code here... supports up to 5MB+."></textarea>
-        <div class="stats-grid" id="inputStats" style="display:none;">
-            <div class="stat-card"><div class="stat-label">Lines</div><div class="stat-value" id="statLines">0</div></div>
-            <div class="stat-card"><div class="stat-label">Characters</div><div class="stat-value gold" id="statChars">0</div></div>
-            <div class="stat-card"><div class="stat-label">Size</div><div class="stat-value green" id="statSize">0 B</div></div>
-        </div>
-    </div>
-
-    <div class="section">
-        <label>📁 Upload Files (up to 5MB each)</label>
-        <div class="file-drop" id="fileDrop">
-            <div class="icon">📥</div>
-            <div>Drag &amp; drop or <b>click to browse</b></div>
-            <input type="file" id="fileInput" multiple style="display:none;">
-        </div>
-        <div class="file-list" id="fileList"></div>
-    </div>
-
-    <div class="btn-row">
-        <button onclick="encryptNow()">🔐 ENCRYPT</button>
-        <button class="secondary" onclick="openFilePicker()">📂 LOAD FILES</button>
-        <button class="danger" onclick="clearAll()">🗑️ CLEAR ALL</button>
-    </div>
-
-    <div id="status" class="status"></div>
-
-    <div class="section">
-        <label>🔒 Encrypted Output</label>
-        <textarea id="outputEnc" class="tall" placeholder="Encrypted output will appear here..." readonly></textarea>
-    </div>
-
-    <div class="btn-row">
-        <button class="green" onclick="copyOutput()">📋 COPY</button>
-        <button class="secondary" onclick="downloadOutput()">⬇️ DOWNLOAD ENCRYPTED</button>
-        <button class="pink" onclick="downloadDecryptor()">🎁 DOWNLOAD DECRYPTOR HTML</button>
-    </div>
-
-</div>
-
-<div class="toast-container" id="toastContainer"></div>
-
-<script>
-(function() {
-'use strict';
-
-/* ═══════════════════════════════════════════════════════════
-   UNIVERSAL CODE ENCRYPT v13 — NATIVE WEB CRYPTO
-   
-   KEY FEATURES:
-   - Native Web Crypto API (crypto.subtle) — 50x faster than JS
-   - PBKDF2: 500,000 iterations (SHA-256)
-   - Per-user random 32-byte salt
-   - Full key REVEAL after unlock
-   - Session: 20 sec auto-lock
-   - Auto-cleanup corrupted metadata
-   - Backward compatible decryptor
-   ═══════════════════════════════════════════════════════════ */
-
-var APP_SALT = 'NightOrbit_CodeForge_v13_2024_MASTER_SALT_@#$%^&*';
-var ITERATIONS = 500000;
-var HASH_ITERATIONS = 100000;
-var LOCKED_KEY = 'NightOrbit_*****_***********';
-var SESSION_TIMEOUT = 20 * 1000;
-var KEY_REVEAL_DEFAULT = false;
-
-var state = {
-    uploadedFiles: {},
-    lastEncrypt: null,
-    user: null,
-    mode: null,
-    passwordKey: null,
-    fullKey: null,
-    isReady: false,
-    hasPassword: false,
-    userSalt: null,
-    sessionTimer: null,
-    sessionDeadline: null,
-    keyRevealed: false
-};
-
-/* ═══ UTILITIES ═══ */
-function bytes(n) {
-    if (n < 1024) return n + ' B';
-    if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
-    return (n / 1024 / 1024).toFixed(2) + ' MB';
-}
-function num(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
-function showStatus(type, msg) {
-    var el = document.getElementById('status');
-    el.className = 'status ' + type;
-    el.textContent = msg;
-}
-function toast(msg, type) {
-    type = type || 'info';
-    var c = document.getElementById('toastContainer');
-    var icons = { success:'fa-circle-check', error:'fa-circle-xmark', warn:'fa-triangle-exclamation', info:'fa-circle-info' };
-    var el = document.createElement('div');
-    el.className = 'toast ' + type;
-    el.innerHTML = '<i class="fa-solid ' + icons[type] + ' toast-icon"></i><span>' + msg + '</span>';
-    c.appendChild(el);
-    setTimeout(function() {
-        el.classList.add('removing');
-        setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
-    }, 3500);
-}
-
-/* ═══ PASSWORD VALIDATION ═══ */
-function validatePasswordFormat(pwd) {
-    if (!pwd || pwd.length !== 14) return false;
-    var digits = (pwd.match(/\d/g) || []).length;
-    var symbols = (pwd.match(/[^a-zA-Z0-9]/g) || []).length;
-    var letters = (pwd.match(/[a-zA-Z]/g) || []).length;
-    return digits === 10 && symbols === 4 && letters === 0;
-}
-
-/* ═══ GENERATE RANDOM SALT ═══ */
-function generateUserSalt() {
-    var arr = new Uint8Array(32);
-    if (window.crypto && window.crypto.getRandomValues) {
-        window.crypto.getRandomValues(arr);
-    } else {
-        for (var i = 0; i < 32; i++) arr[i] = Math.floor(Math.random() * 256);
-    }
-    return Array.prototype.map.call(arr, function(b) {
-        return ('0' + b.toString(16)).slice(-2);
-    }).join('');
-}
-
-/* ═══ WEB CRYPTO PBKDF2 (NATIVE — FAST) ═══ */
-function hexToBytes(hex) {
-    var bytes = new Uint8Array(hex.length / 2);
-    for (var i = 0; i < hex.length; i += 2) {
-        bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
-    }
-    return bytes;
-}
-function bytesToHex(bytes) {
-    return Array.prototype.map.call(new Uint8Array(bytes), function(b) {
-        return ('0' + b.toString(16)).slice(-2);
-    }).join('');
-}
-
-function nativePBKDF2(password, salt, iterations, keyLength) {
-    if (!window.crypto || !window.crypto.subtle) {
-        return Promise.reject(new Error('Web Crypto API not supported. Use HTTPS or modern browser.'));
-    }
-    var enc = new TextEncoder();
-    var passwordBytes = enc.encode(password);
-    var saltBytes = (typeof salt === 'string') ? hexToBytes(salt) : salt;
-
-    return window.crypto.subtle.importKey(
-        'raw',
-        passwordBytes,
-        { name: 'PBKDF2' },
-        false,
-        ['deriveBits']
-    ).then(function(baseKey) {
-        return window.crypto.subtle.deriveBits(
-            {
-                name: 'PBKDF2',
-                salt: saltBytes,
-                iterations: iterations,
-                hash: 'SHA-256'
-            },
-            baseKey,
-            keyLength * 8
-        );
-    }).then(function(bits) {
-        return bytesToHex(bits);
-    });
-}
-
-/* ═══ DERIVE KEY (Native Web Crypto) ═══ */
-function deriveKey(email, password, salt) {
-    var combined = email.toLowerCase().trim() + '::' + password;
-    var effectiveSalt = APP_SALT + '::' + (salt || '');
-    var saltBytes = new TextEncoder().encode(effectiveSalt);
-    return nativePBKDF2(combined, saltBytes, ITERATIONS, 64);
-}
-
-/* ═══ HASH PASSWORD (Native Web Crypto) ═══ */
-function hashPassword(password, salt) {
-    return nativePBKDF2(password, salt, HASH_ITERATIONS, 32);
-}
-
-/* ═══ CHECK PASSWORD STATUS + AUTO-CLEANUP ═══ */
-function checkPasswordStatus(uid) {
-    return new Promise(function(resolve, reject) {
-        firebase.database().ref('users/' + uid + '/keyMetadata').once('value')
-            .then(function(snap) {
-                var meta = snap.val();
-                if (meta && meta.passwordHash && meta.salt && meta.keyVersion) {
-                    resolve({ hasPassword: true, salt: meta.salt, meta: meta });
-                    return;
-                }
-                if (meta) {
-                    firebase.database().ref('users/' + uid + '/keyMetadata').remove()
-                        .then(function() {
-                            resolve({ hasPassword: false, salt: null, meta: null });
-                        })
-                        .catch(function() {
-                            resolve({ hasPassword: false, salt: null, meta: null });
-                        });
-                } else {
-                    resolve({ hasPassword: false, salt: null, meta: null });
-                }
-            })
-            .catch(reject);
-    });
-}
-
-/* ═══ CREATE PASSWORD (async) ═══ */
-function createPassword(user, password) {
-    return new Promise(function(resolve, reject) {
-        if (!validatePasswordFormat(password)) {
-            reject(new Error('Password must be 10 digits + 4 symbols (14 chars, no letters)'));
-            return;
-        }
-
-        var userSalt = generateUserSalt();
-
-        hashPassword(password, userSalt)
-            .then(function(passwordHash) {
-                return firebase.database().ref('users/' + user.uid + '/keyMetadata').remove()
-                    .then(function() {
-                        return firebase.database().ref('users/' + user.uid + '/keyMetadata').set({
-                            passwordHash: passwordHash,
-                            salt: userSalt,
-                            keyVersion: 3,
-                            algorithm: 'webcrypto-pbkdf2-sha256',
-                            iterations: ITERATIONS,
-                            createdAt: new Date().toISOString()
-                        });
-                    });
-            })
-            .then(function() {
-                return deriveKey(user.email, password, userSalt);
-            })
-            .then(function(key) {
-                state.passwordKey = key;
-                state.fullKey = key;
-                state.userSalt = userSalt;
-                state.hasPassword = true;
-                state.isReady = true;
-                resolve(key);
-            })
-            .catch(reject);
-    });
-}
-
-/* ═══ VERIFY PASSWORD (async) ═══ */
-function verifyPassword(user, password) {
-    return new Promise(function(resolve, reject) {
-        if (!validatePasswordFormat(password)) {
-            reject(new Error('Password must be 10 digits + 4 symbols (14 chars)'));
-            return;
-        }
-
-        firebase.database().ref('users/' + user.uid + '/keyMetadata').once('value')
-            .then(function(snap) {
-                var meta = snap.val();
-                if (!meta || !meta.passwordHash || !meta.salt) {
-                    reject(new Error('No password set. Please create one first.'));
-                    return;
-                }
-                return hashPassword(password, meta.salt).then(function(computed) {
-                    if (computed !== meta.passwordHash) {
-                        reject(new Error('Incorrect password. Access denied.'));
-                        return;
-                    }
-                    return deriveKey(user.email, password, meta.salt).then(function(key) {
-                        state.passwordKey = key;
-                        state.fullKey = key;
-                        state.userSalt = meta.salt;
-                        state.hasPassword = true;
-                        state.isReady = true;
-                        resolve(key);
-                    });
-                });
-            })
-            .catch(reject);
-    });
-}
-
-/* ═══ FULL KEY REVEAL (NEW) ═══ */
-window.toggleKeyReveal = function() {
-    var box = document.getElementById('keyRevealBox');
-    var icon = document.getElementById('keyRevealEyeIcon');
-    var text = document.getElementById('keyRevealEyeText');
-
-    if (!box || !state.fullKey) return;
-
-    if (state.keyRevealed) {
-        box.classList.add('hidden-text');
-        icon.className = 'fa-solid fa-eye';
-        text.textContent = 'SHOW';
-        state.keyRevealed = false;
-    } else {
-        box.classList.remove('hidden-text');
-        icon.className = 'fa-solid fa-eye-slash';
-        text.textContent = 'HIDE';
-        state.keyRevealed = true;
-    }
-};
-
-window.copyFullKey = function() {
-    if (!state.fullKey) {
-        toast('Key not available', 'error');
-        return;
-    }
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(state.fullKey).then(function() {
-            toast('✅ Full key copied to clipboard!', 'success');
-        }).catch(function() {
-            fallbackCopy(state.fullKey);
-        });
-    } else {
-        fallbackCopy(state.fullKey);
-    }
-};
-
-function fallbackCopy(text) {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.left = '-9999px';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); toast('✅ Key copied!', 'success'); }
-    catch(e) { toast('Copy failed', 'error'); }
-    document.body.removeChild(ta);
-}
-
-/* ═══ SHOW FULL KEY IN REVEAL PANEL ═══ */
-function showKeyRevealPanel(key) {
-    var wrap = document.getElementById('keyRevealWrap');
-    var box = document.getElementById('keyRevealBox');
-    var lenEl = document.getElementById('keyRevealLength');
-
-    if (!wrap || !box) return;
-
-    wrap.classList.add('active');
-    box.textContent = key;
-    box.classList.add('hidden-text'); /* Start hidden */
-    if (lenEl) lenEl.textContent = key.length + ' chars';
-    state.keyRevealed = false;
-
-    var icon = document.getElementById('keyRevealEyeIcon');
-    var text = document.getElementById('keyRevealEyeText');
-    if (icon) icon.className = 'fa-solid fa-eye';
-    if (text) text.textContent = 'SHOW';
-}
-
-function hideKeyRevealPanel() {
-    var wrap = document.getElementById('keyRevealWrap');
-    if (wrap) wrap.classList.remove('active');
-    state.keyRevealed = false;
-}
-
-/* ═══ PROGRESS TRACKER ═══ */
-function startProgressTracker(mode) {
-    var wrap = document.getElementById('pwdProgressWrap');
-    var fill = document.getElementById('pwdProgressFill');
-    var timer = document.getElementById('pwdTimer');
-    var note = document.getElementById('pwdProgressNote');
-    var label = document.getElementById('pwdProgressLabel');
-
-    if (!wrap) return { stop: function() { return '0.0s'; } };
-
-    var MAX_TIME = 30 * 1000;
-    var startTime = Date.now();
-    var intervalId = null;
-    var stopped = false;
-
-    wrap.classList.add('active');
-    fill.style.width = '0%';
-
-    if (label) {
-        label.textContent = (mode === 'create') ? '⚡ GENERATING KEY' : '🔍 VERIFYING PASSWORD';
-    }
-    if (note) {
-        note.innerHTML = 'Max wait: <b>30 seconds</b> · Native Web Crypto';
-    }
-
-    function update() {
-        if (stopped) return;
-        var elapsed = Date.now() - startTime;
-        var seconds = (elapsed / 1000).toFixed(1);
-
-        if (timer) timer.textContent = seconds + 's';
-
-        var pct = Math.min((elapsed / MAX_TIME) * 100, 95);
-        if (fill) fill.style.width = pct + '%';
-
-        if (elapsed > 15000 && note) {
-            note.innerHTML = '⏳ Still working... <b>' + Math.floor(elapsed/1000) + 's</b>';
-        }
-        if (elapsed > 25000 && note) {
-            note.innerHTML = '⚠️ Almost done...';
-        }
-    }
-
-    intervalId = setInterval(update, 50);
-    update();
-
-    return {
-        stop: function(success) {
-            if (stopped) return ((Date.now() - startTime) / 1000).toFixed(1) + 's';
-            stopped = true;
-            clearInterval(intervalId);
-
-            var elapsed = Date.now() - startTime;
-            var seconds = (elapsed / 1000).toFixed(1);
-            var displayTime = seconds + 's';
-
-            if (success) {
-                if (fill) fill.style.width = '100%';
-                if (timer) timer.textContent = displayTime;
-                if (note) note.innerHTML = '✅ Completed in <b>' + displayTime + '</b>';
-            } else {
-                if (fill) fill.style.width = '0%';
-                if (note) note.innerHTML = '❌ Failed after <b>' + displayTime + '</b>';
-            }
-
-            setTimeout(function() {
-                wrap.classList.remove('active');
-                if (fill) fill.style.width = '0%';
-            }, 2000);
-
-            return displayTime;
-        }
-    };
-}
-
-/* ═══ DELETE KEY & REGENERATE ═══ */
-window.deleteKeyAndRegenerate = function() {
-    if (!state.user) {
-        toast('Not authenticated', 'error');
-        return;
-    }
-
-    var c1 = confirm(
-        '⚠️ WARNING #1 of 3\n\n' +
-        'This will PERMANENTLY DELETE your key + password from Firebase.\n\n' +
-        'ALL code encrypted with the old key will be LOCKED FOREVER.\n' +
-        'You will NOT be able to decrypt old files ever again.\n\n' +
-        'Continue?'
-    );
-    if (!c1) return;
-
-    var c2 = confirm(
-        '⚠️ WARNING #2 of 3 — FINAL CONFIRMATION\n\n' +
-        '✔ Old key deleted from Firebase\n' +
-        '✔ Old password hash deleted\n' +
-        '✔ Old salt deleted\n' +
-        '✔ Old encrypted files = LOCKED FOREVER\n' +
-        '✔ You will create a BRAND-NEW password\n' +
-        '✔ You will get a BRAND-NEW key\n\n' +
-        'This CANNOT be undone. Proceed?'
-    );
-    if (!c2) return;
-
-    var c3 = prompt('Type DELETE (in caps) to confirm:');
-    if (c3 !== 'DELETE') {
-        toast('Deletion cancelled', 'warn');
-        return;
-    }
-
-    showStatus('loading', '⏳ Deleting old key from Firebase...');
-
-    firebase.database().ref('users/' + state.user.uid + '/keyMetadata').remove()
-        .then(function() {
-            state.passwordKey = null;
-            state.fullKey = null;
-            state.userSalt = null;
-            state.hasPassword = false;
-            state.isReady = false;
-            state.uploadedFiles = {};
-            state.lastEncrypt = null;
-
-            document.getElementById('inputCode').value = '';
-            document.getElementById('outputEnc').value = '';
-            document.getElementById('fileList').innerHTML = '';
-            document.getElementById('inputStats').style.display = 'none';
-            document.getElementById('keyDisplay').value = LOCKED_KEY;
-            document.getElementById('keyStatus').textContent = 'Locked';
-            hideKeyRevealPanel();
-
-            updateKeyUI();
-            showStatus('success', '✅ Old key deleted forever. Create a new password.');
-            toast('🗑️ Old key deleted permanently', 'success');
-
-            setTimeout(function() {
-                openPwdModal('create');
-            }, 800);
-        })
-        .catch(function(err) {
-            showStatus('error', '❌ Delete failed: ' + err.message);
-            toast('Delete failed', 'error');
-        });
-};
-
-/* ═══ HANDLE KEY ACTION BUTTON ═══ */
-window.handleKeyAction = function() {
-    if (!state.user) {
-        toast('Please wait, loading user...', 'warn');
-        return;
-    }
-    if (state.hasPassword) {
-        if (state.isReady) {
-            lockKey();
-        } else {
-            openPwdModal('unlock');
-        }
-    } else {
-        openPwdModal('create');
-    }
-};
-
-/* ═══ UPDATE KEY UI ═══ */
-function updateKeyUI() {
-    var btn = document.getElementById('keyActionBtn');
-    var danger = document.getElementById('dangerZone');
-
-    if (!btn) return;
-
-    if (!state.hasPassword) {
-        btn.className = 'key-action-btn create';
-        btn.innerHTML = '<i class="fa-solid fa-plus"></i> CREATE PASSWORD';
-        if (danger) danger.style.display = 'none';
-        hideKeyRevealPanel();
-    } else if (state.isReady) {
-        btn.className = 'key-action-btn lock';
-        btn.innerHTML = '<i class="fa-solid fa-lock"></i> LOCK NOW';
-        if (danger) danger.style.display = 'block';
-    } else {
-        btn.className = 'key-action-btn unlock';
-        btn.innerHTML = '<i class="fa-solid fa-unlock"></i> UNLOCK';
-        if (danger) danger.style.display = 'block';
-        hideKeyRevealPanel();
-    }
-}
-
-/* ═══ LOGOUT ═══ */
-window.doLogout = function() {
-    try {
-        state.passwordKey = null;
-        state.fullKey = null;
-        state.userSalt = null;
-        state.isReady = false;
-        state.user = null;
-
-        if (window.AuthGuard && typeof AuthGuard.logout === 'function') {
-            AuthGuard.logout();
-        } else if (window.firebase && firebase.auth) {
-            firebase.auth().signOut().then(function() {
-                window.location.href = 'index.html';
-            }).catch(function() {
-                window.location.href = 'index.html';
-            });
-        } else {
-            window.location.href = 'index.html';
-        }
-    } catch (e) {
-        window.location.href = 'index.html';
-    }
-};
-
-/* ═══ DRAWER ═══ */
-window.toggleDrawer = function() {
-    document.getElementById('drawer').classList.toggle('open');
-    document.getElementById('drawerOverlay').classList.toggle('open');
-};
-window.closeDrawer = function() {
-    document.getElementById('drawer').classList.remove('open');
-    document.getElementById('drawerOverlay').classList.remove('open');
-};
-window.openFilePicker = function() {
-    closeDrawer();
-    document.getElementById('fileInput').click();
-};
-
-/* ═══ PASSWORD MODAL ═══ */
-var pwdOverlay = document.getElementById('pwdOverlay');
-var pwdInput = document.getElementById('pwdInput');
-var pwdSubmitBtn = document.getElementById('pwdSubmitBtn');
-var pwdCancelBtn = document.getElementById('pwdCancelBtn');
-var pwdStatus = document.getElementById('pwdStatus');
-var pwdEyeBtn = document.getElementById('pwdEyeBtn');
-var pwdModalTitle = document.getElementById('pwdModalTitle');
-var pwdModalSub = document.getElementById('pwdModalSub');
-var pwdModalLabel = document.getElementById('pwdModalLabel');
-var reqList = document.getElementById('reqList');
-
-function openPwdModal(mode) {
-    state.mode = mode;
-
-    if (mode === 'create') {
-        pwdModalTitle.textContent = '🔐 Create Your Password';
-        pwdModalSub.textContent = 'First-time setup — your key will be auto-generated';
-        pwdModalLabel.textContent = 'Create Your 14-Character Password';
-        pwdSubmitBtn.innerHTML = '🔐 Create Password';
-        reqList.style.display = 'block';
-        pwdCancelBtn.style.display = 'none';
-    } else {
-        pwdModalTitle.textContent = '🔐 Enter Your Password';
-        pwdModalSub.textContent = 'Required to unlock your key';
-        pwdModalLabel.textContent = 'Your 14-Character Password';
-        pwdSubmitBtn.innerHTML = '🔓 Unlock';
-        reqList.style.display = 'none';
-        pwdCancelBtn.style.display = 'inline-flex';
-    }
-
-    pwdInput.value = '';
-    pwdInput.type = 'password';
-    pwdEyeBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
-    pwdStatus.style.display = 'none';
-    pwdStatus.className = 'status';
-    pwdSubmitBtn.disabled = true;
-
-    var wrap = document.getElementById('pwdProgressWrap');
-    if (wrap) wrap.classList.remove('active');
-
-    pwdOverlay.classList.add('open');
-    setTimeout(function() { pwdInput.focus(); }, 200);
-}
-
-function closePwdModal() {
-    pwdOverlay.classList.remove('open');
-    pwdInput.value = '';
-}
-
-pwdEyeBtn.addEventListener('click', function() {
-    if (pwdInput.type === 'password') {
-        pwdInput.type = 'text';
-        pwdEyeBtn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
-    } else {
-        pwdInput.type = 'password';
-        pwdEyeBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
-    }
-});
-
-pwdInput.addEventListener('input', function() {
-    var v = this.value;
-
-    if (state.mode === 'create') {
-        var rLen = v.length === 14;
-        var rDig = (v.match(/\d/g) || []).length === 10;
-        var rSym = (v.match(/[^a-zA-Z0-9]/g) || []).length === 4;
-        var rNoL = (v.match(/[a-zA-Z]/g) || []).length === 0;
-
-        updateReq('req-length', rLen);
-        updateReq('req-digits', rDig);
-        updateReq('req-symbols', rSym);
-        updateReq('req-no-letters', rNoL);
-
-        pwdSubmitBtn.disabled = !(rLen && rDig && rSym && rNoL);
-    } else {
-        pwdSubmitBtn.disabled = v.length !== 14;
-    }
-});
-
-function updateReq(id, valid) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    var icon = el.querySelector('i');
-    if (valid) {
-        el.classList.add('valid');
-        el.classList.remove('invalid');
-        icon.className = 'fa-solid fa-circle-check';
-    } else {
-        el.classList.remove('valid');
-        el.classList.add('invalid');
-        icon.className = 'fa-solid fa-circle-xmark';
-    }
-}
-
-pwdInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter' && !pwdSubmitBtn.disabled) {
-        pwdSubmitBtn.click();
-    }
-});
-
-pwdCancelBtn.addEventListener('click', closePwdModal);
-
-/* ═══ SUBMIT PASSWORD ═══ */
-pwdSubmitBtn.addEventListener('click', function() {
-    if (!state.user) {
-        setPwdStatus('error', '❌ User not authenticated');
-        return;
-    }
-    var password = pwdInput.value;
-
-    if (state.mode === 'create') {
-        if (!confirm('⚠️ FINAL WARNING:\n\nYour password CANNOT be changed.\nIf you forget it, your code can NEVER be decrypted.\n\nYou can later DELETE KEY & REGENERATE, but old encrypted files will be LOCKED FOREVER.\n\nCreate this password?')) {
-            return;
-        }
-        setPwdStatus('loading', '⏳ Generating secure key with Web Crypto...');
-        pwdSubmitBtn.disabled = true;
-
-        var progressTracker = startProgressTracker('create');
-
-        createPassword(state.user, password)
-            .then(function(key) {
-                var elapsed = progressTracker.stop(true);
-                setPwdStatus('success', '✅ Key generated in ' + elapsed + '! Unlocked.');
-                onKeyUnlocked(key);
-                setTimeout(closePwdModal, 1500);
-            })
-            .catch(function(err) {
-                progressTracker.stop(false);
-                setPwdStatus('error', '❌ ' + err.message);
-                pwdSubmitBtn.disabled = false;
-                pwdInput.value = '';
-                pwdInput.focus();
-            });
-    } else {
-        setPwdStatus('loading', '⏳ Verifying password with Web Crypto...');
-        pwdSubmitBtn.disabled = true;
-
-        var progressTracker2 = startProgressTracker('verify');
-
-        verifyPassword(state.user, password)
-            .then(function(key) {
-                var elapsed = progressTracker2.stop(true);
-                setPwdStatus('success', '✅ Verified in ' + elapsed + '! Key unlocked.');
-                onKeyUnlocked(key);
-                setTimeout(closePwdModal, 1200);
-            })
-            .catch(function(err) {
-                progressTracker2.stop(false);
-                setPwdStatus('error', '❌ ' + err.message);
-                pwdSubmitBtn.disabled = false;
-                pwdInput.value = '';
-                pwdInput.focus();
-            });
-    }
-});
-
-function setPwdStatus(type, msg) {
-    pwdStatus.className = 'status ' + type;
-    pwdStatus.textContent = msg;
-    pwdStatus.style.display = 'block';
-}
-
-/* ═══ ON KEY UNLOCKED ═══ */
-function onKeyUnlocked(key) {
-    document.getElementById('keyDisplay').value = LOCKED_KEY;
-    document.getElementById('keyStatus').textContent = 'Unlocked';
-
-    showKeyRevealPanel(key);
-
-    toast('🔓 Key unlocked! Scroll to see full key.', 'success');
-    updateKeyUI();
-    startSessionTimer();
-}
-
-/* ═══ LOCK KEY ═══ */
-function lockKey(silent) {
-    state.passwordKey = null;
-    state.fullKey = null;
-    state.isReady = false;
-
-    document.getElementById('keyDisplay').value = LOCKED_KEY;
-    document.getElementById('keyStatus').textContent = 'Locked';
-
-    hideKeyRevealPanel();
-    stopSessionTimer();
-    updateKeyUI();
-
-    if (!silent) {
-        toast('🔒 Key locked', 'warn');
-    }
-}
-
-/* ═══ SESSION TIMER (20 seconds) ═══ */
-function startSessionTimer() {
-    stopSessionTimer();
-    state.sessionDeadline = Date.now() + SESSION_TIMEOUT;
-
-    var bar = document.getElementById('sessionBar');
-    var fill = document.getElementById('sessionBarFill');
-    if (bar) bar.classList.add('active');
-
-    state.sessionTimer = setInterval(function() {
-        var remaining = state.sessionDeadline - Date.now();
-        if (remaining <= 0) {
-            stopSessionTimer();
-            lockKey();
-            return;
-        }
-        var pct = (remaining / SESSION_TIMEOUT) * 100;
-        if (fill) fill.style.width = pct + '%';
-    }, 100);
-}
-
-function stopSessionTimer() {
-    if (state.sessionTimer) {
-        clearInterval(state.sessionTimer);
-        state.sessionTimer = null;
-    }
-    state.sessionDeadline = null;
-    var bar = document.getElementById('sessionBar');
-    if (bar) bar.classList.remove('active');
-}
-
-function resetSessionTimer() {
-    if (state.isReady) {
-        state.sessionDeadline = Date.now() + SESSION_TIMEOUT;
-    }
-}
-
-['click', 'keypress', 'mousemove', 'touchstart', 'scroll'].forEach(function(evt) {
-    document.addEventListener(evt, function() {
-        resetSessionTimer();
-    }, { passive: true });
-});
-
-/* ═══ AUTH READY ═══ */
-document.addEventListener('auth-guard-ready', function(e) {
-    if (!e.detail || !e.detail.user) return;
-
-    state.user = e.detail.user;
-    var name = e.detail.name || (state.user.email ? state.user.email.split('@')[0] : 'User');
-    document.getElementById('welcomeName').textContent = name;
-
-    checkPasswordStatus(state.user.uid)
-        .then(function(result) {
-            if (!result.hasPassword) {
-                state.hasPassword = false;
-                state.userSalt = null;
-                toast('👋 Welcome! Click CREATE PASSWORD to get started', 'info');
-            } else {
-                state.hasPassword = true;
-                state.userSalt = result.salt;
-                toast('🔐 Key found. Click UNLOCK to enter your password.', 'info');
-            }
-            updateKeyUI();
-        })
-        .catch(function(err) {
-            showStatus('error', '❌ Failed to check key status');
-            updateKeyUI();
-        });
-});
-
-setTimeout(function() {
-    if (!state.user) {
-        if (window.AuthGuard && AuthGuard.getUser && AuthGuard.getUser()) {
-            document.dispatchEvent(new CustomEvent('auth-guard-ready', {
-                detail: { user: AuthGuard.getUser() }
-            }));
-        } else if (window.firebase && firebase.auth && firebase.auth().currentUser) {
-            document.dispatchEvent(new CustomEvent('auth-guard-ready', {
-                detail: { user: firebase.auth().currentUser }
-            }));
-        } else {
-            showStatus('error', '❌ Not authenticated. Please login again.');
-            updateKeyUI();
-        }
-    }
-}, 2500);
-
-/* ═══ INPUT DETECTION ═══ */
-var inputCodeEl = document.getElementById('inputCode');
-inputCodeEl.addEventListener('input', function() {
-    var code = this.value;
-    var stats = document.getElementById('inputStats');
-    if (!code.trim()) {
-        stats.style.display = 'none';
-        return;
-    }
-    stats.style.display = 'grid';
-    document.getElementById('statLines').textContent = num(code.split('\n').length);
-    document.getElementById('statChars').textContent = num(code.length);
-    document.getElementById('statSize').textContent = bytes(new Blob([code]).size);
-});
-
-/* ═══ FILE HANDLING ═══ */
-document.getElementById('fileDrop').addEventListener('click', function() {
-    window.openFilePicker();
-});
-document.getElementById('fileInput').addEventListener('change', function(e) {
-    handleFiles(e.target.files);
-});
-
-function handleFiles(files) {
-    Array.prototype.forEach.call(files, function(file) {
-        if (file.size > 5 * 1024 * 1024) {
-            toast('File too large: ' + file.name, 'error');
-            return;
-        }
-        var reader = new FileReader();
-        reader.onload = function(ev) {
-            state.uploadedFiles[file.name] = { content: ev.target.result };
-            renderFileList();
-        };
-        reader.readAsText(file);
-    });
-}
-function renderFileList() {
-    var list = document.getElementById('fileList');
-    var names = Object.keys(state.uploadedFiles);
-    if (names.length === 0) { list.innerHTML = ''; return; }
-    list.innerHTML = names.map(function(name) {
-        var safe = name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        return '<div class="file-item"><span class="fname">📄 ' + safe + '</span>' +
-            '<span class="remove" onclick="removeFile(\'' + name.replace(/'/g, "\\'") + '\')">✖</span></div>';
-    }).join('');
-}
-window.removeFile = function(name) {
-    delete state.uploadedFiles[name];
-    renderFileList();
-};
-
-/* ═══ ENCRYPT (uses CryptoJS AES with derived key) ═══ */
-window.encryptNow = function() {
-    try {
-        if (!state.isReady || !state.passwordKey) {
-            showStatus('error', '❌ Key not unlocked. Click UNLOCK.');
-            if (state.hasPassword) openPwdModal('unlock');
-            else openPwdModal('create');
-            return;
-        }
-
-        var secretKey = state.passwordKey;
-        var pasted = inputCodeEl.value;
-        var fileNames = Object.keys(state.uploadedFiles);
-
-        if (!pasted.trim() && fileNames.length === 0) {
-            showStatus('error', '❌ Paste code or upload files first');
-            return;
-        }
-
-        showStatus('loading', '⏳ Encrypting...');
-
-        var payload;
-        if (fileNames.length > 0) {
-            var bundle = {
-                __type: 'multi-file-bundle',
-                __version: '13.0',
-                __created: new Date().toISOString(),
-                __fileCount: fileNames.length,
-                files: {}
-            };
-            fileNames.forEach(function(name) {
-                bundle.files[name] = { content: state.uploadedFiles[name].content };
-            });
-            payload = JSON.stringify(bundle);
-        } else {
-            payload = pasted;
-        }
-
-        var encrypted = CryptoJS.AES.encrypt(payload, secretKey).toString();
-        document.getElementById('outputEnc').value = encrypted;
-        state.lastEncrypt = { data: encrypted };
-
-        showStatus('success', '✅ Encrypted! ' + bytes(new Blob([encrypted]).size));
-        toast('Encrypted successfully!', 'success');
-        resetSessionTimer();
-    } catch (e) {
-        showStatus('error', '❌ ' + e.message);
-        toast('Error: ' + e.message, 'error');
-    }
-};
-
-/* ═══ COPY / DOWNLOAD ═══ */
-window.copyOutput = function() {
-    var out = document.getElementById('outputEnc');
-    if (!out.value) { toast('Nothing to copy', 'error'); return; }
-    out.select();
-    document.execCommand('copy');
-    toast('Copied!', 'success');
-    showStatus('success', '✅ Copied to clipboard!');
-};
-
-window.downloadOutput = function() {
-    var out = document.getElementById('outputEnc').value;
-    if (!out) { toast('Nothing to download', 'error'); return; }
-    var blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'encrypted-data.txt';
-    a.click();
-    toast('Downloaded!', 'success');
-};
-
-/* ═══ DECRYPTOR GENERATOR — Backward Compatible ═══ */
-window.downloadDecryptor = function() {
-    var out = document.getElementById('outputEnc').value;
-    if (!out) { toast('Encrypt first!', 'error'); return; }
-    if (!state.isReady || !state.user || !state.userSalt) {
-        toast('Key not unlocked', 'error');
-        return;
-    }
-
-    var userEmail = state.user.email;
-    if (!userEmail) { toast('Email not found', 'error'); return; }
-    var userSalt = state.userSalt;
-
-    var parts = [
-        '<!DOCTYPE html>',
-        '<html lang="en">',
-        '<head>',
-        '<meta charset="UTF-8">',
-        '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">',
-        '<title>Decrypting...</title>',
-        '<style>',
-        '*{margin:0;padding:0;box-sizing:border-box;}',
-        'body{background:#05050f;color:#fff;font-family:"Courier New",monospace;min-height:100vh;overflow-x:hidden;}',
-        '.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;}',
-        '.spinner{width:60px;height:60px;border:4px solid rgba(0,240,255,0.15);border-top-color:#00f0ff;border-radius:50%;animation:spin 1s linear infinite;}',
-        '@keyframes spin{to{transform:rotate(360deg);}}',
-        '.txt{color:#00f0ff;font-size:14px;letter-spacing:3px;text-transform:uppercase;}',
-        '.pwd-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:16px;padding:30px;text-align:center;}',
-        '.pwd-screen h2{color:#00f0ff;font-size:20px;letter-spacing:3px;text-transform:uppercase;font-family:sans-serif;}',
-        '.pwd-screen p{color:#b0b0d0;font-size:12px;max-width:400px;line-height:1.7;}',
-        '.pwd-screen input{width:100%;max-width:340px;padding:14px;background:#000;color:#00ff64;border:1.5px solid #00f0ff;border-radius:8px;font-family:"Courier New",monospace;font-size:14px;letter-spacing:3px;outline:none;text-align:center;}',
-        '.pwd-screen button{background:linear-gradient(135deg,#00f0ff,#b400ff);border:none;padding:14px 32px;border-radius:8px;color:#000;font-weight:bold;cursor:pointer;letter-spacing:2px;text-transform:uppercase;font-size:13px;font-family:sans-serif;}',
-        '.pwd-screen button:disabled{opacity:0.4;cursor:not-allowed;}',
-        '.err-msg{color:#ff0064;font-size:12px;min-height:18px;font-family:sans-serif;}',
-        '.key-preview{margin-top:10px;padding:10px 20px;background:rgba(255,215,0,0.1);border:1px solid #ffd700;border-radius:8px;color:#ffd700;font-family:"Courier New",monospace;font-size:14px;letter-spacing:1px;}',
-        '.status-text{color:#ffd700;font-size:11px;margin-top:8px;font-family:sans-serif;}',
-        '.err-wrap{padding:60px 30px;text-align:center;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;}',
-        '.err-icon{font-size:72px;}',
-        '.err-wrap h2{color:#ff0064;font-size:22px;letter-spacing:3px;text-transform:uppercase;}',
-        '.err-wrap p{color:#b0b0d0;font-size:13px;line-height:1.7;max-width:500px;}',
-        '#renderFrame{width:100%;height:100vh;border:0;display:block;position:fixed;inset:0;z-index:10;}',
-        '<' + '/style>',
-        '<' + '/head>',
-        '<body>',
-        '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Loading...<' + '/div><' + '/div>',
-        '<div class="pwd-screen" id="pwdScreen" style="display:none;">',
-        '  <div style="font-size:60px;">🔐</div>',
-        '  <h2>Password Required</h2>',
-        '  <p>Enter your 14-character password to decrypt this code.</p>',
-        '  <input type="password" id="pwdInput" maxlength="14" placeholder="••••••••••••••">',
-        '  <button id="pwdBtn" disabled>🔓 Decrypt</button>',
-        '  <div class="err-msg" id="errMsg"></div>',
-        '  <div class="status-text" id="statusText"></div>',
-        '  <div class="key-preview">NightOrbit_*****_***********</div>',
-        '<' + '/div>',
-        '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
-        '<script>',
-        'var USER_EMAIL=' + JSON.stringify(userEmail) + ';',
-        'var USER_SALT=' + JSON.stringify(userSalt) + ';',
-        'var ENCRYPTED_DATA=' + JSON.stringify(out) + ';',
-        'var APP_SALT="NightOrbit_CodeForge_v13_2024_MASTER_SALT_@#$%^&*";',
-        '',
-        '/* Native Web Crypto PBKDF2 */',
-        'function hexToBytes(hex){',
-        '  var b=new Uint8Array(hex.length/2);',
-        '  for(var i=0;i<hex.length;i+=2)b[i/2]=parseInt(hex.substr(i,2),16);',
-        '  return b;',
-        '}',
-        'function bytesToHex(bytes){',
-        '  return Array.prototype.map.call(new Uint8Array(bytes),function(b){return("0"+b.toString(16)).slice(-2);}).join("");',
-        '}',
-        'function nativePBKDF2(password,saltBytes,iterations,keyLen){',
-        '  if(!window.crypto||!window.crypto.subtle){',
-        '    return Promise.reject(new Error("Web Crypto not supported"));',
-        '  }',
-        '  var enc=new TextEncoder();',
-        '  return window.crypto.subtle.importKey("raw",enc.encode(password),{name:"PBKDF2"},false,["deriveBits"]).then(function(k){',
-        '    return window.crypto.subtle.deriveBits({name:"PBKDF2",salt:saltBytes,iterations:iterations,hash:"SHA-256"},k,keyLen*8);',
-        '  }).then(function(bits){return bytesToHex(bits);});',
-        '}',
-        'function deriveKey(password){',
-        '  var combined=USER_EMAIL.toLowerCase().trim()+"::"+password;',
-        '  var effectiveSalt=APP_SALT+"::"+USER_SALT;',
-        '  var saltBytes=new TextEncoder().encode(effectiveSalt);',
-        '  return nativePBKDF2(combined,saltBytes,500000,64);',
-        '}',
-        '',
-        'function showError(msg){',
-        '  document.body.innerHTML="<div class=\\"err-wrap\\"><div class=\\"err-icon\\">❌<\\/div><h2>Decryption Failed<\\/h2><p>"+msg+"<\\/p><\\/div>";',
-        '}',
-        '',
-        'function renderHTML(htmlContent){',
-        '  document.body.innerHTML="";',
-        '  var iframe=document.createElement("iframe");',
-        '  iframe.id="renderFrame";',
-        '  iframe.setAttribute("sandbox","allow-scripts allow-forms allow-popups allow-modals allow-downloads");',
-        '  document.body.appendChild(iframe);',
-        '  try{iframe.srcdoc=htmlContent;}',
-        '  catch(e){',
-        '    try{',
-        '      var blob=new Blob([htmlContent],{type:"text/html;charset=utf-8"});',
-        '      iframe.removeAttribute("srcdoc");',
-        '      iframe.src=URL.createObjectURL(blob);',
-        '    }catch(e2){showError("Render failed: "+e2.message);}',
-        '  }',
-        '}',
-        '',
-        'function renderText(text){',
-        '  document.body.innerHTML="";',
-        '  document.body.style.cssText="background:#000;color:#00ff64;font-family:\\"Courier New\\",monospace;padding:20px;margin:0;font-size:13px;line-height:1.6;";',
-        '  var pre=document.createElement("pre");',
-        '  pre.style.cssText="margin:0;white-space:pre-wrap;word-break:break-word;";',
-        '  pre.textContent=text;',
-        '  document.body.appendChild(pre);',
-        '}',
-        '',
-        'function tryDecrypt(password){',
-        '  return deriveKey(password).then(function(key){',
-        '    var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,key).toString(CryptoJS.enc.Utf8);',
-        '    if(!dec||dec.length===0){throw new Error("Incorrect password.");}',
-        '    var isBundle=false,bundle=null;',
-        '    try{',
-        '      var p=JSON.parse(dec);',
-        '      if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}',
-        '    }catch(e){}',
-        '    if(isBundle){',
-        '      document.body.innerHTML="";',
-        '      var h="<div style=\\"max-width:1100px;margin:0 auto;padding:30px 20px;\\"><h1 style=\\"color:#00f0ff;text-align:center;margin-bottom:24px;\\">📦 "+bundle.__fileCount+" Files<\\/h1>";',
-        '      Object.keys(bundle.files).forEach(function(name){',
-        '        h+="<div style=\\"background:rgba(0,240,255,0.04);border-left:4px solid #00f0ff;border-radius:10px;padding:18px;margin-bottom:16px;\\">";',
-        '        h+="<div style=\\"color:#ffd700;font-weight:bold;margin-bottom:10px;\\">📄 "+name.replace(/[<>&]/g,function(c){return{"<":"&lt;",">":"&gt;","&":"&amp;"}[c];})+"<\\/div>";',
-        '        h+="<pre style=\\"background:#000;color:#00ff64;padding:14px;border-radius:8px;font-size:12px;max-height:400px;overflow:auto;white-space:pre-wrap;\\">"+bundle.files[name].content.replace(/</g,"&lt;")+"<\\/pre>";',
-        '        h+="<\\/div>";',
-        '      });',
-        '      h+="<\\/div>";',
-        '      document.body.innerHTML=h;',
-        '    } else {',
-        '      var t=dec.trim();',
-        '      var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(t)||/<html[\\s>]/i.test(t)||/<body[\\s>]/i.test(t);',
-        '      if(isHTML){renderHTML(dec);} else {renderText(dec);}',
-        '    }',
-        '  }).catch(function(e){',
-        '    throw e;',
-        '  });',
-        '}',
-        '',
-        'var pwdInput=document.getElementById("pwdInput");',
-        'var pwdBtn=document.getElementById("pwdBtn");',
-        'var errMsg=document.getElementById("errMsg");',
-        'var statusText=document.getElementById("statusText");',
-        '',
-        'document.getElementById("loader").style.display="none";',
-        'document.getElementById("pwdScreen").style.display="flex";',
-        '',
-        'pwdInput.addEventListener("input",function(){',
-        '  pwdBtn.disabled=this.value.length!==14;',
-        '  errMsg.textContent="";',
-        '});',
-        '',
-        'pwdInput.addEventListener("keypress",function(e){',
-        '  if(e.key==="Enter"&&!pwdBtn.disabled){pwdBtn.click();}',
-        '});',
-        '',
-        'pwdBtn.addEventListener("click",function(){',
-        '  errMsg.textContent="";',
-        '  statusText.textContent="⏳ Verifying (native crypto, ~3-8 sec)...";',
-        '  pwdBtn.disabled=true;',
-        '  var startTime=Date.now();',
-        '  tryDecrypt(pwdInput.value).then(function(){',
-        '    var elapsed=((Date.now()-startTime)/1000).toFixed(1);',
-        '    statusText.textContent="";',
-        '  }).catch(function(e){',
-        '    errMsg.textContent="❌ "+e.message;',
-        '    pwdInput.value="";',
-        '    pwdBtn.disabled=true;',
-        '    statusText.textContent="";',
-        '    pwdInput.focus();',
-        '  });',
-        '});',
-        '<' + '/script>',
-        '<' + '/body>',
-        '<' + '/html>'
-    ];
-
-    var html = parts.join('\n');
-    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'decryptor.html';
-    a.click();
-
-    showStatus('success', '🎁 Decryptor downloaded! Works with native Web Crypto.');
-    toast('Decryptor downloaded!', 'success');
-};
-
-/* ═══ CLEAR ═══ */
-window.clearAll = function() {
-    inputCodeEl.value = '';
-    document.getElementById('outputEnc').value = '';
-    document.getElementById('inputStats').style.display = 'none';
-    document.getElementById('status').className = 'status';
-    state.uploadedFiles = {};
-    renderFileList();
-    showStatus('info', '🧹 Cleared');
-    toast('Cleared', 'info');
-};
-
-/* ═══ INIT ═══ */
-updateKeyUI();
-
-console.log('%c🔐 Universal Code Encrypt v13 NATIVE loaded',
-    'color:#00f0ff;font-size:16px;font-weight:bold;');
-console.log('%c⚡ Web Crypto API | 500K iterations | Full key reveal | Session: 20s',
-    'color:#ffd700;font-size:12px;');
-
-})();
-</script>
+    <script src="script2.js"></script>
 </body>
 </html>
