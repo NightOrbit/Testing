@@ -1257,13 +1257,22 @@ pwdSubmitBtn.addEventListener('click', function() {
         setPwdStatus('loading', '⏳ Verifying password...');
         pwdSubmitBtn.disabled = true;
 
-        KEY_MANAGER.unlockKey(state.user, password)
-            .then(function(result) {
-                setPwdStatus('success', '✅ Key revealed!');
-                document.getElementById('secretKey').value = result.key;
-                showReveal(result.key);
-                setTimeout(closePwdModal, 1000);
-            })
+       KEY_MANAGER.unlockKey(state.user, password)
+    .then(function(result) {
+        setPwdStatus('success', '✅ Key revealed!');
+        document.getElementById('secretKey').value = result.key;
+        showReveal(result.key);
+        
+        /* Check if user was trying to encrypt */
+        if (state._pendingAction === 'encrypt') {
+            state._pendingAction = null;
+            setTimeout(function() {
+                performEncrypt(result.key);
+            }, 500);
+        }
+        
+        setTimeout(closePwdModal, 1000);
+    })
             .catch(function(err) {
                 setPwdStatus('error', '❌ ' + err.message);
                 pwdSubmitBtn.disabled = false;
@@ -1380,7 +1389,6 @@ function renderFileList() {
 }
 window.removeFile = function(name) { delete state.uploadedFiles[name]; renderFileList(); updateProgress(); };
 
-/* ═══ ENCRYPT ═══ */
 window.encryptNow = function() {
     try {
         if (!KEY_MANAGER.hasPassword()) {
@@ -1397,9 +1405,16 @@ window.encryptNow = function() {
             return;
         }
 
-        /* Reveal key from Firebase (needs password) */
-        openPwdModal('reveal');
-        toast('Enter password to encrypt', 'info');
+        /* Check if key is already in RAM */
+        if (KEY_MANAGER.isReady() && KEY_MANAGER.getKey()) {
+            /* Key already unlocked — encrypt directly */
+            performEncrypt(KEY_MANAGER.getKey());
+        } else {
+            /* Need to unlock first */
+            state._pendingAction = 'encrypt';
+            openPwdModal('reveal');
+            toast('Enter password to encrypt', 'info');
+        }
     } catch (e) {
         showStatus('error', '❌ ' + e.message);
     }
@@ -1586,15 +1601,22 @@ window.doLogout = function() {
     } catch(e) { window.location.href = 'index.html'; }
 };
 
-/* ═══ AUTH READY ═══ */
-document.addEventListener('auth-guard-ready', function(e) {
+/* ═══ AUTH READY — HANDLE BOTH EVENTS ═══ */
+var authHandled = false;
+
+function handleAuthReady(e) {
     if (!e.detail || !e.detail.user) return;
+    if (authHandled) return; /* Only handle once */
+    authHandled = true;
+    
     state.user = e.detail.user;
     var name = e.detail.name || (state.user.email ? state.user.email.split('@')[0] : 'User');
     document.getElementById('welcomeName').textContent = name;
     document.getElementById('authStatus').textContent = 'Authenticated';
+    
+    console.log('👤 Auth ready:', state.user.email);
 
-    /* Check key status */
+    /* Check key status from Firebase */
     KEY_MANAGER.checkKeyStatus(state.user.uid).then(function(result) {
         if (!result.hasKey) {
             toast('👋 Welcome! Click CREATE KEY to get started', 'info');
@@ -1602,23 +1624,31 @@ document.addEventListener('auth-guard-ready', function(e) {
             toast('🔐 Key found. Click eye icon to reveal.', 'info');
         }
         updateKeyUI();
-    }).catch(function() {
+    }).catch(function(err) {
+        console.error('Key check failed:', err);
         updateKeyUI();
     });
-});
+}
+
+/* Listen to BOTH events (auth-guard.js fires 'auth-ready') */
+document.addEventListener('auth-guard-ready', handleAuthReady);
+document.addEventListener('auth-ready', handleAuthReady);
 
 setTimeout(function() {
     if (!state.user) {
-        if (window.AuthGuard && AuthGuard.getUser && AuthGuard.getUser()) {
-            document.dispatchEvent(new CustomEvent('auth-guard-ready', { detail: { user: AuthGuard.getUser() } }));
-        } else if (window.firebase && firebase.auth && firebase.auth().currentUser) {
-            document.dispatchEvent(new CustomEvent('auth-guard-ready', { detail: { user: firebase.auth().currentUser } }));
+        /* Fallback: check Firebase directly */
+        if (window.firebase && firebase.auth && firebase.auth().currentUser) {
+            handleAuthReady({ detail: { user: firebase.auth().currentUser } });
+        } else if (window.AuthGuard && AuthGuard.getUser && AuthGuard.getUser()) {
+            handleAuthReady({ detail: { user: AuthGuard.getUser() } });
         } else {
-            showStatus('error', '❌ Not authenticated');
-            updateKeyUI();
+            showStatus('error', '❌ Not authenticated. Redirecting...');
+            setTimeout(function() {
+                window.location.href = 'index.html';
+            }, 2000);
         }
     }
-}, 2500);
+}, 3000);
 
 /* ═══ INIT ═══ */
 updateKeyUI();
