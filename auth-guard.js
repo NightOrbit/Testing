@@ -1,21 +1,12 @@
 /**
- * ⚡ NightOrbit CodeForge — Auth Guard
- * Har protected page mein <head> ke end mein include karo:
+ * ⚡ NightOrbit CodeForge — Auth Guard V14
+ * Include this in every protected page:
  * <script src="auth-guard.js"></script>
- * 
- * Ye automatically:
- * 1. Firebase initialize karega
- * 2. Auth check karega
- * 3. Login nahi hai toh index.html pe bhejega
- * 4. Login hai toh page load hone dega
  */
 
 (function() {
     'use strict';
 
-    // ============================================================
-    //  FIREBASE CONFIG
-    // ============================================================
     var firebaseConfig = {
         apiKey: "AIzaSyCMYIa1YwahQRF_EGizjR1Xjj4aD9uBN_o",
         authDomain: "nightorbitbuilder.firebaseapp.com",
@@ -25,12 +16,10 @@
         appId: "1:537115613677:web:6653804e11c47ed746efe4"
     };
 
-    // ============================================================
-    //  PAGE KO HIDE KARO — Jab Tak Auth Check Na Ho
-    // ============================================================
+    // ---- Page hide ----
     var style = document.createElement('style');
     style.id = 'auth-guard-style';
-    style.textContent = 
+    style.textContent =
         'html, body { visibility: hidden !important; opacity: 0 !important; }' +
         '#auth-guard-loader {' +
         '  position: fixed; inset: 0; z-index: 9999999;' +
@@ -60,13 +49,12 @@
         '}';
     document.head.appendChild(style);
 
-    // Loader inject karo
     var loader = document.createElement('div');
     loader.id = 'auth-guard-loader';
-    loader.innerHTML = 
+    loader.innerHTML =
         '<div class="ag-spinner"></div>' +
         '<div class="ag-text">Verifying Access...</div>';
-    
+
     if (document.body) {
         document.body.appendChild(loader);
     } else {
@@ -75,38 +63,44 @@
         });
     }
 
-    // ============================================================
-    //  FIREBASE LOAD KARO (agar already load nahi hai)
-    // ============================================================
-    function loadScript(src, callback) {
+    function redirectToLogin() {
+        try {
+            var currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+            if (currentPage && currentPage !== 'index.html') {
+                sessionStorage.setItem('redirectAfterLogin', currentPage);
+            }
+        } catch (e) {}
+        window.location.replace('index.html');
+    }
+
+    function showPage() {
+        var styleEl = document.getElementById('auth-guard-style');
+        if (styleEl) styleEl.remove();
+        var loaderEl = document.getElementById('auth-guard-loader');
+        if (loaderEl) loaderEl.remove();
+        document.documentElement.style.visibility = 'visible';
+        document.documentElement.style.opacity = '1';
+    }
+
+    function loadScript(src, cb) {
         var s = document.createElement('script');
         s.src = src;
-        s.onload = callback;
-        s.onerror = function() {
-            console.error('Failed to load:', src);
-            redirectToLogin();
-        };
+        s.onload = cb;
+        s.onerror = function() { redirectToLogin(); };
         document.head.appendChild(s);
     }
 
     function initGuard() {
         try {
-            // Firebase already initialized check
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
             }
             var auth = firebase.auth();
 
-            // ============================================================
-            //  AUTH STATE CHECK
-            // ============================================================
             var resolved = false;
             var timeout = setTimeout(function() {
-                if (!resolved) {
-                    resolved = true;
-                    redirectToLogin();
-                }
-            }, 8000); // 8 second timeout
+                if (!resolved) { resolved = true; redirectToLogin(); }
+            }, 8000);
 
             auth.onAuthStateChanged(function(user) {
                 if (resolved) return;
@@ -114,55 +108,20 @@
                 clearTimeout(timeout);
 
                 if (user) {
-                    // ✅ Login hai — page dikhao
                     showPage();
-                    
-                    // Global user object save karo (pages use kar sakte hain)
                     window.__currentUser = user;
-                    
-                    // Custom event fire karo
-                    document.dispatchEvent(new CustomEvent('auth-ready', { 
-                        detail: { user: user } 
+                    document.dispatchEvent(new CustomEvent('auth-ready', {
+                        detail: { user: user }
                     }));
                 } else {
-                    // ❌ Login nahi hai — redirect
                     redirectToLogin();
                 }
             });
         } catch (e) {
-            console.error('Auth guard error:', e);
             redirectToLogin();
         }
     }
 
-    function showPage() {
-        var styleEl = document.getElementById('auth-guard-style');
-        if (styleEl) styleEl.remove();
-        
-        var loaderEl = document.getElementById('auth-guard-loader');
-        if (loaderEl) loaderEl.remove();
-        
-        // Body visible karo
-        document.documentElement.style.visibility = 'visible';
-        document.documentElement.style.opacity = '1';
-    }
-
-    function redirectToLogin() {
-        // Current page save karo — login ke baad wapas aane ke liye
-        try {
-            var currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
-            if (currentPage && currentPage !== 'index.html') {
-                sessionStorage.setItem('redirectAfterLogin', currentPage);
-            }
-        } catch (e) {}
-        
-        // Login page pe bhejo
-        window.location.replace('index.html');
-    }
-
-    // ============================================================
-    //  FIREBASE SCRIPTS LOAD KARO
-    // ============================================================
     if (typeof firebase === 'undefined') {
         loadScript('https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js', function() {
             loadScript('https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js', function() {
