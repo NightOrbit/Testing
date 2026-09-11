@@ -535,15 +535,15 @@ window.doLogout = function() {
             AuthGuard.logout();
         } else if (window.firebase && firebase.auth) {
             firebase.auth().signOut().then(function() {
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             }).catch(function() {
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             });
         } else {
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
     } catch (e) {
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
     }
 };
 
