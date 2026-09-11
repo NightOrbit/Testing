@@ -7,6 +7,7 @@
     var firebaseConfig = {
         apiKey: "AIzaSyCMYIa1YwahQRF_EGizjR1Xjj4aD9uBN_o",
         authDomain: "nightorbitbuilder.firebaseapp.com",
+        databaseURL: "https://nightorbitbuilder-default-rtdb.firebaseio.com",
         projectId: "nightorbitbuilder",
         storageBucket: "nightorbitbuilder.firebasestorage.app",
         messagingSenderId: "537115613677",
