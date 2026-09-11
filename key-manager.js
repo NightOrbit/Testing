@@ -1,14 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
-   key-manager.js — v14 HEAVY
+   key-manager.js — v14 HEAVY (FULL FIX)
    NightOrbit CodeForge
-   
-   SYSTEM:
-   - Per-user unique key (random generated, prefix + 20 chars)
-   - Key encrypted with user password (AES-256)
-   - Password NEVER stored (only PBKDF2 hash in Firebase)
-   - Key stored in Firebase (encrypted form)
-   - Key revealed only with correct password
-   - Delete Key → New password + New key
    ═══════════════════════════════════════════════════════════ */
 
 (function() {
@@ -22,19 +14,16 @@ var KEY_MANAGER = {
     _PASSWORD_LEN: 20,
     
     /* ═══ STATE ═══ */
-    _key: null,           /* Full key (RAM only, after unlock) */
-    _encryptedKey: null,  /* Encrypted key (from Firebase) */
-    _displayKey: null,    /* Masked display */
+    _key: null,
+    _encryptedKey: null,
+    _displayKey: null,
     _email: null,
     _userId: null,
     _initialized: false,
     _hasPassword: false,
     _userSalt: null,
 
-    /* ═══ GENERATE RANDOM KEY ═══
-       Format: NightOrbitGyidi_houperSecret_ + 20 random chars
-       (6 digits + 10 letters + 4 symbols)
-    */
+    /* ═══ GENERATE RANDOM KEY ═══ */
     generateRandomKey: function() {
         var digits = '0123456789';
         var letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -43,20 +32,16 @@ var KEY_MANAGER = {
         var result = [];
         var i;
         
-        /* 6 digits */
         for (i = 0; i < 6; i++) {
             result.push(digits.charAt(Math.floor(Math.random() * digits.length)));
         }
-        /* 10 letters */
         for (i = 0; i < 10; i++) {
             result.push(letters.charAt(Math.floor(Math.random() * letters.length)));
         }
-        /* 4 symbols */
         for (i = 0; i < 4; i++) {
             result.push(symbols.charAt(Math.floor(Math.random() * symbols.length)));
         }
         
-        /* Shuffle */
         for (i = result.length - 1; i > 0; i--) {
             var j = Math.floor(Math.random() * (i + 1));
             var temp = result[i];
@@ -80,12 +65,11 @@ var KEY_MANAGER = {
         }).join('');
     },
 
-    /* ═══ HASH PASSWORD (PBKDF2 via Web Crypto) ═══ */
+    /* ═══ HASH PASSWORD ═══ */
     hashPassword: function(password, salt) {
         var self = this;
         return new Promise(function(resolve, reject) {
             if (!window.crypto || !window.crypto.subtle) {
-                /* Fallback: CryptoJS PBKDF2 */
                 var hash = CryptoJS.PBKDF2(password, salt, {
                     keySize: 256 / 32,
                     iterations: self._PBKDF2_ITER,
@@ -122,7 +106,6 @@ var KEY_MANAGER = {
                 }).join('');
                 resolve(hex);
             }).catch(function() {
-                /* Fallback */
                 var hash = CryptoJS.PBKDF2(password, salt, {
                     keySize: 256 / 32,
                     iterations: self._PBKDF2_ITER,
@@ -133,17 +116,16 @@ var KEY_MANAGER = {
         });
     },
 
-    /* ═══ ENCRYPT KEY (password se) ═══ */
+    /* ═══ ENCRYPT KEY ═══ */
     encryptKey: function(originalKey, password) {
         try {
-            var encrypted = CryptoJS.AES.encrypt(originalKey, password).toString();
-            return encrypted;
+            return CryptoJS.AES.encrypt(originalKey, password).toString();
         } catch (e) {
             throw new Error('Key encryption failed: ' + e.message);
         }
     },
 
-    /* ═══ DECRYPT KEY (password se) ═══ */
+    /* ═══ DECRYPT KEY ═══ */
     decryptKey: function(encryptedKey, password) {
         try {
             var decrypted = CryptoJS.AES.decrypt(encryptedKey, password).toString(CryptoJS.enc.Utf8);
@@ -152,13 +134,11 @@ var KEY_MANAGER = {
             }
             return decrypted;
         } catch (e) {
-            throw new Error('Key decryption failed: Wrong password');
+            throw new Error('Wrong password');
         }
     },
 
-    /* ═══ VALIDATE PASSWORD FORMAT ═══
-       20 chars: 6 digits + 10 letters + 4 symbols
-    */
+    /* ═══ VALIDATE PASSWORD ═══ */
     validatePasswordFormat: function(pwd) {
         if (!pwd || pwd.length !== this._PASSWORD_LEN) return false;
         var digits = (pwd.match(/\d/g) || []).length;
@@ -167,13 +147,27 @@ var KEY_MANAGER = {
         return digits === 6 && letters === 10 && symbols === 4;
     },
 
-    /* ═══ CHECK KEY STATUS (Firebase) ═══ */
+    /* ═══ CHECK KEY STATUS — FULLY SYNCED WITH FIREBASE ═══ */
     checkKeyStatus: function(userId) {
+        var self = this;
         return new Promise(function(resolve, reject) {
             firebase.database().ref('users/' + userId + '/keyData').once('value')
                 .then(function(snap) {
                     var data = snap.val();
+                    
+                    /* Debug log */
+                    console.log('🔍 checkKeyStatus:', { userId: userId, hasData: !!data, data: data });
+                    
                     if (data && data.passwordHash && data.salt && data.encryptedKey && data.keyVersion) {
+                        /* ═══ SYNC STATE ═══ */
+                        self._hasPassword = true;
+                        self._userId = userId;
+                        self._userSalt = data.salt;
+                        self._encryptedKey = data.encryptedKey;
+                        self._displayKey = self._PREFIX + '************';
+                        
+                        console.log('✅ Key found — state synced');
+                        
                         resolve({
                             hasKey: true,
                             salt: data.salt,
@@ -181,18 +175,27 @@ var KEY_MANAGER = {
                             meta: data
                         });
                     } else {
-                        /* Corrupted → auto-cleanup */
+                        /* Corrupted → cleanup */
                         if (data) {
+                            console.warn('⚠️ Corrupted keyData — auto-cleanup');
                             firebase.database().ref('users/' + userId + '/keyData').remove();
                         }
+                        self._hasPassword = false;
+                        self._displayKey = null;
+                        
+                        console.log('❌ No key found');
+                        
                         resolve({ hasKey: false, salt: null, encryptedKey: null, meta: null });
                     }
                 })
-                .catch(reject);
+                .catch(function(err) {
+                    console.error('checkKeyStatus error:', err);
+                    reject(err);
+                });
         });
     },
 
-    /* ═══ CREATE KEY + PASSWORD (First Time) ═══ */
+    /* ═══ CREATE KEY + PASSWORD ═══ */
     createKeyAndPassword: function(user, password) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -236,7 +239,7 @@ var KEY_MANAGER = {
         });
     },
 
-    /* ═══ UNLOCK KEY (Password Se) ═══ */
+    /* ═══ UNLOCK KEY ═══ */
     unlockKey: function(user, password) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -283,7 +286,7 @@ var KEY_MANAGER = {
         return key.substring(0, 35) + '************';
     },
 
-    /* ═══ DELETE KEY (Purani key delete) ═══ */
+    /* ═══ DELETE KEY ═══ */
     deleteKey: function(user) {
         return new Promise(function(resolve, reject) {
             firebase.database().ref('users/' + user.uid + '/keyData').remove()
@@ -302,7 +305,7 @@ var KEY_MANAGER = {
         return this._key;
     },
     getDisplayKey: function() {
-        return this._displayKey || 'NightOrbitGyidi_houperSecret_************';
+        return this._displayKey || (this._PREFIX + '************');
     },
     getEmail: function() { return this._email; },
     getUserId: function() { return this._userId; },
@@ -310,7 +313,7 @@ var KEY_MANAGER = {
     isReady: function() { return this._initialized; },
     hasPassword: function() { return this._hasPassword; },
 
-    /* ═══ CLEAR (Logout) ═══ */
+    /* ═══ CLEAR ═══ */
     clear: function() {
         this._key = null;
         this._encryptedKey = null;
@@ -325,7 +328,6 @@ var KEY_MANAGER = {
 
 window.KEY_MANAGER = KEY_MANAGER;
 
-console.log('%c🔐 Key Manager v14 HEAVY loaded', 'color:#00ff64;font-weight:bold;font-size:14px;');
-console.log('%c⚡ Per-user random key + PBKDF2 250K + AES-256', 'color:#ffd700;font-size:11px;');
+console.log('%c🔐 Key Manager v14 HEAVY (FULL FIX) loaded', 'color:#00ff64;font-weight:bold;font-size:14px;');
 
 })();
