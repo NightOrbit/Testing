@@ -963,9 +963,12 @@ var state = {
     user: null,
     keyRevealed: false,
     sessionTimer: null,
-    sessionDeadline: null
+    sessionDeadline: null,
+    _pwdMode: null,
+    _pendingAction: null,
+    authHandled: false
 };
-
+    
 var SESSION_TIMEOUT = 30 * 1000; /* 30 sec */
 
 /* ═══ UTILITIES ═══ */
@@ -1147,6 +1150,7 @@ var pwdModalLabel = document.getElementById('pwdModalLabel');
 var reqList = document.getElementById('reqList');
 
 function openPwdModal(mode) {
+     state._pwdMode = mode;
     if (mode === 'create') {
         pwdModalTitle.textContent = '🔐 Create Your Password';
         pwdModalSub.textContent = 'This will generate your unique key';
@@ -1234,7 +1238,7 @@ pwdCancelBtn.addEventListener('click', closePwdModal);
 pwdSubmitBtn.addEventListener('click', function() {
     if (!state.user) { setPwdStatus('error', '❌ Not authenticated'); return; }
     var password = pwdInput.value;
-    var isCreate = pwdSubmitBtn.innerHTML.indexOf('Create') !== -1;
+    var isCreate = state._pwdMode === 'create';
 
     if (isCreate) {
         if (!confirm('⚠️ FINAL WARNING:\n\nYour password CANNOT be changed.\nIf you forget it, your key will be LOCKED FOREVER.\n\nYou can later DELETE & REGENERATE.\n\nCreate this password?')) return;
@@ -1601,13 +1605,10 @@ window.doLogout = function() {
     } catch(e) { window.location.href = 'index.html'; }
 };
 
-/* ═══ AUTH READY — HANDLE BOTH EVENTS ═══ */
-var authHandled = false;
-
 function handleAuthReady(e) {
     if (!e.detail || !e.detail.user) return;
-    if (authHandled) return; /* Only handle once */
-    authHandled = true;
+    if (state.authHandled) return;
+    state.authHandled = true;
     
     state.user = e.detail.user;
     var name = e.detail.name || (state.user.email ? state.user.email.split('@')[0] : 'User');
@@ -1616,7 +1617,6 @@ function handleAuthReady(e) {
     
     console.log('👤 Auth ready:', state.user.email);
 
-    /* Check key status from Firebase */
     KEY_MANAGER.checkKeyStatus(state.user.uid).then(function(result) {
         if (!result.hasKey) {
             toast('👋 Welcome! Click CREATE KEY to get started', 'info');
