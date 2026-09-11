@@ -8,6 +8,7 @@
     var firebaseConfig = {
         apiKey: "AIzaSyCMYIa1YwahQRF_EGizjR1Xjj4aD9uBN_o",
         authDomain: "nightorbitbuilder.firebaseapp.com",
+        databaseURL: "https://nightorbitbuilder-default-rtdb.firebaseio.com",
         projectId: "nightorbitbuilder",
         storageBucket: "nightorbitbuilder.firebasestorage.app",
         messagingSenderId: "537115613677",
@@ -80,6 +81,7 @@
                     showPage();
                     window.__currentUser = user;
                     document.dispatchEvent(new CustomEvent('auth-ready', { detail: { user: user } }));
+                    document.dispatchEvent(new CustomEvent('auth-guard-ready', { detail: { user: user } }));
                 } else {
                     redirectToLogin();
                 }
