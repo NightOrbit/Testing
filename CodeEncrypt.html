@@ -4,16 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b0b1a">
-<title>Universal Encrypt Pro — NightOrbit CodeForge</title>
+<title>Universal Code Encrypt — NightOrbit</title>
 
-<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 <script src="auth-guard.js"></script>
-
-<!-- CryptoJS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="key-manager.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -36,6 +34,52 @@ body {
     padding-bottom: 20px; font-size: 14px;
     line-height: 1.5;
 }
+
+/* ═══ PASSWORD MODAL ═══ */
+.pwd-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px); z-index: 9999;
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+}
+.pwd-overlay.open { display: flex; }
+.pwd-modal {
+    background: rgba(11,11,26,0.98); border: 2px solid var(--cyan);
+    border-radius: 20px; padding: 32px 28px; max-width: 460px; width: 100%;
+    box-shadow: 0 0 80px rgba(0,240,255,0.2);
+}
+.pwd-modal h2 {
+    font-family: 'Orbitron', sans-serif; font-size: 18px; letter-spacing: 3px;
+    text-transform: uppercase; text-align: center; margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--cyan), var(--pink));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.pwd-modal .sub { color: var(--muted); font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase; text-align: center; margin-bottom: 22px; }
+.pwd-modal label { display:block; color: var(--cyan); font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase; font-weight: bold; margin-bottom: 8px; }
+.pwd-modal input { width: 100%; background: #000; color: var(--green);
+    border: 1.5px solid #333; border-radius: 10px; padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 14px;
+    letter-spacing: 3px; transition: all 0.3s; }
+.pwd-modal input:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 20px rgba(0,240,255,0.2); }
+.pwd-modal .btn-row { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+.pwd-modal button { flex: 1; background: linear-gradient(135deg, var(--cyan), var(--purple));
+    color: #000; border: none; padding: 14px 20px; border-radius: 10px;
+    font-weight: bold; font-size: 12px; letter-spacing: 2px;
+    text-transform: uppercase; cursor: pointer; font-family: 'Orbitron', sans-serif;
+    transition: all 0.3s; min-width: 130px; }
+.pwd-modal button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,240,255,0.4); }
+.pwd-modal button:disabled { opacity: 0.4; cursor: not-allowed; }
+.pwd-modal .status { margin-top: 16px; padding: 12px; border-radius: 8px;
+    font-size: 12px; text-align: center; font-weight: bold; display: none; }
+.pwd-modal .status.success { background: rgba(0,255,100,0.1); border: 1.5px solid var(--green); color: var(--green); display: block; }
+.pwd-modal .status.error { background: rgba(255,0,100,0.1); border: 1.5px solid var(--red); color: var(--red); display: block; }
+.pwd-modal .status.info { background: rgba(0,240,255,0.1); border: 1.5px solid var(--cyan); color: var(--cyan); display: block; }
+.pwd-modal .status.loading { background: rgba(255,215,0,0.1); border: 1.5px solid var(--gold); color: var(--gold); display: block; }
+.pwd-modal .warn { background: rgba(255,0,100,0.08); border-left: 3px solid var(--red);
+    padding: 10px 12px; border-radius: 6px; font-size: 11px; color: #ffb3c9;
+    line-height: 1.6; margin-top: 14px; }
 
 /* ═══ TOP BAR ═══ */
 .topbar {
@@ -93,8 +137,6 @@ body {
 .menu-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .menu-btn.open span:nth-child(2) { opacity: 0; }
 .menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-/* ═══ DRAWER ═══ */
 .drawer-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.6);
     backdrop-filter: blur(4px); z-index: 998;
@@ -126,7 +168,6 @@ body {
     background: rgba(0,240,255,0.12); border-color: var(--cyan);
     transform: translateX(-3px); box-shadow: 0 5px 20px rgba(0,240,255,0.15);
 }
-.drawer .menu-item.active { border-left: 3px solid var(--cyan); }
 .drawer .menu-item.danger { border-color: rgba(255,0,100,0.25); }
 .drawer .menu-item.danger:hover { background: rgba(255,0,100,0.12); border-color: var(--red); }
 .drawer .menu-item.dashboard { border-color: rgba(255,215,0,0.25); }
@@ -134,11 +175,7 @@ body {
 .drawer .menu-item .ico { font-size: 18px; }
 .drawer .menu-item .label { flex: 1; }
 .drawer .menu-item .ext { font-size: 10px; color: var(--gold); opacity: 0.6; letter-spacing: 1px; }
-
-/* ═══ CONTAINER ═══ */
 .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 15px; }
-
-/* ═══ USER WELCOME ═══ */
 .user-welcome {
     background: rgba(0,240,255,0.05);
     border: 1px solid var(--border);
@@ -159,23 +196,12 @@ body {
     text-transform: uppercase; color: var(--green);
     display: inline-flex; align-items: center; gap: 5px;
 }
-
-/* ═══ HEADER CARD ═══ */
 .header-card {
     background: var(--card); border: 2px solid var(--cyan);
     border-radius: 18px; padding: 22px 24px; margin-bottom: 15px;
     box-shadow: 0 0 50px rgba(0,240,255,0.15);
     text-align: center; position: relative; overflow: hidden;
 }
-.header-card::before {
-    content: ''; position: absolute; inset: -2px; border-radius: 18px;
-    padding: 2px;
-    background: conic-gradient(from 0deg, var(--cyan), var(--pink), var(--purple), var(--gold), var(--cyan));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor; mask-composite: exclude;
-    animation: borderSpin 6s linear infinite; pointer-events: none;
-}
-@keyframes borderSpin { to { transform: rotate(360deg); } }
 h1 {
     font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 900;
     background: linear-gradient(135deg, var(--cyan), var(--pink));
@@ -194,120 +220,6 @@ h1 {
 .header-stat.gold i { color: var(--gold); }
 .header-stat.pink i { color: var(--pink); }
 .header-stat.green i { color: var(--green); }
-
-/* ═══ MODE INDICATOR ═══ */
-.mode-indicator {
-    display: flex; align-items: center; justify-content: space-between;
-    background: linear-gradient(135deg, rgba(0,240,255,0.08), rgba(180,0,255,0.05));
-    border: 1px solid var(--cyan); border-radius: 12px;
-    padding: 12px 16px; margin-bottom: 15px;
-    box-shadow: 0 0 25px rgba(0,240,255,0.08);
-    gap: 10px; flex-wrap: wrap;
-}
-.mode-indicator .left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
-.mode-indicator .mode-icon { font-size: 24px; filter: drop-shadow(0 0 8px var(--cyan)); }
-.mode-indicator .mode-label { color: var(--cyan); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; }
-.mode-indicator .mode-name { color: #fff; font-size: 15px; font-weight: bold; letter-spacing: 1px; }
-.mode-indicator .change-btn {
-    background: rgba(0,240,255,0.15); color: var(--cyan); border: 1px solid var(--cyan);
-    padding: 8px 14px; border-radius: 8px; font-size: 11px; letter-spacing: 1px;
-    cursor: pointer; font-family: inherit; font-weight: bold; transition: all 0.2s; white-space: nowrap;
-}
-.mode-indicator .change-btn:hover { background: var(--cyan); color: #000; }
-
-/* ═══ SAVE BOX ═══ */
-.save-box {
-    background: linear-gradient(135deg, rgba(255,0,100,0.1), rgba(255,215,0,0.08));
-    border: 2px solid var(--red); border-radius: 12px;
-    padding: 16px; margin-bottom: 15px;
-    position: relative; overflow: hidden;
-}
-.save-box::before {
-    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
-    background: linear-gradient(90deg, var(--red), var(--gold), var(--red));
-    background-size: 200% 100%; animation: slide 2s linear infinite;
-}
-@keyframes slide { 0% { background-position: 0% 0; } 100% { background-position: 200% 0; } }
-.save-box h3 { color: var(--red); font-size: 13px; letter-spacing: 2px;
-    text-transform: uppercase; margin-bottom: 10px;
-    display: flex; align-items: center; gap: 8px; font-weight: bold;
-    font-family: 'Orbitron', sans-serif; }
-.save-box .save-step { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 12px; line-height: 1.6; }
-.save-box .save-step .num {
-    background: var(--red); color: #fff; min-width: 22px; height: 22px;
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-weight: bold; font-size: 11px; flex-shrink: 0; margin-top: 2px;
-}
-.save-box .filename {
-    display: inline-block; background: #000; border: 1px solid var(--gold);
-    color: var(--gold); padding: 3px 10px; border-radius: 6px;
-    font-weight: bold; font-size: 12px; margin: 2px 3px;
-    letter-spacing: 0.5px; word-break: break-all; font-family: 'JetBrains Mono', monospace;
-}
-.save-box .highlight { color: var(--gold); font-weight: bold; }
-.save-box .warn {
-    background: rgba(255,0,100,0.15); border-left: 3px solid var(--red);
-    padding: 10px 12px; border-radius: 6px; font-size: 11px;
-    color: #ffb3c9; margin-top: 8px; line-height: 1.6;
-}
-
-/* ═══ PROGRESS BAR ═══ */
-.progress-wrap {
-    background: rgba(0,0,0,0.4); border: 1.5px solid rgba(0,240,255,0.15);
-    border-radius: 12px; padding: 12px 16px; margin-bottom: 15px;
-    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-}
-.progress-label { font-family: 'Orbitron', sans-serif; font-size: 10px;
-    color: var(--cyan); letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
-.progress-track {
-    flex: 1; height: 8px; background: rgba(0,0,0,0.6);
-    border-radius: 20px; overflow: hidden; min-width: 150px;
-}
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink));
-    border-radius: 20px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 0%; box-shadow: 0 0 15px rgba(0,240,255,0.6);
-}
-.progress-percent { font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    color: var(--gold); font-weight: 700; min-width: 45px; text-align: right; }
-.progress-steps { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; }
-.progress-step {
-    width: 24px; height: 24px; border-radius: 50%;
-    background: rgba(0,0,0,0.5); border: 1.5px solid rgba(0,240,255,0.2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 9px; font-weight: 900; color: var(--muted); transition: all 0.3s;
-}
-.progress-step.active {
-    background: linear-gradient(135deg, var(--cyan), var(--purple));
-    color: #000; border-color: #fff;
-    box-shadow: 0 0 15px rgba(0,240,255,0.6); transform: scale(1.15);
-}
-.progress-step.done { background: var(--green); color: #000; border-color: #fff; }
-
-/* ═══ CARD ═══ */
-.card {
-    background: var(--card); border: 2px solid var(--border);
-    border-radius: 18px; padding: 22px;
-    box-shadow: 0 0 40px rgba(0,240,255,0.08); margin-bottom: 15px;
-}
-h2, h3 {
-    font-family: 'Orbitron', sans-serif; color: var(--cyan); font-size: 13px;
-    margin-bottom: 12px; letter-spacing: 2px; text-transform: uppercase;
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 8px;
-}
-.badge {
-    background: rgba(0,240,255,0.15); color: var(--cyan);
-    padding: 3px 10px; border-radius: 20px; font-size: 9px;
-    font-weight: bold; letter-spacing: 1px; border: 1px solid rgba(0,240,255,0.3);
-    font-family: 'Inter', sans-serif; text-transform: uppercase;
-}
-.badge.success { background: rgba(0,255,100,0.15); color: var(--green); border-color: rgba(0,255,100,0.3); }
-.badge.gold { background: rgba(255,215,0,0.15); color: var(--gold); border-color: rgba(255,215,0,0.3); }
-.badge.pink { background: rgba(255,45,149,0.15); color: var(--pink); border-color: rgba(255,45,149,0.3); }
-
-/* ═══ SECTION ═══ */
 .section {
     background: rgba(0,240,255,0.03); border: 1px solid var(--border);
     border-radius: 12px; padding: 16px; margin-bottom: 12px;
@@ -328,8 +240,6 @@ textarea:focus, input:focus {
 }
 textarea { min-height: 220px; }
 textarea.tall { min-height: 320px; }
-
-/* ═══ BUTTONS ═══ */
 button {
     background: linear-gradient(135deg, var(--cyan), var(--purple));
     color: #000; border: none; padding: 12px 22px; border-radius: 10px;
@@ -344,11 +254,8 @@ button.danger { background: linear-gradient(135deg, var(--red), #ff0000); color:
 button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
 button.pink { background: linear-gradient(135deg, var(--pink), var(--purple)); color: #fff; }
 button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
 .btn-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
 .btn-row button { flex: 1 1 auto; min-width: 120px; }
-
-/* ═══ STATUS ═══ */
 .status {
     text-align: center; padding: 12px; border-radius: 8px;
     margin-top: 10px; font-size: 12px; display: none; font-weight: bold;
@@ -358,8 +265,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 .status.error { background: rgba(255,0,100,0.1); border: 1px solid var(--red); color: var(--red); display: block; }
 .status.info { background: rgba(0,240,255,0.1); border: 1px solid var(--cyan); color: var(--cyan); display: block; }
 .status.loading { background: rgba(255,215,0,0.1); border: 1px solid var(--gold); color: var(--gold); display: block; }
-
-/* ═══ FILE DROP ═══ */
 .file-drop {
     border: 2px dashed rgba(0,240,255,0.4); border-radius: 12px;
     padding: 26px 16px; text-align: center; color: var(--cyan);
@@ -370,72 +275,29 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     box-shadow: 0 0 30px rgba(0,240,255,0.15);
 }
 .file-drop .icon { font-size: 36px; margin-bottom: 6px; }
-
-.file-list {
-    max-height: 240px; overflow-y: auto; margin-top: 10px; font-size: 12px;
-}
-.file-list::-webkit-scrollbar { width: 6px; }
-.file-list::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 3px; }
+.file-list { max-height: 240px; overflow-y: auto; margin-top: 10px; font-size: 12px; }
 .file-item {
     background: rgba(0,255,100,0.05); border-left: 3px solid var(--green);
     padding: 10px 12px; margin-bottom: 6px; border-radius: 6px;
     display: flex; justify-content: space-between; align-items: center;
     gap: 8px; flex-wrap: wrap;
 }
-.file-item .name-wrap { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; flex: 1; }
-.file-item .fname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; font-weight: bold; font-family: 'JetBrains Mono', monospace; }
-.file-item .remove { color: var(--red); cursor: pointer; font-weight: bold; padding: 4px 10px; border-radius: 4px; transition: all 0.2s; flex-shrink: 0; }
+.file-item .fname { font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+.file-item .remove { color: var(--red); cursor: pointer; font-weight: bold; padding: 4px 10px; border-radius: 4px; }
 .file-item .remove:hover { background: rgba(255,0,100,0.2); }
-
-.badge-lang {
-    padding: 2px 8px; border-radius: 10px; font-size: 9px;
-    font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;
-}
-.badge-lang.html { background: #e34c26; color:#fff; }
-.badge-lang.css { background: #264de4; color:#fff; }
-.badge-lang.js { background: #f0db4f; color:#000; }
-.badge-lang.json { background: #00ff64; color:#000; }
-.badge-lang.py { background: #3776ab; color:#fff; }
-.badge-lang.php { background: #8892be; color:#fff; }
-.badge-lang.xml { background: #ff8c00; color:#000; }
-.badge-lang.txt { background: #888; color:#000; }
-
-/* ═══ STATS GRID ═══ */
 .stats-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 12px; margin-top: 12px;
 }
 .stat-card {
     background: rgba(0,0,0,0.4); border: 1.5px solid rgba(0,240,255,0.15);
-    border-radius: 12px; padding: 14px; text-align: center; transition: 0.3s;
+    border-radius: 12px; padding: 14px; text-align: center;
 }
-.stat-card:hover { border-color: var(--cyan); box-shadow: 0 0 20px rgba(0,240,255,0.15); transform: translateY(-3px); }
 .stat-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; font-family: 'Orbitron', sans-serif; }
 .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 900; color: var(--cyan); }
 .stat-value.gold { color: var(--gold); }
 .stat-value.green { color: var(--green); }
 .stat-value.pink { color: var(--pink); }
-
-/* ═══ HISTORY ═══ */
-.history-list {
-    max-height: 200px; overflow-y: auto;
-    background: rgba(0,0,0,0.4); border: 1px solid rgba(0,240,255,0.1);
-    border-radius: 10px; padding: 10px;
-}
-.history-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.03);
-    font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #b0b0d0;
-}
-.history-item:last-child { border-bottom: none; }
-.history-time { color: var(--muted); font-size: 10px; flex-shrink: 0; min-width: 70px; }
-.history-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-.history-dot.info { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
-.history-dot.success { background: var(--green); box-shadow: 0 0 8px var(--green); }
-.history-dot.error { background: var(--red); box-shadow: 0 0 8px var(--red); }
-.history-dot.warn { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
-
-/* ═══ TOAST ═══ */
 .toast-container {
     position: fixed; bottom: 20px; right: 20px; z-index: 99999;
     display: flex; flex-direction: column; gap: 10px;
@@ -449,50 +311,58 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     display: flex; align-items: center; gap: 10px;
     pointer-events: auto; animation: toastIn 0.4s ease; min-width: 250px;
 }
-.toast.success { border-color: var(--green); box-shadow: 0 0 30px rgba(0,255,100,0.3); }
-.toast.error { border-color: var(--red); box-shadow: 0 0 30px rgba(255,0,100,0.3); }
-.toast.warn { border-color: var(--gold); box-shadow: 0 0 30px rgba(255,215,0,0.3); }
+.toast.success { border-color: var(--green); }
+.toast.error { border-color: var(--red); }
+.toast.warn { border-color: var(--gold); }
 .toast-icon { font-size: 18px; flex-shrink: 0; }
-.toast.success .toast-icon { color: var(--green); }
-.toast.error .toast-icon { color: var(--red); }
-.toast.warn .toast-icon { color: var(--gold); }
 @keyframes toastIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 .toast.removing { animation: toastOut 0.3s ease forwards; }
 @keyframes toastOut { to { transform: translateX(400px); opacity: 0; } }
-
-/* ═══ RESPONSIVE ═══ */
 @media (max-width: 600px) {
     body { font-size: 13px; }
     .container { padding: 12px; }
-    .section { padding: 14px; }
     textarea { min-height: 180px; font-size: 11px; }
     .btn-row button { flex: 1 1 100%; }
-    h1 { font-size: 20px; letter-spacing: 2px; }
-    .progress-steps { display: none; }
-    .file-item .fname { max-width: 130px; }
-    .topbar-btn { padding: 7px 11px; font-size: 10px; }
-}
-@media (max-width: 400px) {
-    .brand .logo { font-size: 18px; }
-    .topbar-btn .label { display: none; }
-    .topbar-btn { padding: 8px 10px; }
+    h1 { font-size: 20px; }
 }
 </style>
 </head>
 <body>
 
+<!-- ═══ PASSWORD MODAL ═══ -->
+<div class="pwd-overlay" id="pwdOverlay">
+    <div class="pwd-modal">
+        <h2>🔐 Enter Your Password</h2>
+        <div class="sub">Required for encryption & decryption</div>
+        
+        <label>Your 14-Character Password</label>
+        <input type="password" id="pwdInput" maxlength="14" placeholder="••••••••••••••" autocomplete="off">
+        
+        <div class="btn-row">
+            <button id="pwdSubmitBtn" disabled>🔓 Unlock</button>
+        </div>
+        
+        <div class="status" id="pwdStatus"></div>
+        
+        <div class="warn">
+            ⚠️ <b>WARNING:</b> If you enter the wrong password, you cannot encrypt or decrypt.
+            If you forget it, your code is <b>permanently locked</b>.
+        </div>
+    </div>
+</div>
+
 <!-- TOP BAR -->
 <div class="topbar">
     <div class="brand">
         <span class="logo">🔐</span>
-        <span class="title">Universal Encrypt Pro</span>
+        <span class="title">Universal Code Encrypt</span>
     </div>
     <div class="topbar-actions">
         <a href="dashboard.html" class="topbar-btn dashboard">
             <i class="fa-solid fa-arrow-left"></i>
             <span class="label">Dashboard</span>
         </a>
-        <button class="topbar-btn logout" onclick="if(window.AuthGuard&&AuthGuard.logout)AuthGuard.logout();">
+        <button class="topbar-btn logout" onclick="doLogout()">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span class="label">Logout</span>
         </button>
@@ -505,176 +375,93 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 <!-- DRAWER -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
-    <h3>🎯 Select Language</h3>
-    <button class="menu-item active" data-lang="auto" onclick="selectLang('auto', this)"><span class="ico">🔍</span><span class="label">Auto Detect</span><span class="ext">AUTO</span></button>
-    <button class="menu-item" data-lang="html" onclick="selectLang('html', this)"><span class="ico">🌐</span><span class="label">HTML</span><span class="ext">.html</span></button>
-    <button class="menu-item" data-lang="css" onclick="selectLang('css', this)"><span class="ico">🎨</span><span class="label">CSS</span><span class="ext">.css</span></button>
-    <button class="menu-item" data-lang="js" onclick="selectLang('js', this)"><span class="ico">⚡</span><span class="label">JavaScript</span><span class="ext">.js</span></button>
-    <button class="menu-item" data-lang="json" onclick="selectLang('json', this)"><span class="ico">📦</span><span class="label">JSON</span><span class="ext">.json</span></button>
-    <button class="menu-item" data-lang="py" onclick="selectLang('py', this)"><span class="ico">🐍</span><span class="label">Python</span><span class="ext">.py</span></button>
-    <button class="menu-item" data-lang="php" onclick="selectLang('php', this)"><span class="ico">🐘</span><span class="label">PHP</span><span class="ext">.php</span></button>
-    <button class="menu-item" data-lang="xml" onclick="selectLang('xml', this)"><span class="ico">📄</span><span class="label">XML</span><span class="ext">.xml</span></button>
-    <button class="menu-item" data-lang="txt" onclick="selectLang('txt', this)"><span class="ico">📝</span><span class="label">Plain Text</span><span class="ext">.txt</span></button>
-
-    <h3 style="margin-top:20px;">⚙️ Quick Actions</h3>
-    <button class="menu-item" onclick="openFilePicker()"><span class="ico">📁</span><span class="label">Upload Files</span><span class="ext">MULTI</span></button>
-    <button class="menu-item" onclick="clearAll()"><span class="ico">🗑️</span><span class="label">Clear All</span><span class="ext">RESET</span></button>
-
+    <h3>⚙️ Quick Actions</h3>
+    <button class="menu-item" onclick="openFilePicker()"><span class="ico">📁</span><span class="label">Upload Files</span></button>
+    <button class="menu-item" onclick="clearAll()"><span class="ico">🗑️</span><span class="label">Clear All</span></button>
     <h3 style="margin-top:20px;">🏠 Navigation</h3>
-    <a href="dashboard.html" class="menu-item dashboard">
-        <span class="ico">🏠</span>
-        <span class="label">Back to Dashboard</span>
-        <span class="ext">HOME</span>
-    </a>
-    <button class="menu-item danger" onclick="if(window.AuthGuard&&AuthGuard.logout)AuthGuard.logout();">
-        <span class="ico">🚪</span>
-        <span class="label">Logout</span>
-        <span class="ext">EXIT</span>
-    </button>
+    <a href="dashboard.html" class="menu-item dashboard"><span class="ico">🏠</span><span class="label">Back to Dashboard</span></a>
+    <button class="menu-item danger" onclick="doLogout()"><span class="ico">🚪</span><span class="label">Logout</span></button>
 </div>
 
 <!-- MAIN -->
 <div class="container">
 
-    <!-- USER WELCOME -->
     <div class="user-welcome">
         <i class="fa-solid fa-circle-user"></i>
         <span>Welcome, <b id="welcomeName">User</b></span>
         <span class="auth-badge">
-            <i class="fa-solid fa-shield-halved"></i> Authenticated
+            <i class="fa-solid fa-shield-halved"></i> <span id="keyStatus">Locked</span>
         </span>
     </div>
 
-    <!-- HEADER CARD -->
     <div class="header-card">
-        <h1>⚡ Universal Encrypt Pro</h1>
-        <div class="subtitle">NightOrbit CodeForge · Heavy Edition · 5MB+ Support</div>
+        <h1>⚡ Universal Code Encrypt</h1>
+        <div class="subtitle">NightOrbit CodeForge · Password-Protected · 5MB+ Support</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v8 SECURE HEAVY</span>
+            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v9 SECURE</span>
             <span class="header-stat gold"><i class="fa-solid fa-shield-halved"></i> AES-256</span>
-            <span class="header-stat pink"><i class="fa-solid fa-user-lock"></i> Per-User Key</span>
-            <span class="header-stat green"><i class="fa-solid fa-database"></i> 5MB+ Support</span>
+            <span class="header-stat pink"><i class="fa-solid fa-user-lock"></i> Password Key</span>
+            <span class="header-stat green"><i class="fa-solid fa-database"></i> 5MB+</span>
         </div>
     </div>
 
-    <!-- PROGRESS -->
-    <div class="progress-wrap">
-        <div class="progress-label">Progress</div>
-        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-        <div class="progress-percent" id="progressPercent">0%</div>
-        <div class="progress-steps">
-            <div class="progress-step" id="step1">1</div>
-            <div class="progress-step" id="step2">2</div>
-            <div class="progress-step" id="step3">3</div>
-        </div>
-    </div>
-
-    <!-- MODE INDICATOR -->
-    <div class="mode-indicator">
-        <div class="left">
-            <span class="mode-icon" id="modeIcon">🔍</span>
-            <div>
-                <div class="mode-label">Current Mode</div>
-                <div class="mode-name" id="modeName">Auto Detect</div>
-            </div>
-        </div>
-        <button class="change-btn" onclick="toggleDrawer()">CHANGE ▸</button>
-    </div>
-
-    <!-- SAVE INSTRUCTIONS -->
-    <div class="save-box">
-        <h3>📌 WHERE TO SAVE — IMPORTANT</h3>
-        <div class="save-step">
-            <div class="num">1</div>
-            <div class="txt">Open <b>Notepad</b> (Windows), <b>TextEdit</b> (Mac), or <b>VS Code</b>.</div>
-        </div>
-        <div class="save-step">
-            <div class="num">2</div>
-            <div class="txt">Paste your code below, then click <span class="highlight">ENCRYPT</span>.</div>
-        </div>
-        <div class="save-step">
-            <div class="num">3</div>
-            <div class="txt">Save this tool itself as: <div><span class="filename">encrypt-tool.html</span></div><span style="opacity:0.7;">(Must end with <b>.html</b>)</span></div>
-        </div>
-        <div class="save-step">
-            <div class="num">4</div>
-            <div class="txt">After encrypting, save the output as: <div><span class="filename">encrypted-data.txt</span></div></div>
-        </div>
-        <div class="save-step">
-            <div class="num">5</div>
-            <div class="txt">Click <span class="highlight">🎁 DOWNLOAD DECRYPTOR</span> — save as: <div><span class="filename">decryptor.html</span></div><span style="opacity:0.7;">(Must end with <b>.html</b>)</span></div>
-        </div>
-        <div class="warn">⚠️ <b>CRITICAL:</b> The decryptor MUST be saved as <b>.html</b>. Works with files up to 5MB+ — supports iframe render + blob fallback.</div>
-    </div>
-
-    <!-- ═══ CRITICAL WARNING ═══ -->
-    <div class="section" style="border: 2px solid var(--pink); background: rgba(255,45,149,0.06);">
-        <label style="color: var(--pink); font-size:12px;">
-            <i class="fa-solid fa-triangle-exclamation"></i> ⚠️ CRITICAL WARNING — READ BEFORE YOU START
-        </label>
-        <div style="font-size:12px; line-height:1.8; color:#fff;">
-            <p style="margin-bottom:12px; padding:10px; background:rgba(255,0,100,0.12); border-left:3px solid var(--red); border-radius:6px;">
-                <b style="color:var(--pink);">🛑 DO NOT DELETE YOUR ORIGINAL CODE FILES!</b>
-            </p>
-            <ul style="margin-left:20px; color:#ffb3c9; line-height:2;">
-                <li>Never delete your original <b style="color:var(--gold);">index.html</b> or main project file</li>
-                <li>If you delete them, you will <b style="color:var(--red);">NOT be able to add new features</b></li>
-                <li>Always keep a <b style="color:var(--green);">backup</b> of your original code</li>
-                <li>The encrypted output is <b>NOT</b> a replacement — it is a <b>protected copy</b></li>
-            </ul>
-            <p style="margin-top:12px; padding:10px; background:rgba(0,0,0,0.4); border-radius:6px;">
-                ✅ <b style="color:var(--green);">BEST PRACTICE:</b> Keep <b>3 copies</b>:
-                <br>1️⃣ Original source code (editable)
-                <br>2️⃣ Encrypted output (protected)
-                <br>3️⃣ decryptor.html file (for opening encrypted code)
-            </p>
-        </div>
-    </div>
-
-    <!-- ═══ SECURE USER KEY ═══ -->
+    <!-- ═══ USER KEY DISPLAY ═══ -->
     <div class="section" style="border-color: var(--gold); background: rgba(255,215,0,0.05);">
         <label style="color: var(--gold);">
-            <i class="fa-solid fa-lock"></i> YOUR UNIQUE ENCRYPTION KEY (Auto-generated per user)
+            <i class="fa-solid fa-lock"></i> YOUR UNIQUE KEY (Password Protected)
         </label>
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-            <input type="text" id="secretKey" readonly value="***** — Waiting for login..."
+            <input type="text" id="keyDisplay" readonly value="NightOrbit_*****_***********"
                    style="flex:1; min-width:200px; background:#000; color:var(--gold);
                           border:1.5px solid var(--gold); padding:12px; border-radius:8px;
                           font-family:'JetBrains Mono', monospace; font-size:13px;
-                          letter-spacing:1px; cursor:not-allowed;"
-                   title="Security: Key is hidden for your protection">
-            <span class="badge gold" id="keyStatusBadge" style="padding:10px 14px;">
-                <i class="fa-solid fa-hourglass-half"></i> WAITING
+                          cursor:not-allowed;" title="Your key is password-protected">
+            <span class="badge" id="keyStatusBadge" style="padding:10px 14px; background:rgba(255,215,0,0.15); color:var(--gold); border:1px solid rgba(255,215,0,0.3); border-radius:20px; font-size:10px; font-weight:bold;">
+                <i class="fa-solid fa-lock"></i> LOCKED
             </span>
         </div>
         <div style="margin-top:10px; padding:10px; background:rgba(0,240,255,0.06);
                     border-left:3px solid var(--cyan); border-radius:6px;
                     font-size:11px; line-height:1.6; color:#b0d0ff;">
-            🔒 <b>Secure:</b> Your key is generated uniquely from your email address.
-            It is <b>never displayed</b> and <b>never saved to any file</b>. Only a hash
-            is shown above for verification. The key <b>cannot be changed</b>.
+            🔒 <b>Secure:</b> Your key is protected by your <b>14-character password</b>
+            (10 digits + 4 symbols). The actual key is <b>never displayed</b> —
+            only a masked version is shown. The key <b>cannot be changed</b>.
+        </div>
+    </div>
+
+    <!-- ═══ CRITICAL WARNING ═══ -->
+    <div class="section" style="border: 2px solid var(--pink); background: rgba(255,45,149,0.06);">
+        <label style="color: var(--pink); font-size:12px;">
+            <i class="fa-solid fa-triangle-exclamation"></i> ⚠️ CRITICAL WARNING
+        </label>
+        <div style="font-size:12px; line-height:1.8; color:#fff;">
+            <ul style="margin-left:20px; color:#ffb3c9; line-height:2;">
+                <li><b style="color:var(--red);">DO NOT</b> delete your original <b>index.html</b> or main files</li>
+                <li><b style="color:var(--red);">DO NOT</b> forget your <b>14-character password</b></li>
+                <li>If you forget the password, your code can <b style="color:var(--red);">NEVER be decrypted</b></li>
+                <li>Keep <b style="color:var(--green);">3 backups</b>: original code, encrypted output, decryptor.html</li>
+                <li>Save your password in a <b style="color:var(--gold);">password manager</b> or notebook</li>
+            </ul>
         </div>
     </div>
 
     <!-- INPUT CODE -->
     <div class="section">
-        <label>📄 Paste Code (any language — HTML / CSS / JS / JSON / PY / PHP / XML / TXT)</label>
-        <textarea id="inputCode" class="tall" placeholder="Paste your full code here... supports up to 5MB+."></textarea>
+        <label>📄 Paste Code</label>
+        <textarea id="inputCode" class="tall" placeholder="Paste your code here... supports up to 5MB+."></textarea>
         <div class="stats-grid" id="inputStats" style="display:none;">
             <div class="stat-card"><div class="stat-label">Lines</div><div class="stat-value" id="statLines">0</div></div>
             <div class="stat-card"><div class="stat-label">Characters</div><div class="stat-value gold" id="statChars">0</div></div>
             <div class="stat-card"><div class="stat-label">Size</div><div class="stat-value green" id="statSize">0 B</div></div>
-            <div class="stat-card"><div class="stat-label">Detected</div><div class="stat-value pink" id="statLang">—</div></div>
         </div>
     </div>
 
     <!-- FILE UPLOAD -->
     <div class="section">
-        <label>📁 Upload Files (multiple allowed — up to 5MB each)</label>
+        <label>📁 Upload Files (up to 5MB each)</label>
         <div class="file-drop" id="fileDrop">
             <div class="icon">📥</div>
-            <div>Drag &amp; drop files here or <b>click to browse</b></div>
-            <div style="font-size:11px; opacity:0.7; margin-top:5px;">.html .css .js .json .py .php .xml .txt</div>
+            <div>Drag &amp; drop or <b>click to browse</b></div>
             <input type="file" id="fileInput" multiple style="display:none;">
         </div>
         <div class="file-list" id="fileList"></div>
@@ -691,17 +478,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
     <!-- OUTPUT -->
     <div class="section">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-            <label style="margin:0;">🔒 Encrypted Output</label>
-            <div id="outputFileInfo" style="color:var(--gold); font-size:11px;"></div>
-        </div>
+        <label>🔒 Encrypted Output</label>
         <textarea id="outputEnc" class="tall" placeholder="Encrypted output will appear here..." readonly></textarea>
-        <div class="stats-grid" id="outputStatsGrid" style="display:none;">
-            <div class="stat-card"><div class="stat-label">Original</div><div class="stat-value" id="statOriginal">0 B</div></div>
-            <div class="stat-card"><div class="stat-label">Encrypted</div><div class="stat-value gold" id="statEncrypted">0 B</div></div>
-            <div class="stat-card"><div class="stat-label">Ratio</div><div class="stat-value green" id="statRatio">1.0x</div></div>
-            <div class="stat-card"><div class="stat-label">Mode</div><div class="stat-value pink" id="statMode">—</div></div>
-        </div>
     </div>
 
     <div class="btn-row">
@@ -710,91 +488,18 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         <button class="pink" onclick="downloadDecryptor()">🎁 DOWNLOAD DECRYPTOR HTML</button>
     </div>
 
-    <!-- ACTIVITY LOG -->
-    <div class="card">
-        <h3>📊 Activity Log <button style="background:transparent;border:1px solid var(--border);color:var(--cyan);padding:4px 10px;border-radius:6px;font-size:10px;cursor:pointer;" onclick="clearHistory()">🗑️ CLEAR</button></h3>
-        <div class="history-list" id="historyList">
-            <div class="history-item"><span class="history-time">--:--:--</span><span class="history-dot info"></span><span>Encrypt Pro initialized</span></div>
-        </div>
-    </div>
-
 </div>
 
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════
-   UNIVERSAL ENCRYPT PRO v8 — SECURE HEAVY EDITION
-   - Per-user unique key (hash display only)
-   - 5MB+ code support
-   - iframe srcdoc + blob fallback decryptor
-   - Auto language detection
-   - Multi-file bundle
-   ═══════════════════════════════════════════════════════════ */
-
 (function() {
 'use strict';
 
-/* ═══ STATE ═══ */
 var state = {
     uploadedFiles: {},
-    currentLang: 'auto',
-    history: [],
-    lastEncrypt: null
-};
-
-var EXT_LANG = {
-    'html':'html','htm':'html','css':'css','js':'js','mjs':'js','cjs':'js',
-    'json':'json','py':'py','pyw':'py','php':'php','phtml':'php',
-    'xml':'xml','svg':'xml','txt':'txt','md':'txt','log':'txt'
-};
-var LANG_EXT = { html:'html', css:'css', js:'js', json:'json', py:'py', php:'php', xml:'xml', txt:'txt' };
-var LANG_ICON = { auto:'🔍', html:'🌐', css:'🎨', js:'⚡', json:'📦', py:'🐍', php:'🐘', xml:'📄', txt:'📝' };
-var LANG_NAME = { auto:'Auto Detect', html:'HTML', css:'CSS', js:'JavaScript', json:'JSON', py:'Python', php:'PHP', xml:'XML', txt:'Plain Text' };
-
-/* ═══ KEY MANAGER — Per-user unique key ═══ */
-var KEY_MANAGER = {
-    _key: null,
-    _displayHash: '*****',
-    _ready: false,
-    _email: null,
-
-    /* Derive a strong unique key from email */
-    deriveKey: function(email) {
-        var SALT = 'NightOrbit_CodeForge_v8_2024_SECURE_SALT_@#$%';
-        var key = CryptoJS.PBKDF2(email.toLowerCase().trim(), SALT, {
-            keySize: 512 / 32,
-            iterations: 200000,
-            hasher: CryptoJS.algo.SHA512
-        });
-        return key.toString(CryptoJS.enc.Hex);
-    },
-
-    /* Short hash for display only */
-    makeDisplayHash: function(key) {
-        return CryptoJS.SHA256(key).toString(CryptoJS.enc.Hex).substring(0, 16).toUpperCase();
-    },
-
-    /* Initialize from user object */
-    init: function(user) {
-        if (!user || !user.email) return false;
-        this._email = user.email;
-        this._key = this.deriveKey(user.email);
-        this._displayHash = this.makeDisplayHash(this._key);
-        this._ready = true;
-        return true;
-    },
-
-    getKey: function() { return this._key; },
-    isReady: function() { return this._ready; },
-    getHash: function() { return this._displayHash; },
-    getEmail: function() { return this._email; },
-    clear: function() {
-        this._key = null;
-        this._ready = false;
-        this._displayHash = '*****';
-        this._email = null;
-    }
+    lastEncrypt: null,
+    user: null
 };
 
 /* ═══ UTILITIES ═══ */
@@ -822,130 +527,168 @@ function toast(msg, type) {
         setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
     }, 3000);
 }
-function addHistory(msg, type) {
-    type = type || 'info';
-    var t = new Date().toLocaleTimeString('en-GB', { hour12: false });
-    state.history.unshift({ time: t, msg: msg, type: type });
-    if (state.history.length > 50) state.history.pop();
-    renderHistory();
-}
-function renderHistory() {
-    var list = document.getElementById('historyList');
-    if (!list) return;
-    if (state.history.length === 0) {
-        list.innerHTML = '<div class="history-item"><span class="history-time">--:--:--</span><span class="history-dot info"></span><span>No activity yet</span></div>';
-        return;
+
+/* ═══ LOGOUT ═══ */
+window.doLogout = function() {
+    try {
+        if (window.AuthGuard && typeof AuthGuard.logout === 'function') {
+            AuthGuard.logout();
+        } else if (window.firebase && firebase.auth) {
+            firebase.auth().signOut().then(function() {
+                window.location.href = 'login.html';
+            }).catch(function() {
+                window.location.href = 'login.html';
+            });
+        } else {
+            window.location.href = 'login.html';
+        }
+    } catch (e) {
+        window.location.href = 'login.html';
     }
-    var html = '';
-    for (var i = 0; i < state.history.length; i++) {
-        var h = state.history[i];
-        html += '<div class="history-item"><span class="history-time">' + h.time + '</span><span class="history-dot ' + h.type + '"></span><span>' + h.msg + '</span></div>';
-    }
-    list.innerHTML = html;
-}
-function updateProgress() {
-    var steps = 0;
-    if (state.lastEncrypt) steps++;
-    if (document.getElementById('inputCode').value.trim() || Object.keys(state.uploadedFiles).length > 0) steps++;
-    if (state.lastEncrypt && state.lastEncrypt.data) steps++;
-    var percent = Math.round((steps / 3) * 100);
-    document.getElementById('progressFill').style.width = percent + '%';
-    document.getElementById('progressPercent').textContent = percent + '%';
-    for (var i = 1; i <= 3; i++) {
-        var el = document.getElementById('step' + i);
-        el.classList.remove('active', 'done');
-        if (i < steps) el.classList.add('done');
-        else if (i === steps) el.classList.add('active');
-    }
-}
+};
 
 /* ═══ DRAWER ═══ */
 window.toggleDrawer = function() {
     document.getElementById('drawer').classList.toggle('open');
     document.getElementById('drawerOverlay').classList.toggle('open');
-    document.getElementById('menuBtn').classList.toggle('open');
 };
 window.closeDrawer = function() {
     document.getElementById('drawer').classList.remove('open');
     document.getElementById('drawerOverlay').classList.remove('open');
-    document.getElementById('menuBtn').classList.remove('open');
 };
-window.selectLang = function(lang, btn) {
-    state.currentLang = lang;
-    document.querySelectorAll('.drawer .menu-item[data-lang]').forEach(function(b) { b.classList.remove('active'); });
-    if (btn) btn.classList.add('active');
-    document.getElementById('modeIcon').textContent = LANG_ICON[lang];
-    document.getElementById('modeName').textContent = LANG_NAME[lang];
-    updateDetection();
+window.openFilePicker = function() {
     closeDrawer();
+    document.getElementById('fileInput').click();
 };
 
-/* ═══ AUTO LANGUAGE DETECTION ═══ */
-function detectLanguage(code) {
-    var t = code.trim();
-    if (!t) return 'txt';
-    if (t.startsWith('{') || t.startsWith('[')) {
-        try { JSON.parse(t); return 'json'; } catch(e) {}
+/* ═══ PASSWORD MODAL ═══ */
+var pwdModal = {
+    open: function() {
+        document.getElementById('pwdOverlay').classList.add('open');
+    },
+    close: function() {
+        document.getElementById('pwdOverlay').classList.remove('open');
+    },
+    setStatus: function(type, msg) {
+        var el = document.getElementById('pwdStatus');
+        el.className = 'status ' + type;
+        el.textContent = msg;
     }
-    if (/^<!DOCTYPE\s+html/i.test(t) || /<html[\s>]/i.test(t) || /<head[\s>]/i.test(t) || /<body[\s>]/i.test(t)) return 'html';
-    if (/^<\?xml/i.test(t)) return 'xml';
-    if (/<\?php/i.test(t)) return 'php';
-    if (/^\s*(def|class|import|from|print\s*\(|if\s+__name__)/m.test(t)) return 'py';
-    if (/@media|@keyframes|@import|:\s*root\s*\{/i.test(t)) return 'css';
-    if (/[.#]?[\w\-]+\s*\{[^}]*:[^}]*;[^}]*\}/s.test(t) && !/function|=>|<\/?[a-z]/i.test(t)) return 'css';
-    if (/\b(function|const|let|var|=>|document\.|window\.|console\.)\b/.test(t)) return 'js';
-    return 'txt';
-}
+};
 
+var pwdInput = document.getElementById('pwdInput');
+var pwdSubmitBtn = document.getElementById('pwdSubmitBtn');
+
+pwdInput.addEventListener('input', function() {
+    pwdSubmitBtn.disabled = this.value.length !== 14;
+});
+
+pwdInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && !pwdSubmitBtn.disabled) {
+        pwdSubmitBtn.click();
+    }
+});
+
+pwdSubmitBtn.addEventListener('click', function() {
+    var password = pwdInput.value;
+
+    if (!state.user) {
+        pwdModal.setStatus('error', '❌ User not authenticated');
+        return;
+    }
+
+    pwdModal.setStatus('loading', '⏳ Verifying password...');
+    pwdSubmitBtn.disabled = true;
+
+    KEY_MANAGER.verifyPassword(state.user, password)
+        .then(function(result) {
+            pwdModal.setStatus('success', '✅ Password verified!');
+
+            /* Update UI */
+            document.getElementById('keyDisplay').value = result.displayKey;
+            document.getElementById('keyStatus').textContent = 'Unlocked';
+            document.getElementById('keyStatusBadge').innerHTML = '<i class="fa-solid fa-unlock"></i> UNLOCKED';
+            document.getElementById('keyStatusBadge').style.background = 'rgba(0,255,100,0.15)';
+            document.getElementById('keyStatusBadge').style.color = 'var(--green)';
+            document.getElementById('keyStatusBadge').style.borderColor = 'rgba(0,255,100,0.3)';
+
+            toast('🔓 Key unlocked successfully', 'success');
+
+            setTimeout(function() {
+                pwdModal.close();
+                pwdInput.value = '';
+            }, 800);
+        })
+        .catch(function(err) {
+            pwdModal.setStatus('error', '❌ ' + err.message);
+            pwdSubmitBtn.disabled = false;
+            pwdInput.value = '';
+            pwdInput.focus();
+        });
+});
+
+/* ═══ AUTH READY ═══ */
+document.addEventListener('auth-guard-ready', function(e) {
+    if (!e.detail || !e.detail.user) return;
+
+    state.user = e.detail.user;
+    var name = e.detail.name || (state.user.email ? state.user.email.split('@')[0] : 'User');
+    document.getElementById('welcomeName').textContent = name;
+
+    /* Check if password exists */
+    KEY_MANAGER.checkPasswordStatus(state.user.uid)
+        .then(function(result) {
+            if (!result.hasPassword) {
+                /* No password — redirect to setup */
+                toast('No password set. Redirecting to setup...', 'warn');
+                setTimeout(function() {
+                    window.location.href = 'password-setup.html';
+                }, 1500);
+            } else {
+                /* Password exists — show modal */
+                pwdModal.open();
+                pwdInput.focus();
+            }
+        })
+        .catch(function(err) {
+            console.error('Check failed:', err);
+            showStatus('error', '❌ Failed to check password status');
+        });
+});
+
+/* ═══ INPUT DETECTION ═══ */
 var inputCodeEl = document.getElementById('inputCode');
-function updateDetection() {
-    var code = inputCodeEl.value;
+inputCodeEl.addEventListener('input', function() {
+    var code = this.value;
     var stats = document.getElementById('inputStats');
     if (!code.trim()) {
         stats.style.display = 'none';
-        updateProgress();
         return;
     }
-    var detected = detectLanguage(code);
-    var finalLang = (state.currentLang === 'auto') ? detected : state.currentLang;
     stats.style.display = 'grid';
     document.getElementById('statLines').textContent = num(code.split('\n').length);
     document.getElementById('statChars').textContent = num(code.length);
     document.getElementById('statSize').textContent = bytes(new Blob([code]).size);
-    document.getElementById('statLang').textContent = finalLang.toUpperCase();
-    updateProgress();
-}
-inputCodeEl.addEventListener('input', updateDetection);
+});
 
 /* ═══ FILE HANDLING ═══ */
-var fileDrop = document.getElementById('fileDrop');
-var fileInput = document.getElementById('fileInput');
-fileDrop.addEventListener('click', function() { window.openFilePicker(); });
-fileDrop.addEventListener('dragover', function(e) { e.preventDefault(); fileDrop.classList.add('dragover'); });
-fileDrop.addEventListener('dragleave', function() { fileDrop.classList.remove('dragover'); });
-fileDrop.addEventListener('drop', function(e) { e.preventDefault(); fileDrop.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
-fileInput.addEventListener('change', function(e) { handleFiles(e.target.files); });
-
-window.openFilePicker = function() { closeDrawer(); fileInput.click(); };
-
-var MAX_FILE_SIZE = 5 * 1024 * 1024; /* 5MB */
+document.getElementById('fileDrop').addEventListener('click', function() {
+    window.openFilePicker();
+});
+document.getElementById('fileInput').addEventListener('change', function(e) {
+    handleFiles(e.target.files);
+});
 
 function handleFiles(files) {
     Array.prototype.forEach.call(files, function(file) {
-        if (file.size > MAX_FILE_SIZE) {
-            toast('File too large: ' + file.name + ' (max 5MB)', 'error');
-            addHistory('Rejected: ' + file.name + ' exceeds 5MB', 'error');
+        if (file.size > 5 * 1024 * 1024) {
+            toast('File too large: ' + file.name, 'error');
             return;
         }
         var reader = new FileReader();
         reader.onload = function(ev) {
-            var content = ev.target.result;
-            var ext = (file.name.split('.').pop() || '').toLowerCase();
-            var lang = EXT_LANG[ext] || detectLanguage(content);
-            state.uploadedFiles[file.name] = { content: content, lang: lang };
+            state.uploadedFiles[file.name] = { content: ev.target.result };
             renderFileList();
-            updateProgress();
-            addHistory('Loaded: ' + file.name + ' (' + bytes(file.size) + ')', 'success');
         };
         reader.readAsText(file);
     });
@@ -955,98 +698,63 @@ function renderFileList() {
     var names = Object.keys(state.uploadedFiles);
     if (names.length === 0) { list.innerHTML = ''; return; }
     list.innerHTML = names.map(function(name) {
-        var f = state.uploadedFiles[name];
-        return '<div class="file-item">' +
-            '<span class="name-wrap">📄 <span class="fname">' + name + '</span>' +
-            '<span class="badge-lang ' + f.lang + '">' + f.lang + '</span>' +
-            '<span style="opacity:0.6;font-size:10px;">(' + num(f.content.length) + ' chars)</span></span>' +
+        return '<div class="file-item"><span class="fname">📄 ' + name + '</span>' +
             '<span class="remove" onclick="removeFile(\'' + name.replace(/'/g, "\\'") + '\')">✖</span></div>';
     }).join('');
 }
-window.removeFile = function(name) { delete state.uploadedFiles[name]; renderFileList(); updateProgress(); };
+window.removeFile = function(name) {
+    delete state.uploadedFiles[name];
+    renderFileList();
+};
 
 /* ═══ ENCRYPT ═══ */
 window.encryptNow = function() {
     try {
-        /* ⭐ Use KEY_MANAGER key (not input) */
         if (!KEY_MANAGER.isReady()) {
-            showStatus('error', '❌ Security key not ready. Please wait or re-login.');
-            toast('Key manager not ready', 'error');
+            showStatus('error', '❌ Key not unlocked. Enter your password.');
+            pwdModal.open();
+            pwdInput.focus();
             return;
         }
+
         var secretKey = KEY_MANAGER.getKey();
         var pasted = inputCodeEl.value;
         var fileNames = Object.keys(state.uploadedFiles);
 
         if (!pasted.trim() && fileNames.length === 0) {
             showStatus('error', '❌ Paste code or upload files first');
-            toast('Nothing to encrypt', 'error');
             return;
         }
 
-        var totalSize = new Blob([pasted]).size;
-        if (totalSize > 5 * 1024 * 1024) {
-            if (!confirm('Code is larger than 5MB. Encryption may take a few seconds. Continue?')) return;
-        }
+        showStatus('loading', '⏳ Encrypting...');
 
-        showStatus('loading', '⏳ Encrypting ' + bytes(totalSize) + '...');
-        var t0 = performance.now();
-
-        var payload, mode, outExt, outName;
+        var payload;
         if (fileNames.length > 0) {
             var bundle = {
                 __type: 'multi-file-bundle',
-                __version: '8.0',
+                __version: '9.0',
                 __created: new Date().toISOString(),
                 __fileCount: fileNames.length,
                 files: {}
             };
             fileNames.forEach(function(name) {
-                bundle.files[name] = { lang: state.uploadedFiles[name].lang, content: state.uploadedFiles[name].content };
+                bundle.files[name] = { content: state.uploadedFiles[name].content };
             });
             payload = JSON.stringify(bundle);
-            mode = 'Bundle (' + fileNames.length + ' files)';
-            outExt = 'bundle';
-            outName = 'encrypted-bundle.txt';
-            document.getElementById('outputFileInfo').textContent = '📦 ' + fileNames.length + ' files';
         } else {
-            var detected = detectLanguage(pasted);
-            var finalLang = (state.currentLang === 'auto') ? detected : state.currentLang;
             payload = pasted;
-            mode = 'Single ' + finalLang.toUpperCase();
-            outExt = LANG_EXT[finalLang] || 'txt';
-            outName = 'encrypted-' + finalLang + '.txt';
-            document.getElementById('outputFileInfo').textContent = '📄 ' + finalLang.toUpperCase() + ' → .' + outExt;
         }
 
         var encrypted = CryptoJS.AES.encrypt(payload, secretKey).toString();
-        var t1 = performance.now();
-
         document.getElementById('outputEnc').value = encrypted;
 
-        var origSize = new Blob([payload]).size;
-        var encSize = new Blob([encrypted]).size;
-        document.getElementById('outputStatsGrid').style.display = 'grid';
-        document.getElementById('statOriginal').textContent = bytes(origSize);
-        document.getElementById('statEncrypted').textContent = bytes(encSize);
-        document.getElementById('statRatio').textContent = (encSize / origSize).toFixed(2) + 'x';
-        document.getElementById('statMode').textContent = fileNames.length > 0 ? 'BUNDLE' : 'SINGLE';
+        state.lastEncrypt = { data: encrypted };
 
-        state.lastEncrypt = {
-            data: encrypted,
-            ext: outExt,
-            name: outName,
-            lang: (fileNames.length === 0) ? ((state.currentLang === 'auto') ? detectLanguage(pasted) : state.currentLang) : 'bundle'
-        };
-
-        showStatus('success', '✅ Encrypted! ' + mode + ' · ' + bytes(origSize) + ' → ' + bytes(encSize) + ' · ' + (t1 - t0).toFixed(0) + 'ms');
-        toast('Encrypted in ' + (t1 - t0).toFixed(0) + 'ms', 'success');
-        addHistory('Encrypted ' + mode + ' (' + bytes(origSize) + ' → ' + bytes(encSize) + ')', 'success');
-        updateProgress();
+        showStatus('success', '✅ Encrypted! ' + bytes(new Blob([encrypted]).size));
+        toast('Encrypted successfully!', 'success');
     } catch (e) {
         showStatus('error', '❌ ' + e.message);
         toast('Error: ' + e.message, 'error');
-        addHistory('Encrypt error: ' + e.message, 'error');
     }
 };
 
@@ -1054,44 +762,35 @@ window.encryptNow = function() {
 window.copyOutput = function() {
     var out = document.getElementById('outputEnc');
     if (!out.value) { toast('Nothing to copy', 'error'); return; }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(out.value).then(function() {
-            showStatus('success', '✅ Copied to clipboard!'); toast('Copied!', 'success');
-            addHistory('Copied encrypted output', 'success');
-        }).catch(function() {
-            out.select(); document.execCommand('copy');
-            showStatus('success', '✅ Copied!'); toast('Copied!', 'success');
-        });
-    } else {
-        out.select(); document.execCommand('copy');
-        showStatus('success', '✅ Copied!'); toast('Copied!', 'success');
-    }
+    out.select();
+    document.execCommand('copy');
+    toast('Copied!', 'success');
+    showStatus('success', '✅ Copied to clipboard!');
 };
 
 window.downloadOutput = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Nothing to download', 'error'); return; }
-    var info = state.lastEncrypt || { name: 'encrypted-data.txt' };
     var blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = info.name;
+    a.download = 'encrypted-data.txt';
     a.click();
-    showStatus('success', '✅ Downloaded: ' + info.name);
-    toast('Downloaded: ' + info.name, 'success');
-    addHistory('Downloaded ' + info.name, 'success');
+    toast('Downloaded!', 'success');
 };
 
-/* ═══ DECRYPTOR GENERATOR — 5MB+ SUPPORT ═══ */
+/* ═══ DECRYPTOR GENERATOR — Secure (email + password prompt) ═══ */
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Encrypt first!', 'error'); return; }
 
     if (!KEY_MANAGER.isReady()) {
-        toast('Key not ready — please re-login', 'error');
+        toast('Key not unlocked', 'error');
         return;
     }
-    var secretKey = KEY_MANAGER.getKey();
+
+    var userEmail = KEY_MANAGER.getEmail();
+    if (!userEmail) { toast('Email not found', 'error'); return; }
 
     var parts = [
         '<!DOCTYPE html>',
@@ -1103,134 +802,156 @@ window.downloadDecryptor = function() {
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
         '<style>',
         '*{margin:0;padding:0;box-sizing:border-box;}',
-        'html,body{width:100%;min-height:100vh;}',
-        'body{background:#05050f;color:#fff;font-family:"Courier New",monospace;overflow-x:hidden;}',
-        '.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,#0b0b1a 0%,#000 100%);z-index:9999;}',
+        'body{background:#05050f;color:#fff;font-family:"Courier New",monospace;min-height:100vh;overflow-x:hidden;}',
+        '.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;}',
         '.spinner{width:60px;height:60px;border:4px solid rgba(0,240,255,0.15);border-top-color:#00f0ff;border-radius:50%;animation:spin 1s linear infinite;}',
         '@keyframes spin{to{transform:rotate(360deg);}}',
         '.txt{color:#00f0ff;font-size:14px;letter-spacing:3px;text-transform:uppercase;}',
-        '.sub{color:#6a6a8a;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:8px;}',
-        '.err{padding:60px 30px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;}',
+        '.pwd-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:16px;padding:30px;text-align:center;}',
+        '.pwd-screen h2{color:#00f0ff;font-size:20px;letter-spacing:3px;text-transform:uppercase;font-family:sans-serif;}',
+        '.pwd-screen p{color:#b0b0d0;font-size:12px;max-width:400px;line-height:1.7;}',
+        '.pwd-screen input{width:100%;max-width:340px;padding:14px;background:#000;color:#00ff64;border:1.5px solid #00f0ff;border-radius:8px;font-family:"Courier New",monospace;font-size:14px;letter-spacing:3px;outline:none;text-align:center;}',
+        '.pwd-screen button{background:linear-gradient(135deg,#00f0ff,#b400ff);border:none;padding:14px 32px;border-radius:8px;color:#000;font-weight:bold;cursor:pointer;letter-spacing:2px;text-transform:uppercase;font-size:13px;font-family:sans-serif;}',
+        '.pwd-screen button:disabled{opacity:0.4;cursor:not-allowed;}',
+        '.err-msg{color:#ff0064;font-size:12px;min-height:18px;font-family:sans-serif;}',
+        '.key-preview{margin-top:10px;padding:10px 20px;background:rgba(255,215,0,0.1);border:1px solid #ffd700;border-radius:8px;color:#ffd700;font-family:"Courier New",monospace;font-size:14px;letter-spacing:1px;}',
+        '.err-wrap{padding:60px 30px;text-align:center;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;}',
         '.err-icon{font-size:72px;}',
-        '.err h2{color:#ff0064;font-size:24px;letter-spacing:3px;text-transform:uppercase;}',
-        '.err p{color:#b0b0d0;font-size:13px;line-height:1.7;max-width:500px;}',
-        '.bundle-wrap{max-width:1100px;margin:0 auto;padding:30px 20px;}',
-        '.bundle-title{color:#00f0ff;text-align:center;font-size:22px;letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;font-family:"Orbitron",sans-serif;}',
-        '.file-card{background:rgba(0,240,255,0.04);border-left:4px solid #00f0ff;border-radius:10px;padding:18px;margin-bottom:16px;}',
-        '.file-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;}',
-        '.file-name{color:#ffd700;font-weight:bold;font-size:14px;}',
-        '.file-lang{background:#00f0ff;color:#000;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:bold;text-transform:uppercase;}',
-        '.file-content{background:#000;color:#00ff64;padding:14px;border-radius:8px;font-family:"Courier New",monospace;font-size:12px;line-height:1.5;max-height:400px;overflow:auto;white-space:pre-wrap;word-break:break-word;}',
-        '.dl-btn{background:linear-gradient(135deg,#00f0ff,#b400ff);border:none;padding:10px 20px;border-radius:8px;color:#000;font-weight:bold;cursor:pointer;margin-top:12px;font-family:inherit;letter-spacing:1px;text-transform:uppercase;font-size:11px;}',
-        '.dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,240,255,0.3);}',
+        '.err-wrap h2{color:#ff0064;font-size:22px;letter-spacing:3px;text-transform:uppercase;}',
+        '.err-wrap p{color:#b0b0d0;font-size:13px;line-height:1.7;max-width:500px;}',
         '#renderFrame{width:100%;height:100vh;border:0;display:block;position:fixed;inset:0;z-index:10;}',
         '<' + '/style>',
         '<' + '/head>',
         '<body>',
-        '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
+        
+        /* Loading screen */
+        '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Please wait...<' + '/div><' + '/div>',
+        
+        /* Password screen */
+        '<div class="pwd-screen" id="pwdScreen" style="display:none;">',
+        '  <div style="font-size:60px;">🔐</div>',
+        '  <h2>Password Required</h2>',
+        '  <p>Enter your 14-character password (10 digits + 4 symbols) to decrypt this code.</p>',
+        '  <input type="password" id="pwdInput" maxlength="14" placeholder="••••••••••••••">',
+        '  <button id="pwdBtn" disabled>🔓 Decrypt</button>',
+        '  <div class="err-msg" id="errMsg"></div>',
+        '  <div class="key-preview">NightOrbit_*****_***********</div>',
+        '<' + '/div>',
+        
         '<script>',
-        'var SECRET_KEY=' + JSON.stringify(secretKey) + ';',
+        'var USER_EMAIL=' + JSON.stringify(userEmail) + ';',
         'var ENCRYPTED_DATA=' + JSON.stringify(out) + ';',
+        'var SALT="NightOrbit_CodeForge_v9_2024_MASTER_SALT_@#$%^&*";',
         '',
-        'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
+        'function deriveKey(password){',
+        '  var combined=USER_EMAIL.toLowerCase().trim()+"::"+password;',
+        '  return CryptoJS.PBKDF2(combined,SALT,{',
+        '    keySize:512/32,',
+        '    iterations:500000,',
+        '    hasher:CryptoJS.algo.SHA512',
+        '  }).toString(CryptoJS.enc.Hex);',
+        '}',
         '',
         'function showError(msg){',
         '  document.body.innerHTML="";',
-        '  document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;margin:0;";',
-        '  var err="<div class=\\"err\\">";',
-        '  err+="<div class=\\"err-icon\\">❌<\\/div>";',
-        '  err+="<h2>Decryption Failed<\\/h2>";',
-        '  err+="<p>"+msg+"<\\/p>";',
-        '  err+="<p style=\\"font-size:11px;color:#6a6a8a;margin-top:20px;\\">This decryptor only works with the account that encrypted the code.<\\/p>";',
-        '  err+="<\\/div>";',
-        '  document.body.innerHTML=err;',
+        '  var h="<div class=\\"err-wrap\\"><div class=\\"err-icon\\">❌<\\/div><h2>Decryption Failed<\\/h2><p>"+msg+"<\\/p><p style=\\"font-size:11px;color:#6a6a8a;margin-top:20px;\\">Your password is required to decrypt.<\\/p><\\/div>";',
+        '  document.body.innerHTML=h;',
         '}',
         '',
         'function renderHTML(htmlContent){',
-        '  var loader=document.getElementById("loader");',
-        '  if(loader)loader.style.display="none";',
+        '  document.body.innerHTML="";',
         '  var iframe=document.createElement("iframe");',
         '  iframe.id="renderFrame";',
-        '  iframe.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-top-navigation-by-user-activation");',
+        '  iframe.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads");',
         '  document.body.appendChild(iframe);',
-        '  try{',
-        '    iframe.srcdoc=htmlContent;',
-        '  }catch(e){',
+        '  try{iframe.srcdoc=htmlContent;}',
+        '  catch(e){',
         '    try{',
         '      var blob=new Blob([htmlContent],{type:"text/html;charset=utf-8"});',
-        '      var url=URL.createObjectURL(blob);',
         '      iframe.removeAttribute("srcdoc");',
-        '      iframe.src=url;',
-        '    }catch(e2){',
-        '      showError("Render failed: "+e2.message);',
-        '    }',
+        '      iframe.src=URL.createObjectURL(blob);',
+        '    }catch(e2){showError("Render failed: "+e2.message);}',
         '  }',
         '}',
         '',
-        'function renderText(textContent){',
+        'function renderText(text){',
         '  document.body.innerHTML="";',
         '  document.body.style.cssText="background:#000;color:#00ff64;font-family:\\"Courier New\\",monospace;padding:20px;margin:0;font-size:13px;line-height:1.6;";',
         '  var pre=document.createElement("pre");',
         '  pre.style.cssText="margin:0;white-space:pre-wrap;word-break:break-word;";',
-        '  pre.textContent=textContent;',
+        '  pre.textContent=text;',
         '  document.body.appendChild(pre);',
         '}',
         '',
-        'function renderBundle(bundle){',
-        '  document.body.innerHTML="";',
-        '  document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;padding:20px;margin:0;min-height:100vh;";',
-        '  var h="<div class=\\"bundle-wrap\\">";',
-        '  h+="<div class=\\"bundle-title\\">📦 Multi-File Bundle ("+bundle.__fileCount+" files)<\\/div>";',
-        '  Object.keys(bundle.files).forEach(function(name){',
-        '    var f=bundle.files[name];',
-        '    h+="<div class=\\"file-card\\">";',
-        '    h+="<div class=\\"file-head\\"><span class=\\"file-name\\">📄 "+name+"<\\/span><span class=\\"file-lang\\">"+(f.lang||"?").toUpperCase()+"<\\/span><\\/div>";',
-        '    h+="<pre class=\\"file-content\\">"+f.content.replace(/</g,"&lt;")+"<\\/pre>";',
-        '    h+="<button class=\\"dl-btn\\" data-name=\\""+name+"\\">⬇ Download "+name+"<\\/button>";',
-        '    h+="<\\/div>";',
-        '  });',
-        '  h+="<\\/div>";',
-        '  document.body.innerHTML=h;',
-        '  document.body.querySelectorAll(".dl-btn").forEach(function(b){',
-        '    b.addEventListener("click",function(){',
-        '      var name=this.getAttribute("data-name");',
-        '      var f=bundle.files[name];',
-        '      var blob=new Blob([f.content],{type:"text/plain;charset=utf-8"});',
-        '      var a=document.createElement("a");',
-        '      a.href=URL.createObjectURL(blob);',
-        '      a.download=name;',
-        '      a.click();',
-        '    });',
-        '  });',
-        '}',
-        '',
-        'ready(function(){',
+        'function tryDecrypt(password){',
         '  try{',
-        '    if(typeof CryptoJS==="undefined"){throw new Error("CryptoJS library failed to load. Check your internet connection.");}',
-        '    var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,SECRET_KEY).toString(CryptoJS.enc.Utf8);',
-        '    if(!dec||dec.length===0){throw new Error("Decryption failed — wrong key or corrupted data.");}',
-        '',
+        '    var key=deriveKey(password);',
+        '    var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,key).toString(CryptoJS.enc.Utf8);',
+        '    if(!dec||dec.length===0){throw new Error("Incorrect password.");}',
         '    var isBundle=false,bundle=null;',
         '    try{',
         '      var p=JSON.parse(dec);',
         '      if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}',
         '    }catch(e){}',
-        '',
         '    if(isBundle){',
-        '      renderBundle(bundle);',
+        '      /* Bundle render */',
+        '      document.body.innerHTML="";',
+        '      var h="<div style=\\"max-width:1100px;margin:0 auto;padding:30px 20px;\\"><h1 style=\\"color:#00f0ff;text-align:center;margin-bottom:24px;\\">📦 "+bundle.__fileCount+" Files<\\/h1>";',
+        '      Object.keys(bundle.files).forEach(function(name){',
+        '        h+="<div style=\\"background:rgba(0,240,255,0.04);border-left:4px solid #00f0ff;border-radius:10px;padding:18px;margin-bottom:16px;\\">";',
+        '        h+="<div style=\\"color:#ffd700;font-weight:bold;margin-bottom:10px;\\">📄 "+name+"<\\/div>";',
+        '        h+="<pre style=\\"background:#000;color:#00ff64;padding:14px;border-radius:8px;font-size:12px;max-height:400px;overflow:auto;white-space:pre-wrap;\\">"+bundle.files[name].content.replace(/</g,"&lt;")+"<\\/pre>";',
+        '        h+="<\\/div>";',
+        '      });',
+        '      h+="<\\/div>";',
+        '      document.body.innerHTML=h;',
         '    } else {',
-        '      var trimmed=dec.trim();',
-        '      var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);',
-        '      if(isHTML){',
-        '        renderHTML(dec);',
-        '      } else {',
-        '        renderText(dec);',
-        '      }',
+        '      var t=dec.trim();',
+        '      var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(t)||/<html[\\s>]/i.test(t)||/<body[\\s>]/i.test(t);',
+        '      if(isHTML){renderHTML(dec);} else {renderText(dec);}',
         '    }',
         '  }catch(e){',
         '    showError(e.message);',
         '  }',
+        '}',
+        '',
+        'var pwdInput=document.getElementById("pwdInput");',
+        'var pwdBtn=document.getElementById("pwdBtn");',
+        'var errMsg=document.getElementById("errMsg");',
+        '',
+        'document.getElementById("loader").style.display="none";',
+        'document.getElementById("pwdScreen").style.display="flex";',
+        '',
+        'pwdInput.addEventListener("input",function(){',
+        '  pwdBtn.disabled=this.value.length!==14;',
+        '  errMsg.textContent="";',
         '});',
+        '',
+        'pwdInput.addEventListener("keypress",function(e){',
+        '  if(e.key==="Enter"&&!pwdBtn.disabled){pwdBtn.click();}',
+        '});',
+        '',
+        'pwdBtn.addEventListener("click",function(){',
+        '  errMsg.textContent="⏳ Verifying...";',
+        '  setTimeout(function(){',
+        '    var pwd=pwdInput.value;',
+        '    try{',
+        '      var key=deriveKey(pwd);',
+        '      var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,key).toString(CryptoJS.enc.Utf8);',
+        '      if(!dec||dec.length===0){',
+        '        errMsg.textContent="❌ Incorrect password. Try again.";',
+        '        pwdInput.value="";',
+        '        pwdBtn.disabled=true;',
+        '        pwdInput.focus();',
+        '        return;',
+        '      }',
+        '      tryDecrypt(pwd);',
+        '    }catch(e){',
+        '      errMsg.textContent="❌ "+e.message;',
+        '    }',
+        '  },50);',
+        '});',
+        '',
         '<' + '/script>',
         '<' + '/body>',
         '<' + '/html>'
@@ -1242,130 +963,37 @@ window.downloadDecryptor = function() {
     a.href = URL.createObjectURL(blob);
     a.download = 'decryptor.html';
     a.click();
-    showStatus('success', '🎁 Decryptor downloaded! Works with 5MB+ files.');
+
+    showStatus('success', '🎁 Secure decryptor downloaded!');
     toast('Decryptor downloaded!', 'success');
-    addHistory('Downloaded decryptor.html (5MB+ support)', 'success');
 };
 
 /* ═══ CLEAR ═══ */
 window.clearAll = function() {
     inputCodeEl.value = '';
     document.getElementById('outputEnc').value = '';
-    document.getElementById('outputStatsGrid').style.display = 'none';
     document.getElementById('inputStats').style.display = 'none';
-    document.getElementById('outputFileInfo').textContent = '';
     document.getElementById('status').className = 'status';
     state.uploadedFiles = {};
-    state.lastEncrypt = null;
     renderFileList();
-    fileInput.value = '';
-    closeDrawer();
     showStatus('info', '🧹 Cleared');
     toast('Cleared', 'info');
-    addHistory('Cleared all', 'warn');
-    updateProgress();
 };
 
-window.clearHistory = function() {
-    state.history = [];
-    renderHistory();
-    toast('History cleared', 'info');
-};
-
-/* ═══ WELCOME NAME + KEY INIT ═══ */
-function setWelcomeName(name) {
-    var el = document.getElementById('welcomeName');
-    if (el && name) el.textContent = name;
-}
-
-function initUserKey(user) {
-    if (!user || !user.email) return;
-
-    var success = KEY_MANAGER.init(user);
-    if (!success) return;
-
-    var keyInput = document.getElementById('secretKey');
-    var badge = document.getElementById('keyStatusBadge');
-
-    if (keyInput) {
-        keyInput.value = '***** — Hash: ' + KEY_MANAGER.getHash();
-    }
-    if (badge) {
-        badge.innerHTML = '<i class="fa-solid fa-shield-halved"></i> SECURED';
-        badge.style.background = 'rgba(0,255,100,0.15)';
-        badge.style.color = 'var(--green)';
-        badge.style.borderColor = 'rgba(0,255,100,0.3)';
-    }
-
-    addHistory('🔐 Unique key loaded for ' + user.email, 'success');
-    toast('🔐 Your unique key is ready', 'success');
-}
-
-/* ═══ AUTH EVENTS ═══ */
-document.addEventListener('auth-guard-ready', function(e) {
-    if (!e.detail) return;
-    var name = e.detail.name || (e.detail.email ? e.detail.email.split('@')[0] : 'User');
-    setWelcomeName(name);
-    if (e.detail.email) {
-        initUserKey({ email: e.detail.email });
-    }
-});
-
-document.addEventListener('auth-ready', function(e) {
-    if (!e.detail || !e.detail.user) return;
-    var u = e.detail.user;
-    var name = u.displayName || (u.email ? u.email.split('@')[0] : 'User');
-    setWelcomeName(name);
-    if (u.email) {
-        initUserKey(u);
-    }
-});
-
-/* Fallback for auth init */
-setTimeout(function() {
-    if (window.AuthGuard && AuthGuard.getUser) {
-        var u = AuthGuard.getUser();
-        if (u && u.email && !KEY_MANAGER.isReady()) {
-            setWelcomeName(u.displayName || (u.email ? u.email.split('@')[0] : 'User'));
-            initUserKey(u);
-        }
-    }
-    /* Also try Firebase directly */
-    if (window.firebase && firebase.auth && !KEY_MANAGER.isReady()) {
-        var fu = firebase.auth().currentUser;
-        if (fu && fu.email) {
-            setWelcomeName(fu.displayName || (fu.email ? fu.email.split('@')[0] : 'User'));
-            initUserKey(fu);
-        }
-    }
-}, 2000);
-
-/* ═══ SESSION TIMEOUT (30 min inactivity) ═══ */
+/* ═══ SESSION TIMEOUT ═══ */
 var _lastActivity = Date.now();
-var SESSION_TIMEOUT = 30 * 60 * 1000;
-document.addEventListener('click', function() { _lastActivity = Date.now(); });
-document.addEventListener('keypress', function() { _lastActivity = Date.now(); });
 setInterval(function() {
-    if (KEY_MANAGER.isReady() && Date.now() - _lastActivity > SESSION_TIMEOUT) {
+    if (KEY_MANAGER.isReady() && Date.now() - _lastActivity > 30 * 60 * 1000) {
         KEY_MANAGER.clear();
-        var keyInput = document.getElementById('secretKey');
-        var badge = document.getElementById('keyStatusBadge');
-        if (keyInput) keyInput.value = '***** — Session expired';
-        if (badge) {
-            badge.innerHTML = '<i class="fa-solid fa-clock"></i> EXPIRED';
-            badge.style.background = 'rgba(255,215,0,0.15)';
-            badge.style.color = 'var(--gold)';
-        }
-        toast('Session expired. Please refresh to continue.', 'warn');
-        addHistory('Session expired — key cleared from memory', 'warn');
+        toast('Session expired. Please re-enter password.', 'warn');
+        pwdModal.open();
+        pwdInput.focus();
     }
 }, 60000);
+document.addEventListener('click', function() { _lastActivity = Date.now(); });
+document.addEventListener('keypress', function() { _lastActivity = Date.now(); });
 
-/* ═══ INIT ═══ */
-renderHistory();
-addHistory('Universal Encrypt Pro v8 SECURE HEAVY initialized', 'info');
-updateDetection();
-console.log('%c🔐 Universal Encrypt Pro v8 SECURE HEAVY loaded (5MB+ support, per-user keys)',
+console.log('%c🔐 Universal Code Encrypt v9 loaded (password-protected)', 
     'color:#00f0ff;font-size:16px;font-weight:bold;');
 
 })();
