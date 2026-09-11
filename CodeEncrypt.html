@@ -601,8 +601,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
    ═══════════════════════════════════════════════════════════ */
 
 var SALT = 'NightOrbit_CodeForge_v11_2024_MASTER_SALT_@#$%^&*';
-var ITERATIONS = 1000000;   /* 1 MILLION — heavy */
-var HASH_ITERATIONS = 200000; /* password hash iterations */
+var ITERATIONS = 100000;  /* 1 MILLION — heavy */
+var HASH_ITERATIONS = 50000; /* password hash iterations */ /* password hash iterations */
 var LOCKED_KEY = 'NightOrbit_*****_***********';
 var SESSION_TIMEOUT = 20 * 1000; /* 20 seconds */
 
@@ -1400,7 +1400,7 @@ window.downloadDecryptor = function() {
         '  var effectiveSalt=SALT+"::"+USER_SALT;',
         '  return CryptoJS.PBKDF2(combined,effectiveSalt,{',
         '    keySize:512/32,',
-        '    iterations:1000000,',
+        '    iterations:100000,',
         '    hasher:CryptoJS.algo.SHA512',
         '  }).toString(CryptoJS.enc.Hex);',
         '}',
