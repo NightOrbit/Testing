@@ -18,104 +18,89 @@
     </div>
 </noscript>
 
-<!-- ============================================================ -->
-<!--  SMART BLOCKING — Firebase-safe                              -->
-<!-- ============================================================ -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  🔒 SECURITY BLOCKING — Firebase-safe, single consolidated  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
 <script>
 (function() {
     'use strict';
 
-    function isEditableElement(el) {
+    function isEditable(el) {
         if (!el || !el.tagName) return false;
         var tag = el.tagName.toLowerCase();
         return tag === 'input' || tag === 'textarea' || tag === 'select' || el.isContentEditable;
     }
 
-    function blockKey(e) {
+    function onKeyDown(e) {
         var key = e.key, code = e.keyCode;
         var ctrl = e.ctrlKey, shift = e.shiftKey, alt = e.altKey, meta = e.metaKey;
-        var editable = isEditableElement(e.target);
+        var editable = isEditable(e.target);
 
-        if (key && key.startsWith('F') && key.length <= 3) {
-            var num = parseInt(key.replace('F', ''));
+        // Function keys F1–F12
+        if (key && key.length <= 3 && key.charAt(0) === 'F') {
+            var num = parseInt(key.substring(1), 10);
             if (num >= 1 && num <= 12) { e.preventDefault(); e.stopPropagation(); return false; }
         }
+        // DevTools
         if (key === 'F12' || code === 123) { e.preventDefault(); e.stopPropagation(); return false; }
+        if (ctrl && shift && (key === 'I' || key === 'J' || key === 'C' || key === 'K' ||
+                              code === 73 || code === 74 || code === 67 || code === 75)) {
+            e.preventDefault(); e.stopPropagation(); return false;
+        }
+        if (ctrl && (key === 'U' || code === 85)) { e.preventDefault(); e.stopPropagation(); return false; }
         if (key === 'PrintScreen' || code === 44) { e.preventDefault(); e.stopPropagation(); return false; }
-        if (key === 'Insert' || code === 45) { e.preventDefault(); e.stopPropagation(); return false; }
-        if (key === 'Home' || code === 36) { e.preventDefault(); e.stopPropagation(); return false; }
-        if (key === 'PageUp' || key === 'PageDown' || code === 33 || code === 34) { e.preventDefault(); e.stopPropagation(); return false; }
 
-        if (ctrl) {
-            var c = key ? key.toUpperCase() : '';
-            if (editable && ['V','C','A','X','Z','Y'].includes(c)) return true;
-            if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); return false; }
-            if (c >= '0' && c <= '9') { e.preventDefault(); e.stopPropagation(); return false; }
-            if (['`','-','=','[',']','\\',';',"'",',','.','/'].includes(key)) { e.preventDefault(); e.stopPropagation(); return false; }
+        // Block these only outside inputs
+        if (!editable) {
+            if (key === 'Insert' || code === 45) { e.preventDefault(); e.stopPropagation(); return false; }
+            if (key === 'Home' || code === 36) { e.preventDefault(); e.stopPropagation(); return false; }
+            if (key === 'PageUp' || key === 'PageDown' || code === 33 || code === 34) {
+                e.preventDefault(); e.stopPropagation(); return false;
+            }
+            if (key === 'Backspace') { e.preventDefault(); e.stopPropagation(); return false; }
+            if (key === 'Tab') { e.preventDefault(); e.stopPropagation(); return false; }
         }
-        if (ctrl && shift) {
-            var c = key ? key.toUpperCase() : '';
-            if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); return false; }
-        }
-        if (alt) {
-            var c = key ? key.toUpperCase() : '';
-            if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); return false; }
-            if (key === 'F4' || code === 115) { e.preventDefault(); e.stopPropagation(); return false; }
-        }
-        if (meta) {
-            var c = key ? key.toUpperCase() : '';
-            if (editable && ['V','C','A','X','Z'].includes(c)) return true;
-            if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); return false; }
-        }
-        if (key === 'Backspace' && !editable) { e.preventDefault(); e.stopPropagation(); return false; }
-        if (key === 'Tab' && !editable) { e.preventDefault(); e.stopPropagation(); return false; }
         return true;
     }
 
-    document.addEventListener('keydown', blockKey, { capture: true, passive: false });
-    window.addEventListener('keydown', blockKey, { capture: true, passive: false });
+    document.addEventListener('keydown', onKeyDown, { capture: true, passive: false });
 
     document.addEventListener('contextmenu', function(e) {
-        if (isEditableElement(e.target)) return true;
-        e.preventDefault(); e.stopPropagation();
-    }, { capture: true });
-
-    try { window.console.clear = function() {}; } catch(e) {}
-
-    document.addEventListener('selectstart', function(e) {
-        if (isEditableElement(e.target)) return true;
-        e.preventDefault();
-    }, { capture: true });
-
-    document.addEventListener('dragstart', function(e) {
-        if (isEditableElement(e.target)) return true;
-        e.preventDefault();
+        if (isEditable(e.target)) return true;
+        e.preventDefault(); e.stopPropagation(); return false;
     }, { capture: true });
 
     document.addEventListener('copy', function(e) {
-        if (isEditableElement(e.target)) return true;
-        e.preventDefault();
+        if (isEditable(e.target)) return true;
+        e.preventDefault(); return false;
     }, { capture: true });
 
     document.addEventListener('cut', function(e) {
-        if (isEditableElement(e.target)) return true;
-        e.preventDefault();
+        if (isEditable(e.target)) return true;
+        e.preventDefault(); return false;
+    }, { capture: true });
+
+    document.addEventListener('selectstart', function(e) {
+        if (isEditable(e.target)) return true;
+        e.preventDefault(); return false;
+    }, { capture: true });
+
+    document.addEventListener('dragstart', function(e) {
+        if (isEditable(e.target)) return true;
+        e.preventDefault(); return false;
     }, { capture: true });
 
     document.addEventListener('auxclick', function(e) {
-        if (e.button === 1) { e.preventDefault(); e.stopPropagation(); }
+        if (e.button === 1) { e.preventDefault(); e.stopPropagation(); return false; }
     }, { capture: true });
+
+    try { if (window.console && window.console.clear) window.console.clear = function() {}; } catch(e) {}
 })();
 </script>
 
-<!-- ============================================================ -->
-<!--  FIREBASE SDKs                                               -->
-<!-- ============================================================ -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-
-<!-- 🔒 AUTH GUARD -->
 <script src="auth-guard.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -132,6 +117,7 @@
     --neon-purple: #b400ff;
     --neon-gold: #ffd700;
     --neon-green: #00ff64;
+    --neon-red: #ff0064;
     --bg: #05050f;
     --card: rgba(11, 11, 26, 0.94);
     --border: rgba(0, 240, 255, 0.22);
@@ -160,6 +146,18 @@ body::before {
     z-index: 0;
 }
 
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(0,240,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,240,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+}
+
 .app {
     max-width: 1400px;
     margin: 0 auto;
@@ -168,11 +166,12 @@ body::before {
     z-index: 1;
 }
 
+/* ═══ HEADER ═══ */
 .header {
     background: rgba(11, 11, 26, 0.95);
     border: 2px solid var(--neon-cyan);
     border-radius: 18px;
-    padding: 18px 22px;
+    padding: 22px 24px;
     margin-bottom: 15px;
     box-shadow: 0 0 50px rgba(0, 240, 255, 0.15);
     text-align: center;
@@ -185,7 +184,7 @@ body::before {
     position: absolute; inset: -2px;
     border-radius: 18px;
     padding: 2px;
-    background: conic-gradient(from 0deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple), var(--neon-cyan));
+    background: conic-gradient(from 0deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple), var(--neon-gold), var(--neon-cyan));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -200,14 +199,14 @@ body::before {
 
 h1 {
     font-family: 'Orbitron', sans-serif;
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 900;
     background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     letter-spacing: 3px;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     text-transform: uppercase;
 }
 
@@ -218,6 +217,35 @@ h1 {
     text-transform: uppercase;
 }
 
+.header-stats {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+}
+
+.header-stat {
+    background: rgba(0, 240, 255, 0.05);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-radius: 40px;
+    padding: 4px 12px;
+    font-size: 10px;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.header-stat i { color: var(--neon-cyan); font-size: 11px; }
+.header-stat.gold { border-color: rgba(255,215,0,0.2); }
+.header-stat.gold i { color: var(--neon-gold); }
+.header-stat.pink { border-color: rgba(255,45,149,0.2); }
+.header-stat.pink i { color: var(--neon-pink); }
+
+/* ═══ TOP ACTIONS ═══ */
 .top-actions {
     display: flex;
     justify-content: center;
@@ -255,11 +283,98 @@ h1 {
 .top-btn.green { background: linear-gradient(135deg, #00ff88, #00b85c); }
 .top-btn.pink { background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple)); color: #fff; }
 
+/* ═══ PROGRESS BAR ═══ */
+.progress-wrap {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1.5px solid rgba(0, 240, 255, 0.15);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.progress-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    color: var(--neon-cyan);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.progress-track {
+    flex: 1;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    min-width: 150px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
+    border-radius: 20px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+    box-shadow: 0 0 15px rgba(0,240,255,0.6);
+}
+
+.progress-percent {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--neon-gold);
+    font-weight: 700;
+    min-width: 45px;
+    text-align: right;
+}
+
+.progress-steps {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+    flex-wrap: wrap;
+}
+
+.progress-step {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1.5px solid rgba(0, 240, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 900;
+    color: var(--text-muted);
+    transition: all 0.3s;
+}
+
+.progress-step.active {
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+    color: #000;
+    border-color: #fff;
+    box-shadow: 0 0 15px rgba(0,240,255,0.6);
+    transform: scale(1.15);
+}
+
+.progress-step.done {
+    background: var(--neon-green);
+    color: #000;
+    border-color: #fff;
+}
+
+/* ═══ CARD ═══ */
 .card {
     background: var(--card);
     border: 2px solid var(--border);
     border-radius: 18px;
-    padding: 20px;
+    padding: 22px;
     box-shadow: 0 0 40px rgba(0, 240, 255, 0.08);
     margin-bottom: 15px;
     position: relative;
@@ -271,6 +386,9 @@ h1 {
     background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
     opacity: 0.6;
 }
+
+.card.collapsed .card-body { display: none; }
+.card.collapsed .card-toggle i { transform: rotate(-90deg); }
 
 h2, h3 {
     font-family: 'Orbitron', sans-serif;
@@ -285,6 +403,18 @@ h2, h3 {
     flex-wrap: wrap;
     gap: 8px;
 }
+
+.card-toggle {
+    background: transparent;
+    border: none;
+    color: var(--neon-cyan);
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.card-toggle i { transition: transform 0.3s; }
 
 .badge {
     background: rgba(0, 240, 255, 0.15);
@@ -303,6 +433,7 @@ h2, h3 {
 .badge.danger { background: rgba(255, 0, 100, 0.15); color: #ff0064; border-color: rgba(255,0,100,0.3); }
 .badge.pink { background: rgba(255, 45, 149, 0.15); color: var(--neon-pink); border-color: rgba(255,45,149,0.3); }
 
+/* ═══ SECTION BLOCK ═══ */
 .section-block {
     background: rgba(0, 0, 0, 0.3);
     border: 1.5px solid rgba(0, 240, 255, 0.15);
@@ -341,11 +472,12 @@ h2, h3 {
 
 .section-title .icon { font-size: 18px; }
 
+/* ═══ GUIDE BOX ═══ */
 .guide-box {
     background: rgba(0, 240, 255, 0.05);
     border-left: 3px solid var(--neon-cyan);
     border-radius: 8px;
-    padding: 10px 14px;
+    padding: 12px 14px;
     margin-bottom: 12px;
     font-size: 11px;
     color: #ccc;
@@ -363,6 +495,7 @@ h2, h3 {
     font-family: 'JetBrains Mono', monospace;
 }
 
+/* ═══ TEXTAREA ═══ */
 textarea, input[type="text"] {
     width: 100%;
     padding: 12px 14px;
@@ -379,7 +512,7 @@ textarea, input[type="text"] {
 
 textarea { min-height: 140px; max-height: 400px; }
 textarea.tall { min-height: 220px; }
-textarea.huge { min-height: 320px; }
+textarea.huge { min-height: 340px; }
 
 textarea:focus, input[type="text"]:focus {
     outline: none;
@@ -396,11 +529,12 @@ textarea[readonly] {
     cursor: not-allowed;
 }
 
+/* ═══ BUTTONS ═══ */
 .mini-btn {
     background: rgba(0, 240, 255, 0.08);
     border: 1.5px solid rgba(0, 240, 255, 0.25);
     color: var(--neon-cyan);
-    padding: 6px 12px;
+    padding: 7px 12px;
     border-radius: 8px;
     font-size: 10px;
     font-weight: bold;
@@ -427,12 +561,14 @@ textarea[readonly] {
 .mini-btn.pink:hover { background: rgba(255,45,149,0.15); border-color: var(--neon-pink); }
 .mini-btn.green { color: #00ff64; border-color: rgba(0,255,100,0.25); background: rgba(0,255,100,0.06); }
 .mini-btn.green:hover { background: rgba(0,255,100,0.15); border-color: #00ff64; }
+.mini-btn.red { color: var(--neon-red); border-color: rgba(255,0,100,0.25); background: rgba(255,0,100,0.06); }
+.mini-btn.red:hover { background: rgba(255,0,100,0.15); border-color: var(--neon-red); }
 
 .btn {
     background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
     color: #000;
     border: none;
-    padding: 14px 24px;
+    padding: 15px 26px;
     border-radius: 12px;
     font-weight: 900;
     font-size: 12px;
@@ -445,6 +581,8 @@ textarea[readonly] {
     justify-content: center;
     gap: 8px;
     font-family: 'Orbitron', sans-serif;
+    position: relative;
+    overflow: hidden;
 }
 
 .btn:hover:not(:disabled) {
@@ -459,6 +597,17 @@ textarea[readonly] {
 .btn.red { background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple)); color: #fff; }
 .btn.secondary { background: rgba(0, 240, 255, 0.1); border: 1.5px solid rgba(0, 240, 255, 0.35); color: var(--neon-cyan); }
 
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::after { left: 100%; }
+
 .btn-row {
     display: flex;
     gap: 8px;
@@ -466,6 +615,7 @@ textarea[readonly] {
     margin-top: 8px;
 }
 
+/* ═══ MODE TOGGLE ═══ */
 .mode-toggle {
     display: flex;
     gap: 8px;
@@ -480,7 +630,7 @@ textarea[readonly] {
 .mode-btn {
     flex: 1;
     min-width: 140px;
-    padding: 12px 14px;
+    padding: 13px 14px;
     background: transparent;
     border: 1.5px solid transparent;
     border-radius: 8px;
@@ -492,6 +642,8 @@ textarea[readonly] {
     text-transform: uppercase;
     letter-spacing: 1.2px;
     font-family: inherit;
+    position: relative;
+    overflow: hidden;
 }
 
 .mode-btn.active {
@@ -505,6 +657,7 @@ textarea[readonly] {
     color: var(--neon-cyan);
 }
 
+/* ═══ STATUS ═══ */
 .status {
     padding: 12px 15px;
     border-radius: 10px;
@@ -524,6 +677,7 @@ textarea[readonly] {
 .status.loading { background: rgba(255, 215, 0, 0.08); border: 1.5px solid var(--neon-gold); color: var(--neon-gold); }
 .status.info { background: rgba(0, 240, 255, 0.08); border: 1.5px solid var(--neon-cyan); color: var(--neon-cyan); }
 
+/* ═══ PREVIEW BOX ═══ */
 .preview-box {
     background: rgba(0, 0, 0, 0.5);
     border: 1.5px solid rgba(0, 240, 255, 0.2);
@@ -542,6 +696,7 @@ textarea[readonly] {
     display: flex;
     align-items: center;
     gap: 8px;
+    justify-content: space-between;
 }
 
 .preview-code {
@@ -564,6 +719,243 @@ textarea[readonly] {
     font-style: italic;
 }
 
+/* ═══ STATS GRID ═══ */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.stat-card {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1.5px solid rgba(0, 240, 255, 0.15);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.stat-card:hover {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 20px rgba(0,240,255,0.15);
+    transform: translateY(-3px);
+}
+
+.stat-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--neon-cyan);
+}
+
+.stat-value.gold { color: var(--neon-gold); }
+.stat-value.green { color: var(--neon-green); }
+.stat-value.pink { color: var(--neon-pink); }
+
+/* ═══ HISTORY / ACTIVITY ═══ */
+.history-list {
+    max-height: 200px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 240, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-secondary);
+}
+
+.history-item:last-child { border-bottom: none; }
+
+.history-time {
+    color: var(--text-muted);
+    font-size: 10px;
+    flex-shrink: 0;
+    min-width: 70px;
+}
+
+.history-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.history-dot.info { background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan); }
+.history-dot.success { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
+.history-dot.error { background: var(--neon-red); box-shadow: 0 0 8px var(--neon-red); }
+.history-dot.warn { background: var(--neon-gold); box-shadow: 0 0 8px var(--neon-gold); }
+
+/* ═══ TABS ═══ */
+.tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+    overflow-x: auto;
+    flex-wrap: nowrap;
+}
+
+.tab {
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    transition: 0.3s;
+    white-space: nowrap;
+    font-weight: 700;
+}
+
+.tab:hover { color: var(--neon-cyan); }
+
+.tab.active {
+    color: var(--neon-cyan);
+}
+
+.tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 2px;
+    background: var(--neon-cyan);
+    box-shadow: 0 0 10px var(--neon-cyan);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active { display: block; }
+
+/* ═══ TOAST ═══ */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+    max-width: 400px;
+}
+
+.toast {
+    background: rgba(11, 11, 26, 0.98);
+    border: 2px solid var(--neon-cyan);
+    border-radius: 12px;
+    padding: 12px 18px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 30px rgba(0,240,255,0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    pointer-events: auto;
+    animation: toastIn 0.4s ease;
+    min-width: 250px;
+}
+
+.toast.success { border-color: var(--neon-green); box-shadow: 0 0 30px rgba(0,255,100,0.3); }
+.toast.error { border-color: var(--neon-red); box-shadow: 0 0 30px rgba(255,0,100,0.3); }
+.toast.warn { border-color: var(--neon-gold); box-shadow: 0 0 30px rgba(255,215,0,0.3); }
+
+.toast-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.toast.success .toast-icon { color: var(--neon-green); }
+.toast.error .toast-icon { color: var(--neon-red); }
+.toast.warn .toast-icon { color: var(--neon-gold); }
+
+@keyframes toastIn {
+    from { transform: translateX(400px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.toast.removing {
+    animation: toastOut 0.3s ease forwards;
+}
+
+@keyframes toastOut {
+    to { transform: translateX(400px); opacity: 0; }
+}
+
+/* ═══ SHORTCUTS ═══ */
+.shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+.shortcut {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 240, 255, 0.1);
+    border-radius: 10px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    transition: 0.3s;
+}
+
+.shortcut:hover {
+    border-color: var(--neon-cyan);
+    background: rgba(0, 240, 255, 0.04);
+}
+
+.shortcut-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.shortcut-label i { color: var(--neon-cyan); font-size: 13px; }
+
+.kbd {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    border-radius: 5px;
+    padding: 3px 7px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--neon-gold);
+    font-weight: 700;
+}
+
+/* ═══ RESPONSIVE ═══ */
 @media (max-width: 768px) {
     .app { padding: 10px; }
     h1 { font-size: 18px; letter-spacing: 2px; }
@@ -574,7 +966,10 @@ textarea[readonly] {
     .top-actions { flex-direction: column; }
     .top-btn { justify-content: center; }
     textarea { font-size: 11px; }
-    .btn { font-size: 11px; padding: 12px 18px; }
+    .btn { font-size: 11px; padding: 13px 20px; }
+    .progress-steps { display: none; }
+    .header-stats { gap: 8px; }
+    .header-stat { font-size: 9px; padding: 3px 9px; }
 }
 
 @media (max-width: 480px) {
@@ -583,8 +978,11 @@ textarea[readonly] {
     .card { padding: 12px; }
     h2, h3 { font-size: 11px; }
     .section-title { font-size: 10px; }
-    .btn { font-size: 10px; padding: 10px 14px; letter-spacing: 1px; }
-    .mini-btn { font-size: 9px; padding: 5px 10px; }
+    .btn { font-size: 10px; padding: 11px 16px; letter-spacing: 1.5px; }
+    .mini-btn { font-size: 9px; padding: 6px 10px; }
+    .stat-value { font-size: 14px; }
+    .toast-container { left: 10px; right: 10px; bottom: 10px; }
+    .toast { min-width: auto; }
 }
 </style>
 </head>
@@ -592,54 +990,83 @@ textarea[readonly] {
 
 <div class="app">
 
+    <!-- ═══ HEADER ═══ -->
     <div class="header">
         <h1>⚡ Create JSON File</h1>
         <div class="subtitle">NightOrbit CodeForge · Combine · Convert · Export</div>
+        <div class="header-stats">
+            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v14 HEAVY</span>
+            <span class="header-stat gold"><i class="fa-solid fa-shield-halved"></i> Firebase-Safe</span>
+            <span class="header-stat pink"><i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Detect</span>
+            <span class="header-stat"><i class="fa-solid fa-code"></i> Comment-Safe</span>
+        </div>
     </div>
 
+    <!-- ═══ PROGRESS ═══ -->
+    <div class="progress-wrap">
+        <div class="progress-label">Progress</div>
+        <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-percent" id="progressPercent">0%</div>
+        <div class="progress-steps">
+            <div class="progress-step" id="step1">1</div>
+            <div class="progress-step" id="step2">2</div>
+            <div class="progress-step" id="step3">3</div>
+            <div class="progress-step" id="step4">4</div>
+        </div>
+    </div>
+
+    <!-- ═══ TOP ACTIONS ═══ -->
     <div class="top-actions">
         <a href="dashboard.html" class="top-btn gold">⬅ BACK TO DASHBOARD</a>
         <button class="top-btn pink" onclick="scrollToSection('convertSection')">📦 GO TO CONVERT</button>
+        <button class="top-btn green" onclick="loadSampleCode()">📥 LOAD SAMPLE</button>
     </div>
 
+    <!-- ═══ GUIDE ═══ -->
     <div class="card">
         <div class="guide-box">
             <strong>📌 4 Simple Steps:</strong><br>
             1️⃣ <b>Config Mode</b> — choose Demo / Your Config / No Config<br>
             2️⃣ <b>Paste your code</b> (HTML + CSS + JS together)<br>
-            3️⃣ Click <b>"PARSE & SEPARATE CODE"</b> — HTML, CSS, JS will be separated<br>
+            3️⃣ Click <b>"PARSE & SEPARATE CODE"</b> — comments removed safely<br>
             4️⃣ Click <b>"CONVERT TO JSON"</b> — your <code>code.json</code> is ready!
+            <br><br>
+            <b style="color:var(--neon-gold);">⚠️ Important:</b> JSON-LD, Google Analytics, GTM, and other data scripts <b>stay in HTML</b>. Only real executable JS goes to the JS field.
         </div>
     </div>
 
+    <!-- ═══ STEP 1: CONFIG ═══ -->
     <div class="card" id="configSection">
-        <h3>🔥 STEP 1 — Config Setup <span class="badge" id="configModeBadge">DEMO</span></h3>
+        <h3>
+            <span>🔥 STEP 1 — Config Setup <span class="badge" id="configModeBadge">DEMO</span></span>
+            <button class="card-toggle" onclick="toggleCard('configSection')"><i class="fa-solid fa-chevron-down"></i></button>
+        </h3>
 
-        <div class="guide-box">
-            <strong>📌 Choose Config Mode:</strong><br>
-            • <b>Demo Config</b> — Placeholder values (for testing)<br>
-            • <b>Your Config</b> — Paste your own Firebase config (for real app)<br>
-            • <b>No Config</b> — Static app without Firebase (config: null)
-        </div>
-
-        <div class="mode-toggle">
-            <button class="mode-btn active" data-mode="demo" onclick="setConfigMode('demo')">🎭 DEMO CONFIG</button>
-            <button class="mode-btn" data-mode="custom" onclick="setConfigMode('custom')">🔑 YOUR CONFIG</button>
-            <button class="mode-btn" data-mode="null" onclick="setConfigMode('null')">🚫 NO CONFIG (NULL)</button>
-        </div>
-
-        <div id="demoConfigPreview" class="section-block">
-            <div class="section-header">
-                <div class="section-title">
-                    <span class="icon">🎭</span>
-                    <span>DEMO CONFIG (Preview)</span>
-                </div>
-                <span class="badge gold">PLACEHOLDER VALUES</span>
-            </div>
+        <div class="card-body">
             <div class="guide-box">
-                This is a demo config with placeholder values. For real Firebase, choose <strong>"YOUR CONFIG"</strong>.
+                <strong>📌 Choose Config Mode:</strong><br>
+                • <b>Demo Config</b> — Placeholder values (for testing)<br>
+                • <b>Your Config</b> — Paste your own Firebase config (for real app)<br>
+                • <b>No Config</b> — Static app without Firebase (config: null)
             </div>
-            <textarea id="demoConfigArea" readonly>{
+
+            <div class="mode-toggle">
+                <button class="mode-btn active" data-mode="demo" onclick="setConfigMode('demo')">🎭 DEMO CONFIG</button>
+                <button class="mode-btn" data-mode="custom" onclick="setConfigMode('custom')">🔑 YOUR CONFIG</button>
+                <button class="mode-btn" data-mode="null" onclick="setConfigMode('null')">🚫 NO CONFIG (NULL)</button>
+            </div>
+
+            <div id="demoConfigPreview" class="section-block">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="icon">🎭</span>
+                        <span>DEMO CONFIG (Preview)</span>
+                    </div>
+                    <span class="badge gold">PLACEHOLDER VALUES</span>
+                </div>
+                <textarea id="demoConfigArea" readonly>{
   "config": {
     "firebase": {
       "apiKey": "your-api-key",
@@ -656,20 +1083,17 @@ textarea[readonly] {
   "css": "",
   "js": ""
 }</textarea>
-        </div>
+            </div>
 
-        <div id="customConfigSection" class="section-block" style="display:none;">
-            <div class="section-header">
-                <div class="section-title">
-                    <span class="icon">🔑</span>
-                    <span>YOUR FIREBASE CONFIG</span>
+            <div id="customConfigSection" class="section-block" style="display:none;">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="icon">🔑</span>
+                        <span>YOUR FIREBASE CONFIG</span>
+                    </div>
+                    <span class="badge" id="customConfigBadge">EMPTY</span>
                 </div>
-                <span class="badge" id="customConfigBadge">EMPTY</span>
-            </div>
-            <div class="guide-box">
-                Paste your Firebase config here. If you don't have a config, choose <strong>"NO CONFIG (NULL)"</strong>.
-            </div>
-            <textarea id="customConfigArea" class="tall" placeholder='{
+                <textarea id="customConfigArea" class="tall" placeholder='{
   "apiKey": "AIzaSy...",
   "authDomain": "your-app.firebaseapp.com",
   "databaseURL": "https://your-app.firebaseio.com",
@@ -679,124 +1103,245 @@ textarea[readonly] {
   "appId": "1:123:web:abc",
   "measurementId": "G-XXXXXX"
 }'></textarea>
-            <div class="btn-row">
-                <button class="mini-btn" onclick="copyCustomConfig()">📋 COPY</button>
-                <button class="mini-btn gold" onclick="compactCustomConfig()">🗜️ COMPACT</button>
-                <button class="mini-btn pink" onclick="clearCustomConfig()">🗑️ CLEAR</button>
-            </div>
-        </div>
-
-        <div id="nullConfigInfo" class="section-block" style="display:none;">
-            <div class="section-header">
-                <div class="section-title">
-                    <span class="icon">🚫</span>
-                    <span>NO CONFIG MODE</span>
+                <div class="btn-row">
+                    <button class="mini-btn" onclick="copyCustomConfig()">📋 COPY</button>
+                    <button class="mini-btn gold" onclick="compactCustomConfig()">🗜️ FORMAT</button>
+                    <button class="mini-btn pink" onclick="clearCustomConfig()">🗑️ CLEAR</button>
                 </div>
-                <span class="badge danger">STATIC APP</span>
             </div>
-            <div class="guide-box">
-                In this mode, <code>"config": null</code> will be set. The app will run <strong>without Firebase</strong>.
+
+            <div id="nullConfigInfo" class="section-block" style="display:none;">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="icon">🚫</span>
+                        <span>NO CONFIG MODE</span>
+                    </div>
+                    <span class="badge danger">STATIC APP</span>
+                </div>
+                <div class="guide-box">
+                    In this mode, <code>"config": null</code> will be set. The app will run <strong>without Firebase</strong>.
+                </div>
             </div>
         </div>
-
-        <div class="status" id="statusConfig"></div>
     </div>
 
+    <!-- ═══ STEP 2: CODE INPUT ═══ -->
     <div class="card" id="codeSection">
-        <h3>📝 STEP 2 — Paste Your Code <span class="badge pink">AUTO-DETECT</span></h3>
+        <h3>
+            <span>📝 STEP 2 — Paste Your Code <span class="badge pink">AUTO-DETECT</span></span>
+            <button class="card-toggle" onclick="toggleCard('codeSection')"><i class="fa-solid fa-chevron-down"></i></button>
+        </h3>
 
-        <div class="guide-box">
-            <strong>📌 Paste your code here:</strong><br>
-            • You can paste <b>HTML + CSS + JS</b> together<br>
-            • Or just <b>HTML</b>, just <b>CSS</b>, or just <b>JS</b><br>
-            • The system will <b>automatically</b> separate HTML, CSS, JS<br>
-            • <b>⚠️ Your code will NOT change at all</b> — only separated
+        <div class="card-body">
+            <div class="guide-box">
+                <strong>📌 Paste your code here:</strong><br>
+                • Paste <b>HTML + CSS + JS</b> together (any order)<br>
+                • System will <b>automatically separate</b> them<br>
+                • <b>Comments will be safely removed</b> (never touches strings)<br>
+                • <b>⚠️ Data scripts (JSON-LD, GA, GTM) stay in HTML</b><br>
+                • <b>Shortcut:</b> Press <span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> to parse
+            </div>
+
+            <textarea id="fullCodeArea" class="huge" placeholder="Paste your full code here (HTML + CSS + JS)..."></textarea>
+
+            <div class="btn-row">
+                <button class="mini-btn gold" onclick="parseFullCode()">🔍 PARSE & SEPARATE</button>
+                <button class="mini-btn" onclick="copyFullCode()">📋 COPY</button>
+                <button class="mini-btn green" onclick="loadSampleCode()">📥 SAMPLE</button>
+                <button class="mini-btn red" onclick="clearFullCode()">🗑️ CLEAR</button>
+            </div>
+
+            <div class="status" id="statusFullCode"></div>
+
+            <div class="stats-grid" id="inputStats" style="display:none;">
+                <div class="stat-card">
+                    <div class="stat-label">Lines</div>
+                    <div class="stat-value" id="statLines">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Characters</div>
+                    <div class="stat-value gold" id="statChars">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Size</div>
+                    <div class="stat-value green" id="statSize">0 B</div>
+                </div>
+            </div>
         </div>
-
-        <textarea id="fullCodeArea" class="huge" placeholder="Paste your full code here..."></textarea>
-
-        <div class="btn-row">
-            <button class="mini-btn gold" onclick="parseFullCode()">🔍 PARSE & SEPARATE CODE</button>
-            <button class="mini-btn" onclick="copyFullCode()">📋 COPY</button>
-            <button class="mini-btn pink" onclick="clearFullCode()">🗑️ CLEAR</button>
-        </div>
-
-        <div class="status" id="statusFullCode"></div>
     </div>
 
+    <!-- ═══ STEP 3: SECTIONS ═══ -->
     <div id="sectionsContainer" style="display:none;">
 
-        <div class="card" id="htmlSection">
-            <h3>📄 HTML <span class="badge" id="htmlBadge">EMPTY</span></h3>
-            <div class="guide-box">
-                <strong>HTML section</strong> — This is the separated HTML code. You can edit it.
+        <!-- Tab Navigation -->
+        <div class="card">
+            <div class="tabs">
+                <button class="tab active" data-tab="html" onclick="switchTab('html')">📄 HTML</button>
+                <button class="tab" data-tab="css" onclick="switchTab('css')">🎨 CSS</button>
+                <button class="tab" data-tab="js" onclick="switchTab('js')">⚙️ JS</button>
             </div>
-            <textarea id="htmlArea" class="tall" placeholder="HTML will appear here..."></textarea>
-            <div class="btn-row">
-                <button class="mini-btn" onclick="copyHtml()">📋 COPY</button>
-                <button class="mini-btn pink" onclick="clearHtml()">🗑️ CLEAR</button>
-            </div>
-        </div>
 
-        <div class="card" id="cssSection">
-            <h3>🎨 CSS <span class="badge" id="cssBadge">EMPTY</span></h3>
-            <div class="guide-box">
-                <strong>CSS section</strong> — This is the separated CSS code.
+            <!-- HTML Tab -->
+            <div class="tab-content active" id="tab-html">
+                <h3 style="margin-bottom:8px;">📄 HTML <span class="badge" id="htmlBadge">EMPTY</span></h3>
+                <div class="guide-box">
+                    Separated HTML (comments removed, data scripts like JSON-LD kept).
+                </div>
+                <textarea id="htmlArea" class="tall" placeholder="HTML will appear here..."></textarea>
+                <div class="btn-row">
+                    <button class="mini-btn" onclick="copyHtml()">📋 COPY</button>
+                    <button class="mini-btn gold" onclick="downloadSection('html')">⬇ DOWNLOAD</button>
+                    <button class="mini-btn pink" onclick="clearHtml()">🗑️ CLEAR</button>
+                </div>
             </div>
-            <textarea id="cssArea" class="tall" placeholder="CSS will appear here..."></textarea>
-            <div class="btn-row">
-                <button class="mini-btn" onclick="copyCss()">📋 COPY</button>
-                <button class="mini-btn pink" onclick="clearCss()">🗑️ CLEAR</button>
-            </div>
-        </div>
 
-        <div class="card" id="jsSection">
-            <h3>⚙️ JavaScript <span class="badge" id="jsBadge">EMPTY</span></h3>
-            <div class="guide-box">
-                <strong>JS section</strong> — This is the separated JavaScript code.
+            <!-- CSS Tab -->
+            <div class="tab-content" id="tab-css">
+                <h3 style="margin-bottom:8px;">🎨 CSS <span class="badge" id="cssBadge">EMPTY</span></h3>
+                <div class="guide-box">
+                    Separated CSS (comments removed).
+                </div>
+                <textarea id="cssArea" class="tall" placeholder="CSS will appear here..."></textarea>
+                <div class="btn-row">
+                    <button class="mini-btn" onclick="copyCss()">📋 COPY</button>
+                    <button class="mini-btn gold" onclick="downloadSection('css')">⬇ DOWNLOAD</button>
+                    <button class="mini-btn pink" onclick="clearCss()">🗑️ CLEAR</button>
+                </div>
             </div>
-            <textarea id="jsArea" class="tall" placeholder="JS will appear here..."></textarea>
-            <div class="btn-row">
-                <button class="mini-btn" onclick="copyJs()">📋 COPY</button>
-                <button class="mini-btn pink" onclick="clearJs()">🗑️ CLEAR</button>
+
+            <!-- JS Tab -->
+            <div class="tab-content" id="tab-js">
+                <h3 style="margin-bottom:8px;">⚙️ JavaScript <span class="badge" id="jsBadge">EMPTY</span></h3>
+                <div class="guide-box">
+                    Separated JS (comments removed, only text/javascript).
+                </div>
+                <textarea id="jsArea" class="tall" placeholder="JS will appear here..."></textarea>
+                <div class="btn-row">
+                    <button class="mini-btn" onclick="copyJs()">📋 COPY</button>
+                    <button class="mini-btn gold" onclick="downloadSection('js')">⬇ DOWNLOAD</button>
+                    <button class="mini-btn pink" onclick="clearJs()">🗑️ CLEAR</button>
+                </div>
             </div>
         </div>
 
     </div>
 
+    <!-- ═══ STEP 4: CONVERT ═══ -->
     <div class="card" id="convertSection">
-        <h3>📦 STEP 3 — Convert to JSON <span class="badge gold">FINAL</span></h3>
+        <h3>
+            <span>📦 STEP 3 — Convert to JSON <span class="badge gold">FINAL</span></span>
+            <button class="card-toggle" onclick="toggleCard('convertSection')"><i class="fa-solid fa-chevron-down"></i></button>
+        </h3>
 
-        <div class="guide-box">
-            <strong>📌 Now convert everything to JSON:</strong><br>
-            • Config will be set based on your mode<br>
-            • HTML, CSS, JS fields will stay as-is<br>
-            • <b>⚠️ Your code will NOT change at all</b><br>
-            • Download or Copy
-        </div>
-
-        <button class="btn full gold" id="convertBtn" style="margin-bottom:12px;">⚡ CONVERT TO JSON</button>
-
-        <div class="status" id="statusConvert"></div>
-
-        <h3 style="margin-top:16px;">📦 code.json <span class="badge success" id="jsonBadge">NOT READY</span></h3>
-
-        <div class="preview-box">
-            <div class="preview-title">
-                <i class="fa-solid fa-file-code"></i>
-                JSON Preview
+        <div class="card-body">
+            <div class="guide-box">
+                <strong>📌 Now convert everything to JSON:</strong><br>
+                • Config will be set based on your mode<br>
+                • HTML, CSS, JS fields will be clean (comments removed)<br>
+                • All <code>&lt;/script&gt;</code> tags will be safely escaped<br>
+                • Download or Copy
             </div>
-            <div class="preview-code empty" id="jsonPreview">Click "CONVERT TO JSON" to generate...</div>
-        </div>
 
-        <textarea id="outputJson" class="tall" placeholder="Click CONVERT TO JSON..." readonly style="margin-top:12px;"></textarea>
+            <button class="btn full gold" id="convertBtn">⚡ CONVERT TO JSON</button>
 
-        <div class="btn-row">
-            <button class="btn green" id="downloadJsonBtn" disabled>⬇ DOWNLOAD CODE.JSON</button>
-            <button class="btn secondary" id="copyJsonBtn" disabled>📋 COPY JSON</button>
+            <div class="status" id="statusConvert"></div>
+
+            <h3 style="margin-top:16px;">📦 code.json <span class="badge success" id="jsonBadge">NOT READY</span></h3>
+
+            <div class="preview-box">
+                <div class="preview-title">
+                    <span><i class="fa-solid fa-file-code"></i> JSON Preview</span>
+                    <span style="font-size:9px;color:var(--text-muted);" id="jsonSize"></span>
+                </div>
+                <div class="preview-code empty" id="jsonPreview">Click "CONVERT TO JSON" to generate...</div>
+            </div>
+
+            <textarea id="outputJson" class="tall" placeholder="Click CONVERT TO JSON..." readonly style="margin-top:12px;"></textarea>
+
+            <div class="btn-row">
+                <button class="btn green" id="downloadJsonBtn" disabled>⬇ DOWNLOAD CODE.JSON</button>
+                <button class="btn secondary" id="copyJsonBtn" disabled>📋 COPY JSON</button>
+            </div>
+
+            <div class="stats-grid" id="outputStats" style="display:none;">
+                <div class="stat-card">
+                    <div class="stat-label">Config</div>
+                    <div class="stat-value gold" id="statConfig">SET</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">HTML</div>
+                    <div class="stat-value" id="statHtml">0 B</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">CSS</div>
+                    <div class="stat-value green" id="statCss">0 B</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">JS</div>
+                    <div class="stat-value pink" id="statJs">0 B</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total</div>
+                    <div class="stat-value" id="statTotal">0 B</div>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- ═══ ACTIVITY & SHORTCUTS ═══ -->
+    <div class="card">
+        <h3>📊 Activity Log & Shortcuts</h3>
+        <div class="card-body">
+            <div class="tabs">
+                <button class="tab active" data-tab="activity" onclick="switchLogTab('activity')">📋 Activity</button>
+                <button class="tab" data-tab="shortcuts" onclick="switchLogTab('shortcuts')">⌨️ Shortcuts</button>
+            </div>
+
+            <div class="tab-content active" id="tab-activity">
+                <div class="history-list" id="historyList">
+                    <div class="history-item">
+                        <span class="history-time">--:--:--</span>
+                        <span class="history-dot info"></span>
+                        <span>CodeForge HEAVY initialized</span>
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <button class="mini-btn pink" onclick="clearHistory()">🗑️ CLEAR HISTORY</button>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-shortcuts">
+                <div class="shortcuts-grid">
+                    <div class="shortcut">
+                        <span class="shortcut-label"><i class="fa-solid fa-bolt"></i> Parse Code</span>
+                        <span class="kbd">Ctrl</span><span class="kbd">Enter</span>
+                    </div>
+                    <div class="shortcut">
+                        <span class="shortcut-label"><i class="fa-solid fa-file-code"></i> Convert JSON</span>
+                        <span class="kbd">Ctrl</span><span class="kbd">S</span>
+                    </div>
+                    <div class="shortcut">
+                        <span class="shortcut-label"><i class="fa-solid fa-download"></i> Download</span>
+                        <span class="kbd">Ctrl</span><span class="kbd">D</span>
+                    </div>
+                    <div class="shortcut">
+                        <span class="shortcut-label"><i class="fa-solid fa-copy"></i> Copy JSON</span>
+                        <span class="kbd">Ctrl</span><span class="kbd">Shift</span><span class="kbd">C</span>
+                    </div>
+                    <div class="shortcut">
+                        <span class="shortcut-label"><i class="fa-solid fa-trash"></i> Clear All</span>
+                        <span class="kbd">Ctrl</span><span class="kbd">Shift</span><span class="kbd">X</span>
+                    </div>
+                    <div class="shortcut">
+                        <span class="shortcut-label"><i class="fa-solid fa-rotate"></i> Reset</span>
+                        <span class="kbd">Ctrl</span><span class="kbd">R</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ FOOTER ═══ -->
     <div class="card" style="text-align:center;">
         <div style="font-size:11px;color:#444;letter-spacing:2px;line-height:1.8;">
             Powered by <b style="color:var(--neon-cyan);">NightOrbit</b> · Owner: <b style="color:var(--neon-cyan);">Anas Farooq</b>
@@ -805,17 +1350,17 @@ textarea[readonly] {
 
 </div>
 
-<!-- ============================================================ -->
-<!--  MAIN SCRIPT — SAFE (no </script> in regex)                  -->
-<!-- ============================================================ -->
+<!-- ═══ TOAST CONTAINER ═══ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  MAIN SCRIPT — HEAVY V14                                     -->
+<!-- ═══════════════════════════════════════════════════════════ -->
 <script>
 (function() {
     'use strict';
 
-    // ============================================================
-    //  🔥 CRITICAL — Build closing tag strings safely
-    //  (to avoid browser HTML parser breaking the script)
-    // ============================================================
+    // ═══ SAFE TAG STRINGS ═══
     var TAG_OPEN_SCRIPT  = '<' + 'script';
     var TAG_CLOSE_SCRIPT = '<' + '/script>';
     var TAG_OPEN_STYLE   = '<' + 'style';
@@ -824,9 +1369,7 @@ textarea[readonly] {
     var TAG_CLOSE_BODY   = '<' + '/body>';
     var TAG_CLOSE_HEAD   = '<' + '/head>';
 
-    // ============================================================
-    //  STATE
-    // ============================================================
+    // ═══ STATE ═══
     var state = {
         configMode: 'demo',
         customConfig: '',
@@ -834,16 +1377,19 @@ textarea[readonly] {
         html: '',
         css: '',
         js: '',
-        outputJson: null
+        outputJson: null,
+        history: []
     };
 
-    // ============================================================
-    //  UTILITIES
-    // ============================================================
+    // ═══ UTILITIES ═══
     function bytes(n) {
         if (n < 1024) return n + ' B';
         if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
         return (n / 1024 / 1024).toFixed(2) + ' MB';
+    }
+
+    function num(n) {
+        return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
 
     function showStatus(id, type, text) {
@@ -857,9 +1403,192 @@ textarea[readonly] {
         return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    // ============================================================
-    //  ESCAPE FOR JSON — escape any closing tag
-    // ============================================================
+    // ═══ TOAST SYSTEM ═══
+    function toast(message, type) {
+        type = type || 'info';
+        var container = document.getElementById('toastContainer');
+        var icons = {
+            success: 'fa-circle-check',
+            error: 'fa-circle-xmark',
+            warn: 'fa-triangle-exclamation',
+            info: 'fa-circle-info'
+        };
+        var el = document.createElement('div');
+        el.className = 'toast ' + type;
+        el.innerHTML = '<i class="fa-solid ' + (icons[type] || icons.info) + ' toast-icon"></i><span>' + message + '</span>';
+        container.appendChild(el);
+        setTimeout(function() {
+            el.classList.add('removing');
+            setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
+        }, 3000);
+    }
+
+    // ═══ HISTORY LOG ═══
+    function addHistory(msg, type) {
+        type = type || 'info';
+        var time = new Date().toLocaleTimeString('en-PK', { hour12: false });
+        state.history.unshift({ time: time, msg: msg, type: type });
+        if (state.history.length > 50) state.history.pop();
+        renderHistory();
+    }
+
+    function renderHistory() {
+        var list = document.getElementById('historyList');
+        if (!list) return;
+        if (state.history.length === 0) {
+            list.innerHTML = '<div class="history-item"><span class="history-time">--:--:--</span><span class="history-dot info"></span><span>No activity yet</span></div>';
+            return;
+        }
+        var html = '';
+        for (var i = 0; i < state.history.length; i++) {
+            var h = state.history[i];
+            html += '<div class="history-item">' +
+                '<span class="history-time">' + h.time + '</span>' +
+                '<span class="history-dot ' + h.type + '"></span>' +
+                '<span>' + h.msg + '</span>' +
+                '</div>';
+        }
+        list.innerHTML = html;
+    }
+
+    function clearHistory() {
+        state.history = [];
+        renderHistory();
+        toast('History cleared', 'info');
+        addHistory('History cleared', 'info');
+    }
+
+    // ═══ PROGRESS TRACKER ═══
+    function updateProgress() {
+        var steps = 0;
+        // Step 1: Config selected
+        if (state.configMode) steps++;
+        // Step 2: Code pasted
+        if (state.fullCode && state.fullCode.trim()) steps++;
+        // Step 3: Parsed
+        if (state.html || state.css || state.js) steps++;
+        // Step 4: Converted
+        if (state.outputJson) steps++;
+
+        var percent = Math.round((steps / 4) * 100);
+        document.getElementById('progressFill').style.width = percent + '%';
+        document.getElementById('progressPercent').textContent = percent + '%';
+
+        for (var i = 1; i <= 4; i++) {
+            var el = document.getElementById('step' + i);
+            el.classList.remove('active', 'done');
+            if (i < steps) el.classList.add('done');
+            else if (i === steps) el.classList.add('active');
+        }
+    }
+
+    // ═══ COMMENT STRIPPERS (SAFE) ═══
+
+    function stripCssComments(code) {
+        if (!code) return '';
+        var result = '';
+        var i = 0, len = code.length;
+        var inString = false, stringChar = '';
+
+        while (i < len) {
+            var ch = code[i];
+            var next = code[i + 1];
+
+            if (inString) {
+                result += ch;
+                if (ch === '\\' && i + 1 < len) {
+                    result += code[i + 1];
+                    i += 2;
+                    continue;
+                }
+                if (ch === stringChar) inString = false;
+                i++;
+                continue;
+            }
+
+            if (ch === '"' || ch === "'") {
+                inString = true;
+                stringChar = ch;
+                result += ch;
+                i++;
+                continue;
+            }
+
+            if (ch === '/' && next === '*') {
+                i += 2;
+                while (i < len) {
+                    if (code[i] === '*' && code[i + 1] === '/') { i += 2; break; }
+                    i++;
+                }
+                continue;
+            }
+
+            result += ch;
+            i++;
+        }
+        return result;
+    }
+
+    function stripJsComments(code) {
+        if (!code) return '';
+        var result = '';
+        var i = 0, len = code.length;
+        var st = 'code';
+
+        while (i < len) {
+            var ch = code[i];
+            var next = code[i + 1];
+
+            if (st === 'lineComment') {
+                if (ch === '\n') { st = 'code'; result += ch; }
+                i++;
+                continue;
+            }
+            if (st === 'blockComment') {
+                if (ch === '*' && next === '/') { st = 'code'; i += 2; continue; }
+                i++;
+                continue;
+            }
+            if (st === 'single') {
+                result += ch;
+                if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+                if (ch === "'") st = 'code';
+                i++;
+                continue;
+            }
+            if (st === 'double') {
+                result += ch;
+                if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+                if (ch === '"') st = 'code';
+                i++;
+                continue;
+            }
+            if (st === 'template') {
+                result += ch;
+                if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+                if (ch === '`') st = 'code';
+                i++;
+                continue;
+            }
+
+            if (ch === '/' && next === '/') { st = 'lineComment'; i += 2; continue; }
+            if (ch === '/' && next === '*') { st = 'blockComment'; i += 2; continue; }
+            if (ch === "'") { st = 'single'; result += ch; i++; continue; }
+            if (ch === '"') { st = 'double'; result += ch; i++; continue; }
+            if (ch === '`') { st = 'template'; result += ch; i++; continue; }
+
+            result += ch;
+            i++;
+        }
+        return result;
+    }
+
+    function stripHtmlComments(code) {
+        if (!code) return '';
+        return code.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
+    }
+
+    // ═══ ESCAPE FOR JSON ═══
     function escapeForJson(str) {
         if (!str) return '';
         return String(str)
@@ -870,16 +1599,12 @@ textarea[readonly] {
             .split(TAG_CLOSE_HEAD).join('<\\/head>');
     }
 
-    // ============================================================
-    //  CONFIG MODE
-    // ============================================================
+    // ═══ CONFIG MODE ═══
     window.setConfigMode = function(mode) {
         state.configMode = mode;
-
         document.querySelectorAll('.mode-btn').forEach(function(btn) {
             btn.classList.toggle('active', btn.dataset.mode === mode);
         });
-
         var badge = document.getElementById('configModeBadge');
         var demoPreview = document.getElementById('demoConfigPreview');
         var customSection = document.getElementById('customConfigSection');
@@ -902,28 +1627,39 @@ textarea[readonly] {
             badge.className = 'badge danger';
             nullInfo.style.display = 'block';
         }
+        updateProgress();
     };
 
-    // ============================================================
-    //  CUSTOM CONFIG
-    // ============================================================
+    // ═══ CUSTOM CONFIG ═══
     window.copyCustomConfig = function() {
         var val = document.getElementById('customConfigArea').value;
-        if (!val) { alert('❌ Config empty!'); return; }
+        if (!val) { toast('Config empty!', 'error'); return; }
         navigator.clipboard.writeText(val);
-        alert('✅ Copied!');
+        toast('Config copied!', 'success');
+        addHistory('Copied custom config', 'success');
     };
 
     window.compactCustomConfig = function() {
         var area = document.getElementById('customConfigArea');
-        if (!area.value) { alert('❌ Empty!'); return; }
-        area.value = area.value.replace(/\s+/g, ' ').trim();
+        if (!area.value) { toast('Empty!', 'error'); return; }
+        try {
+            var parsed = JSON.parse(area.value);
+            area.value = JSON.stringify(parsed, null, 2);
+            toast('Config formatted!', 'success');
+            addHistory('Formatted config JSON', 'success');
+        } catch(e) {
+            toast('Invalid JSON: ' + e.message, 'error');
+            addHistory('Invalid JSON', 'error');
+            return;
+        }
         updateCustomConfigState();
     };
 
     window.clearCustomConfig = function() {
         document.getElementById('customConfigArea').value = '';
         updateCustomConfigState();
+        toast('Config cleared', 'info');
+        addHistory('Cleared config', 'info');
     };
 
     function updateCustomConfigState() {
@@ -941,73 +1677,88 @@ textarea[readonly] {
 
     document.getElementById('customConfigArea').addEventListener('input', updateCustomConfigState);
 
-    // ============================================================
-    //  PARSE FULL CODE — SAFE REGEX
-    // ============================================================
+    // ═══ FULL CODE INPUT ═══
+    var fullCodeArea = document.getElementById('fullCodeArea');
+    fullCodeArea.addEventListener('input', function() {
+        state.fullCode = this.value;
+        var stats = document.getElementById('inputStats');
+        if (this.value) {
+            stats.style.display = 'grid';
+            document.getElementById('statLines').textContent = num(this.value.split('\n').length);
+            document.getElementById('statChars').textContent = num(this.value.length);
+            document.getElementById('statSize').textContent = bytes(new Blob([this.value]).size);
+        } else {
+            stats.style.display = 'none';
+        }
+        updateProgress();
+    });
+
+    // ═══ PARSE FULL CODE ═══
     window.parseFullCode = function() {
-        var fullCode = document.getElementById('fullCodeArea').value;
+        var fullCode = fullCodeArea.value;
         if (!fullCode.trim()) {
+            toast('Code is empty!', 'error');
             showStatus('statusFullCode', 'error', '❌ Code is empty! Please paste your code first.');
             return;
         }
 
         state.fullCode = fullCode;
-
         var html = fullCode;
         var css = '';
         var js = '';
 
-        // 🔥 SAFE REGEX — build closing tags from split strings
         var escStyle  = escapeRegex(TAG_CLOSE_STYLE);
         var escScript = escapeRegex(TAG_CLOSE_SCRIPT);
 
-        // ---- CSS Extract ----
-        var styleRegex = new RegExp(
-            TAG_OPEN_STYLE + '[^>]*>([\\s\\S]*?)' + escStyle,
-            'gi'
-        );
+        // CSS Extract
+        var styleRegex = new RegExp(TAG_OPEN_STYLE + '[^>]*>([\\s\\S]*?)' + escStyle, 'gi');
         var styleMatch;
         while ((styleMatch = styleRegex.exec(fullCode)) !== null) {
             if (css) css += '\n\n';
-            css += styleMatch[1].trim();
+            css += stripCssComments(styleMatch[1]).trim();
         }
 
-        // ---- JS Extract (skip <script src="...">) ----
+        // JS Extract (skip data scripts)
         var scriptRegex = new RegExp(
-            TAG_OPEN_SCRIPT + '(?![^>]*\\bsrc\\s*=)[^>]*>([\\s\\S]*?)' + escScript,
+            TAG_OPEN_SCRIPT +
+            '(?![^>]*\\bsrc\\s*=)' +
+            '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template|application\\/json\\+ld)[^>]*)' +
+            '[^>]*>([\\s\\S]*?)' + escScript,
             'gi'
         );
         var scriptMatch;
         while ((scriptMatch = scriptRegex.exec(fullCode)) !== null) {
             if (js) js += '\n\n';
-            js += scriptMatch[1].trim();
+            js += stripJsComments(scriptMatch[1]).trim();
         }
 
-        // ---- HTML Extract ----
+        // HTML Extract
+        html = html.replace(new RegExp(TAG_OPEN_STYLE + '[^>]*>[\\s\\S]*?' + escStyle, 'gi'), '');
         html = html.replace(
-            new RegExp(TAG_OPEN_STYLE + '[^>]*>[\\s\\S]*?' + escStyle, 'gi'),
+            new RegExp(
+                TAG_OPEN_SCRIPT +
+                '(?![^>]*\\bsrc\\s*=)' +
+                '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template|application\\/json\\+ld)[^>]*)' +
+                '[^>]*>[\\s\\S]*?' + escScript,
+                'gi'
+            ),
             ''
         );
-        html = html.replace(
-            new RegExp(TAG_OPEN_SCRIPT + '(?![^>]*\\bsrc\\s*=)[^>]*>[\\s\\S]*?' + escScript, 'gi'),
-            ''
-        );
+        html = stripHtmlComments(html);
+        html = html.replace(/\n{3,}/g, '\n\n').trim();
 
-        // ---- Pure CSS/JS Detect ----
+        // Pure CSS/JS Detect
         var hasHtmlTags = /<[a-z][\s\S]*>/i.test(fullCode);
-
         if (!hasHtmlTags) {
             if (fullCode.indexOf('function') !== -1 || fullCode.indexOf('const ') !== -1 ||
                 fullCode.indexOf('let ') !== -1 || fullCode.indexOf('var ') !== -1 ||
                 fullCode.indexOf('=>') !== -1) {
-                js = fullCode.trim();
-                html = '';
-                css = '';
+                js = stripJsComments(fullCode).trim();
+                html = ''; css = '';
             } else if (fullCode.indexOf('{') !== -1 && fullCode.indexOf('}') !== -1 &&
                        (fullCode.indexOf(':') !== -1 || fullCode.indexOf(';') !== -1)) {
-                css = fullCode.trim();
-                html = '';
-                js = '';
+                css = stripCssComments(fullCode).trim();
+                html = ''; js = '';
             }
         }
 
@@ -1030,31 +1781,73 @@ textarea[readonly] {
             '📄 HTML: ' + bytes(new Blob([html]).size) + '\n' +
             '🎨 CSS: ' + bytes(new Blob([css]).size) + '\n' +
             '⚙️ JS: ' + bytes(new Blob([js]).size) + '\n\n' +
+            '✨ Comments removed safely\n' +
+            '🔒 JSON-LD, GA, GTM kept in HTML\n\n' +
             'Now scroll down and click "CONVERT TO JSON".'
         );
 
+        toast('Code parsed successfully!', 'success');
+        addHistory('Parsed code — HTML: ' + bytes(new Blob([html]).size) + ', CSS: ' + bytes(new Blob([css]).size) + ', JS: ' + bytes(new Blob([js]).size), 'success');
+
         setTimeout(function() {
-            var el = document.getElementById('htmlSection');
+            var el = document.getElementById('sectionsContainer');
             if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 300);
+
+        updateProgress();
     };
 
     window.copyFullCode = function() {
-        var v = document.getElementById('fullCodeArea').value;
-        if (!v) { alert('❌ Empty!'); return; }
+        var v = fullCodeArea.value;
+        if (!v) { toast('Empty!', 'error'); return; }
         navigator.clipboard.writeText(v);
-        alert('✅ Copied!');
+        toast('Copied to clipboard!', 'success');
+        addHistory('Copied full code', 'success');
+    };
+
+    window.loadSampleCode = function() {
+        var sample =
+            '<!-- JSON-LD Structured Data -->\n' +
+            TAG_OPEN_SCRIPT + ' type="application/ld+json">\n' +
+            '{\n' +
+            '  "@context": "https://schema.org",\n' +
+            '  "@type": "WebSite",\n' +
+            '  "name": "Sample Site"\n' +
+            '}\n' +
+            TAG_CLOSE_SCRIPT + '\n\n' +
+            '<meta charset="UTF-8">\n' +
+            '<title>Sample</title>\n' +
+            '<style>\n' +
+            '  /* Sample CSS comment */\n' +
+            '  body { background: #000; color: #fff; }\n' +
+            '</style>\n' +
+            '<body>\n' +
+            '  <h1>Hello World</h1>\n' +
+            '  ' + TAG_OPEN_SCRIPT + '>\n' +
+            '    // Sample JS comment\n' +
+            '    console.log("Hello");\n' +
+            '  ' + TAG_CLOSE_SCRIPT + '\n' +
+            '</body>';
+        fullCodeArea.value = sample;
+        state.fullCode = sample;
+        fullCodeArea.dispatchEvent(new Event('input'));
+        toast('Sample code loaded!', 'info');
+        addHistory('Loaded sample code', 'info');
     };
 
     window.clearFullCode = function() {
-        document.getElementById('fullCodeArea').value = '';
+        if (!confirm('Clear all code?')) return;
+        fullCodeArea.value = '';
         state.fullCode = '';
+        state.html = state.css = state.js = '';
+        document.getElementById('sectionsContainer').style.display = 'none';
         showStatus('statusFullCode', 'info', '🗑️ Cleared');
+        fullCodeArea.dispatchEvent(new Event('input'));
+        toast('Cleared', 'info');
+        addHistory('Cleared full code', 'warn');
     };
 
-    // ============================================================
-    //  HTML / CSS / JS ACTIONS
-    // ============================================================
+    // ═══ BADGE UPDATERS ═══
     function updateHtmlBadge() {
         var v = document.getElementById('htmlArea').value;
         state.html = v;
@@ -1081,47 +1874,71 @@ textarea[readonly] {
 
     window.copyHtml = function() {
         var v = document.getElementById('htmlArea').value;
-        if (!v) { alert('❌ Empty!'); return; }
+        if (!v) { toast('Empty!', 'error'); return; }
         navigator.clipboard.writeText(v);
-        alert('✅ HTML Copied!');
+        toast('HTML copied!', 'success');
+        addHistory('Copied HTML', 'success');
     };
 
     window.clearHtml = function() {
         document.getElementById('htmlArea').value = '';
         updateHtmlBadge();
+        toast('HTML cleared', 'info');
     };
 
     window.copyCss = function() {
         var v = document.getElementById('cssArea').value;
-        if (!v) { alert('❌ Empty!'); return; }
+        if (!v) { toast('Empty!', 'error'); return; }
         navigator.clipboard.writeText(v);
-        alert('✅ CSS Copied!');
+        toast('CSS copied!', 'success');
+        addHistory('Copied CSS', 'success');
     };
 
     window.clearCss = function() {
         document.getElementById('cssArea').value = '';
         updateCssBadge();
+        toast('CSS cleared', 'info');
     };
 
     window.copyJs = function() {
         var v = document.getElementById('jsArea').value;
-        if (!v) { alert('❌ Empty!'); return; }
+        if (!v) { toast('Empty!', 'error'); return; }
         navigator.clipboard.writeText(v);
-        alert('✅ JS Copied!');
+        toast('JS copied!', 'success');
+        addHistory('Copied JS', 'success');
     };
 
     window.clearJs = function() {
         document.getElementById('jsArea').value = '';
         updateJsBadge();
+        toast('JS cleared', 'info');
+    };
+
+    window.downloadSection = function(type) {
+        var content = '';
+        var filename = '';
+        if (type === 'html') { content = state.html; filename = 'index.html'; }
+        else if (type === 'css') { content = state.css; filename = 'style.css'; }
+        else if (type === 'js') { content = state.js; filename = 'script.js'; }
+        if (!content) { toast('Empty!', 'error'); return; }
+        var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast(filename + ' downloaded!', 'success');
+        addHistory('Downloaded ' + filename, 'success');
     };
 
     document.getElementById('htmlArea').addEventListener('input', updateHtmlBadge);
     document.getElementById('cssArea').addEventListener('input', updateCssBadge);
     document.getElementById('jsArea').addEventListener('input', updateJsBadge);
 
-    // ============================================================
-    //  CONVERT TO JSON
-    // ============================================================
+    // ═══ CONVERT TO JSON ═══
     document.getElementById('convertBtn').addEventListener('click', function() {
         try {
             var configValue = null;
@@ -1142,51 +1959,33 @@ textarea[readonly] {
             } else if (state.configMode === 'custom') {
                 var raw = (state.customConfig || '').trim();
                 if (!raw) {
-                    showStatus('statusConvert', 'error',
-                        '❌ CONFIG REQUIRED!\n\n' +
-                        'You selected "YOUR CONFIG" mode but the config is empty.\n' +
-                        'Please paste your Firebase config, or choose "NO CONFIG (NULL)" mode.'
-                    );
+                    showStatus('statusConvert', 'error', '❌ CONFIG REQUIRED! Select "NO CONFIG" or paste config.');
+                    toast('Config required!', 'error');
                     return;
                 }
-                var parsed = null;
-                try {
-                    parsed = JSON.parse(raw);
-                } catch (e) {
-                    showStatus('statusConvert', 'error',
-                        '❌ INVALID JSON in config!\n\n' + e.message
-                    );
+                var parsed;
+                try { parsed = JSON.parse(raw); }
+                catch (e) {
+                    showStatus('statusConvert', 'error', '❌ INVALID JSON in config!\n\n' + e.message);
+                    toast('Invalid config JSON!', 'error');
                     return;
                 }
-
-                if (parsed.firebase) {
-                    configValue = parsed;
-                } else {
-                    configValue = { firebase: parsed };
-                }
+                configValue = parsed.firebase ? parsed : { firebase: parsed };
             } else if (state.configMode === 'null') {
                 configValue = null;
             }
 
             var htmlEsc = escapeForJson(state.html || '');
-            var cssEsc = escapeForJson(state.css || '');
-            var jsEsc = escapeForJson(state.js || '');
+            var cssEsc  = escapeForJson(state.css  || '');
+            var jsEsc   = escapeForJson(state.js   || '');
 
-            var finalObj = {
-                config: configValue,
-                html: htmlEsc,
-                css: cssEsc,
-                js: jsEsc
-            };
-
+            var finalObj = { config: configValue, html: htmlEsc, css: cssEsc, js: jsEsc };
             state.outputJson = JSON.stringify(finalObj, null, 2);
 
-            try {
-                JSON.parse(state.outputJson);
-            } catch (e) {
-                showStatus('statusConvert', 'error',
-                    '❌ Generated JSON is invalid!\n\n' + e.message
-                );
+            try { JSON.parse(state.outputJson); }
+            catch (e) {
+                showStatus('statusConvert', 'error', '❌ Generated JSON is invalid!\n\n' + e.message);
+                toast('Generated JSON invalid!', 'error');
                 return;
             }
 
@@ -1203,6 +2002,15 @@ textarea[readonly] {
             document.getElementById('downloadJsonBtn').disabled = false;
             document.getElementById('copyJsonBtn').disabled = false;
 
+            // Stats
+            document.getElementById('outputStats').style.display = 'grid';
+            document.getElementById('statConfig').textContent = configValue ? 'SET' : 'NULL';
+            document.getElementById('statHtml').textContent = bytes(new Blob([htmlEsc]).size);
+            document.getElementById('statCss').textContent = bytes(new Blob([cssEsc]).size);
+            document.getElementById('statJs').textContent = bytes(new Blob([jsEsc]).size);
+            document.getElementById('statTotal').textContent = bytes(new Blob([state.outputJson]).size);
+            document.getElementById('jsonSize').textContent = bytes(new Blob([state.outputJson]).size);
+
             showStatus('statusConvert', 'success',
                 '✅ CONVERTED TO JSON!\n\n' +
                 '🎯 Config Mode: ' + state.configMode.toUpperCase() + '\n' +
@@ -1214,14 +2022,18 @@ textarea[readonly] {
                 'Download or Copy below!'
             );
 
+            toast('JSON generated!', 'success');
+            addHistory('Converted to JSON — ' + bytes(new Blob([state.outputJson]).size), 'success');
+            updateProgress();
+
         } catch (e) {
             showStatus('statusConvert', 'error', '❌ Error: ' + e.message);
+            toast('Error: ' + e.message, 'error');
+            addHistory('Convert error: ' + e.message, 'error');
         }
     });
 
-    // ============================================================
-    //  DOWNLOAD / COPY JSON
-    // ============================================================
+    // ═══ DOWNLOAD / COPY JSON ═══
     document.getElementById('downloadJsonBtn').addEventListener('click', function() {
         if (!state.outputJson) return;
         var blob = new Blob([state.outputJson], { type: 'application/json;charset=utf-8' });
@@ -1233,32 +2045,103 @@ textarea[readonly] {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showStatus('statusConvert', 'success', '✅ Downloaded code.json!');
+        toast('code.json downloaded!', 'success');
+        addHistory('Downloaded code.json', 'success');
     });
 
     document.getElementById('copyJsonBtn').addEventListener('click', function() {
         if (!state.outputJson) return;
         navigator.clipboard.writeText(state.outputJson);
-        alert('✅ JSON copied to clipboard!');
-        showStatus('statusConvert', 'success', '✅ JSON copied!');
+        toast('JSON copied!', 'success');
+        addHistory('Copied JSON', 'success');
     });
 
-    // ============================================================
-    //  SCROLL HELPER
-    // ============================================================
+    // ═══ UI HELPERS ═══
     window.scrollToSection = function(id) {
         var el = document.getElementById(id);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
-    // ============================================================
-    //  INIT
-    // ============================================================
+    window.toggleCard = function(id) {
+        var card = document.getElementById(id);
+        if (card) card.classList.toggle('collapsed');
+    };
+
+    window.switchTab = function(tab) {
+        document.querySelectorAll('.tabs .tab[data-tab]').forEach(function(t) {
+            if (['html','css','js'].includes(t.dataset.tab)) {
+                t.classList.toggle('active', t.dataset.tab === tab);
+            }
+        });
+        document.querySelectorAll('.tab-content').forEach(function(c) {
+            if (['tab-html','tab-css','tab-js'].includes(c.id)) {
+                c.classList.toggle('active', c.id === 'tab-' + tab);
+            }
+        });
+    };
+
+    window.switchLogTab = function(tab) {
+        document.querySelectorAll('.tabs .tab[data-tab]').forEach(function(t) {
+            if (['activity','shortcuts'].includes(t.dataset.tab)) {
+                t.classList.toggle('active', t.dataset.tab === tab);
+            }
+        });
+        document.querySelectorAll('.tab-content').forEach(function(c) {
+            if (['tab-activity','tab-shortcuts'].includes(c.id)) {
+                c.classList.toggle('active', c.id === 'tab-' + tab);
+            }
+        });
+    };
+
+    // ═══ KEYBOARD SHORTCUTS ═══
+    document.addEventListener('keydown', function(e) {
+        // Ctrl+Enter: Parse
+        if (e.ctrlKey && e.key === 'Enter') {
+            e.preventDefault();
+            parseFullCode();
+        }
+        // Ctrl+S: Convert
+        if (e.ctrlKey && !e.shiftKey && e.key === 's') {
+            e.preventDefault();
+            document.getElementById('convertBtn').click();
+        }
+        // Ctrl+D: Download
+        if (e.ctrlKey && !e.shiftKey && e.key === 'd') {
+            e.preventDefault();
+            if (!document.getElementById('downloadJsonBtn').disabled) {
+                document.getElementById('downloadJsonBtn').click();
+            }
+        }
+        // Ctrl+Shift+C: Copy JSON
+        if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+            e.preventDefault();
+            if (!document.getElementById('copyJsonBtn').disabled) {
+                document.getElementById('copyJsonBtn').click();
+            }
+        }
+        // Ctrl+Shift+X: Clear all
+        if (e.ctrlKey && e.shiftKey && e.key === 'X') {
+            e.preventDefault();
+            clearFullCode();
+        }
+        // Ctrl+R: Reset (with confirm)
+        if (e.ctrlKey && !e.shiftKey && e.key === 'r') {
+            e.preventDefault();
+            if (confirm('Reset the tool?')) {
+                location.reload();
+            }
+        }
+    });
+
+    // ═══ INIT ═══
     setConfigMode('demo');
     updateCustomConfigState();
     updateHtmlBadge();
     updateCssBadge();
     updateJsBadge();
+    updateProgress();
+    renderHistory();
+    addHistory('CodeForge HEAVY v14 initialized', 'info');
 
 })();
 </script>
