@@ -15,85 +15,19 @@
             html, body, * {
                 display: none !important;
                 visibility: hidden !important;
-                opacity: 0 !important;
-                width: 0 !important;
-                height: 0 !important;
-                overflow: hidden !important;
-                position: absolute !important;
-                top: -9999px !important;
-                left: -9999px !important;
             }
         </style>
         <meta http-equiv="refresh" content="0; url=https://google.com">
     </noscript>
 
-    <script>
-    (function() {
-        'use strict';
-        function blockAllKeys(e) {
-            var key = e.key, code = e.keyCode, ctrl = e.ctrlKey, shift = e.shiftKey, alt = e.altKey, meta = e.metaKey;
-            if (key && key.startsWith('F') && key.length <= 3) { var num = parseInt(key.replace('F', '')); if (num >= 1 && num <= 12) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } }
-            if (key === 'F12' || code === 123) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
-            if (key === 'PrintScreen' || code === 44) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
-            if (key === 'Insert' || code === 45) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
-            if (key === 'Home' || code === 36) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
-            if (key === 'PageUp' || key === 'PageDown' || code === 33 || code === 34) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
-            if (ctrl) { var c = key ? key.toUpperCase() : ''; if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } if (c >= '0' && c <= '9') { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } if (['`','-','=','[',']','\\',';',"'",',','.','/'].includes(key)) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } }
-            if (ctrl && shift) { var c = key ? key.toUpperCase() : ''; if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } }
-            if (alt) { var c = key ? key.toUpperCase() : ''; if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } if (key === 'F4' || code === 115) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } }
-            if (meta) { var c = key ? key.toUpperCase() : ''; if (c.length === 1 && c >= 'A' && c <= 'Z') { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; } }
-            if (key === 'Backspace' && !e.target.matches('input, textarea, select')) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
-            if (key === 'Escape' || code === 27) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
-            if (key === 'Tab' || code === 9) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
-            return true;
-        }
-        document.addEventListener('keydown', blockAllKeys, { capture: true, passive: false });
-        window.addEventListener('keydown', blockAllKeys, { capture: true, passive: false });
-        document.addEventListener('contextmenu', function(e) {
-            var tag = e.target.tagName.toLowerCase();
-            if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
-            e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false;
-        }, { capture: true });
-        try {
-            var empty = function() {};
-            var methods = ['log','warn','error','info','debug','trace','group','groupEnd','table','clear','dir','dirxml','profile','profileEnd','time','timeEnd','timeStamp','memory','assert','count','countReset'];
-            methods.forEach(function(m) { try { window.console[m] = empty; } catch(e) {} });
-            window.console.clear = empty;
-        } catch(e) {}
-        document.addEventListener('selectstart', function(e) {
-            var tag = e.target.tagName.toLowerCase();
-            if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') { e.preventDefault(); return false; }
-        }, { capture: true });
-        document.addEventListener('dragstart', function(e) { e.preventDefault(); return false; }, { capture: true });
-        document.addEventListener('copy', function(e) {
-            var tag = e.target.tagName.toLowerCase();
-            if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') { e.preventDefault(); return false; }
-        }, { capture: true });
-        document.addEventListener('cut', function(e) {
-            var tag = e.target.tagName.toLowerCase();
-            if (tag !== 'input' && tag !== 'textarea' && tag !== 'select') { e.preventDefault(); return false; }
-        }, { capture: true });
-        document.addEventListener('auxclick', function(e) {
-            if (e.button === 1) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); return false; }
-        }, { capture: true });
-    })();
-    </script>
-
-    <script>
-    (function() {
-        if (window.location.hostname.includes('firebaseapp.com')) {
-            window.location.replace(window.location.href.replace('firebaseapp.com', 'web.app'));
-        }
-    })();
-    </script>
-
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
@@ -109,6 +43,8 @@
         --neon-pink: #ff2d95;
         --neon-purple: #b400ff;
         --neon-gold: #ffd700;
+        --neon-green: #00ff64;
+        --neon-red: #ff0064;
         --dark-bg: #0b0b1a;
         --card-bg: rgba(11, 11, 26, 0.88);
         --glass-border: rgba(0, 240, 255, 0.15);
@@ -371,12 +307,6 @@
         overflow: hidden;
     }
 
-    .menu-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
     .menu-user-name {
         font-family: 'Orbitron', sans-serif;
         font-size: 16px;
@@ -484,6 +414,7 @@
         margin: 0 auto;
     }
 
+    /* ═══ HERO ═══ */
     .hero {
         text-align: center;
         padding: 50px 25px;
@@ -495,7 +426,7 @@
         box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(0,240,255,0.04);
         position: relative;
         overflow: hidden;
-        margin-bottom: 30px;
+        margin-bottom: 25px;
     }
 
     .hero::before {
@@ -509,10 +440,7 @@
         pointer-events: none;
     }
 
-    .hero-content {
-        position: relative;
-        z-index: 1;
-    }
+    .hero-content { position: relative; z-index: 1; }
 
     .hero-icon {
         width: 90px;
@@ -545,7 +473,6 @@
         letter-spacing: 5px;
         margin-bottom: 12px;
         text-transform: uppercase;
-        filter: drop-shadow(0 0 30px rgba(0,240,255,0.3));
     }
 
     .hero-desc {
@@ -570,89 +497,162 @@
         margin-bottom: 22px;
     }
 
-    .quick-start {
-        background: rgba(11, 11, 26, 0.75);
-        backdrop-filter: blur(30px);
-        -webkit-backdrop-filter: blur(30px);
+    /* ═══ KEY SECTION ═══ */
+    .key-section {
+        background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,45,149,0.04));
+        border: 2px solid var(--neon-gold);
         border-radius: var(--radius-xl);
-        border: 1px solid var(--glass-border);
-        padding: 35px 30px;
+        padding: 30px;
         margin-bottom: 25px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        box-shadow: 0 0 50px rgba(255,215,0,0.15);
+        position: relative;
+        overflow: hidden;
     }
 
-    .quick-title {
+    .key-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--neon-gold), var(--neon-pink), var(--neon-gold));
+        background-size: 200% 100%;
+        animation: slideGradient 3s linear infinite;
+    }
+
+    @keyframes slideGradient {
+        0% { background-position: 0% 0; }
+        100% { background-position: 200% 0; }
+    }
+
+    .key-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .key-section-title {
         font-family: 'Orbitron', sans-serif;
-        font-size: 22px;
-        font-weight: 900;
+        font-size: 15px;
         color: var(--neon-gold);
         letter-spacing: 3px;
         text-transform: uppercase;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .key-lock-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 14px;
+        border-radius: 50px;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        background: rgba(255, 0, 100, 0.15);
+        color: var(--neon-red);
+        border: 1.5px solid rgba(255, 0, 100, 0.35);
+        transition: all 0.3s;
+    }
+
+    .key-lock-badge.unlocked {
+        background: rgba(0, 255, 100, 0.15);
+        color: var(--neon-green);
+        border-color: rgba(0, 255, 100, 0.35);
+        box-shadow: 0 0 20px rgba(0,255,100,0.2);
+    }
+
+    .key-display {
+        background: #000;
+        border: 2px solid var(--neon-gold);
+        border-radius: 14px;
+        padding: 20px 24px;
+        color: var(--neon-gold);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 18px;
+        letter-spacing: 2px;
         text-align: center;
-        margin-bottom: 25px;
-        text-shadow: 0 0 30px rgba(255,215,0,0.3);
+        font-weight: 700;
+        word-break: break-all;
+        box-shadow: inset 0 0 30px rgba(255,215,0,0.05);
+        transition: all 0.3s;
     }
 
-    .steps-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 16px;
+    .key-display.revealed {
+        color: var(--neon-green);
+        border-color: var(--neon-green);
+        box-shadow: inset 0 0 30px rgba(0,255,100,0.08), 0 0 30px rgba(0,255,100,0.15);
     }
 
-    .step-card {
-        background: rgba(0, 240, 255, 0.04);
-        border-radius: var(--radius-md);
-        border: 1px solid rgba(0, 240, 255, 0.1);
-        border-left: 4px solid var(--neon-cyan);
-        padding: 18px;
-        transition: 0.3s;
+    .key-warning {
+        color: #ffb3c9;
+        font-size: 11px;
+        margin-top: 14px;
+        line-height: 1.7;
+        padding: 12px 14px;
+        background: rgba(255, 0, 100, 0.08);
+        border-left: 3px solid var(--neon-red);
+        border-radius: 8px;
     }
 
-    .step-card:hover {
-        background: rgba(0, 240, 255, 0.08);
-        transform: translateY(-4px);
-        box-shadow: 0 10px 30px rgba(0,240,255,0.1);
+    .key-warning b { color: var(--neon-gold); }
+
+    .key-action-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+        flex-wrap: wrap;
     }
 
-    .step-number {
+    .key-action-btn {
+        flex: 1;
+        min-width: 180px;
+        background: linear-gradient(135deg, var(--neon-gold), #ff8c00);
+        color: #000;
+        border: none;
+        padding: 14px 24px;
+        border-radius: 10px;
+        font-weight: 900;
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        font-family: 'Orbitron', sans-serif;
+        transition: all 0.3s;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 34px;
-        height: 34px;
-        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
-        color: #000;
-        border-radius: 50%;
-        font-weight: 900;
-        font-size: 15px;
-        font-family: 'Orbitron', sans-serif;
-        margin-bottom: 12px;
-        box-shadow: 0 0 20px rgba(0,240,255,0.4);
+        gap: 8px;
     }
 
-    .step-title {
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--neon-cyan);
-        margin-bottom: 8px;
-        letter-spacing: 1px;
+    .key-action-btn:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(255,215,0,0.4);
     }
 
-    .step-text {
-        font-size: 12.5px;
-        color: var(--text-secondary);
-        line-height: 1.6;
+    .key-action-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
     }
 
-    .step-text code {
-        background: rgba(255, 215, 0, 0.1);
-        color: var(--neon-gold);
-        padding: 2px 7px;
-        border-radius: 5px;
-        font-size: 11.5px;
-        font-family: 'Courier New', monospace;
+    .key-action-btn.secondary {
+        background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+        color: #fff;
     }
 
+    .key-action-btn.secondary:hover:not(:disabled) {
+        box-shadow: 0 12px 30px rgba(255,45,149,0.4);
+    }
+
+    /* ═══ TOOLS ═══ */
     .tools-section {
         background: rgba(11, 11, 26, 0.75);
         backdrop-filter: blur(30px);
@@ -695,14 +695,6 @@
         gap: 12px;
         position: relative;
         overflow: hidden;
-    }
-
-    .tool-card::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, rgba(0,240,255,0.03), transparent 60%);
-        pointer-events: none;
     }
 
     .tool-card:hover {
@@ -754,6 +746,89 @@
         transform: translateX(6px);
     }
 
+    /* ═══ QUICK START ═══ */
+    .quick-start {
+        background: rgba(11, 11, 26, 0.75);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--glass-border);
+        padding: 35px 30px;
+        margin-bottom: 25px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    .quick-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 22px;
+        font-weight: 900;
+        color: var(--neon-gold);
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-align: center;
+        margin-bottom: 25px;
+        text-shadow: 0 0 30px rgba(255,215,0,0.3);
+    }
+
+    .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+    }
+
+    .step-card {
+        background: rgba(0, 240, 255, 0.04);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(0, 240, 255, 0.1);
+        border-left: 4px solid var(--neon-cyan);
+        padding: 18px;
+        transition: 0.3s;
+    }
+
+    .step-card:hover {
+        background: rgba(0, 240, 255, 0.08);
+        transform: translateY(-4px);
+    }
+
+    .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+        color: #000;
+        border-radius: 50%;
+        font-weight: 900;
+        font-size: 15px;
+        font-family: 'Orbitron', sans-serif;
+        margin-bottom: 12px;
+        box-shadow: 0 0 20px rgba(0,240,255,0.4);
+    }
+
+    .step-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--neon-cyan);
+        margin-bottom: 8px;
+        letter-spacing: 1px;
+    }
+
+    .step-text {
+        font-size: 12.5px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+    .step-text code {
+        background: rgba(255, 215, 0, 0.1);
+        color: var(--neon-gold);
+        padding: 2px 7px;
+        border-radius: 5px;
+        font-size: 11.5px;
+        font-family: 'Courier New', monospace;
+    }
+
     .footer {
         text-align: center;
         padding: 25px 15px;
@@ -765,6 +840,249 @@
 
     .footer b { color: var(--neon-cyan); }
 
+    /* ═══ PASSWORD MODAL ═══ */
+    .pwd-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.88);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        z-index: 99999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .pwd-modal-overlay.open { display: flex; }
+
+    .pwd-modal {
+        background: rgba(11,11,26,0.98);
+        border: 2px solid var(--neon-cyan);
+        border-radius: 22px;
+        padding: 36px 30px;
+        max-width: 480px;
+        width: 100%;
+        box-shadow: 0 0 100px rgba(0,240,255,0.25);
+        animation: modalIn 0.3s ease;
+    }
+
+    @keyframes modalIn {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .pwd-modal h2 {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 20px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-align: center;
+        margin-bottom: 8px;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .pwd-modal .sub {
+        color: var(--text-muted);
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-align: center;
+        margin-bottom: 26px;
+    }
+
+    .pwd-modal label {
+        display: block;
+        color: var(--neon-cyan);
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .pwd-input-wrap {
+        position: relative;
+    }
+
+    .pwd-modal input[type="password"],
+    .pwd-modal input[type="text"] {
+        width: 100%;
+        background: #000;
+        color: var(--neon-green);
+        border: 1.5px solid #333;
+        border-radius: 12px;
+        padding: 16px 50px 16px 18px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 16px;
+        letter-spacing: 4px;
+        transition: all 0.3s;
+        text-align: center;
+    }
+
+    .pwd-modal input:focus {
+        outline: none;
+        border-color: var(--neon-cyan);
+        box-shadow: 0 0 25px rgba(0,240,255,0.25);
+    }
+
+    .pwd-modal .eye-btn {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 16px;
+        padding: 8px;
+        transition: color 0.2s;
+    }
+
+    .pwd-modal .eye-btn:hover { color: var(--neon-cyan); }
+
+    .pwd-modal .btn-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 22px;
+        flex-wrap: wrap;
+    }
+
+    .pwd-modal .btn {
+        flex: 1;
+        min-width: 130px;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+        color: #000;
+        border: none;
+        padding: 15px 22px;
+        border-radius: 12px;
+        font-weight: 900;
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        font-family: 'Orbitron', sans-serif;
+        transition: all 0.3s;
+    }
+
+    .pwd-modal .btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(0,240,255,0.4);
+    }
+
+    .pwd-modal .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    .pwd-modal .btn.cancel {
+        background: linear-gradient(135deg, var(--neon-red), var(--neon-purple));
+        color: #fff;
+    }
+
+    .pwd-modal .btn.cancel:hover {
+        box-shadow: 0 12px 30px rgba(255,0,100,0.4);
+    }
+
+    .pwd-status {
+        margin-top: 18px;
+        padding: 14px;
+        border-radius: 10px;
+        font-size: 12px;
+        text-align: center;
+        font-weight: 700;
+        display: none;
+        word-wrap: break-word;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .pwd-status.success {
+        background: rgba(0,255,100,0.1);
+        border: 1.5px solid var(--neon-green);
+        color: var(--neon-green);
+        display: block;
+    }
+
+    .pwd-status.error {
+        background: rgba(255,0,100,0.1);
+        border: 1.5px solid var(--neon-red);
+        color: var(--neon-red);
+        display: block;
+    }
+
+    .pwd-status.info {
+        background: rgba(0,240,255,0.1);
+        border: 1.5px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+        display: block;
+    }
+
+    .pwd-status.loading {
+        background: rgba(255,215,0,0.1);
+        border: 1.5px solid var(--neon-gold);
+        color: var(--neon-gold);
+        display: block;
+    }
+
+    .pwd-warn {
+        background: rgba(255, 0, 100, 0.08);
+        border-left: 3px solid var(--neon-red);
+        padding: 12px 14px;
+        border-radius: 8px;
+        font-size: 11px;
+        color: #ffb3c9;
+        line-height: 1.7;
+        margin-top: 16px;
+    }
+
+    .pwd-warn b { color: var(--neon-gold); }
+
+    /* ═══ TOAST ═══ */
+    .toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 999999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+        max-width: 400px;
+    }
+
+    .toast {
+        background: rgba(11,11,26,0.98);
+        border: 2px solid var(--neon-cyan);
+        border-radius: 14px;
+        padding: 14px 20px;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 30px rgba(0,240,255,0.2);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        pointer-events: auto;
+        animation: toastIn 0.4s ease;
+        min-width: 260px;
+    }
+
+    .toast.success { border-color: var(--neon-green); }
+    .toast.error { border-color: var(--neon-red); }
+    .toast.warn { border-color: var(--neon-gold); }
+    .toast-icon { font-size: 18px; flex-shrink: 0; }
+    .toast.success .toast-icon { color: var(--neon-green); }
+    .toast.error .toast-icon { color: var(--neon-red); }
+    .toast.warn .toast-icon { color: var(--neon-gold); }
+
+    @keyframes toastIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .toast.removing { animation: toastOut 0.3s ease forwards; }
+    @keyframes toastOut { to { transform: translateX(400px); opacity: 0; } }
+
     @media (max-width: 768px) {
         .app-container { padding: 12px; }
         .navbar { padding: 12px 16px; margin-bottom: 18px; border-radius: var(--radius-md); }
@@ -773,32 +1091,29 @@
         .nav-brand-sub { font-size: 8px; letter-spacing: 1.5px; }
         .menu-btn-toggle { width: 44px; height: 44px; font-size: 18px; }
         .side-menu { width: 340px; padding: 22px 18px; }
-        .menu-header-title { font-size: 14px; }
-        .menu-avatar { width: 60px; height: 60px; font-size: 24px; }
-        .menu-user-name { font-size: 14px; }
-        .menu-user-email { font-size: 10px; }
-        .menu-item { padding: 13px 15px; font-size: 12px; }
-        .menu-item i { font-size: 15px; width: 22px; }
-        .hero { padding: 35px 20px; margin-bottom: 22px; }
+        .hero { padding: 35px 20px; margin-bottom: 18px; }
         .hero-icon { width: 75px; height: 75px; font-size: 36px; }
         .hero-title { font-size: 26px; letter-spacing: 3px; }
         .hero-desc { font-size: 12.5px; }
+        .key-section { padding: 22px 18px; }
+        .key-section-title { font-size: 13px; letter-spacing: 2px; }
+        .key-display { font-size: 14px; padding: 16px 18px; letter-spacing: 1.5px; }
+        .key-action-btn { min-width: 100%; }
         .quick-start, .tools-section { padding: 25px 18px; margin-bottom: 18px; }
         .quick-title, .tools-title { font-size: 17px; letter-spacing: 2px; }
         .steps-grid, .tools-grid { grid-template-columns: 1fr; gap: 12px; }
         .step-card, .tool-card { padding: 16px; }
-        .step-number { width: 30px; height: 30px; font-size: 14px; }
-        .step-title { font-size: 13px; }
-        .step-text { font-size: 12px; }
         .tool-icon { width: 44px; height: 44px; font-size: 20px; }
         .tool-name { font-size: 13px; }
         .tool-desc { font-size: 11px; }
+        .pwd-modal { padding: 28px 22px; }
+        .pwd-modal h2 { font-size: 17px; letter-spacing: 2px; }
     }
 
     @media (max-width: 480px) {
         .app-container { padding: 10px; }
         .navbar { padding: 10px 14px; }
-        .nav-logo { width: 36px; height: 36px; font-size: 17px; border-radius: 10px; }
+        .nav-logo { width: 36px; height: 36px; font-size: 17px; }
         .nav-brand-title { font-size: 12px; }
         .menu-btn-toggle { width: 42px; height: 42px; }
         .side-menu { width: 320px; }
@@ -806,33 +1121,14 @@
         .hero-icon { width: 65px; height: 65px; font-size: 30px; }
         .hero-title { font-size: 21px; letter-spacing: 2px; }
         .hero-desc { font-size: 11.5px; }
-        .welcome-badge { font-size: 10px; padding: 6px 16px; letter-spacing: 1.5px; }
-        .quick-title, .tools-title { font-size: 15px; }
-        .step-title { font-size: 12.5px; }
-        .step-text { font-size: 11.5px; }
-        .tool-name { font-size: 12px; letter-spacing: 1px; }
-    }
-
-    @media (max-width: 360px) {
-        .hero-title { font-size: 18px; }
-        .hero-icon { width: 55px; height: 55px; font-size: 26px; }
-        .quick-title, .tools-title { font-size: 13px; letter-spacing: 1.5px; }
-        .nav-brand-title { font-size: 11px; }
-        .menu-item { padding: 11px 13px; font-size: 11px; }
-    }
-
-    @supports (padding: max(0px)) {
-        .app-container {
-            padding-top: max(15px, env(safe-area-inset-top));
-            padding-bottom: max(15px, env(safe-area-inset-bottom));
-            padding-left: max(12px, env(safe-area-inset-left));
-            padding-right: max(12px, env(safe-area-inset-right));
-        }
+        .key-display { font-size: 12px; padding: 14px 16px; letter-spacing: 1px; }
+        .key-section-title { font-size: 11px; }
     }
     </style>
 </head>
 <body>
 
+    <!-- LOADING SCREEN -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-spinner"></div>
         <div class="loading-text">Verifying Access...</div>
@@ -840,6 +1136,36 @@
 
     <canvas id="particles-canvas"></canvas>
 
+    <!-- PASSWORD MODAL -->
+    <div class="pwd-modal-overlay" id="pwdModalOverlay">
+        <div class="pwd-modal">
+            <h2>🔐 Enter Your Password</h2>
+            <div class="sub">Required to reveal your key</div>
+
+            <label>Your 14-Character Password</label>
+            <div class="pwd-input-wrap">
+                <input type="password" id="pwdInput" maxlength="14" placeholder="••••••••••••••" autocomplete="off">
+                <button class="eye-btn" id="pwdEyeBtn" type="button">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn" id="pwdSubmitBtn" disabled>🔓 Unlock Key</button>
+                <button class="btn cancel" id="pwdCancelBtn">✖ Cancel</button>
+            </div>
+
+            <div class="pwd-status" id="pwdStatus"></div>
+
+            <div class="pwd-warn">
+                ⚠️ <b>WARNING:</b> Your password is required to reveal the key.
+                If you forget your password, your key can <b>NEVER be recovered</b>.
+                Wrong password = no access.
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
     <div class="app-container" id="appContainer" style="display:none;">
 
         <div class="navbar">
@@ -937,17 +1263,50 @@
 
         <div class="main-content">
 
+            <!-- HERO -->
             <div class="hero">
                 <div class="hero-content">
                     <div class="welcome-badge">👋 Welcome</div>
                     <div class="hero-icon">⚡</div>
                     <h1 class="hero-title">CoreForge</h1>
                     <p class="hero-desc">
-                        Your all-in-one developer toolkit. Create, convert, compress, obfuscate, and encrypt your code with ease. Choose a tool below to get started.
+                        Your all-in-one developer toolkit. Create, convert, compress, obfuscate, and encrypt your code with ease.
                     </p>
                 </div>
             </div>
 
+            <!-- ═══ USER'S UNIQUE KEY ═══ -->
+            <div class="key-section">
+                <div class="key-section-header">
+                    <div class="key-section-title">
+                        <i class="fa-solid fa-key"></i> YOUR UNIQUE KEY
+                    </div>
+                    <div class="key-lock-badge" id="keyLockBadge">
+                        <i class="fa-solid fa-lock"></i> LOCKED
+                    </div>
+                </div>
+
+                <div class="key-display" id="keyDisplay">
+                    NightOrbit_*****_***********
+                </div>
+
+                <div class="key-warning">
+                    ⚠️ <b>NEVER SHARE THIS KEY.</b> If someone gets your key, they can decrypt your code.
+                    Your key is protected by your <b>14-character password</b> (10 digits + 4 symbols).
+                    <br>⚠️ If you forget your password, this key can <b>NEVER be recovered</b>.
+                </div>
+
+                <div class="key-action-row">
+                    <button class="key-action-btn" id="showKeyBtn">
+                        <i class="fa-solid fa-eye"></i> SHOW MY KEY
+                    </button>
+                    <button class="key-action-btn secondary" id="hideKeyBtn" style="display:none;">
+                        <i class="fa-solid fa-eye-slash"></i> HIDE KEY
+                    </button>
+                </div>
+            </div>
+
+            <!-- TOOLS -->
             <div class="tools-section">
                 <h2 class="tools-title">🛠️ Available Tools</h2>
                 <div class="tools-grid">
@@ -990,45 +1349,33 @@
                 </div>
             </div>
 
+            <!-- QUICK START -->
             <div class="quick-start">
                 <h2 class="quick-title">⚡ Quick Start — 4 Steps</h2>
                 <div class="steps-grid">
-
                     <div class="step-card">
                         <div class="step-number">1</div>
                         <div class="step-title">Config Setup</div>
-                        <div class="step-text">
-                            Neeche "Config Mode" chuno — <code>Demo</code>, <code>Your Config</code>, ya <code>No Config</code>
-                        </div>
+                        <div class="step-text">Choose your config — <code>Demo</code>, <code>Your Config</code>, or <code>No Config</code></div>
                     </div>
-
                     <div class="step-card">
                         <div class="step-number">2</div>
                         <div class="step-title">HTML</div>
-                        <div class="step-text">
-                            Apna HTML code daalo (sirf HTML — CSS/JS nahi)
-                        </div>
+                        <div class="step-text">Paste your HTML code (HTML only — no CSS/JS)</div>
                     </div>
-
                     <div class="step-card">
                         <div class="step-number">3</div>
                         <div class="step-title">CSS</div>
-                        <div class="step-text">
-                            Apna CSS code daalo (sirf CSS — HTML/JS nahi)
-                        </div>
+                        <div class="step-text">Paste your CSS code (CSS only — no HTML/JS)</div>
                     </div>
-
                     <div class="step-card">
                         <div class="step-number">4</div>
                         <div class="step-title">JavaScript</div>
-                        <div class="step-text">
-                            Apna JS code daalo (sirf JS — HTML/CSS nahi)
-                        </div>
+                        <div class="step-text">Paste your JS code (JS only — no HTML/CSS)</div>
                     </div>
-
                 </div>
                 <p style="text-align:center; margin-top:22px; font-size:13px; color:var(--text-secondary); line-height:1.7;">
-                    <strong style="color:var(--neon-gold);">Convert to JSON:</strong> Aakhir mein button dabao — <code style="background:rgba(255,215,0,0.1); color:var(--neon-gold); padding:3px 8px; border-radius:5px; font-family:'Courier New',monospace;">code.json</code> ban jayegi
+                    <strong style="color:var(--neon-gold);">Convert to JSON:</strong> Click the button — <code style="background:rgba(255,215,0,0.1); color:var(--neon-gold); padding:3px 8px; border-radius:5px; font-family:'Courier New',monospace;">code.json</code> will be created
                 </p>
             </div>
 
@@ -1039,6 +1386,446 @@
         </div>
     </div>
 
-    <script src="script2.js"></script>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ═══ FIREBASE + SCRIPT ═══ -->
+    <script src="auth-guard.js"></script>
+
+    <script>
+    (function() {
+    'use strict';
+
+    /* ═══════════════════════════════════════════════════════════
+       DASHBOARD — NightOrbit CoreForge
+       - Unique key display with password protection
+       - Auto-lock after 60 seconds
+       - Toast notifications
+       - Secure logout
+       ═══════════════════════════════════════════════════════════ */
+
+    var SALT = 'NightOrbit_CodeForge_v9_2024_MASTER_SALT_@#$%^&*';
+    var ITERATIONS = 500000;
+    var AUTO_LOCK_TIME = 60000; /* 60 seconds */
+
+    var dashState = {
+        user: null,
+        revealedKey: null,
+        autoLockTimer: null
+    };
+
+    /* ═══ TOAST ═══ */
+    function toast(msg, type) {
+        type = type || 'info';
+        var c = document.getElementById('toastContainer');
+        if (!c) return;
+        var icons = {
+            success: 'fa-circle-check',
+            error: 'fa-circle-xmark',
+            warn: 'fa-triangle-exclamation',
+            info: 'fa-circle-info'
+        };
+        var el = document.createElement('div');
+        el.className = 'toast ' + type;
+        el.innerHTML = '<i class="fa-solid ' + icons[type] + ' toast-icon"></i><span>' + msg + '</span>';
+        c.appendChild(el);
+        setTimeout(function() {
+            el.classList.add('removing');
+            setTimeout(function() {
+                if (el.parentNode) el.parentNode.removeChild(el);
+            }, 300);
+        }, 3500);
+    }
+
+    /* ═══ SHOW / HIDE LOADING ═══ */
+    function hideLoading() {
+        var el = document.getElementById('loadingScreen');
+        if (el) el.classList.add('hidden');
+    }
+    function showApp() {
+        var el = document.getElementById('appContainer');
+        if (el) el.style.display = 'flex';
+    }
+
+    /* ═══ MENU TOGGLE ═══ */
+    var menuToggle = document.getElementById('menuToggle');
+    var menuClose = document.getElementById('menuClose');
+    var sideMenu = document.getElementById('sideMenu');
+    var menuOverlay = document.getElementById('menuOverlay');
+
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function() {
+            sideMenu.classList.add('open');
+            menuOverlay.classList.add('active');
+        });
+    }
+    if (menuClose) {
+        menuClose.addEventListener('click', function() {
+            sideMenu.classList.remove('open');
+            menuOverlay.classList.remove('active');
+        });
+    }
+    if (menuOverlay) {
+        menuOverlay.addEventListener('click', function() {
+            sideMenu.classList.remove('open');
+            menuOverlay.classList.remove('active');
+        });
+    }
+
+    /* ═══ LOGOUT ═══ */
+    function doLogout() {
+        try {
+            if (window.AuthGuard && typeof AuthGuard.logout === 'function') {
+                AuthGuard.logout();
+            } else if (window.firebase && firebase.auth) {
+                firebase.auth().signOut().then(function() {
+                    window.location.href = 'login.html';
+                }).catch(function() {
+                    window.location.href = 'login.html';
+                });
+            } else {
+                window.location.href = 'login.html';
+            }
+        } catch (e) {
+            window.location.href = 'login.html';
+        }
+    }
+
+    var logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', doLogout);
+    }
+
+    /* ═══ PASSWORD MODAL ═══ */
+    var pwdOverlay = document.getElementById('pwdModalOverlay');
+    var pwdInput = document.getElementById('pwdInput');
+    var pwdSubmit = document.getElementById('pwdSubmitBtn');
+    var pwdCancel = document.getElementById('pwdCancelBtn');
+    var pwdStatus = document.getElementById('pwdStatus');
+    var pwdEye = document.getElementById('pwdEyeBtn');
+
+    function openPwdModal() {
+        pwdOverlay.classList.add('open');
+        pwdInput.value = '';
+        pwdInput.type = 'password';
+        pwdStatus.style.display = 'none';
+        pwdStatus.className = 'pwd-status';
+        pwdSubmit.disabled = true;
+        pwdEye.innerHTML = '<i class="fa-solid fa-eye"></i>';
+        setTimeout(function() { pwdInput.focus(); }, 200);
+    }
+
+    function closePwdModal() {
+        pwdOverlay.classList.remove('open');
+        pwdInput.value = '';
+    }
+
+    if (pwdEye) {
+        pwdEye.addEventListener('click', function() {
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                pwdEye.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+            } else {
+                pwdInput.type = 'password';
+                pwdEye.innerHTML = '<i class="fa-solid fa-eye"></i>';
+            }
+        });
+    }
+
+    if (pwdInput) {
+        pwdInput.addEventListener('input', function() {
+            pwdSubmit.disabled = this.value.length !== 14;
+        });
+        pwdInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !pwdSubmit.disabled) {
+                pwdSubmit.click();
+            }
+        });
+    }
+
+    if (pwdCancel) {
+        pwdCancel.addEventListener('click', closePwdModal);
+    }
+
+    /* ═══ PASSWORD SUBMIT ═══ */
+    if (pwdSubmit) {
+        pwdSubmit.addEventListener('click', function() {
+            var password = pwdInput.value;
+            if (!dashState.user) {
+                setPwdStatus('error', '❌ User not authenticated');
+                return;
+            }
+
+            setPwdStatus('loading', '⏳ Verifying password...');
+            pwdSubmit.disabled = true;
+
+            verifyPassword(dashState.user, password)
+                .then(function(displayKey) {
+                    setPwdStatus('success', '✅ Key unlocked!');
+                    revealKey(displayKey);
+                    setTimeout(function() {
+                        closePwdModal();
+                    }, 800);
+                })
+                .catch(function(err) {
+                    setPwdStatus('error', '❌ ' + err.message);
+                    pwdSubmit.disabled = false;
+                    pwdInput.value = '';
+                    pwdInput.focus();
+                });
+        });
+    }
+
+    function setPwdStatus(type, msg) {
+        pwdStatus.className = 'pwd-status ' + type;
+        pwdStatus.textContent = msg;
+        pwdStatus.style.display = 'block';
+    }
+
+    /* ═══ VERIFY PASSWORD + DERIVE KEY ═══ */
+    function verifyPassword(user, password) {
+        return new Promise(function(resolve, reject) {
+            /* Validate format: 10 digits + 4 symbols, total 14 chars */
+            if (password.length !== 14) {
+                reject(new Error('Password must be 14 characters'));
+                return;
+            }
+            var digits = (password.match(/\d/g) || []).length;
+            var symbols = (password.match(/[^a-zA-Z0-9]/g) || []).length;
+            var letters = (password.match(/[a-zA-Z]/g) || []).length;
+
+            if (digits !== 10 || symbols !== 4 || letters !== 0) {
+                reject(new Error('Password must be 10 digits + 4 symbols (no letters)'));
+                return;
+            }
+
+            /* Check against Firebase */
+            var passwordHash = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+
+            firebase.database().ref('users/' + user.uid + '/passwordHash').once('value')
+                .then(function(snap) {
+                    var storedHash = snap.val();
+                    if (!storedHash) {
+                        reject(new Error('No password set. Please set it first.'));
+                        return;
+                    }
+                    if (storedHash !== passwordHash) {
+                        reject(new Error('Incorrect password. Access denied.'));
+                        return;
+                    }
+
+                    /* Derive actual key */
+                    var combined = user.email.toLowerCase().trim() + '::' + password;
+                    var key = CryptoJS.PBKDF2(combined, SALT, {
+                        keySize: 512 / 32,
+                        iterations: ITERATIONS,
+                        hasher: CryptoJS.algo.SHA512
+                    }).toString(CryptoJS.enc.Hex);
+
+                    /* Build display format: NightOrbit_XXXXX_XXXXXXX */
+                    var part1 = key.substring(0, 5).toUpperCase();
+                    var part2 = key.substring(5, 12).toUpperCase();
+                    var displayKey = 'NightOrbit_' + part1 + '_' + part2;
+
+                    dashState.revealedKey = displayKey;
+                    resolve(displayKey);
+                })
+                .catch(function(err) {
+                    reject(new Error('Verification failed: ' + err.message));
+                });
+        });
+    }
+
+    /* ═══ REVEAL KEY ═══ */
+    function revealKey(displayKey) {
+        var keyDisplay = document.getElementById('keyDisplay');
+        var lockBadge = document.getElementById('keyLockBadge');
+        var showBtn = document.getElementById('showKeyBtn');
+        var hideBtn = document.getElementById('hideKeyBtn');
+
+        if (keyDisplay) {
+            keyDisplay.textContent = displayKey;
+            keyDisplay.classList.add('revealed');
+        }
+        if (lockBadge) {
+            lockBadge.innerHTML = '<i class="fa-solid fa-unlock"></i> UNLOCKED';
+            lockBadge.classList.add('unlocked');
+        }
+        if (showBtn) showBtn.style.display = 'none';
+        if (hideBtn) hideBtn.style.display = 'inline-flex';
+
+        toast('🔓 Key revealed — auto-locks in 60s', 'success');
+
+        /* Clear old timer */
+        if (dashState.autoLockTimer) clearTimeout(dashState.autoLockTimer);
+
+        /* Auto-lock after 60 seconds */
+        dashState.autoLockTimer = setTimeout(function() {
+            hideKey(true);
+        }, AUTO_LOCK_TIME);
+    }
+
+    /* ═══ HIDE KEY ═══ */
+    function hideKey(auto) {
+        var keyDisplay = document.getElementById('keyDisplay');
+        var lockBadge = document.getElementById('keyLockBadge');
+        var showBtn = document.getElementById('showKeyBtn');
+        var hideBtn = document.getElementById('hideKeyBtn');
+
+        if (keyDisplay) {
+            keyDisplay.textContent = 'NightOrbit_*****_***********';
+            keyDisplay.classList.remove('revealed');
+        }
+        if (lockBadge) {
+            lockBadge.innerHTML = '<i class="fa-solid fa-lock"></i> LOCKED';
+            lockBadge.classList.remove('unlocked');
+        }
+        if (showBtn) showBtn.style.display = 'inline-flex';
+        if (hideBtn) hideBtn.style.display = 'none';
+
+        dashState.revealedKey = null;
+
+        if (dashState.autoLockTimer) {
+            clearTimeout(dashState.autoLockTimer);
+            dashState.autoLockTimer = null;
+        }
+
+        if (auto) {
+            toast('🔒 Key auto-locked for security', 'info');
+        }
+    }
+
+    /* ═══ BUTTON LISTENERS ═══ */
+    var showKeyBtn = document.getElementById('showKeyBtn');
+    var hideKeyBtn = document.getElementById('hideKeyBtn');
+
+    if (showKeyBtn) {
+        showKeyBtn.addEventListener('click', function() {
+            if (!dashState.user) {
+                toast('Please wait, loading user...', 'warn');
+                return;
+            }
+            openPwdModal();
+        });
+    }
+    if (hideKeyBtn) {
+        hideKeyBtn.addEventListener('click', function() {
+            hideKey(false);
+            toast('🔒 Key hidden', 'info');
+        });
+    }
+
+    /* ═══ AUTH READY ═══ */
+    document.addEventListener('auth-guard-ready', function(e) {
+        if (!e.detail || !e.detail.user) {
+            hideLoading();
+            return;
+        }
+
+        dashState.user = e.detail.user;
+
+        /* Update profile UI */
+        var email = dashState.user.email || '';
+        var name = dashState.user.displayName || (email ? email.split('@')[0] : 'User');
+        var initial = (name.charAt(0) || 'U').toUpperCase();
+
+        var menuAvatar = document.getElementById('menuAvatar');
+        var menuUserName = document.getElementById('menuUserName');
+        var menuUserEmail = document.getElementById('menuUserEmail');
+
+        if (menuAvatar) menuAvatar.textContent = initial;
+        if (menuUserName) menuUserName.textContent = name;
+        if (menuUserEmail) menuUserEmail.textContent = email;
+
+        /* Device info */
+        var menuDevice = document.getElementById('menuDevice');
+        if (menuDevice) {
+            menuDevice.textContent = /Mobile|Android|iPhone/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop';
+        }
+
+        /* Login times */
+        var menuLastLogin = document.getElementById('menuLastLogin');
+        if (menuLastLogin) {
+            menuLastLogin.textContent = new Date().toLocaleString('en-GB', {
+                day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        /* Hide loading, show app */
+        setTimeout(function() {
+            hideLoading();
+            showApp();
+        }, 400);
+
+        toast('👋 Welcome back, ' + name, 'success');
+    });
+
+    /* Fallback: if auth-guard-ready doesn't fire in 3 seconds */
+    setTimeout(function() {
+        if (!dashState.user) {
+            if (window.AuthGuard && AuthGuard.getUser && AuthGuard.getUser()) {
+                var u = AuthGuard.getUser();
+                var evt = new CustomEvent('auth-guard-ready', { detail: { user: u } });
+                document.dispatchEvent(evt);
+            } else if (window.firebase && firebase.auth && firebase.auth().currentUser) {
+                var u2 = firebase.auth().currentUser;
+                var evt2 = new CustomEvent('auth-guard-ready', { detail: { user: u2 } });
+                document.dispatchEvent(evt2);
+            } else {
+                /* No user — redirect to login */
+                hideLoading();
+                setTimeout(function() {
+                    window.location.href = 'login.html';
+                }, 500);
+            }
+        }
+    }, 3000);
+
+    /* ═══ PARTICLES (optional visual) ═══ */
+    var canvas = document.getElementById('particles-canvas');
+    if (canvas) {
+        var ctx = canvas.getContext('2d');
+        var particles = [];
+        var particleCount = 40;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        for (var i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 1.5 + 0.5,
+                dx: (Math.random() - 0.5) * 0.3,
+                dy: (Math.random() - 0.5) * 0.3
+            });
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (var i = 0; i < particles.length; i++) {
+                var p = particles[i];
+                p.x += p.dx;
+                p.y += p.dy;
+                if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 240, 255, 0.4)';
+                ctx.fill();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+    }
+
+    console.log('%c🔐 Dashboard loaded (key protection enabled)',
+        'color:#00f0ff;font-weight:bold;font-size:14px;');
+
+    })();
+    </script>
 </body>
 </html>
