@@ -101,7 +101,6 @@ body {
     line-height: 1.7; margin-top: 16px; }
 .pwd-modal .warn b { color: var(--gold); }
 
-/* Requirements checklist */
 .req-list { margin-top: 14px; padding: 12px; background: rgba(0,0,0,0.4);
     border-radius: 10px; font-size: 11px; line-height: 2; font-family: 'JetBrains Mono', monospace; }
 .req-item { color: var(--muted); transition: color 0.3s; }
@@ -338,9 +337,58 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     .pwd-modal { padding: 28px 22px; }
     .pwd-modal h2 { font-size: 17px; letter-spacing: 2px; }
 }
+/* ═══ KEY ACTION BUTTONS (NEW) ═══ */
+.key-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.key-action-btn {
+    padding: 12px 20px; border-radius: 10px; font-weight: 900;
+    font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+    cursor: pointer; font-family: 'Orbitron', sans-serif;
+    border: none; transition: all 0.3s; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 8px;
+}
+.key-action-btn.create {
+    background: linear-gradient(135deg, var(--gold), #ff8c00);
+    color: #000; box-shadow: 0 0 20px rgba(255,215,0,0.4);
+}
+.key-action-btn.unlock {
+    background: linear-gradient(135deg, var(--green), #00aa44);
+    color: #000; box-shadow: 0 0 20px rgba(0,255,100,0.4);
+}
+.key-action-btn.delete {
+    background: linear-gradient(135deg, var(--red), #aa0044);
+    color: #fff; box-shadow: 0 0 20px rgba(255,0,100,0.4);
+}
+.key-action-btn:hover { transform: translateY(-2px); }
+.key-action-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.key-action-btn.danger-zone {
+    background: rgba(255,0,100,0.1);
+    border: 2px solid var(--red); color: var(--red);
+    box-shadow: none; margin-top: 12px;
+}
+.key-action-btn.danger-zone:hover {
+    background: rgba(255,0,100,0.2);
+    box-shadow: 0 0 20px rgba(255,0,100,0.3);
+}
+/* Session timer bar */
+.session-bar {
+    position: fixed; top: var(--header-h); left: 0; right: 0;
+    height: 3px; background: rgba(0,240,255,0.1); z-index: 999;
+    display: none;
+}
+.session-bar.active { display: block; }
+.session-bar-fill {
+    height: 100%; background: linear-gradient(90deg, var(--green), var(--gold), var(--red));
+    width: 100%; transition: width 1s linear;
+    box-shadow: 0 0 10px rgba(0,240,255,0.6);
+}
 </style>
 </head>
 <body>
+
+<!-- ═══ SESSION TIMER BAR (NEW) ═══ -->
+<div class="session-bar" id="sessionBar">
+    <div class="session-bar-fill" id="sessionBarFill"></div>
+</div>
 
 <!-- ═══ PASSWORD MODAL ═══ -->
 <div class="pwd-overlay" id="pwdOverlay">
@@ -356,7 +404,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
             </button>
         </div>
 
-        <!-- Requirements (shown only in CREATE mode) -->
         <div class="req-list" id="reqList" style="display:none;">
             <div class="req-item" id="req-length"><i class="fa-solid fa-circle-xmark"></i>14 characters total</div>
             <div class="req-item" id="req-digits"><i class="fa-solid fa-circle-xmark"></i>10 digits (0-9)</div>
@@ -425,14 +472,14 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         <h1>⚡ Universal Code Encrypt</h1>
         <div class="subtitle">NightOrbit CodeForge · Password-Protected · 5MB+ Support</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v10 AUTO</span>
+            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v11 HEAVY</span>
             <span class="header-stat gold"><i class="fa-solid fa-shield-halved"></i> AES-256</span>
             <span class="header-stat pink"><i class="fa-solid fa-user-lock"></i> Password Key</span>
             <span class="header-stat green"><i class="fa-solid fa-database"></i> 5MB+</span>
         </div>
     </div>
 
-    <!-- ═══ USER KEY DISPLAY ═══ -->
+    <!-- ═══ USER KEY DISPLAY (UPDATED — CREATE/UNLOCK/DELETE) ═══ -->
     <div class="section" style="border-color: var(--gold); background: rgba(255,215,0,0.05);">
         <label style="color: var(--gold);">
             <i class="fa-solid fa-lock"></i> YOUR UNIQUE KEY (Password Protected)
@@ -443,16 +490,33 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
                           border:1.5px solid var(--gold); padding:12px; border-radius:8px;
                           font-family:'JetBrains Mono', monospace; font-size:13px;
                           cursor:not-allowed;" title="Your key is password-protected">
-            <span class="badge" id="keyStatusBadge" style="padding:10px 14px; background:rgba(255,215,0,0.15); color:var(--gold); border:1px solid rgba(255,215,0,0.3); border-radius:20px; font-size:10px; font-weight:bold;">
-                <i class="fa-solid fa-lock"></i> LOCKED
-            </span>
+            <div class="key-actions" id="keyActions">
+                <!-- Dynamically updated by JS -->
+                <button class="key-action-btn create" id="keyActionBtn" onclick="handleKeyAction()">
+                    <i class="fa-solid fa-plus"></i> CREATE PASSWORD
+                </button>
+            </div>
         </div>
-        <div style="margin-top:10px; padding:10px; background:rgba(0,240,255,0.06);
+        <div id="keyInfoBox" style="margin-top:10px; padding:10px; background:rgba(0,240,255,0.06);
                     border-left:3px solid var(--cyan); border-radius:6px;
                     font-size:11px; line-height:1.6; color:#b0d0ff;">
             🔒 <b>Secure:</b> Your key is protected by your <b>14-character password</b>
             (10 digits + 4 symbols). The actual key is <b>never displayed</b>.
-            <b>This password cannot be changed once set.</b>
+        </div>
+
+        <!-- Delete Key / Danger Zone (only shows if password exists) -->
+        <div id="dangerZone" style="display:none; margin-top:14px; padding-top:14px; border-top:1px dashed rgba(255,0,100,0.3);">
+            <div style="font-size:10px; color:var(--red); letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:8px;">
+                ⚠️ DANGER ZONE
+            </div>
+            <button class="key-action-btn delete danger-zone" onclick="deleteKeyAndRegenerate()">
+                <i class="fa-solid fa-trash"></i> DELETE KEY & GENERATE NEW
+            </button>
+            <div style="font-size:10px; color:#ffb3c9; margin-top:8px; line-height:1.6;">
+                ⚠️ This will <b>PERMANENTLY DELETE</b> your old key from Firebase.
+                All code encrypted with the old key will be <b>LOCKED FOREVER</b>.
+                A new key will be generated with a new password.
+            </div>
         </div>
     </div>
 
@@ -466,8 +530,10 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
                 <li><b style="color:var(--red);">DO NOT</b> delete your original <b>index.html</b> or main files</li>
                 <li><b style="color:var(--red);">DO NOT</b> forget your <b>14-character password</b></li>
                 <li>If you forget the password, your code can <b style="color:var(--red);">NEVER be decrypted</b></li>
+                <li>If you delete the key, old encrypted code is <b style="color:var(--red);">LOCKED FOREVER</b></li>
                 <li>Keep <b style="color:var(--green);">3 backups</b>: original code, encrypted output, decryptor.html</li>
                 <li>Save your password in a <b style="color:var(--gold);">password manager</b> or notebook</li>
+                <li>Session auto-locks in <b style="color:var(--gold);">20 seconds</b> of inactivity</li>
             </ul>
         </div>
     </div>
@@ -524,16 +590,21 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 'use strict';
 
 /* ═══════════════════════════════════════════════════════════
-   UNIVERSAL CODE ENCRYPT v10 — AUTO PASSWORD SETUP
-   - First time: password CREATE
-   - Regular: password UNLOCK
-   - Password change: NEVER (locked after creation)
-   - Storage: Firebase Realtime Database
+   UNIVERSAL CODE ENCRYPT v11 — HEAVY SECURE
+   - First time: CREATE password (button in key section)
+   - Regular: UNLOCK with existing password
+   - DELETE KEY: Firebase purge, old key locked forever
+   - Session: 20 second inactivity auto-lock
+   - PBKDF2: 1,000,000 iterations (double heavy)
+   - Password hash: PBKDF2 with per-user random salt
+   - Key NEVER stored anywhere except RAM
    ═══════════════════════════════════════════════════════════ */
 
-var SALT = 'NightOrbit_CodeForge_v10_2024_MASTER_SALT_@#$%^&*';
-var ITERATIONS = 500000;
+var SALT = 'NightOrbit_CodeForge_v11_2024_MASTER_SALT_@#$%^&*';
+var ITERATIONS = 1000000;   /* 1 MILLION — heavy */
+var HASH_ITERATIONS = 200000; /* password hash iterations */
 var LOCKED_KEY = 'NightOrbit_*****_***********';
+var SESSION_TIMEOUT = 20 * 1000; /* 20 seconds */
 
 var state = {
     uploadedFiles: {},
@@ -542,7 +613,11 @@ var state = {
     mode: null,        /* 'create' or 'unlock' */
     passwordKey: null,
     isReady: false,
-    autoLockTimer: null
+    hasPassword: false,
+    userSalt: null,    /* per-user random salt from Firebase */
+    autoLockTimer: null,
+    sessionTimer: null,
+    sessionDeadline: null
 };
 
 /* ═══ UTILITIES ═══ */
@@ -573,25 +648,52 @@ function toast(msg, type) {
 
 /* ═══ PASSWORD VALIDATION ═══ */
 function validatePasswordFormat(pwd) {
-    if (pwd.length !== 14) return false;
+    if (!pwd || pwd.length !== 14) return false;
     var digits = (pwd.match(/\d/g) || []).length;
     var symbols = (pwd.match(/[^a-zA-Z0-9]/g) || []).length;
     var letters = (pwd.match(/[a-zA-Z]/g) || []).length;
     return digits === 10 && symbols === 4 && letters === 0;
 }
 
-/* ═══ CHECK PASSWORD STATUS (Firebase Realtime DB) ═══ */
+/* ═══ GENERATE RANDOM SALT (per user) ═══ */
+function generateUserSalt() {
+    var arr = new Uint8Array(32);
+    if (window.crypto && window.crypto.getRandomValues) {
+        window.crypto.getRandomValues(arr);
+    } else {
+        for (var i = 0; i < 32; i++) arr[i] = Math.floor(Math.random() * 256);
+    }
+    return Array.prototype.map.call(arr, function(b) {
+        return ('0' + b.toString(16)).slice(-2);
+    }).join('');
+}
+
+/* ═══ HEAVY PASSWORD HASH (PBKDF2 + salt) ═══ */
+function hashPassword(password, salt) {
+    return CryptoJS.PBKDF2(password, salt, {
+        keySize: 256 / 32,
+        iterations: HASH_ITERATIONS,
+        hasher: CryptoJS.algo.SHA256
+    }).toString(CryptoJS.enc.Hex);
+}
+
+/* ═══ CHECK PASSWORD STATUS (Firebase) ═══ */
 function checkPasswordStatus(uid) {
     return new Promise(function(resolve, reject) {
-        firebase.database().ref('users/' + uid + '/passwordHash').once('value')
+        firebase.database().ref('users/' + uid + '/keyMetadata').once('value')
             .then(function(snap) {
-                resolve({ hasPassword: !!snap.val() });
+                var meta = snap.val();
+                if (!meta || !meta.passwordHash || !meta.salt) {
+                    resolve({ hasPassword: false, salt: null, meta: null });
+                    return;
+                }
+                resolve({ hasPassword: true, salt: meta.salt, meta: meta });
             })
             .catch(reject);
     });
 }
 
-/* ═══ CREATE PASSWORD (First time only) ═══ */
+/* ═══ CREATE PASSWORD (first time) — with per-user salt ═══ */
 function createPassword(user, password) {
     return new Promise(function(resolve, reject) {
         if (!validatePasswordFormat(password)) {
@@ -599,23 +701,28 @@ function createPassword(user, password) {
             return;
         }
 
-        var passwordHash = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+        var userSalt = generateUserSalt();
+        var passwordHash = hashPassword(password, userSalt);
 
-        /* Double check: password should NOT exist */
-        firebase.database().ref('users/' + user.uid + '/passwordHash').once('value')
+        /* Double-check: no existing password */
+        firebase.database().ref('users/' + user.uid + '/keyMetadata').once('value')
             .then(function(snap) {
                 if (snap.val()) {
-                    reject(new Error('Password already exists. Cannot change.'));
+                    reject(new Error('Password already exists. Use Unlock or Delete Key.'));
                     return;
                 }
-
-                /* Save to Firebase Realtime Database */
-                return firebase.database().ref('users/' + user.uid + '/passwordHash').set(passwordHash);
+                return firebase.database().ref('users/' + user.uid + '/keyMetadata').set({
+                    passwordHash: passwordHash,
+                    salt: userSalt,
+                    keyVersion: 1,
+                    createdAt: new Date().toISOString()
+                });
             })
             .then(function() {
-                /* Derive key */
-                var key = deriveKey(user.email, password);
+                var key = deriveKey(user.email, password, userSalt);
                 state.passwordKey = key;
+                state.userSalt = userSalt;
+                state.hasPassword = true;
                 state.isReady = true;
                 resolve(key);
             })
@@ -623,7 +730,7 @@ function createPassword(user, password) {
     });
 }
 
-/* ═══ VERIFY PASSWORD (Regular) ═══ */
+/* ═══ VERIFY PASSWORD (regular) ═══ */
 function verifyPassword(user, password) {
     return new Promise(function(resolve, reject) {
         if (!validatePasswordFormat(password)) {
@@ -631,22 +738,22 @@ function verifyPassword(user, password) {
             return;
         }
 
-        var passwordHash = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
-
-        firebase.database().ref('users/' + user.uid + '/passwordHash').once('value')
+        firebase.database().ref('users/' + user.uid + '/keyMetadata').once('value')
             .then(function(snap) {
-                var storedHash = snap.val();
-                if (!storedHash) {
+                var meta = snap.val();
+                if (!meta || !meta.passwordHash || !meta.salt) {
                     reject(new Error('No password set. Please create one.'));
                     return;
                 }
-                if (storedHash !== passwordHash) {
+                var computed = hashPassword(password, meta.salt);
+                if (computed !== meta.passwordHash) {
                     reject(new Error('Incorrect password. Access denied.'));
                     return;
                 }
-
-                var key = deriveKey(user.email, password);
+                var key = deriveKey(user.email, password, meta.salt);
                 state.passwordKey = key;
+                state.userSalt = meta.salt;
+                state.hasPassword = true;
                 state.isReady = true;
                 resolve(key);
             })
@@ -654,27 +761,151 @@ function verifyPassword(user, password) {
     });
 }
 
-/* ═══ DERIVE KEY FROM EMAIL + PASSWORD ═══ */
-function deriveKey(email, password) {
+/* ═══ DERIVE KEY (email + password + salt, PBKDF2 1M) ═══ */
+function deriveKey(email, password, salt) {
     var combined = email.toLowerCase().trim() + '::' + password;
-    return CryptoJS.PBKDF2(combined, SALT, {
+    var effectiveSalt = SALT + '::' + (salt || '');
+    return CryptoJS.PBKDF2(combined, effectiveSalt, {
         keySize: 512 / 32,
         iterations: ITERATIONS,
         hasher: CryptoJS.algo.SHA512
     }).toString(CryptoJS.enc.Hex);
 }
 
-/* ═══ GET DISPLAY KEY (partial hash) ═══ */
-function getDisplayKey(key) {
-    if (!key) return LOCKED_KEY;
-    var p1 = key.substring(0, 5).toUpperCase();
-    var p2 = key.substring(5, 12).toUpperCase();
-    return 'NightOrbit_' + p1 + '_' + p2;
+/* ═══ DISPLAY KEY (masked only) ═══ */
+function getDisplayKey() {
+    return LOCKED_KEY;
+}
+
+/* ═══ DELETE KEY & REGENERATE (heavy) ═══ */
+window.deleteKeyAndRegenerate = function() {
+    if (!state.user) {
+        toast('Not authenticated', 'error');
+        return;
+    }
+
+    var c1 = confirm(
+        '⚠️ WARNING #1 of 2\n\n' +
+        'This will PERMANENTLY DELETE your key from Firebase.\n\n' +
+        'ALL code encrypted with the old key will be LOCKED FOREVER.\n' +
+        'You will NOT be able to decrypt old files ever again.\n\n' +
+        'Continue?'
+    );
+    if (!c1) return;
+
+    var c2 = confirm(
+        '⚠️ WARNING #2 of 2 — FINAL CONFIRMATION\n\n' +
+        'Type "DELETE" mentally and confirm:\n\n' +
+        '✔ Old key deleted from Firebase\n' +
+        '✔ Old password hash deleted\n' +
+        '✔ Old salt deleted\n' +
+        '✔ Old encrypted files = LOCKED FOREVER\n' +
+        '✔ You will create a NEW password\n\n' +
+        'This CANNOT be undone. Proceed?'
+    );
+    if (!c2) return;
+
+    var c3 = prompt('Type DELETE (in caps) to confirm:');
+    if (c3 !== 'DELETE') {
+        toast('Deletion cancelled', 'warn');
+        return;
+    }
+
+    showStatus('loading', '⏳ Deleting old key from Firebase...');
+
+    firebase.database().ref('users/' + state.user.uid + '/keyMetadata').remove()
+        .then(function() {
+            /* Clear memory */
+            state.passwordKey = null;
+            state.userSalt = null;
+            state.hasPassword = false;
+            state.isReady = false;
+            state.uploadedFiles = {};
+            state.lastEncrypt = null;
+
+            /* Clear UI */
+            document.getElementById('inputCode').value = '';
+            document.getElementById('outputEnc').value = '';
+            document.getElementById('fileList').innerHTML = '';
+            document.getElementById('inputStats').style.display = 'none';
+
+            /* Update UI */
+            updateKeyUI();
+            showStatus('success', '✅ Old key deleted forever. Create a new password.');
+            toast('🗑️ Old key deleted permanently', 'success');
+
+            /* Open create modal */
+            setTimeout(function() {
+                openPwdModal('create');
+            }, 800);
+        })
+        .catch(function(err) {
+            showStatus('error', '❌ Delete failed: ' + err.message);
+            toast('Delete failed', 'error');
+        });
+};
+
+/* ═══ HANDLE KEY ACTION BUTTON ═══ */
+window.handleKeyAction = function() {
+    if (!state.user) {
+        toast('Please wait, loading user...', 'warn');
+        return;
+    }
+    if (state.hasPassword) {
+        if (state.isReady) {
+            /* Already unlocked — offer lock */
+            lockKey();
+        } else {
+            openPwdModal('unlock');
+        }
+    } else {
+        openPwdModal('create');
+    }
+};
+
+/* ═══ UPDATE KEY UI (button + badge + danger zone) ═══ */
+function updateKeyUI() {
+    var btn = document.getElementById('keyActionBtn');
+    var badge = document.getElementById('keyStatusBadge');
+    var danger = document.getElementById('dangerZone');
+    var infoBox = document.getElementById('keyInfoBox');
+
+    if (!btn) return;
+
+    if (!state.hasPassword) {
+        btn.className = 'key-action-btn create';
+        btn.innerHTML = '<i class="fa-solid fa-plus"></i> CREATE PASSWORD';
+        if (danger) danger.style.display = 'none';
+    } else if (!state.isReady) {
+        btn.className = 'key-action-btn unlock';
+        btn.innerHTML = '<i class="fa-solid fa-unlock"></i> UNLOCK';
+        if (danger) danger.style.display = 'block';
+    } else {
+        btn.className = 'key-action-btn delete';
+        btn.innerHTML = '<i class="fa-solid fa-lock"></i> LOCK NOW';
+        if (danger) danger.style.display = 'block';
+    }
+
+    if (infoBox) {
+        if (!state.hasPassword) {
+            infoBox.innerHTML = '🔒 <b>First time?</b> Click <b>CREATE PASSWORD</b> above to set your 14-character password. <b>Once set, it cannot be changed</b> — but you can delete & regenerate.';
+        } else if (!state.isReady) {
+            infoBox.innerHTML = '🔐 <b>Password set.</b> Click <b>UNLOCK</b> to enter your password and unlock your key. Session auto-locks in <b>20 seconds</b>.';
+        } else {
+            infoBox.innerHTML = '🔓 <b>Key unlocked.</b> Encrypt your code now. Auto-locks in <b>20 seconds</b> of inactivity.';
+        }
+    }
 }
 
 /* ═══ LOGOUT ═══ */
 window.doLogout = function() {
     try {
+        /* Clear all sensitive state */
+        state.passwordKey = null;
+        state.userSalt = null;
+        state.isReady = false;
+        state.user = null;
+
         if (window.AuthGuard && typeof AuthGuard.logout === 'function') {
             AuthGuard.logout();
         } else if (window.firebase && firebase.auth) {
@@ -705,7 +936,7 @@ window.openFilePicker = function() {
     document.getElementById('fileInput').click();
 };
 
-/* ═══ PASSWORD MODAL — AUTO DETECT MODE ═══ */
+/* ═══ PASSWORD MODAL ═══ */
 var pwdOverlay = document.getElementById('pwdOverlay');
 var pwdInput = document.getElementById('pwdInput');
 var pwdSubmitBtn = document.getElementById('pwdSubmitBtn');
@@ -722,7 +953,7 @@ function openPwdModal(mode) {
 
     if (mode === 'create') {
         pwdModalTitle.textContent = '🔐 Create Your Password';
-        pwdModalSub.textContent = 'First-time setup — one password, forever';
+        pwdModalSub.textContent = 'First-time setup — remember this forever';
         pwdModalLabel.textContent = 'Create Your 14-Character Password';
         pwdSubmitBtn.innerHTML = '🔐 Create Password';
         reqList.style.display = 'block';
@@ -761,12 +992,10 @@ pwdEyeBtn.addEventListener('click', function() {
     }
 });
 
-/* ═══ INPUT LISTENER ═══ */
 pwdInput.addEventListener('input', function() {
     var v = this.value;
 
     if (state.mode === 'create') {
-        /* Update requirements */
         var rLen = v.length === 14;
         var rDig = (v.match(/\d/g) || []).length === 10;
         var rSym = (v.match(/[^a-zA-Z0-9]/g) || []).length === 4;
@@ -815,10 +1044,10 @@ pwdSubmitBtn.addEventListener('click', function() {
     var password = pwdInput.value;
 
     if (state.mode === 'create') {
-        if (!confirm('⚠️ IMPORTANT: This password CANNOT be changed or recovered.\n\nIf you forget it, your encrypted code can NEVER be decrypted.\n\nCreate this password?')) {
+        if (!confirm('⚠️ FINAL WARNING:\n\nThis password CANNOT be changed.\nIf you forget it, your code can NEVER be decrypted.\n\nYou can later DELETE KEY & REGENERATE, but old encrypted files will be LOCKED FOREVER.\n\nCreate this password?')) {
             return;
         }
-        setPwdStatus('loading', '⏳ Creating your secure key...');
+        setPwdStatus('loading', '⏳ Creating your heavy secure key... (may take a few seconds)');
         pwdSubmitBtn.disabled = true;
 
         createPassword(state.user, password)
@@ -834,7 +1063,7 @@ pwdSubmitBtn.addEventListener('click', function() {
                 pwdInput.focus();
             });
     } else {
-        setPwdStatus('loading', '⏳ Verifying password...');
+        setPwdStatus('loading', '⏳ Verifying password... (may take a few seconds)');
         pwdSubmitBtn.disabled = true;
 
         verifyPassword(state.user, password)
@@ -860,50 +1089,76 @@ function setPwdStatus(type, msg) {
 
 /* ═══ ON KEY UNLOCKED ═══ */
 function onKeyUnlocked(key) {
-    var displayKey = getDisplayKey(key);
-    document.getElementById('keyDisplay').value = displayKey;
+    document.getElementById('keyDisplay').value = LOCKED_KEY;
     document.getElementById('keyStatus').textContent = 'Unlocked';
 
-    var badge = document.getElementById('keyStatusBadge');
-    badge.innerHTML = '<i class="fa-solid fa-unlock"></i> UNLOCKED';
-    badge.style.background = 'rgba(0,255,100,0.15)';
-    badge.style.color = 'var(--green)';
-    badge.style.borderColor = 'rgba(0,255,100,0.3)';
-
     toast('🔓 Key unlocked successfully', 'success');
-
-    /* Auto-lock after 5 minutes of inactivity */
-    resetAutoLock();
+    updateKeyUI();
+    startSessionTimer();
 }
 
-/* ═══ AUTO-LOCK (5 min inactivity) ═══ */
-function resetAutoLock() {
-    if (state.autoLockTimer) clearTimeout(state.autoLockTimer);
-    state.autoLockTimer = setTimeout(function() {
-        lockKey();
-    }, 5 * 60 * 1000);
-}
-
-function lockKey() {
+/* ═══ LOCK KEY (manual or auto) ═══ */
+function lockKey(silent) {
     state.passwordKey = null;
     state.isReady = false;
 
     document.getElementById('keyDisplay').value = LOCKED_KEY;
     document.getElementById('keyStatus').textContent = 'Locked';
 
-    var badge = document.getElementById('keyStatusBadge');
-    badge.innerHTML = '<i class="fa-solid fa-lock"></i> LOCKED';
-    badge.style.background = 'rgba(255,215,0,0.15)';
-    badge.style.color = 'var(--gold)';
-    badge.style.borderColor = 'rgba(255,215,0,0.3)';
+    stopSessionTimer();
+    updateKeyUI();
 
-    toast('🔒 Key auto-locked due to inactivity', 'warn');
+    if (!silent) {
+        toast('🔒 Key locked', 'warn');
+    }
 }
 
-document.addEventListener('click', resetAutoLock);
-document.addEventListener('keypress', resetAutoLock);
+/* ═══ SESSION TIMER (20 seconds) ═══ */
+function startSessionTimer() {
+    stopSessionTimer();
+    state.sessionDeadline = Date.now() + SESSION_TIMEOUT;
 
-/* ═══ AUTH READY — AUTO DETECT ═══ */
+    var bar = document.getElementById('sessionBar');
+    var fill = document.getElementById('sessionBarFill');
+    if (bar) bar.classList.add('active');
+
+    /* Update fill every 100ms */
+    state.sessionTimer = setInterval(function() {
+        var remaining = state.sessionDeadline - Date.now();
+        if (remaining <= 0) {
+            stopSessionTimer();
+            lockKey();
+            return;
+        }
+        var pct = (remaining / SESSION_TIMEOUT) * 100;
+        if (fill) fill.style.width = pct + '%';
+    }, 100);
+}
+
+function stopSessionTimer() {
+    if (state.sessionTimer) {
+        clearInterval(state.sessionTimer);
+        state.sessionTimer = null;
+    }
+    state.sessionDeadline = null;
+    var bar = document.getElementById('sessionBar');
+    if (bar) bar.classList.remove('active');
+}
+
+function resetSessionTimer() {
+    if (state.isReady) {
+        state.sessionDeadline = Date.now() + SESSION_TIMEOUT;
+    }
+}
+
+/* Activity listeners — reset session on any interaction */
+['click', 'keypress', 'mousemove', 'touchstart', 'scroll'].forEach(function(evt) {
+    document.addEventListener(evt, function() {
+        resetSessionTimer();
+    }, { passive: true });
+});
+
+/* ═══ AUTH READY ═══ */
 document.addEventListener('auth-guard-ready', function(e) {
     if (!e.detail || !e.detail.user) return;
 
@@ -915,19 +1170,20 @@ document.addEventListener('auth-guard-ready', function(e) {
     checkPasswordStatus(state.user.uid)
         .then(function(result) {
             if (!result.hasPassword) {
-                /* First time — CREATE mode */
-                toast('👋 Welcome! Create your password to get started', 'info');
-                openPwdModal('create');
+                state.hasPassword = false;
+                state.userSalt = null;
+                toast('👋 Welcome! Click CREATE PASSWORD to get started', 'info');
             } else {
-                /* Regular — UNLOCK mode */
-                openPwdModal('unlock');
+                state.hasPassword = true;
+                state.userSalt = result.salt;
+                toast('🔐 Password found. Click UNLOCK to enter password.', 'info');
             }
+            updateKeyUI();
         })
         .catch(function(err) {
             console.error('Check failed:', err);
             showStatus('error', '❌ Failed to check password status');
-            /* Fallback: try unlock */
-            openPwdModal('unlock');
+            updateKeyUI();
         });
 });
 
@@ -944,6 +1200,7 @@ setTimeout(function() {
             }));
         } else {
             showStatus('error', '❌ Not authenticated. Please login again.');
+            updateKeyUI();
         }
     }
 }, 2500);
@@ -990,7 +1247,8 @@ function renderFileList() {
     var names = Object.keys(state.uploadedFiles);
     if (names.length === 0) { list.innerHTML = ''; return; }
     list.innerHTML = names.map(function(name) {
-        return '<div class="file-item"><span class="fname">📄 ' + name + '</span>' +
+        var safe = name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        return '<div class="file-item"><span class="fname">📄 ' + safe + '</span>' +
             '<span class="remove" onclick="removeFile(\'' + name.replace(/'/g, "\\'") + '\')">✖</span></div>';
     }).join('');
 }
@@ -1003,8 +1261,12 @@ window.removeFile = function(name) {
 window.encryptNow = function() {
     try {
         if (!state.isReady || !state.passwordKey) {
-            showStatus('error', '❌ Key not unlocked. Enter your password.');
-            openPwdModal(state.user && state.user.email ? 'unlock' : 'unlock');
+            showStatus('error', '❌ Key not unlocked. Click UNLOCK.');
+            if (state.hasPassword) {
+                openPwdModal('unlock');
+            } else {
+                openPwdModal('create');
+            }
             return;
         }
 
@@ -1023,7 +1285,7 @@ window.encryptNow = function() {
         if (fileNames.length > 0) {
             var bundle = {
                 __type: 'multi-file-bundle',
-                __version: '10.0',
+                __version: '11.0',
                 __created: new Date().toISOString(),
                 __fileCount: fileNames.length,
                 files: {}
@@ -1043,7 +1305,7 @@ window.encryptNow = function() {
 
         showStatus('success', '✅ Encrypted! ' + bytes(new Blob([encrypted]).size));
         toast('Encrypted successfully!', 'success');
-        resetAutoLock();
+        resetSessionTimer();
     } catch (e) {
         showStatus('error', '❌ ' + e.message);
         toast('Error: ' + e.message, 'error');
@@ -1071,18 +1333,20 @@ window.downloadOutput = function() {
     toast('Downloaded!', 'success');
 };
 
-/* ═══ DECRYPTOR GENERATOR — Secure (email + password prompt) ═══ */
+/* ═══ DECRYPTOR GENERATOR (with salt, no key) ═══ */
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Encrypt first!', 'error'); return; }
 
-    if (!state.isReady || !state.user) {
+    if (!state.isReady || !state.user || !state.userSalt) {
         toast('Key not unlocked', 'error');
         return;
     }
 
     var userEmail = state.user.email;
     if (!userEmail) { toast('Email not found', 'error'); return; }
+
+    var userSalt = state.userSalt; /* salt is safe to embed — key is NOT */
 
     var parts = [
         '<!DOCTYPE html>',
@@ -1127,14 +1391,16 @@ window.downloadDecryptor = function() {
         '<' + '/div>',
         '<script>',
         'var USER_EMAIL=' + JSON.stringify(userEmail) + ';',
+        'var USER_SALT=' + JSON.stringify(userSalt) + ';',
         'var ENCRYPTED_DATA=' + JSON.stringify(out) + ';',
-        'var SALT="NightOrbit_CodeForge_v10_2024_MASTER_SALT_@#$%^&*";',
+        'var SALT="NightOrbit_CodeForge_v11_2024_MASTER_SALT_@#$%^&*";',
         '',
         'function deriveKey(password){',
         '  var combined=USER_EMAIL.toLowerCase().trim()+"::"+password;',
-        '  return CryptoJS.PBKDF2(combined,SALT,{',
+        '  var effectiveSalt=SALT+"::"+USER_SALT;',
+        '  return CryptoJS.PBKDF2(combined,effectiveSalt,{',
         '    keySize:512/32,',
-        '    iterations:500000,',
+        '    iterations:1000000,',
         '    hasher:CryptoJS.algo.SHA512',
         '  }).toString(CryptoJS.enc.Hex);',
         '}',
@@ -1149,7 +1415,7 @@ window.downloadDecryptor = function() {
         '  document.body.innerHTML="";',
         '  var iframe=document.createElement("iframe");',
         '  iframe.id="renderFrame";',
-        '  iframe.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads");',
+        '  iframe.setAttribute("sandbox","allow-scripts allow-forms allow-popups allow-modals allow-downloads");',
         '  document.body.appendChild(iframe);',
         '  try{iframe.srcdoc=htmlContent;}',
         '  catch(e){',
@@ -1185,7 +1451,7 @@ window.downloadDecryptor = function() {
         '      var h="<div style=\\"max-width:1100px;margin:0 auto;padding:30px 20px;\\"><h1 style=\\"color:#00f0ff;text-align:center;margin-bottom:24px;\\">📦 "+bundle.__fileCount+" Files<\\/h1>";',
         '      Object.keys(bundle.files).forEach(function(name){',
         '        h+="<div style=\\"background:rgba(0,240,255,0.04);border-left:4px solid #00f0ff;border-radius:10px;padding:18px;margin-bottom:16px;\\">";',
-        '        h+="<div style=\\"color:#ffd700;font-weight:bold;margin-bottom:10px;\\">📄 "+name+"<\\/div>";',
+        '        h+="<div style=\\"color:#ffd700;font-weight:bold;margin-bottom:10px;\\">📄 "+name.replace(/[<>&]/g,function(c){return{"<":"&lt;",">":"&gt;","&":"&amp;"}[c];})+"<\\/div>";',
         '        h+="<pre style=\\"background:#000;color:#00ff64;padding:14px;border-radius:8px;font-size:12px;max-height:400px;overflow:auto;white-space:pre-wrap;\\">"+bundle.files[name].content.replace(/</g,"&lt;")+"<\\/pre>";',
         '        h+="<\\/div>";',
         '      });',
@@ -1265,8 +1531,13 @@ window.clearAll = function() {
     toast('Cleared', 'info');
 };
 
-console.log('%c🔐 Universal Code Encrypt v10 loaded (auto password setup)',
+/* ═══ INIT ═══ */
+updateKeyUI();
+
+console.log('%c🔐 Universal Code Encrypt v11 HEAVY loaded',
     'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c⚡ Session: 20s | PBKDF2: 1M iter | Delete+Regenerate enabled',
+    'color:#ffd700;font-size:12px;');
 
 })();
 </script>
