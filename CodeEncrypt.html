@@ -4,13 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b0b1a">
-<title>Universal Encrypt Pro — NightOrbit CodeForge</title>
+<title>Universal Encrypt Code — NightOrbit CodeForge</title>
 
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-<script src="auth-guard.js"></script>
 
 <!-- CryptoJS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -253,6 +252,44 @@ h1 {
     color: #ffb3c9; margin-top: 8px; line-height: 1.6;
 }
 
+/* ═══ VAULT BOX (NEW) ═══ */
+.vault-box {
+    background: linear-gradient(135deg, rgba(0,240,255,0.08), rgba(180,0,255,0.06));
+    border: 2px solid var(--purple); border-radius: 14px;
+    padding: 18px; margin-bottom: 15px;
+    position: relative; overflow: hidden;
+}
+.vault-box h3 {
+    color: var(--purple); font-size: 14px; letter-spacing: 2px;
+    text-transform: uppercase; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Orbitron', sans-serif; font-weight: 900;
+}
+.vault-box .vault-row {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+.vault-box .vault-row input,
+.vault-box .vault-row select {
+    flex: 1 1 200px;
+    background: #000; color: var(--green);
+    border: 1px solid #333; border-radius: 8px;
+    padding: 12px; font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+}
+.vault-box .vault-row button {
+    flex: 0 1 auto;
+    padding: 12px 20px;
+    font-size: 11px;
+}
+.vault-info {
+    background: rgba(0,0,0,0.4); border-left: 3px solid var(--cyan);
+    padding: 10px 14px; border-radius: 6px;
+    font-size: 11px; color: #b0b0d0; line-height: 1.7;
+    margin-top: 10px;
+}
+.vault-info b { color: var(--cyan); }
+
 /* ═══ PROGRESS BAR ═══ */
 .progress-wrap {
     background: rgba(0,0,0,0.4); border: 1.5px solid rgba(0,240,255,0.15);
@@ -308,6 +345,7 @@ h2, h3 {
 .badge.success { background: rgba(0,255,100,0.15); color: var(--green); border-color: rgba(0,255,100,0.3); }
 .badge.gold { background: rgba(255,215,0,0.15); color: var(--gold); border-color: rgba(255,215,0,0.3); }
 .badge.pink { background: rgba(255,45,149,0.15); color: var(--pink); border-color: rgba(255,45,149,0.3); }
+.badge.danger { background: rgba(255,0,100,0.15); color: var(--red); border-color: rgba(255,0,100,0.3); }
 
 /* ═══ SECTION ═══ */
 .section {
@@ -318,7 +356,7 @@ label {
     color: var(--cyan); font-size: 11px; letter-spacing: 2px;
     text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 8px;
 }
-textarea, input[type="text"] {
+textarea, input[type="text"], input[type="password"] {
     width: 100%; background: #000; color: var(--green);
     border: 1px solid #333; border-radius: 8px; padding: 12px;
     font-family: 'JetBrains Mono', monospace; font-size: 12px;
@@ -330,6 +368,12 @@ textarea:focus, input:focus {
 }
 textarea { min-height: 220px; }
 textarea.tall { min-height: 320px; }
+
+.pin-hint {
+    font-size: 10px; color: var(--muted);
+    margin-top: -4px; margin-bottom: 10px;
+    letter-spacing: 0.5px; line-height: 1.6;
+}
 
 /* ═══ BUTTONS ═══ */
 button {
@@ -345,6 +389,7 @@ button.secondary { background: linear-gradient(135deg, var(--gold), #ff8c00); }
 button.danger { background: linear-gradient(135deg, var(--red), #ff0000); color: #fff; }
 button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
 button.pink { background: linear-gradient(135deg, var(--pink), var(--purple)); color: #fff; }
+button.purple { background: linear-gradient(135deg, var(--purple), #6a00cc); color: #fff; }
 button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 .btn-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
@@ -355,6 +400,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     text-align: center; padding: 12px; border-radius: 8px;
     margin-top: 10px; font-size: 12px; display: none; font-weight: bold;
     word-wrap: break-word; font-family: 'JetBrains Mono', monospace;
+    white-space: pre-wrap;
 }
 .status.success { background: rgba(0,255,100,0.1); border: 1px solid var(--green); color: var(--green); display: block; }
 .status.error { background: rgba(255,0,100,0.1); border: 1px solid var(--red); color: var(--red); display: block; }
@@ -413,7 +459,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 }
 .stat-card:hover { border-color: var(--cyan); box-shadow: 0 0 20px rgba(0,240,255,0.15); transform: translateY(-3px); }
 .stat-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; font-family: 'Orbitron', sans-serif; }
-.stat-value { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 900; color: var(--cyan); }
+.stat-value { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 900; color: var(--cyan); word-break: break-all; }
 .stat-value.gold { color: var(--gold); }
 .stat-value.green { color: var(--green); }
 .stat-value.pink { color: var(--pink); }
@@ -462,6 +508,33 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 .toast.removing { animation: toastOut 0.3s ease forwards; }
 @keyframes toastOut { to { transform: translateX(400px); opacity: 0; } }
 
+/* ═══ MODAL ═══ */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(6px);
+    z-index: 99998; display: none;
+    align-items: center; justify-content: center;
+    padding: 20px;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+    background: var(--card); border: 2px solid var(--cyan);
+    border-radius: 18px; padding: 28px;
+    max-width: 480px; width: 100%;
+    box-shadow: 0 0 60px rgba(0,240,255,0.3);
+    position: relative;
+}
+.modal h2 {
+    color: var(--cyan); font-size: 16px; letter-spacing: 2px;
+    text-transform: uppercase; margin-bottom: 14px;
+    font-family: 'Orbitron', sans-serif;
+}
+.modal p { color: #b0b0d0; font-size: 13px; line-height: 1.7; margin-bottom: 14px; }
+.modal .modal-actions {
+    display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px;
+}
+.modal .modal-actions button { min-width: 100px; }
+
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 600px) {
     body { font-size: 13px; }
@@ -473,6 +546,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     .progress-steps { display: none; }
     .file-item .fname { max-width: 130px; }
     .topbar-btn { padding: 7px 11px; font-size: 10px; }
+    .vault-box .vault-row input,
+    .vault-box .vault-row button { flex: 1 1 100%; }
 }
 @media (max-width: 400px) {
     .brand .logo { font-size: 18px; }
@@ -494,7 +569,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
             <i class="fa-solid fa-arrow-left"></i>
             <span class="label">Dashboard</span>
         </a>
-        <button class="topbar-btn logout" onclick="if(window.AuthGuard&&AuthGuard.logout)AuthGuard.logout();">
+        <button class="topbar-btn logout" onclick="logoutUser()">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span class="label">Logout</span>
         </button>
@@ -528,7 +603,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         <span class="label">Back to Dashboard</span>
         <span class="ext">HOME</span>
     </a>
-    <button class="menu-item danger" onclick="if(window.AuthGuard&&AuthGuard.logout)AuthGuard.logout();">
+    <button class="menu-item danger" onclick="logoutUser()">
         <span class="ico">🚪</span>
         <span class="label">Logout</span>
         <span class="ext">EXIT</span>
@@ -549,13 +624,13 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
     <!-- HEADER CARD -->
     <div class="header-card">
-        <h1>⚡ Universal Encrypt Pro</h1>
-        <div class="subtitle">NightOrbit CodeForge · Heavy Edition · 1MB+ Support</div>
+        <h1>⚡ Universal Encrypt Pro v8</h1>
+        <div class="subtitle">NightOrbit CodeForge · Vault Edition · 5MB+ Support</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v7 ULTRA HEAVY</span>
+            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v8 ULTRA HEAVY</span>
             <span class="header-stat gold"><i class="fa-solid fa-shield-halved"></i> AES-256</span>
-            <span class="header-stat pink"><i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Detect</span>
-            <span class="header-stat green"><i class="fa-solid fa-database"></i> 1MB+ Support</span>
+            <span class="header-stat pink"><i class="fa-solid fa-vault"></i> Per-User Vault</span>
+            <span class="header-stat green"><i class="fa-solid fa-database"></i> 5MB Support</span>
         </div>
     </div>
 
@@ -583,6 +658,42 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         <button class="change-btn" onclick="toggleDrawer()">CHANGE ▸</button>
     </div>
 
+    <!-- ═══ VAULT SECTION (NEW) ═══ -->
+    <div class="vault-box">
+        <h3>🔐 SECURE VAULT — SAVE TO FIREBASE</h3>
+
+        <div class="vault-info">
+            <b>📌 How Vault Works:</b><br>
+            • Vault saves your <b>encrypted data</b> to Firebase (per-user, email-based)<br>
+            • <b>PIN is NEVER saved</b> — neither in browser, nor Firebase, nor code<br>
+            • <b>If you forget PIN →</b> encrypted data permanently lost<br>
+            • <b>NEW KEY button</b> → deletes old data, generates new key<br>
+            • PIN minimum: <b>10 numbers + 3 symbols</b>
+        </div>
+
+        <div class="vault-row" style="margin-top:14px;">
+            <input type="password" id="vaultPin" placeholder="Enter your PIN (min 10 numbers + 3 symbols)">
+        </div>
+        <div class="pin-hint">Example: <code>MyCode1234567890!@#</code> — minimum 10 numbers, 3 symbols</div>
+
+        <div class="vault-row">
+            <button class="purple" onclick="saveToVault()">💾 SAVE TO VAULT</button>
+            <button class="green" onclick="loadFromVault()">📂 LOAD FROM VAULT</button>
+            <button class="pink" onclick="generateNewVaultKey()">🔄 NEW KEY</button>
+            <button class="danger" onclick="deleteVault()">🗑️ DELETE VAULT</button>
+        </div>
+
+        <div class="status" id="vaultStatus"></div>
+
+        <!-- VAULT STATS -->
+        <div class="stats-grid" id="vaultStats" style="display:none; margin-top:12px;">
+            <div class="stat-card"><div class="stat-label">Email</div><div class="stat-value green" id="vaultEmail" style="font-size:10px;">—</div></div>
+            <div class="stat-card"><div class="stat-label">Vault Size</div><div class="stat-value gold" id="vaultSize">—</div></div>
+            <div class="stat-card"><div class="stat-label">Version</div><div class="stat-value pink" id="vaultVersion">—</div></div>
+            <div class="stat-card"><div class="stat-label">Status</div><div class="stat-value" id="vaultState">—</div></div>
+        </div>
+    </div>
+
     <!-- SAVE INSTRUCTIONS -->
     <div class="save-box">
         <h3>📌 WHERE TO SAVE — IMPORTANT</h3>
@@ -606,19 +717,26 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
             <div class="num">5</div>
             <div class="txt">Click <span class="highlight">🎁 DOWNLOAD DECRYPTOR</span> — save as: <div><span class="filename">decryptor.html</span></div><span style="opacity:0.7;">(Must end with <b>.html</b>)</span></div>
         </div>
-        <div class="warn">⚠️ <b>CRITICAL:</b> The decryptor MUST be saved as <b>.html</b>. Works with files up to 1MB+ — supports iframe render + blob fallback.</div>
+        <div class="warn">
+            ⚠️ <b>CRITICAL:</b><br>
+            1. Decryptor MUST be saved as <b>.html</b><br>
+            2. <b>PIN bhool gaye → code permanently lost</b> (no recovery)<br>
+            3. <b>NEW KEY dabaya → purana data delete</b> ho jayega<br>
+            4. Works with files up to <b>5MB</b>
+        </div>
     </div>
 
     <!-- SECRET KEY -->
     <div class="section">
         <label>🔑 Secret Key (must match decryptor)</label>
         <input type="text" id="secretKey" value="NightOrbitGyidi_houperSecret_!@#$%^&*_Key" placeholder="Enter secret key...">
+        <div class="pin-hint">Save this key safely — used for encrypt/decrypt</div>
     </div>
 
     <!-- INPUT CODE -->
     <div class="section">
         <label>📄 Paste Code (any language — HTML / CSS / JS / JSON / PY / PHP / XML / TXT)</label>
-        <textarea id="inputCode" class="tall" placeholder="Paste your full code here... supports up to 1MB+."></textarea>
+        <textarea id="inputCode" class="tall" placeholder="Paste your full code here... supports up to 5MB."></textarea>
         <div class="stats-grid" id="inputStats" style="display:none;">
             <div class="stat-card"><div class="stat-label">Lines</div><div class="stat-value" id="statLines">0</div></div>
             <div class="stat-card"><div class="stat-label">Characters</div><div class="stat-value gold" id="statChars">0</div></div>
@@ -629,7 +747,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
     <!-- FILE UPLOAD -->
     <div class="section">
-        <label>📁 Upload Files (multiple allowed)</label>
+        <label>📁 Upload Files (multiple allowed — max 5MB each)</label>
         <div class="file-drop" id="fileDrop">
             <div class="icon">📥</div>
             <div>Drag &amp; drop files here or <b>click to browse</b></div>
@@ -671,35 +789,66 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
     <!-- ACTIVITY LOG -->
     <div class="card">
-        <h3>📊 Activity Log <button style="background:transparent;border:1px solid var(--border);color:var(--cyan);padding:4px 10px;border-radius:6px;font-size:10px;cursor:pointer;" onclick="clearHistory()">🗑️ CLEAR</button></h3>
+        <h3>📊 Activity Log <button style="background:transparent;border:1px solid var(--border);color:var(--cyan);padding:4px 10px;border-radius:6px;font-size:10px;cursor:pointer;font-family:inherit;" onclick="clearHistory()">🗑️ CLEAR</button></h3>
         <div class="history-list" id="historyList">
-            <div class="history-item"><span class="history-time">--:--:--</span><span class="history-dot info"></span><span>Encrypt Pro initialized</span></div>
+            <div class="history-item"><span class="history-time">--:--:--</span><span class="history-dot info"></span><span>Encrypt Pro v8 initialized</span></div>
         </div>
     </div>
 
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <h2 id="modalTitle">⚠️ Alert</h2>
+        <p id="modalMessage">Message</p>
+        <div class="modal-actions">
+            <button class="secondary" id="modalCancel" onclick="closeModal()">CANCEL</button>
+            <button class="danger" id="modalConfirm" onclick="confirmModal()">CONFIRM</button>
+        </div>
+    </div>
 </div>
 
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════
-   UNIVERSAL ENCRYPT PRO v7 — ULTRA HEAVY EDITION
-   - 1MB+ code support
-   - iframe srcdoc + blob fallback decryptor
-   - Auto language detection
-   - Multi-file bundle
-   - Activity log + toast + progress
+   UNIVERSAL ENCRYPT PRO v8 — VAULT EDITION
+   - Original v7 features (all preserved)
+   - Per-user Firebase Vault (NEW)
+   - PIN-based encryption (NEW)
+   - NEW KEY / DELETE VAULT (NEW)
+   - 5MB support (increased from 1MB)
    ═══════════════════════════════════════════════════════════ */
 
 (function() {
 'use strict';
+
+/* ═══ FIREBASE CONFIG ═══ */
+var firebaseConfig = {
+    apiKey: "AIzaSyCMYIa1YwahQRF_EGizjR1Xjj4aD9uBN_o",
+    authDomain: "nightorbitbuilder.firebaseapp.com",
+    projectId: "nightorbitbuilder",
+    storageBucket: "nightorbitbuilder.firebasestorage.app",
+    messagingSenderId: "537115613677",
+    appId: "1:537115613677:web:6653804e11c47ed746efe4"
+};
+
+if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+/* ═══ MASTER KEY (client-side) ═══ */
+var MASTER_KEY = "GYIDI_BAZAR_MASTER_2024_ULTRA_SECRET_!@#$%^&*()_+XYZ";
 
 /* ═══ STATE ═══ */
 var state = {
     uploadedFiles: {},
     currentLang: 'auto',
     history: [],
-    lastEncrypt: null
+    lastEncrypt: null,
+    currentUser: null,
+    userVault: null
 };
 
 var EXT_LANG = {
@@ -720,6 +869,11 @@ function bytes(n) {
 function num(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
 function showStatus(type, msg) {
     var el = document.getElementById('status');
+    el.className = 'status ' + type;
+    el.textContent = msg;
+}
+function showVaultStatus(type, msg) {
+    var el = document.getElementById('vaultStatus');
     el.className = 'status ' + type;
     el.textContent = msg;
 }
@@ -772,6 +926,355 @@ function updateProgress() {
         else if (i === steps) el.classList.add('active');
     }
 }
+
+/* ═══ MODAL ═══ */
+var modalCallback = null;
+function showModal(title, message, onConfirm) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalMessage').textContent = message;
+    modalCallback = onConfirm || null;
+    document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('show');
+    modalCallback = null;
+}
+function confirmModal() {
+    var cb = modalCallback;
+    closeModal();
+    if (cb) cb();
+}
+
+/* ═══ VALIDATION ═══ */
+function validatePin(pin) {
+    if (!pin || typeof pin !== 'string') return { valid: false, numbers: 0, symbols: 0 };
+    var numbers = (pin.match(/\d/g) || []).length;
+    var symbols = (pin.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/g) || []).length;
+    return { valid: numbers >= 10 && symbols >= 3, numbers: numbers, symbols: symbols };
+}
+
+/* ═══ KEY DERIVATION ═══ */
+function deriveUserKey(email, pin) {
+    return CryptoJS.SHA256(email + ":" + pin).toString();
+}
+function deriveFinalKey(userKey) {
+    return CryptoJS.AES.encrypt(userKey, MASTER_KEY).toString();
+}
+
+/* ═══ AUTH STATE ═══ */
+if (typeof firebase !== 'undefined' && firebase.auth) {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            state.currentUser = user;
+            var email = user.email || user.uid;
+            var name = user.displayName || (email ? email.split('@')[0] : 'User');
+            setWelcomeName(name);
+            document.getElementById('vaultEmail').textContent = email;
+            refreshVaultState();
+        } else {
+            state.currentUser = null;
+        }
+    });
+}
+
+function logoutUser() {
+    showModal('🚪 Logout', 'Are you sure you want to logout?', function() {
+        if (firebase && firebase.auth) {
+            firebase.auth().signOut().then(function() {
+                window.location.replace('index.html');
+            });
+        } else {
+            window.location.replace('index.html');
+        }
+    });
+}
+
+/* ═══ REFRESH VAULT STATE ═══ */
+function refreshVaultState() {
+    if (!state.currentUser) return;
+    firebase.database().ref('vaults/' + state.currentUser.uid).once('value')
+        .then(function(snap) {
+            var v = snap.val();
+            var statsEl = document.getElementById('vaultStats');
+            if (v && v.status === 'active') {
+                state.userVault = v;
+                statsEl.style.display = 'grid';
+                document.getElementById('vaultSize').textContent = v.size_kb + ' KB';
+                document.getElementById('vaultVersion').textContent = 'v' + (v.version || 1);
+                document.getElementById('vaultState').textContent = '✅ Active';
+                addHistory('Vault loaded: v' + (v.version || 1), 'success');
+            } else {
+                state.userVault = null;
+                statsEl.style.display = 'none';
+            }
+        })
+        .catch(function(err) {
+            console.log('Vault check error:', err);
+        });
+}
+
+/* ═══ SAVE TO VAULT ═══ */
+window.saveToVault = function() {
+    if (!state.currentUser) {
+        showVaultStatus('error', '❌ Not logged in. Please login first.');
+        toast('Not logged in', 'error');
+        return;
+    }
+
+    var pin = document.getElementById('vaultPin').value;
+    var code = document.getElementById('inputCode').value;
+    var secretKey = document.getElementById('secretKey').value;
+
+    if (!pin) { showVaultStatus('error', '❌ PIN required.'); return; }
+    if (!code.trim()) { showVaultStatus('error', '❌ Paste some code first.'); return; }
+    if (!secretKey) { showVaultStatus('error', '❌ Secret Key required.'); return; }
+
+    var v = validatePin(pin);
+    if (!v.valid) {
+        showVaultStatus('error',
+            '❌ PIN weak.\nYou have: ' + v.numbers + ' numbers, ' + v.symbols + ' symbols.\nNeed: 10+ numbers, 3+ symbols.');
+        toast('PIN too weak', 'error');
+        return;
+    }
+
+    var sizeMB = new Blob([code]).size / 1024 / 1024;
+    if (sizeMB > 5) {
+        showVaultStatus('error', '❌ Code too large: ' + sizeMB.toFixed(2) + ' MB (max 5 MB).');
+        toast('Too large', 'error');
+        return;
+    }
+
+    /* Check if vault exists */
+    if (state.userVault) {
+        showModal('⚠️ Overwrite Vault?',
+            'A vault already exists (v' + state.userVault.version + ').\n\nOverwriting will DELETE old data permanently.\n\nContinue?',
+            function() { doSaveToVault(pin, code, secretKey); }
+        );
+    } else {
+        doSaveToVault(pin, code, secretKey);
+    }
+};
+
+function doSaveToVault(pin, code, secretKey) {
+    showVaultStatus('loading', '⏳ Encrypting & saving to Firebase vault...');
+    toast('Saving to vault...', 'info');
+    addHistory('Saving to vault...', 'info');
+
+    try {
+        var email = state.currentUser.email || state.currentUser.uid;
+
+        /* Step 1: user_key = SHA256(email + ":" + PIN) */
+        var userKey = deriveUserKey(email, pin);
+
+        /* Step 2: final_key = AES(user_key, MASTER_KEY) */
+        var finalKey = deriveFinalKey(userKey);
+
+        /* Step 3: Payload = combine secretKey + code */
+        var payload = JSON.stringify({
+            __vault: true,
+            secret_key: secretKey,
+            code: code,
+            email: email,
+            created: Date.now()
+        });
+
+        /* Step 4: encrypted = AES(payload, final_key) */
+        var encrypted = CryptoJS.AES.encrypt(payload, finalKey).toString();
+
+        var sizeKB = (new Blob([encrypted]).size / 1024).toFixed(2);
+        var newVersion = (state.userVault && state.userVault.version ? state.userVault.version : 0) + 1;
+
+        /* Step 5: Save to Firebase */
+        firebase.database().ref('vaults/' + state.currentUser.uid).set({
+            email: email,
+            encrypted_data: encrypted,
+            size_kb: sizeKB,
+            created_at: Date.now(),
+            version: newVersion,
+            status: 'active'
+        }).then(function() {
+            showVaultStatus('success',
+                '✅ Vault saved!\n\n' +
+                '📧 Email: ' + email + '\n' +
+                '📊 Size: ' + sizeKB + ' KB\n' +
+                '🔢 Version: v' + newVersion + '\n' +
+                '🔐 PIN: ' + v.numbers + ' numbers, ' + v.symbols + ' symbols\n\n' +
+                '⚠️ If you forget PIN → data permanently lost!');
+            toast('Vault saved!', 'success');
+            addHistory('Vault saved: v' + newVersion + ' (' + sizeKB + ' KB)', 'success');
+            document.getElementById('vaultPin').value = '';
+            refreshVaultState();
+        }).catch(function(err) {
+            showVaultStatus('error', '❌ Firebase error: ' + err.message);
+            toast('Save failed', 'error');
+            addHistory('Vault save error: ' + err.message, 'error');
+        });
+    } catch(e) {
+        showVaultStatus('error', '❌ ' + e.message);
+        toast('Error', 'error');
+        addHistory('Vault error: ' + e.message, 'error');
+    }
+}
+
+/* ═══ LOAD FROM VAULT ═══ */
+window.loadFromVault = function() {
+    if (!state.currentUser) {
+        showVaultStatus('error', '❌ Not logged in.');
+        return;
+    }
+    if (!state.userVault) {
+        showVaultStatus('error', '❌ No vault found. Save one first.');
+        return;
+    }
+
+    var pin = document.getElementById('vaultPin').value;
+    if (!pin) { showVaultStatus('error', '❌ Enter your PIN first.'); return; }
+
+    showVaultStatus('loading', '⏳ Decrypting vault...');
+    toast('Decrypting...', 'info');
+
+    try {
+        var email = state.currentUser.email || state.currentUser.uid;
+        var userKey = deriveUserKey(email, pin);
+        var finalKey = deriveFinalKey(userKey);
+
+        var decrypted = CryptoJS.AES.decrypt(state.userVault.encrypted_data, finalKey).toString(CryptoJS.enc.Utf8);
+
+        if (!decrypted || decrypted.length === 0) {
+            throw new Error('Wrong PIN. Please try again.');
+        }
+
+        var parsed = JSON.parse(decrypted);
+        if (!parsed || !parsed.code) {
+            throw new Error('Vault corrupted.');
+        }
+
+        /* Restore to UI */
+        document.getElementById('inputCode').value = parsed.code;
+        document.getElementById('secretKey').value = parsed.secret_key || '';
+        updateDetection();
+
+        showVaultStatus('success',
+            '✅ Vault decrypted!\n\n' +
+            '📄 Code restored: ' + bytes(new Blob([parsed.code]).size) + '\n' +
+            '🔑 Secret Key restored\n\n' +
+            '⚠️ Now you can download decryptor or re-encrypt.');
+        toast('Vault loaded!', 'success');
+        addHistory('Vault decrypted — code: ' + bytes(new Blob([parsed.code]).size), 'success');
+        document.getElementById('vaultPin').value = '';
+    } catch(e) {
+        showVaultStatus('error', '❌ ' + e.message);
+        toast('Wrong PIN', 'error');
+        addHistory('Vault decrypt error: ' + e.message, 'error');
+    }
+};
+
+/* ═══ GENERATE NEW VAULT KEY ═══ */
+window.generateNewVaultKey = function() {
+    if (!state.currentUser) {
+        showVaultStatus('error', '❌ Not logged in.');
+        return;
+    }
+
+    var pin = document.getElementById('vaultPin').value;
+    var code = document.getElementById('inputCode').value;
+    var secretKey = document.getElementById('secretKey').value;
+
+    if (!pin) { showVaultStatus('error', '❌ Enter new PIN first.'); return; }
+    if (!code.trim()) { showVaultStatus('error', '❌ Paste code first.'); return; }
+
+    var v = validatePin(pin);
+    if (!v.valid) {
+        showVaultStatus('error',
+            '❌ PIN weak.\nYou have: ' + v.numbers + ' numbers, ' + v.symbols + ' symbols.\nNeed: 10+ numbers, 3+ symbols.');
+        return;
+    }
+
+    showModal('🔄 Generate New Key?',
+        'This will DELETE the old vault permanently and create a new one with new PIN + new code.\n\nOld data cannot be recovered.\n\nContinue?',
+        function() { doGenerateNewKey(pin, code, secretKey); }
+    );
+};
+
+function doGenerateNewKey(pin, code, secretKey) {
+    showVaultStatus('loading', '⏳ Generating new key...');
+    toast('Generating new key...', 'info');
+
+    try {
+        var email = state.currentUser.email || state.currentUser.uid;
+        var userKey = deriveUserKey(email, pin);
+        var finalKey = deriveFinalKey(userKey);
+
+        var payload = JSON.stringify({
+            __vault: true,
+            secret_key: secretKey,
+            code: code,
+            email: email,
+            created: Date.now(),
+            is_new_key: true
+        });
+
+        var encrypted = CryptoJS.AES.encrypt(payload, finalKey).toString();
+        var sizeKB = (new Blob([encrypted]).size / 1024).toFixed(2);
+        var newVersion = (state.userVault && state.userVault.version ? state.userVault.version : 0) + 1;
+
+        firebase.database().ref('vaults/' + state.currentUser.uid).set({
+            email: email,
+            encrypted_data: encrypted,
+            size_kb: sizeKB,
+            created_at: Date.now(),
+            version: newVersion,
+            status: 'active',
+            old_deleted_at: Date.now()
+        }).then(function() {
+            showVaultStatus('success',
+                '✅ NEW KEY generated!\n\n' +
+                '🔐 New PIN: ' + v.numbers + ' numbers, ' + v.symbols + ' symbols\n' +
+                '📊 Size: ' + sizeKB + ' KB\n' +
+                '🔢 Version: v' + newVersion + '\n\n' +
+                '⚠️ OLD VAULT DELETED PERMANENTLY!\n' +
+                'Save your new PIN safely.');
+            toast('New key generated!', 'success');
+            addHistory('New vault key generated: v' + newVersion, 'success');
+            document.getElementById('vaultPin').value = '';
+            refreshVaultState();
+        }).catch(function(err) {
+            showVaultStatus('error', '❌ Firebase error: ' + err.message);
+        });
+    } catch(e) {
+        showVaultStatus('error', '❌ ' + e.message);
+    }
+}
+
+/* ═══ DELETE VAULT ═══ */
+window.deleteVault = function() {
+    if (!state.currentUser) {
+        showVaultStatus('error', '❌ Not logged in.');
+        return;
+    }
+    if (!state.userVault) {
+        showVaultStatus('error', '❌ No vault to delete.');
+        return;
+    }
+
+    showModal('🗑️ Delete Vault?',
+        'This will PERMANENTLY delete your vault.\n\nRecovery is IMPOSSIBLE.\n\nAre you 100% sure?',
+        function() {
+            showVaultStatus('loading', '⏳ Deleting vault...');
+            firebase.database().ref('vaults/' + state.currentUser.uid).remove()
+                .then(function() {
+                    showVaultStatus('success', '✅ Vault permanently deleted.');
+                    toast('Vault deleted', 'success');
+                    addHistory('Vault deleted', 'warn');
+                    state.userVault = null;
+                    document.getElementById('vaultStats').style.display = 'none';
+                })
+                .catch(function(err) {
+                    showVaultStatus('error', '❌ ' + err.message);
+                });
+        }
+    );
+};
 
 /* ═══ DRAWER ═══ */
 window.toggleDrawer = function() {
@@ -844,6 +1347,11 @@ window.openFilePicker = function() { closeDrawer(); fileInput.click(); };
 
 function handleFiles(files) {
     Array.prototype.forEach.call(files, function(file) {
+        /* Size check 5MB */
+        if (file.size > 5 * 1024 * 1024) {
+            toast('File too large: ' + file.name + ' (max 5MB)', 'error');
+            return;
+        }
         var reader = new FileReader();
         reader.onload = function(ev) {
             var content = ev.target.result;
@@ -883,69 +1391,76 @@ window.encryptNow = function() {
 
         var totalSize = new Blob([pasted]).size;
         if (totalSize > 5 * 1024 * 1024) {
-            if (!confirm('Code is larger than 5MB. Encryption may take a few seconds. Continue?')) return;
-        }
-
-        showStatus('loading', '⏳ Encrypting ' + bytes(totalSize) + '...');
-        var t0 = performance.now();
-
-        var payload, mode, outExt, outName;
-        if (fileNames.length > 0) {
-            var bundle = {
-                __type: 'multi-file-bundle',
-                __version: '7.0',
-                __created: new Date().toISOString(),
-                __fileCount: fileNames.length,
-                files: {}
-            };
-            fileNames.forEach(function(name) {
-                bundle.files[name] = { lang: state.uploadedFiles[name].lang, content: state.uploadedFiles[name].content };
+            showModal('⚠️ Large File', 'Code is larger than 5MB. Encryption may take a few seconds.\n\nContinue?', function() {
+                doEncrypt(secretKey, pasted, fileNames);
             });
-            payload = JSON.stringify(bundle);
-            mode = 'Bundle (' + fileNames.length + ' files)';
-            outExt = 'bundle';
-            outName = 'encrypted-bundle.txt';
-            document.getElementById('outputFileInfo').textContent = '📦 ' + fileNames.length + ' files';
-        } else {
-            var detected = detectLanguage(pasted);
-            var finalLang = (state.currentLang === 'auto') ? detected : state.currentLang;
-            payload = pasted;
-            mode = 'Single ' + finalLang.toUpperCase();
-            outExt = LANG_EXT[finalLang] || 'txt';
-            outName = 'encrypted-' + finalLang + '.txt';
-            document.getElementById('outputFileInfo').textContent = '📄 ' + finalLang.toUpperCase() + ' → .' + outExt;
+            return;
         }
 
-        var encrypted = CryptoJS.AES.encrypt(payload, secretKey).toString();
-        var t1 = performance.now();
-
-        document.getElementById('outputEnc').value = encrypted;
-
-        var origSize = new Blob([payload]).size;
-        var encSize = new Blob([encrypted]).size;
-        document.getElementById('outputStatsGrid').style.display = 'grid';
-        document.getElementById('statOriginal').textContent = bytes(origSize);
-        document.getElementById('statEncrypted').textContent = bytes(encSize);
-        document.getElementById('statRatio').textContent = (encSize / origSize).toFixed(2) + 'x';
-        document.getElementById('statMode').textContent = fileNames.length > 0 ? 'BUNDLE' : 'SINGLE';
-
-        state.lastEncrypt = {
-            data: encrypted,
-            ext: outExt,
-            name: outName,
-            lang: (fileNames.length === 0) ? ((state.currentLang === 'auto') ? detectLanguage(pasted) : state.currentLang) : 'bundle'
-        };
-
-        showStatus('success', '✅ Encrypted! ' + mode + ' · ' + bytes(origSize) + ' → ' + bytes(encSize) + ' · ' + (t1 - t0).toFixed(0) + 'ms');
-        toast('Encrypted in ' + (t1 - t0).toFixed(0) + 'ms', 'success');
-        addHistory('Encrypted ' + mode + ' (' + bytes(origSize) + ' → ' + bytes(encSize) + ')', 'success');
-        updateProgress();
+        doEncrypt(secretKey, pasted, fileNames);
     } catch (e) {
         showStatus('error', '❌ ' + e.message);
         toast('Error: ' + e.message, 'error');
         addHistory('Encrypt error: ' + e.message, 'error');
     }
 };
+
+function doEncrypt(secretKey, pasted, fileNames) {
+    showStatus('loading', '⏳ Encrypting...');
+    var t0 = performance.now();
+
+    var payload, mode, outExt, outName;
+    if (fileNames.length > 0) {
+        var bundle = {
+            __type: 'multi-file-bundle',
+            __version: '8.0',
+            __created: new Date().toISOString(),
+            __fileCount: fileNames.length,
+            files: {}
+        };
+        fileNames.forEach(function(name) {
+            bundle.files[name] = { lang: state.uploadedFiles[name].lang, content: state.uploadedFiles[name].content };
+        });
+        payload = JSON.stringify(bundle);
+        mode = 'Bundle (' + fileNames.length + ' files)';
+        outExt = 'bundle';
+        outName = 'encrypted-bundle.txt';
+        document.getElementById('outputFileInfo').textContent = '📦 ' + fileNames.length + ' files';
+    } else {
+        var detected = detectLanguage(pasted);
+        var finalLang = (state.currentLang === 'auto') ? detected : state.currentLang;
+        payload = pasted;
+        mode = 'Single ' + finalLang.toUpperCase();
+        outExt = LANG_EXT[finalLang] || 'txt';
+        outName = 'encrypted-' + finalLang + '.txt';
+        document.getElementById('outputFileInfo').textContent = '📄 ' + finalLang.toUpperCase() + ' → .' + outExt;
+    }
+
+    var encrypted = CryptoJS.AES.encrypt(payload, secretKey).toString();
+    var t1 = performance.now();
+
+    document.getElementById('outputEnc').value = encrypted;
+
+    var origSize = new Blob([payload]).size;
+    var encSize = new Blob([encrypted]).size;
+    document.getElementById('outputStatsGrid').style.display = 'grid';
+    document.getElementById('statOriginal').textContent = bytes(origSize);
+    document.getElementById('statEncrypted').textContent = bytes(encSize);
+    document.getElementById('statRatio').textContent = (encSize / origSize).toFixed(2) + 'x';
+    document.getElementById('statMode').textContent = fileNames.length > 0 ? 'BUNDLE' : 'SINGLE';
+
+    state.lastEncrypt = {
+        data: encrypted,
+        ext: outExt,
+        name: outName,
+        lang: (fileNames.length === 0) ? ((state.currentLang === 'auto') ? detectLanguage(pasted) : state.currentLang) : 'bundle'
+    };
+
+    showStatus('success', '✅ Encrypted! ' + mode + ' · ' + bytes(origSize) + ' → ' + bytes(encSize) + ' · ' + (t1 - t0).toFixed(0) + 'ms');
+    toast('Encrypted in ' + (t1 - t0).toFixed(0) + 'ms', 'success');
+    addHistory('Encrypted ' + mode + ' (' + bytes(origSize) + ' → ' + bytes(encSize) + ')', 'success');
+    updateProgress();
+}
 
 /* ═══ COPY / DOWNLOAD ═══ */
 window.copyOutput = function() {
@@ -979,7 +1494,7 @@ window.downloadOutput = function() {
     addHistory('Downloaded ' + info.name, 'success');
 };
 
-/* ═══ DECRYPTOR GENERATOR (ULTRA HEAVY — 1MB+ SUPPORT) ═══ */
+/* ═══ DECRYPTOR GENERATOR (ULTRA HEAVY) ═══ */
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Encrypt first!', 'error'); return; }
@@ -1045,19 +1560,13 @@ window.downloadDecryptor = function() {
         '  iframe.id="renderFrame";',
         '  iframe.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-top-navigation-by-user-activation");',
         '  document.body.appendChild(iframe);',
-        '  /* Try srcdoc first — works for most sizes */',
-        '  try{',
-        '    iframe.srcdoc=htmlContent;',
-        '  }catch(e){',
-        '    /* Fallback for very large — blob URL */',
+        '  try{ iframe.srcdoc=htmlContent; }',
+        '  catch(e){',
         '    try{',
         '      var blob=new Blob([htmlContent],{type:"text/html;charset=utf-8"});',
-        '      var url=URL.createObjectURL(blob);',
         '      iframe.removeAttribute("srcdoc");',
-        '      iframe.src=url;',
-        '    }catch(e2){',
-        '      showError("Render failed: "+e2.message);',
-        '    }',
+        '      iframe.src=URL.createObjectURL(blob);',
+        '    }catch(e2){ showError("Render failed: "+e2.message); }',
         '  }',
         '}',
         '',
@@ -1104,28 +1613,19 @@ window.downloadDecryptor = function() {
         '    var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,SECRET_KEY).toString(CryptoJS.enc.Utf8);',
         '    if(!dec||dec.length===0){throw new Error("Decryption failed — wrong key or corrupted data.");}',
         '',
-        '    /* Check if bundle */',
         '    var isBundle=false,bundle=null;',
         '    try{',
         '      var p=JSON.parse(dec);',
         '      if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}',
         '    }catch(e){}',
         '',
-        '    if(isBundle){',
-        '      renderBundle(bundle);',
-        '    } else {',
-        '      /* Detect HTML vs plain text */',
+        '    if(isBundle){ renderBundle(bundle); }',
+        '    else {',
         '      var trimmed=dec.trim();',
         '      var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);',
-        '      if(isHTML){',
-        '        renderHTML(dec);',
-        '      } else {',
-        '        renderText(dec);',
-        '      }',
+        '      if(isHTML){ renderHTML(dec); } else { renderText(dec); }',
         '    }',
-        '  }catch(e){',
-        '    showError(e.message);',
-        '  }',
+        '  }catch(e){ showError(e.message); }',
         '});',
         '<' + '/script>',
         '<' + '/body>',
@@ -1138,28 +1638,30 @@ window.downloadDecryptor = function() {
     a.href = URL.createObjectURL(blob);
     a.download = 'decryptor.html';
     a.click();
-    showStatus('success', '🎁 Decryptor downloaded! Works with 1MB+ files.');
+    showStatus('success', '🎁 Decryptor downloaded! Works with 5MB+ files.');
     toast('Decryptor downloaded!', 'success');
-    addHistory('Downloaded decryptor.html (1MB+ support)', 'success');
+    addHistory('Downloaded decryptor.html (5MB+ support)', 'success');
 };
 
 /* ═══ CLEAR ═══ */
 window.clearAll = function() {
-    inputCodeEl.value = '';
-    document.getElementById('outputEnc').value = '';
-    document.getElementById('outputStatsGrid').style.display = 'none';
-    document.getElementById('inputStats').style.display = 'none';
-    document.getElementById('outputFileInfo').textContent = '';
-    document.getElementById('status').className = 'status';
-    state.uploadedFiles = {};
-    state.lastEncrypt = null;
-    renderFileList();
-    fileInput.value = '';
-    closeDrawer();
-    showStatus('info', '🧹 Cleared');
-    toast('Cleared', 'info');
-    addHistory('Cleared all', 'warn');
-    updateProgress();
+    showModal('🗑️ Clear All?', 'All input, output, and files will be cleared.\n\nVault data in Firebase will NOT be affected.\n\nContinue?', function() {
+        inputCodeEl.value = '';
+        document.getElementById('outputEnc').value = '';
+        document.getElementById('outputStatsGrid').style.display = 'none';
+        document.getElementById('inputStats').style.display = 'none';
+        document.getElementById('outputFileInfo').textContent = '';
+        document.getElementById('status').className = 'status';
+        state.uploadedFiles = {};
+        state.lastEncrypt = null;
+        renderFileList();
+        fileInput.value = '';
+        closeDrawer();
+        showStatus('info', '🧹 Cleared');
+        toast('Cleared', 'info');
+        addHistory('Cleared all', 'warn');
+        updateProgress();
+    });
 };
 
 window.clearHistory = function() {
@@ -1173,31 +1675,18 @@ function setWelcomeName(name) {
     var el = document.getElementById('welcomeName');
     if (el && name) el.textContent = name;
 }
-document.addEventListener('auth-guard-ready', function(e) {
-    if (!e.detail) return;
-    var name = e.detail.name || (e.detail.email ? e.detail.email.split('@')[0] : 'User');
-    setWelcomeName(name);
-});
 document.addEventListener('auth-ready', function(e) {
     if (!e.detail || !e.detail.user) return;
     var u = e.detail.user;
     var name = u.displayName || (u.email ? u.email.split('@')[0] : 'User');
     setWelcomeName(name);
 });
-setTimeout(function() {
-    if (window.AuthGuard && AuthGuard.getUser) {
-        var u = AuthGuard.getUser();
-        if (u) {
-            setWelcomeName(u.displayName || (u.email ? u.email.split('@')[0] : 'User'));
-        }
-    }
-}, 2000);
 
 /* ═══ INIT ═══ */
 renderHistory();
-addHistory('Universal Encrypt Pro v7 ULTRA HEAVY initialized', 'info');
+addHistory('Universal Encrypt Pro v8 VAULT EDITION initialized', 'info');
 updateDetection();
-console.log('%c🔐 Universal Encrypt Pro v7 ULTRA HEAVY loaded (1MB+ support)', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c🔐 Universal Encrypt Pro v8 VAULT EDITION loaded (5MB+ support)', 'color:#00f0ff;font-size:16px;font-weight:bold;');
 
 })();
 </script>
