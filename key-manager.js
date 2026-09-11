@@ -1,73 +1,234 @@
 /* ═══════════════════════════════════════════════════════════
-   key-manager.js — Secure Password-Based Key Management
+   key-manager.js — v14 HEAVY
    NightOrbit CodeForge
    
-   SECURITY FEATURES:
-   - Per-user unique key (from email + password)
-   - Password NEVER stored (only hash in Firebase)
-   - Key NEVER displayed (only masked format)
-   - Key NEVER saved to any file
-   - Password recovery IMPOSSIBLE
-   - Brute-force protection (500,000 iterations)
+   SYSTEM:
+   - Per-user unique key (random generated, prefix + 20 chars)
+   - Key encrypted with user password (AES-256)
+   - Password NEVER stored (only PBKDF2 hash in Firebase)
+   - Key stored in Firebase (encrypted form)
+   - Key revealed only with correct password
+   - Delete Key → New password + New key
    ═══════════════════════════════════════════════════════════ */
 
 (function() {
 'use strict';
 
 var KEY_MANAGER = {
-    _key: null,           // Full derived key (memory only)
-    _displayKey: null,    // Masked display key
+    /* ═══ CONFIG ═══ */
+    _PREFIX: 'NightOrbitGyidi_houperSecret_',
+    _PBKDF2_ITER: 250000,
+    _KEY_RANDOM_LEN: 20,
+    _PASSWORD_LEN: 20,
+    
+    /* ═══ STATE ═══ */
+    _key: null,           /* Full key (RAM only, after unlock) */
+    _encryptedKey: null,  /* Encrypted key (from Firebase) */
+    _displayKey: null,    /* Masked display */
     _email: null,
     _userId: null,
     _initialized: false,
     _hasPassword: false,
+    _userSalt: null,
 
-    /* ═══ SALT (fixed, part of algorithm) ═══ */
-    _SALT: 'NightOrbit_CodeForge_v9_2024_MASTER_SALT_@#$%^&*',
-    _ITERATIONS: 500000,
+    /* ═══ GENERATE RANDOM KEY ═══
+       Format: NightOrbitGyidi_houperSecret_ + 20 random chars
+       (6 digits + 10 letters + 4 symbols)
+    */
+    generateRandomKey: function() {
+        var digits = '0123456789';
+        var letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+        
+        var result = [];
+        var i;
+        
+        /* 6 digits */
+        for (i = 0; i < 6; i++) {
+            result.push(digits.charAt(Math.floor(Math.random() * digits.length)));
+        }
+        /* 10 letters */
+        for (i = 0; i < 10; i++) {
+            result.push(letters.charAt(Math.floor(Math.random() * letters.length)));
+        }
+        /* 4 symbols */
+        for (i = 0; i < 4; i++) {
+            result.push(symbols.charAt(Math.floor(Math.random() * symbols.length)));
+        }
+        
+        /* Shuffle */
+        for (i = result.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = result[i];
+            result[i] = result[j];
+            result[j] = temp;
+        }
+        
+        return this._PREFIX + result.join('');
+    },
 
-    /* ═══ STEP 1: Check if user already created password ═══ */
-    checkPasswordStatus: function(userId) {
+    /* ═══ GENERATE USER SALT ═══ */
+    generateUserSalt: function() {
+        var arr = new Uint8Array(32);
+        if (window.crypto && window.crypto.getRandomValues) {
+            window.crypto.getRandomValues(arr);
+        } else {
+            for (var i = 0; i < 32; i++) arr[i] = Math.floor(Math.random() * 256);
+        }
+        return Array.prototype.map.call(arr, function(b) {
+            return ('0' + b.toString(16)).slice(-2);
+        }).join('');
+    },
+
+    /* ═══ HASH PASSWORD (PBKDF2 via Web Crypto) ═══ */
+    hashPassword: function(password, salt) {
         var self = this;
         return new Promise(function(resolve, reject) {
-            firebase.database().ref('users/' + userId + '/passwordHash').once('value')
-                .then(function(snapshot) {
-                    var hash = snapshot.val();
-                    resolve({
-                        hasPassword: !!hash,
-                        hash: hash || null
-                    });
+            if (!window.crypto || !window.crypto.subtle) {
+                /* Fallback: CryptoJS PBKDF2 */
+                var hash = CryptoJS.PBKDF2(password, salt, {
+                    keySize: 256 / 32,
+                    iterations: self._PBKDF2_ITER,
+                    hasher: CryptoJS.algo.SHA256
+                }).toString(CryptoJS.enc.Hex);
+                resolve(hash);
+                return;
+            }
+            
+            var enc = new TextEncoder();
+            var saltBytes = enc.encode(salt);
+            
+            window.crypto.subtle.importKey(
+                'raw',
+                enc.encode(password),
+                { name: 'PBKDF2' },
+                false,
+                ['deriveBits']
+            ).then(function(baseKey) {
+                return window.crypto.subtle.deriveBits(
+                    {
+                        name: 'PBKDF2',
+                        salt: saltBytes,
+                        iterations: self._PBKDF2_ITER,
+                        hash: 'SHA-256'
+                    },
+                    baseKey,
+                    256
+                );
+            }).then(function(bits) {
+                var bytes = new Uint8Array(bits);
+                var hex = Array.prototype.map.call(bytes, function(b) {
+                    return ('0' + b.toString(16)).slice(-2);
+                }).join('');
+                resolve(hex);
+            }).catch(function() {
+                /* Fallback */
+                var hash = CryptoJS.PBKDF2(password, salt, {
+                    keySize: 256 / 32,
+                    iterations: self._PBKDF2_ITER,
+                    hasher: CryptoJS.algo.SHA256
+                }).toString(CryptoJS.enc.Hex);
+                resolve(hash);
+            });
+        });
+    },
+
+    /* ═══ ENCRYPT KEY (password se) ═══ */
+    encryptKey: function(originalKey, password) {
+        try {
+            var encrypted = CryptoJS.AES.encrypt(originalKey, password).toString();
+            return encrypted;
+        } catch (e) {
+            throw new Error('Key encryption failed: ' + e.message);
+        }
+    },
+
+    /* ═══ DECRYPT KEY (password se) ═══ */
+    decryptKey: function(encryptedKey, password) {
+        try {
+            var decrypted = CryptoJS.AES.decrypt(encryptedKey, password).toString(CryptoJS.enc.Utf8);
+            if (!decrypted || decrypted.length === 0) {
+                throw new Error('Wrong password');
+            }
+            return decrypted;
+        } catch (e) {
+            throw new Error('Key decryption failed: Wrong password');
+        }
+    },
+
+    /* ═══ VALIDATE PASSWORD FORMAT ═══
+       20 chars: 6 digits + 10 letters + 4 symbols
+    */
+    validatePasswordFormat: function(pwd) {
+        if (!pwd || pwd.length !== this._PASSWORD_LEN) return false;
+        var digits = (pwd.match(/\d/g) || []).length;
+        var letters = (pwd.match(/[a-zA-Z]/g) || []).length;
+        var symbols = (pwd.match(/[^a-zA-Z0-9]/g) || []).length;
+        return digits === 6 && letters === 10 && symbols === 4;
+    },
+
+    /* ═══ CHECK KEY STATUS (Firebase) ═══ */
+    checkKeyStatus: function(userId) {
+        return new Promise(function(resolve, reject) {
+            firebase.database().ref('users/' + userId + '/keyData').once('value')
+                .then(function(snap) {
+                    var data = snap.val();
+                    if (data && data.passwordHash && data.salt && data.encryptedKey && data.keyVersion) {
+                        resolve({
+                            hasKey: true,
+                            salt: data.salt,
+                            encryptedKey: data.encryptedKey,
+                            meta: data
+                        });
+                    } else {
+                        /* Corrupted → auto-cleanup */
+                        if (data) {
+                            firebase.database().ref('users/' + userId + '/keyData').remove();
+                        }
+                        resolve({ hasKey: false, salt: null, encryptedKey: null, meta: null });
+                    }
                 })
                 .catch(reject);
         });
     },
 
-    /* ═══ STEP 2: Create new password (first time) ═══ */
-    createPassword: function(user, password) {
+    /* ═══ CREATE KEY + PASSWORD (First Time) ═══ */
+    createKeyAndPassword: function(user, password) {
         var self = this;
         return new Promise(function(resolve, reject) {
-            /* Validate password */
-            var validation = self._validatePassword(password);
-            if (!validation.valid) {
-                reject(new Error(validation.message));
+            if (!self.validatePasswordFormat(password)) {
+                reject(new Error('Password must be 20 chars: 6 digits + 10 letters + 4 symbols'));
                 return;
             }
 
-            /* Hash password (SHA-256) */
-            var passwordHash = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+            var userSalt = self.generateUserSalt();
+            var originalKey = self.generateRandomKey();
+            var encryptedKey = self.encryptKey(originalKey, password);
 
-            /* Save hash to Firebase */
-            firebase.database().ref('users/' + user.uid + '/passwordHash').set(passwordHash)
+            self.hashPassword(password, userSalt)
+                .then(function(passwordHash) {
+                    return firebase.database().ref('users/' + user.uid + '/keyData').set({
+                        passwordHash: passwordHash,
+                        salt: userSalt,
+                        encryptedKey: encryptedKey,
+                        keyVersion: 14,
+                        algorithm: 'aes-256-cbc-pbkdf2-sha256',
+                        iterations: self._PBKDF2_ITER,
+                        createdAt: new Date().toISOString()
+                    });
+                })
                 .then(function() {
-                    /* Derive full key */
-                    self._deriveKey(user.email, password);
+                    self._key = originalKey;
+                    self._encryptedKey = encryptedKey;
                     self._email = user.email;
                     self._userId = user.uid;
+                    self._userSalt = userSalt;
                     self._hasPassword = true;
                     self._initialized = true;
-
+                    self._displayKey = self._makeMaskedKey(originalKey);
                     resolve({
                         success: true,
+                        key: originalKey,
                         displayKey: self._displayKey
                     });
                 })
@@ -75,119 +236,88 @@ var KEY_MANAGER = {
         });
     },
 
-    /* ═══ STEP 3: Verify password (on login) ═══ */
-    verifyPassword: function(user, password) {
+    /* ═══ UNLOCK KEY (Password Se) ═══ */
+    unlockKey: function(user, password) {
         var self = this;
         return new Promise(function(resolve, reject) {
-            var passwordHash = CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
-
-            firebase.database().ref('users/' + user.uid + '/passwordHash').once('value')
-                .then(function(snapshot) {
-                    var storedHash = snapshot.val();
-                    if (!storedHash) {
-                        reject(new Error('No password found for this account.'));
+            firebase.database().ref('users/' + user.uid + '/keyData').once('value')
+                .then(function(snap) {
+                    var data = snap.val();
+                    if (!data || !data.passwordHash || !data.salt || !data.encryptedKey) {
+                        reject(new Error('No key found. Please create one.'));
                         return;
                     }
-                    if (storedHash !== passwordHash) {
-                        reject(new Error('Incorrect password. Access denied.'));
-                        return;
-                    }
-
-                    /* Password correct — derive key */
-                    self._deriveKey(user.email, password);
-                    self._email = user.email;
-                    self._userId = user.uid;
-                    self._hasPassword = true;
-                    self._initialized = true;
-
-                    resolve({
-                        success: true,
-                        displayKey: self._displayKey
+                    
+                    return self.hashPassword(password, data.salt).then(function(computed) {
+                        if (computed !== data.passwordHash) {
+                            reject(new Error('Incorrect password'));
+                            return;
+                        }
+                        
+                        try {
+                            var originalKey = self.decryptKey(data.encryptedKey, password);
+                            self._key = originalKey;
+                            self._encryptedKey = data.encryptedKey;
+                            self._email = user.email;
+                            self._userId = user.uid;
+                            self._userSalt = data.salt;
+                            self._hasPassword = true;
+                            self._initialized = true;
+                            self._displayKey = self._makeMaskedKey(originalKey);
+                            resolve({
+                                success: true,
+                                key: originalKey,
+                                displayKey: self._displayKey
+                            });
+                        } catch (e) {
+                            reject(new Error('Wrong password'));
+                        }
                     });
                 })
                 .catch(reject);
         });
     },
 
-    /* ═══ Validate password format ═══ */
-    _validatePassword: function(password) {
-        if (!password || typeof password !== 'string') {
-            return { valid: false, message: 'Password is required.' };
-        }
-
-        /* Must be exactly 14 characters */
-        if (password.length !== 14) {
-            return { valid: false, message: 'Password must be exactly 14 characters (10 digits + 4 symbols).' };
-        }
-
-        /* Count digits */
-        var digits = (password.match(/\d/g) || []).length;
-        /* Count symbols */
-        var symbols = (password.match(/[^a-zA-Z0-9]/g) || []).length;
-        /* Count letters (should be 0) */
-        var letters = (password.match(/[a-zA-Z]/g) || []).length;
-
-        if (digits !== 10) {
-            return { valid: false, message: 'Password must contain exactly 10 digits (numbers).' };
-        }
-        if (symbols !== 4) {
-            return { valid: false, message: 'Password must contain exactly 4 symbols (e.g., @#$%).' };
-        }
-        if (letters !== 0) {
-            return { valid: false, message: 'Password must NOT contain any letters.' };
-        }
-
-        return { valid: true };
+    /* ═══ MASKED KEY ═══ */
+    _makeMaskedKey: function(key) {
+        return key.substring(0, 35) + '************';
     },
 
-    /* ═══ Derive full key from email + password ═══ */
-    _deriveKey: function(email, password) {
-        /* Combine email + password */
-        var combined = email.toLowerCase().trim() + '::' + password;
-
-        /* PBKDF2 with 500,000 iterations (very slow for brute-force) */
-        var key = CryptoJS.PBKDF2(combined, this._SALT, {
-            keySize: 512 / 32,       /* 512 bits = 128 hex chars */
-            iterations: 500000,
-            hasher: CryptoJS.algo.SHA512
+    /* ═══ DELETE KEY (Purani key delete) ═══ */
+    deleteKey: function(user) {
+        return new Promise(function(resolve, reject) {
+            firebase.database().ref('users/' + user.uid + '/keyData').remove()
+                .then(function() {
+                    resolve({ success: true });
+                })
+                .catch(reject);
         });
-
-        this._key = key.toString(CryptoJS.enc.Hex);
-        this._displayKey = this._makeDisplayKey(this._key);
     },
 
-    /* ═══ Create masked display key ═══ */
-    _makeDisplayKey: function(key) {
-        /* Format: NightOrbit_*****_***********
-           (NightOrbit_ + 5 stars + _ + 11 stars = fixed format) */
-        return 'NightOrbit_*****_***********';
-    },
-
-    /* ═══ Get key for encryption (internal use) ═══ */
+    /* ═══ GETTERS ═══ */
     getKey: function() {
         if (!this._initialized || !this._key) {
-            throw new Error('Key not initialized. Please login first.');
+            throw new Error('Key not initialized');
         }
         return this._key;
     },
-
-    /* ═══ Get display key (safe to show) ═══ */
     getDisplayKey: function() {
-        return this._displayKey || 'NightOrbit_*****_***********';
+        return this._displayKey || 'NightOrbitGyidi_houperSecret_************';
     },
-
-    /* ═══ Get user info ═══ */
     getEmail: function() { return this._email; },
     getUserId: function() { return this._userId; },
+    getUserSalt: function() { return this._userSalt; },
     isReady: function() { return this._initialized; },
     hasPassword: function() { return this._hasPassword; },
 
-    /* ═══ Clear on logout ═══ */
+    /* ═══ CLEAR (Logout) ═══ */
     clear: function() {
         this._key = null;
+        this._encryptedKey = null;
         this._displayKey = null;
         this._email = null;
         this._userId = null;
+        this._userSalt = null;
         this._initialized = false;
         this._hasPassword = false;
     }
@@ -195,7 +325,7 @@ var KEY_MANAGER = {
 
 window.KEY_MANAGER = KEY_MANAGER;
 
-console.log('%c🔐 Key Manager v9 loaded (password-based keys)', 
-    'color:#00ff64;font-weight:bold;font-size:14px;');
+console.log('%c🔐 Key Manager v14 HEAVY loaded', 'color:#00ff64;font-weight:bold;font-size:14px;');
+console.log('%c⚡ Per-user random key + PBKDF2 250K + AES-256', 'color:#ffd700;font-size:11px;');
 
 })();
