@@ -101,7 +101,7 @@ body {
     line-height: 1.7; margin-top: 16px; }
 .pwd-modal .warn b { color: var(--gold); }
 
-/* ═══ PROGRESS BAR (NEW) ═══ */
+/* ═══ PROGRESS BAR ═══ */
 .pwd-progress-wrap {
     margin-top: 16px; padding: 14px;
     background: rgba(0,0,0,0.5); border-radius: 12px;
@@ -369,7 +369,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     .pwd-modal { padding: 28px 22px; }
     .pwd-modal h2 { font-size: 17px; letter-spacing: 2px; }
 }
-/* ═══ KEY ACTION BUTTONS (NEW) ═══ */
 .key-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .key-action-btn {
     padding: 12px 20px; border-radius: 10px; font-weight: 900;
@@ -386,9 +385,9 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     background: linear-gradient(135deg, var(--green), #00aa44);
     color: #000; box-shadow: 0 0 20px rgba(0,255,100,0.4);
 }
-.key-action-btn.delete {
-    background: linear-gradient(135deg, var(--red), #aa0044);
-    color: #fff; box-shadow: 0 0 20px rgba(255,0,100,0.4);
+.key-action-btn.lock {
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    color: #000; box-shadow: 0 0 20px rgba(0,240,255,0.4);
 }
 .key-action-btn:hover { transform: translateY(-2px); }
 .key-action-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
@@ -401,7 +400,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     background: rgba(255,0,100,0.2);
     box-shadow: 0 0 20px rgba(255,0,100,0.3);
 }
-/* Session timer bar */
 .session-bar {
     position: fixed; top: var(--header-h); left: 0; right: 0;
     height: 3px; background: rgba(0,240,255,0.1); z-index: 999;
@@ -450,7 +448,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
         <div class="status" id="pwdStatus"></div>
 
-        <!-- ═══ PROGRESS BAR (NEW) ═══ -->
         <div class="pwd-progress-wrap" id="pwdProgressWrap">
             <div class="pwd-progress-header">
                 <span class="pwd-progress-label" id="pwdProgressLabel">⚡ GENERATING KEY</span>
@@ -518,9 +515,9 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         <h1>⚡ Universal Code Encrypt</h1>
         <div class="subtitle">NightOrbit CodeForge · Password-Protected · 5MB+ Support</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v11 HEAVY</span>
+            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v12 HEAVY</span>
             <span class="header-stat gold"><i class="fa-solid fa-shield-halved"></i> AES-256</span>
-            <span class="header-stat pink"><i class="fa-solid fa-user-lock"></i> Password Key</span>
+            <span class="header-stat pink"><i class="fa-solid fa-user-lock"></i> Auto Key</span>
             <span class="header-stat green"><i class="fa-solid fa-database"></i> 5MB+</span>
         </div>
     </div>
@@ -528,14 +525,14 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     <!-- ═══ USER KEY DISPLAY ═══ -->
     <div class="section" style="border-color: var(--gold); background: rgba(255,215,0,0.05);">
         <label style="color: var(--gold);">
-            <i class="fa-solid fa-lock"></i> YOUR UNIQUE KEY (Password Protected)
+            <i class="fa-solid fa-key"></i> YOUR AUTO-GENERATED ENCRYPTION KEY
         </label>
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
             <input type="text" id="keyDisplay" readonly value="NightOrbit_*****_***********"
                    style="flex:1; min-width:200px; background:#000; color:var(--gold);
                           border:1.5px solid var(--gold); padding:12px; border-radius:8px;
                           font-family:'JetBrains Mono', monospace; font-size:13px;
-                          cursor:not-allowed;" title="Your key is password-protected">
+                          cursor:not-allowed;" title="Your key is auto-generated and password-protected">
             <div class="key-actions" id="keyActions">
                 <button class="key-action-btn create" id="keyActionBtn" onclick="handleKeyAction()">
                     <i class="fa-solid fa-plus"></i> CREATE PASSWORD
@@ -545,21 +542,23 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         <div id="keyInfoBox" style="margin-top:10px; padding:10px; background:rgba(0,240,255,0.06);
                     border-left:3px solid var(--cyan); border-radius:6px;
                     font-size:11px; line-height:1.6; color:#b0d0ff;">
-            🔒 <b>Secure:</b> Your key is protected by your <b>14-character password</b>
-            (10 digits + 4 symbols). The actual key is <b>never displayed</b>.
+            🔑 <b>How it works:</b> You only create a <b>14-character password</b>.
+            The system automatically generates a <b>unique encryption key</b> linked to your
+            password. This key is <b>never displayed</b> and <b>never stored</b> — only your
+            password can unlock it.
         </div>
 
         <div id="dangerZone" style="display:none; margin-top:14px; padding-top:14px; border-top:1px dashed rgba(255,0,100,0.3);">
             <div style="font-size:10px; color:var(--red); letter-spacing:2px; text-transform:uppercase; font-weight:bold; margin-bottom:8px;">
-                ⚠️ DANGER ZONE
+                ⚠️ DANGER ZONE — PERMANENT
             </div>
-            <button class="key-action-btn delete danger-zone" onclick="deleteKeyAndRegenerate()">
+            <button class="key-action-btn danger-zone" onclick="deleteKeyAndRegenerate()">
                 <i class="fa-solid fa-trash"></i> DELETE KEY & GENERATE NEW
             </button>
             <div style="font-size:10px; color:#ffb3c9; margin-top:8px; line-height:1.6;">
-                ⚠️ This will <b>PERMANENTLY DELETE</b> your old key from Firebase.
+                ⚠️ This will <b>PERMANENTLY DELETE</b> your old key + password from Firebase.
                 All code encrypted with the old key will be <b>LOCKED FOREVER</b>.
-                A new key will be generated with a new password.
+                You will create a <b>brand-new password</b> and get a <b>brand-new key</b>.
             </div>
         </div>
     </div>
@@ -634,22 +633,29 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 'use strict';
 
 /* ═══════════════════════════════════════════════════════════
-   UNIVERSAL CODE ENCRYPT v11 — HEAVY SECURE
-   - First time: CREATE password
-   - Regular: UNLOCK with existing password
-   - DELETE KEY: Firebase purge, old key locked forever
-   - Session: 20 second inactivity auto-lock
-   - PBKDF2: 1,000,000 iterations (heavy)
-   - Password hash: PBKDF2 with per-user random salt
-   - Key NEVER stored anywhere except RAM
-   - Progress bar: max 5 min, auto-stops when done
+   UNIVERSAL CODE ENCRYPT v12 — FULL HEAVY SECURE
+   
+   FLOW:
+   1. User login → check Firebase for existing keyMetadata
+   2. If NOT exists → show CREATE PASSWORD button
+   3. User creates password → backend generates unique key
+   4. If EXISTS → show UNLOCK button (always, even after timeout)
+   5. User can DELETE KEY & GENERATE NEW → old key locked forever
+   
+   SECURITY:
+   - PBKDF2: 1,000,000 iterations (key derivation)
+   - PBKDF2: 200,000 iterations (password hash)
+   - Per-user random 32-byte salt
+   - Key NEVER stored, NEVER displayed, NEVER in source
+   - Session: 20 sec auto-lock (key clears from RAM)
+   - Session timeout does NOT change button state
    ═══════════════════════════════════════════════════════════ */
 
-var SALT = 'NightOrbit_CodeForge_v11_2024_MASTER_SALT_@#$%^&*';
-var ITERATIONS = 1000000;      /* 1 MILLION — heavy */
-var HASH_ITERATIONS = 200000;  /* 200K — password hash */
+var SALT = 'NightOrbit_CodeForge_v12_2024_MASTER_SALT_@#$%^&*';
+var ITERATIONS = 1000000;
+var HASH_ITERATIONS = 200000;
 var LOCKED_KEY = 'NightOrbit_*****_***********';
-var SESSION_TIMEOUT = 20 * 1000; /* 20 seconds */
+var SESSION_TIMEOUT = 20 * 1000;
 
 var state = {
     uploadedFiles: {},
@@ -660,7 +666,6 @@ var state = {
     isReady: false,
     hasPassword: false,
     userSalt: null,
-    autoLockTimer: null,
     sessionTimer: null,
     sessionDeadline: null
 };
@@ -700,7 +705,7 @@ function validatePasswordFormat(pwd) {
     return digits === 10 && symbols === 4 && letters === 0;
 }
 
-/* ═══ GENERATE RANDOM SALT (per user) ═══ */
+/* ═══ GENERATE RANDOM SALT ═══ */
 function generateUserSalt() {
     var arr = new Uint8Array(32);
     if (window.crypto && window.crypto.getRandomValues) {
@@ -713,7 +718,7 @@ function generateUserSalt() {
     }).join('');
 }
 
-/* ═══ HEAVY PASSWORD HASH (PBKDF2 + salt) ═══ */
+/* ═══ HEAVY PASSWORD HASH ═══ */
 function hashPassword(password, salt) {
     return CryptoJS.PBKDF2(password, salt, {
         keySize: 256 / 32,
@@ -722,23 +727,38 @@ function hashPassword(password, salt) {
     }).toString(CryptoJS.enc.Hex);
 }
 
-/* ═══ CHECK PASSWORD STATUS (Firebase) ═══ */
+/* ═══ CHECK PASSWORD STATUS + AUTO-CLEANUP ═══
+   Agar purana corrupted data mile to khud delete karke fresh start.
+   Isse "Password already exists" wala error nahi aayega. */
 function checkPasswordStatus(uid) {
     return new Promise(function(resolve, reject) {
         firebase.database().ref('users/' + uid + '/keyMetadata').once('value')
             .then(function(snap) {
                 var meta = snap.val();
-                if (!meta || !meta.passwordHash || !meta.salt) {
-                    resolve({ hasPassword: false, salt: null, meta: null });
+                /* Valid metadata check */
+                if (meta && meta.passwordHash && meta.salt && meta.keyVersion) {
+                    resolve({ hasPassword: true, salt: meta.salt, meta: meta });
                     return;
                 }
-                resolve({ hasPassword: true, salt: meta.salt, meta: meta });
+                /* Corrupted / old format → auto-cleanup */
+                if (meta) {
+                    console.warn('⚠️ Corrupted keyMetadata found. Auto-cleaning...');
+                    firebase.database().ref('users/' + uid + '/keyMetadata').remove()
+                        .then(function() {
+                            resolve({ hasPassword: false, salt: null, meta: null });
+                        })
+                        .catch(function() {
+                            resolve({ hasPassword: false, salt: null, meta: null });
+                        });
+                } else {
+                    resolve({ hasPassword: false, salt: null, meta: null });
+                }
             })
             .catch(reject);
     });
 }
 
-/* ═══ CREATE PASSWORD (first time) ═══ */
+/* ═══ CREATE PASSWORD (first time only) ═══ */
 function createPassword(user, password) {
     return new Promise(function(resolve, reject) {
         if (!validatePasswordFormat(password)) {
@@ -749,16 +769,13 @@ function createPassword(user, password) {
         var userSalt = generateUserSalt();
         var passwordHash = hashPassword(password, userSalt);
 
-        firebase.database().ref('users/' + user.uid + '/keyMetadata').once('value')
-            .then(function(snap) {
-                if (snap.val()) {
-                    reject(new Error('Password already exists. Use Unlock or Delete Key.'));
-                    return;
-                }
+        /* Force clean any old data first */
+        firebase.database().ref('users/' + user.uid + '/keyMetadata').remove()
+            .then(function() {
                 return firebase.database().ref('users/' + user.uid + '/keyMetadata').set({
                     passwordHash: passwordHash,
                     salt: userSalt,
-                    keyVersion: 1,
+                    keyVersion: 2,
                     createdAt: new Date().toISOString()
                 });
             })
@@ -786,7 +803,7 @@ function verifyPassword(user, password) {
             .then(function(snap) {
                 var meta = snap.val();
                 if (!meta || !meta.passwordHash || !meta.salt) {
-                    reject(new Error('No password set. Please create one.'));
+                    reject(new Error('No password set. Please create one first.'));
                     return;
                 }
                 var computed = hashPassword(password, meta.salt);
@@ -816,12 +833,7 @@ function deriveKey(email, password, salt) {
     }).toString(CryptoJS.enc.Hex);
 }
 
-/* ═══ DISPLAY KEY (masked only) ═══ */
-function getDisplayKey() {
-    return LOCKED_KEY;
-}
-
-/* ═══ PROGRESS TRACKER (NEW) — Live timer + auto-stop ═══ */
+/* ═══ PROGRESS TRACKER ═══ */
 function startProgressTracker(mode) {
     var wrap = document.getElementById('pwdProgressWrap');
     var fill = document.getElementById('pwdProgressFill');
@@ -831,7 +843,7 @@ function startProgressTracker(mode) {
 
     if (!wrap) return { stop: function() { return '0.0s'; } };
 
-    var MAX_TIME = 5 * 60 * 1000;   /* 5 minutes max */
+    var MAX_TIME = 5 * 60 * 1000;
     var startTime = Date.now();
     var intervalId = null;
     var stopped = false;
@@ -853,11 +865,9 @@ function startProgressTracker(mode) {
 
         if (timer) timer.textContent = seconds + 's';
 
-        /* Fake progress — caps at 95% until actual done */
         var pct = Math.min((elapsed / MAX_TIME) * 100, 95);
         if (fill) fill.style.width = pct + '%';
 
-        /* Notes based on elapsed time */
         if (elapsed > 60000 && elapsed <= 180000 && note) {
             note.innerHTML = '⏳ Still working... <b>' + Math.floor(elapsed/1000) + 's</b> elapsed';
         }
@@ -909,8 +919,8 @@ window.deleteKeyAndRegenerate = function() {
     }
 
     var c1 = confirm(
-        '⚠️ WARNING #1 of 2\n\n' +
-        'This will PERMANENTLY DELETE your key from Firebase.\n\n' +
+        '⚠️ WARNING #1 of 3\n\n' +
+        'This will PERMANENTLY DELETE your key + password from Firebase.\n\n' +
         'ALL code encrypted with the old key will be LOCKED FOREVER.\n' +
         'You will NOT be able to decrypt old files ever again.\n\n' +
         'Continue?'
@@ -918,12 +928,13 @@ window.deleteKeyAndRegenerate = function() {
     if (!c1) return;
 
     var c2 = confirm(
-        '⚠️ WARNING #2 of 2 — FINAL CONFIRMATION\n\n' +
+        '⚠️ WARNING #2 of 3 — FINAL CONFIRMATION\n\n' +
         '✔ Old key deleted from Firebase\n' +
         '✔ Old password hash deleted\n' +
         '✔ Old salt deleted\n' +
         '✔ Old encrypted files = LOCKED FOREVER\n' +
-        '✔ You will create a NEW password\n\n' +
+        '✔ You will create a BRAND-NEW password\n' +
+        '✔ You will get a BRAND-NEW key\n\n' +
         'This CANNOT be undone. Proceed?'
     );
     if (!c2) return;
@@ -949,6 +960,8 @@ window.deleteKeyAndRegenerate = function() {
             document.getElementById('outputEnc').value = '';
             document.getElementById('fileList').innerHTML = '';
             document.getElementById('inputStats').style.display = 'none';
+            document.getElementById('keyDisplay').value = LOCKED_KEY;
+            document.getElementById('keyStatus').textContent = 'Locked';
 
             updateKeyUI();
             showStatus('success', '✅ Old key deleted forever. Create a new password.');
@@ -981,11 +994,14 @@ window.handleKeyAction = function() {
     }
 };
 
-/* ═══ UPDATE KEY UI ═══ */
+/* ═══ UPDATE KEY UI — BUTTON STATE NEVER CHANGES ON TIMEOUT ═══
+   - No password → CREATE PASSWORD
+   - Has password → UNLOCK (always, even after session timeout)
+   - Only when actively unlocked → LOCK NOW
+*/
 function updateKeyUI() {
     var btn = document.getElementById('keyActionBtn');
     var danger = document.getElementById('dangerZone');
-    var infoBox = document.getElementById('keyInfoBox');
 
     if (!btn) return;
 
@@ -993,24 +1009,16 @@ function updateKeyUI() {
         btn.className = 'key-action-btn create';
         btn.innerHTML = '<i class="fa-solid fa-plus"></i> CREATE PASSWORD';
         if (danger) danger.style.display = 'none';
-    } else if (!state.isReady) {
+    } else if (state.isReady) {
+        /* Currently unlocked → LOCK NOW */
+        btn.className = 'key-action-btn lock';
+        btn.innerHTML = '<i class="fa-solid fa-lock"></i> LOCK NOW';
+        if (danger) danger.style.display = 'block';
+    } else {
+        /* Has password but locked (including after 20s timeout) → UNLOCK */
         btn.className = 'key-action-btn unlock';
         btn.innerHTML = '<i class="fa-solid fa-unlock"></i> UNLOCK';
         if (danger) danger.style.display = 'block';
-    } else {
-        btn.className = 'key-action-btn delete';
-        btn.innerHTML = '<i class="fa-solid fa-lock"></i> LOCK NOW';
-        if (danger) danger.style.display = 'block';
-    }
-
-    if (infoBox) {
-        if (!state.hasPassword) {
-            infoBox.innerHTML = '🔒 <b>First time?</b> Click <b>CREATE PASSWORD</b> above to set your 14-character password. <b>Once set, it cannot be changed</b> — but you can delete & regenerate.';
-        } else if (!state.isReady) {
-            infoBox.innerHTML = '🔐 <b>Password set.</b> Click <b>UNLOCK</b> to enter your password and unlock your key. Session auto-locks in <b>20 seconds</b>.';
-        } else {
-            infoBox.innerHTML = '🔓 <b>Key unlocked.</b> Encrypt your code now. Auto-locks in <b>20 seconds</b> of inactivity.';
-        }
     }
 }
 
@@ -1069,7 +1077,7 @@ function openPwdModal(mode) {
 
     if (mode === 'create') {
         pwdModalTitle.textContent = '🔐 Create Your Password';
-        pwdModalSub.textContent = 'First-time setup — remember this forever';
+        pwdModalSub.textContent = 'First-time setup — your key will be auto-generated';
         pwdModalLabel.textContent = 'Create Your 14-Character Password';
         pwdSubmitBtn.innerHTML = '🔐 Create Password';
         reqList.style.display = 'block';
@@ -1090,7 +1098,6 @@ function openPwdModal(mode) {
     pwdStatus.className = 'status';
     pwdSubmitBtn.disabled = true;
 
-    /* Hide progress tracker */
     var wrap = document.getElementById('pwdProgressWrap');
     if (wrap) wrap.classList.remove('active');
 
@@ -1165,7 +1172,7 @@ pwdSubmitBtn.addEventListener('click', function() {
     var password = pwdInput.value;
 
     if (state.mode === 'create') {
-        if (!confirm('⚠️ FINAL WARNING:\n\nThis password CANNOT be changed.\nIf you forget it, your code can NEVER be decrypted.\n\nYou can later DELETE KEY & REGENERATE, but old encrypted files will be LOCKED FOREVER.\n\nCreate this password?')) {
+        if (!confirm('⚠️ FINAL WARNING:\n\nYour password CANNOT be changed.\nIf you forget it, your code can NEVER be decrypted.\n\nYou can later DELETE KEY & REGENERATE, but old encrypted files will be LOCKED FOREVER.\n\nCreate this password?')) {
             return;
         }
         setPwdStatus('loading', '⏳ Generating heavy secure key...');
@@ -1176,7 +1183,7 @@ pwdSubmitBtn.addEventListener('click', function() {
         createPassword(state.user, password)
             .then(function(key) {
                 var elapsed = progressTracker.stop(true);
-                setPwdStatus('success', '✅ Password created in ' + elapsed + '! Key unlocked.');
+                setPwdStatus('success', '✅ Key generated in ' + elapsed + '! Unlocked.');
                 onKeyUnlocked(key);
                 setTimeout(closePwdModal, 1500);
             })
@@ -1196,7 +1203,7 @@ pwdSubmitBtn.addEventListener('click', function() {
         verifyPassword(state.user, password)
             .then(function(key) {
                 var elapsed = progressTracker2.stop(true);
-                setPwdStatus('success', '✅ Password verified in ' + elapsed + '! Key unlocked.');
+                setPwdStatus('success', '✅ Verified in ' + elapsed + '! Key unlocked.');
                 onKeyUnlocked(key);
                 setTimeout(closePwdModal, 1200);
             })
@@ -1226,7 +1233,7 @@ function onKeyUnlocked(key) {
     startSessionTimer();
 }
 
-/* ═══ LOCK KEY ═══ */
+/* ═══ LOCK KEY — SESSION TIMEOUT PAR BUTTON STATE CHANGE NAHI HOGI ═══ */
 function lockKey(silent) {
     state.passwordKey = null;
     state.isReady = false;
@@ -1302,13 +1309,13 @@ document.addEventListener('auth-guard-ready', function(e) {
             } else {
                 state.hasPassword = true;
                 state.userSalt = result.salt;
-                toast('🔐 Password found. Click UNLOCK to enter password.', 'info');
+                toast('🔐 Key found. Click UNLOCK to enter your password.', 'info');
             }
             updateKeyUI();
         })
         .catch(function(err) {
             console.error('Check failed:', err);
-            showStatus('error', '❌ Failed to check password status');
+            showStatus('error', '❌ Failed to check key status');
             updateKeyUI();
         });
 });
@@ -1410,7 +1417,7 @@ window.encryptNow = function() {
         if (fileNames.length > 0) {
             var bundle = {
                 __type: 'multi-file-bundle',
-                __version: '11.0',
+                __version: '12.0',
                 __created: new Date().toISOString(),
                 __fileCount: fileNames.length,
                 files: {}
@@ -1518,7 +1525,7 @@ window.downloadDecryptor = function() {
         'var USER_EMAIL=' + JSON.stringify(userEmail) + ';',
         'var USER_SALT=' + JSON.stringify(userSalt) + ';',
         'var ENCRYPTED_DATA=' + JSON.stringify(out) + ';',
-        'var SALT="NightOrbit_CodeForge_v11_2024_MASTER_SALT_@#$%^&*";',
+        'var SALT="NightOrbit_CodeForge_v12_2024_MASTER_SALT_@#$%^&*";',
         '',
         'function deriveKey(password){',
         '  var combined=USER_EMAIL.toLowerCase().trim()+"::"+password;',
@@ -1661,9 +1668,9 @@ window.clearAll = function() {
 /* ═══ INIT ═══ */
 updateKeyUI();
 
-console.log('%c🔐 Universal Code Encrypt v11 HEAVY loaded',
+console.log('%c🔐 Universal Code Encrypt v12 FULL HEAVY loaded',
     'color:#00f0ff;font-size:16px;font-weight:bold;');
-console.log('%c⚡ Iterations: 1M | Hash: 200K | Session: 20s | Progress: 5min max',
+console.log('%c⚡ 1M iterations | Auto-cleanup | Session: 20s | Button state never resets',
     'color:#ffd700;font-size:12px;');
 
 })();
