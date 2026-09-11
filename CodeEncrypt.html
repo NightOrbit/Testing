@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Encrypt Tool - Code.json</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0b0b1a;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 {
+            color: #00f0ff;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        .info {
+            background: rgba(255,215,0,0.1);
+            border: 1px solid #ffd700;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #ffd700;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .section {
+            background: rgba(0,240,255,0.03);
+            border: 1px solid rgba(0,240,255,0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        label {
+            color: #00f0ff;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            background: #000;
+            color: #00ff64;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            resize: vertical;
+        }
+        button {
+            background: linear-gradient(135deg, #00f0ff, #b400ff);
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,240,255,0.4);
+        }
+        button:active { transform: scale(0.97); }
+        .btn-row { text-align: center; margin: 15px 0; }
+        .key-input {
+            width: 100%;
+            background: #000;
+            color: #ffd700;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        .status {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 13px;
+            display: none;
+        }
+        .status.success {
+            background: rgba(0,255,100,0.1);
+            border: 1px solid #00ff64;
+            color: #00ff64;
+            display: block;
+        }
+        .status.error {
+            background: rgba(255,0,100,0.1);
+            border: 1px solid #ff0064;
+            color: #ff0064;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Encrypt Tool</h1>
+
+        <div class="info">
+            <b>📌 How to use:</b><br>
+            1. Paste your <code>code.json</code> content in the first box<br>
+            2. Your SECRET_KEY should match the one in <code>index.html</code><br>
+            3. Click <b>ENCRYPT</b><br>
+            4. Copy the encrypted output<br>
+            5. Paste it in Firebase Realtime Database at <code>secure_app/data</code><br>
+            6. Set Firebase rules: <code>".read": "auth != null", ".write": false</code>
+        </div>
+
+        <div class="section">
+            <label>🔑 SECRET KEY (must match index.html)</label>
+            <input type="text" class="key-input" id="secretKey" value="GyidiBazar_2024_SuperSecret_!@#$%^&*_Key">
+        </div>
+
+        <div class="section">
+            <label>📄 Paste code.json Here</label>
+            <textarea id="inputJson" placeholder='{"config": {...}, "html": "...", "css": "...", "js": "..."}'></textarea>
+        </div>
+
+        <div class="btn-row">
+            <button onclick="encryptNow()">🔐 ENCRYPT</button>
+            <button onclick="clearAll()">🗑️ CLEAR</button>
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <div class="section">
+            <label>🔒 Encrypted Output (copy this to Firebase DB)</label>
+            <textarea id="outputEnc" placeholder="Encrypted output will appear here..." readonly></textarea>
+        </div>
+
+        <div class="btn-row">
+            <button onclick="copyOutput()">📋 COPY ENCRYPTED</button>
+            <button onclick="downloadOutput()">⬇️ DOWNLOAD</button>
+        </div>
+    </div>
+
+    <script>
+        function showStatus(type, msg) {
+            var el = document.getElementById('status');
+            el.className = 'status ' + type;
+            el.textContent = msg;
+        }
+
+        function encryptNow() {
+            try {
+                var inputJson = document.getElementById('inputJson').value.trim();
+                var secretKey = document.getElementById('secretKey').value;
+
+                if (!inputJson) {
+                    showStatus('error', '❌ Please paste code.json');
+                    return;
+                }
+                if (!secretKey) {
+                    showStatus('error', '❌ Secret key is empty');
+                    return;
+                }
+
+                // Validate JSON first
+                try {
+                    JSON.parse(inputJson);
+                } catch (e) {
+                    showStatus('error', '❌ Invalid JSON: ' + e.message);
+                    return;
+                }
+
+                // Encrypt
+                var encrypted = CryptoJS.AES.encrypt(inputJson, secretKey).toString();
+
+                document.getElementById('outputEnc').value = encrypted;
+                showStatus('success', '✅ Encrypted! Size: ' + encrypted.length + ' chars. Copy & paste in Firebase DB.');
+            } catch (e) {
+                showStatus('error', '❌ Error: ' + e.message);
+            }
+        }
+
+        function copyOutput() {
+            var output = document.getElementById('outputEnc');
+            if (!output.value) {
+                showStatus('error', '❌ Nothing to copy');
+                return;
+            }
+            output.select();
+            document.execCommand('copy');
+            showStatus('success', '✅ Copied to clipboard!');
+        }
+
+        function downloadOutput() {
+            var output = document.getElementById('outputEnc').value;
+            if (!output) {
+                showStatus('error', '❌ Nothing to download');
+                return;
+            }
+            var blob = new Blob([output], { type: 'text/plain' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'encrypted-data.txt';
+            a.click();
+        }
+
+        function clearAll() {
+            document.getElementById('inputJson').value = '';
+            document.getElementById('outputEnc').value = '';
+            document.getElementById('status').className = 'status';
+        }
+    </script>
+</body>
+</html>
