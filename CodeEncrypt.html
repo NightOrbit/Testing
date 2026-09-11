@@ -1,229 +1,1008 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Encrypt Tool - Code.json</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: #0b0b1a;
-            color: #fff;
-            font-family: 'Courier New', monospace;
-            padding: 20px;
-            min-height: 100vh;
-        }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 {
-            color: #00f0ff;
-            text-align: center;
-            margin-bottom: 20px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
-        .info {
-            background: rgba(255,215,0,0.1);
-            border: 1px solid #ffd700;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            color: #ffd700;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        .section {
-            background: rgba(0,240,255,0.03);
-            border: 1px solid rgba(0,240,255,0.2);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-        }
-        label {
-            color: #00f0ff;
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 8px;
-        }
-        textarea {
-            width: 100%;
-            min-height: 200px;
-            background: #000;
-            color: #00ff64;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 15px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            line-height: 1.5;
-            resize: vertical;
-        }
-        button {
-            background: linear-gradient(135deg, #00f0ff, #b400ff);
-            color: #000;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 14px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin: 10px 5px;
-            font-family: inherit;
-            transition: all 0.3s;
-        }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0,240,255,0.4);
-        }
-        button:active { transform: scale(0.97); }
-        .btn-row { text-align: center; margin: 15px 0; }
-        .key-input {
-            width: 100%;
-            background: #000;
-            color: #ffd700;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 12px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-        .status {
-            text-align: center;
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 13px;
-            display: none;
-        }
-        .status.success {
-            background: rgba(0,255,100,0.1);
-            border: 1px solid #00ff64;
-            color: #00ff64;
-            display: block;
-        }
-        .status.error {
-            background: rgba(255,0,100,0.1);
-            border: 1px solid #ff0064;
-            color: #ff0064;
-            display: block;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0b0b1a">
+<title>Universal Encrypt Pro — NightOrbit CodeForge</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+    --cyan: #00f0ff; --pink: #ff2d95; --purple: #b400ff;
+    --gold: #ffd700; --green: #00ff64; --red: #ff0064;
+    --dark: #05050f; --card: rgba(11,11,26,0.94);
+    --border: rgba(0,240,255,0.22);
+    --muted: #6a6a8a; --header-h: 62px;
+}
+html, body { width: 100%; overflow-x: hidden; }
+body {
+    background: radial-gradient(ellipse at top, #13132a 0%, #000 70%);
+    background-attachment: fixed;
+    color: #fff; font-family: 'Inter', sans-serif;
+    min-height: 100vh; padding-top: var(--header-h);
+    padding-bottom: 20px; font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ═══ TOP BAR ═══ */
+.topbar {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: var(--header-h);
+    background: rgba(6,6,15,0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 1000; display: flex; align-items: center;
+    justify-content: space-between; padding: 0 15px;
+    box-shadow: 0 4px 30px rgba(0,240,255,0.1);
+}
+.brand { display: flex; align-items: center; gap: 10px; font-family: 'Orbitron', sans-serif;
+    font-size: 14px; font-weight: 900; color: var(--cyan);
+    letter-spacing: 1px; text-shadow: 0 0 15px rgba(0,240,255,0.5); }
+.brand .logo { font-size: 22px; }
+.brand .title { display: none; }
+@media (min-width: 500px) { .brand .title { display: inline; } .brand { font-size: 16px; letter-spacing: 2px; } }
+
+.menu-btn {
+    display: flex; flex-direction: column; justify-content: center;
+    align-items: center; gap: 5px; width: 42px; height: 42px;
+    background: rgba(0,240,255,0.08); border: 1px solid var(--border);
+    border-radius: 10px; cursor: pointer; transition: all 0.3s; padding: 0;
+}
+.menu-btn:hover { background: rgba(0,240,255,0.15); }
+.menu-btn span { display: block; width: 20px; height: 2px; background: var(--cyan);
+    border-radius: 2px; transition: all 0.3s; box-shadow: 0 0 6px rgba(0,240,255,0.6); }
+.menu-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.menu-btn.open span:nth-child(2) { opacity: 0; }
+.menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ═══ DRAWER ═══ */
+.drawer-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px); z-index: 998;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.drawer-overlay.open { opacity: 1; pointer-events: auto; }
+.drawer {
+    position: fixed; top: 0; right: 0; bottom: 0;
+    width: 290px; max-width: 85vw;
+    background: linear-gradient(180deg, #0f0f22 0%, #000 100%);
+    border-left: 1px solid var(--border); z-index: 999;
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 80px 18px 20px; overflow-y: auto;
+    box-shadow: -10px 0 40px rgba(0,240,255,0.15);
+}
+.drawer.open { transform: translateX(0); }
+.drawer h3 { color: var(--cyan); font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase; margin-bottom: 12px; opacity: 0.7; font-family: 'Orbitron', sans-serif; }
+.drawer .menu-item {
+    display: flex; align-items: center; gap: 12px; padding: 14px;
+    background: rgba(0,240,255,0.03); border: 1px solid var(--border);
+    border-radius: 10px; color: #fff; font-size: 13px; letter-spacing: 1px;
+    margin-bottom: 8px; cursor: pointer; transition: all 0.25s;
+    font-family: inherit; width: 100%; text-align: left;
+}
+.drawer .menu-item:hover, .drawer .menu-item.active {
+    background: rgba(0,240,255,0.12); border-color: var(--cyan);
+    transform: translateX(-3px); box-shadow: 0 5px 20px rgba(0,240,255,0.15);
+}
+.drawer .menu-item.active { border-left: 3px solid var(--cyan); }
+.drawer .menu-item .ico { font-size: 18px; }
+.drawer .menu-item .label { flex: 1; }
+.drawer .menu-item .ext { font-size: 10px; color: var(--gold); opacity: 0.6; letter-spacing: 1px; }
+
+/* ═══ CONTAINER ═══ */
+.container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 15px; }
+
+/* ═══ HEADER CARD ═══ */
+.header-card {
+    background: var(--card); border: 2px solid var(--cyan);
+    border-radius: 18px; padding: 22px 24px; margin-bottom: 15px;
+    box-shadow: 0 0 50px rgba(0,240,255,0.15);
+    text-align: center; position: relative; overflow: hidden;
+}
+.header-card::before {
+    content: ''; position: absolute; inset: -2px; border-radius: 18px;
+    padding: 2px;
+    background: conic-gradient(from 0deg, var(--cyan), var(--pink), var(--purple), var(--gold), var(--cyan));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: borderSpin 6s linear infinite; pointer-events: none;
+}
+@keyframes borderSpin { to { transform: rotate(360deg); } }
+h1 {
+    font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 900;
+    background: linear-gradient(135deg, var(--cyan), var(--pink));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; letter-spacing: 3px; margin-bottom: 6px; text-transform: uppercase;
+}
+.subtitle { color: var(--muted); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+.header-stats { display: flex; justify-content: center; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
+.header-stat {
+    background: rgba(0,240,255,0.05); border: 1px solid rgba(0,240,255,0.15);
+    border-radius: 40px; padding: 4px 12px; font-size: 10px;
+    color: #b0b0d0; letter-spacing: 1px; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 6px;
+}
+.header-stat i { color: var(--cyan); font-size: 11px; }
+.header-stat.gold i { color: var(--gold); }
+.header-stat.pink i { color: var(--pink); }
+.header-stat.green i { color: var(--green); }
+
+/* ═══ MODE INDICATOR ═══ */
+.mode-indicator {
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(135deg, rgba(0,240,255,0.08), rgba(180,0,255,0.05));
+    border: 1px solid var(--cyan); border-radius: 12px;
+    padding: 12px 16px; margin-bottom: 15px;
+    box-shadow: 0 0 25px rgba(0,240,255,0.08);
+    gap: 10px; flex-wrap: wrap;
+}
+.mode-indicator .left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.mode-indicator .mode-icon { font-size: 24px; filter: drop-shadow(0 0 8px var(--cyan)); }
+.mode-indicator .mode-label { color: var(--cyan); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; }
+.mode-indicator .mode-name { color: #fff; font-size: 15px; font-weight: bold; letter-spacing: 1px; }
+.mode-indicator .change-btn {
+    background: rgba(0,240,255,0.15); color: var(--cyan); border: 1px solid var(--cyan);
+    padding: 8px 14px; border-radius: 8px; font-size: 11px; letter-spacing: 1px;
+    cursor: pointer; font-family: inherit; font-weight: bold; transition: all 0.2s; white-space: nowrap;
+}
+.mode-indicator .change-btn:hover { background: var(--cyan); color: #000; }
+
+/* ═══ SAVE BOX ═══ */
+.save-box {
+    background: linear-gradient(135deg, rgba(255,0,100,0.1), rgba(255,215,0,0.08));
+    border: 2px solid var(--red); border-radius: 12px;
+    padding: 16px; margin-bottom: 15px;
+    position: relative; overflow: hidden;
+}
+.save-box::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+    background: linear-gradient(90deg, var(--red), var(--gold), var(--red));
+    background-size: 200% 100%; animation: slide 2s linear infinite;
+}
+@keyframes slide { 0% { background-position: 0% 0; } 100% { background-position: 200% 0; } }
+.save-box h3 { color: var(--red); font-size: 13px; letter-spacing: 2px;
+    text-transform: uppercase; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px; font-weight: bold;
+    font-family: 'Orbitron', sans-serif; }
+.save-box .save-step { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 12px; line-height: 1.6; }
+.save-box .save-step .num {
+    background: var(--red); color: #fff; min-width: 22px; height: 22px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 11px; flex-shrink: 0; margin-top: 2px;
+}
+.save-box .filename {
+    display: inline-block; background: #000; border: 1px solid var(--gold);
+    color: var(--gold); padding: 3px 10px; border-radius: 6px;
+    font-weight: bold; font-size: 12px; margin: 2px 3px;
+    letter-spacing: 0.5px; word-break: break-all; font-family: 'JetBrains Mono', monospace;
+}
+.save-box .highlight { color: var(--gold); font-weight: bold; }
+.save-box .warn {
+    background: rgba(255,0,100,0.15); border-left: 3px solid var(--red);
+    padding: 10px 12px; border-radius: 6px; font-size: 11px;
+    color: #ffb3c9; margin-top: 8px; line-height: 1.6;
+}
+
+/* ═══ PROGRESS BAR ═══ */
+.progress-wrap {
+    background: rgba(0,0,0,0.4); border: 1.5px solid rgba(0,240,255,0.15);
+    border-radius: 12px; padding: 12px 16px; margin-bottom: 15px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.progress-label { font-family: 'Orbitron', sans-serif; font-size: 10px;
+    color: var(--cyan); letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
+.progress-track {
+    flex: 1; height: 8px; background: rgba(0,0,0,0.6);
+    border-radius: 20px; overflow: hidden; min-width: 150px;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink));
+    border-radius: 20px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%; box-shadow: 0 0 15px rgba(0,240,255,0.6);
+}
+.progress-percent { font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--gold); font-weight: 700; min-width: 45px; text-align: right; }
+.progress-steps { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; }
+.progress-step {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(0,0,0,0.5); border: 1.5px solid rgba(0,240,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 900; color: var(--muted); transition: all 0.3s;
+}
+.progress-step.active {
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    color: #000; border-color: #fff;
+    box-shadow: 0 0 15px rgba(0,240,255,0.6); transform: scale(1.15);
+}
+.progress-step.done { background: var(--green); color: #000; border-color: #fff; }
+
+/* ═══ CARD ═══ */
+.card {
+    background: var(--card); border: 2px solid var(--border);
+    border-radius: 18px; padding: 22px;
+    box-shadow: 0 0 40px rgba(0,240,255,0.08); margin-bottom: 15px;
+}
+h2, h3 {
+    font-family: 'Orbitron', sans-serif; color: var(--cyan); font-size: 13px;
+    margin-bottom: 12px; letter-spacing: 2px; text-transform: uppercase;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 8px;
+}
+.badge {
+    background: rgba(0,240,255,0.15); color: var(--cyan);
+    padding: 3px 10px; border-radius: 20px; font-size: 9px;
+    font-weight: bold; letter-spacing: 1px; border: 1px solid rgba(0,240,255,0.3);
+    font-family: 'Inter', sans-serif; text-transform: uppercase;
+}
+.badge.success { background: rgba(0,255,100,0.15); color: var(--green); border-color: rgba(0,255,100,0.3); }
+.badge.gold { background: rgba(255,215,0,0.15); color: var(--gold); border-color: rgba(255,215,0,0.3); }
+.badge.pink { background: rgba(255,45,149,0.15); color: var(--pink); border-color: rgba(255,45,149,0.3); }
+
+/* ═══ SECTION ═══ */
+.section {
+    background: rgba(0,240,255,0.03); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; margin-bottom: 12px;
+}
+label {
+    color: var(--cyan); font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 8px;
+}
+textarea, input[type="text"] {
+    width: 100%; background: #000; color: var(--green);
+    border: 1px solid #333; border-radius: 8px; padding: 12px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    line-height: 1.5; resize: vertical; transition: all 0.3s;
+}
+textarea:focus, input:focus {
+    outline: none; border-color: var(--cyan);
+    box-shadow: 0 0 15px rgba(0,240,255,0.2);
+}
+textarea { min-height: 220px; }
+textarea.tall { min-height: 320px; }
+
+/* ═══ BUTTONS ═══ */
+button {
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    color: #000; border: none; padding: 12px 22px; border-radius: 10px;
+    font-weight: bold; font-size: 12px; letter-spacing: 1.5px;
+    text-transform: uppercase; cursor: pointer; font-family: 'Orbitron', sans-serif;
+    transition: all 0.3s; touch-action: manipulation;
+}
+button:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,240,255,0.4); }
+button:active { transform: scale(0.97); }
+button.secondary { background: linear-gradient(135deg, var(--gold), #ff8c00); }
+button.danger { background: linear-gradient(135deg, var(--red), #ff0000); color: #fff; }
+button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
+button.pink { background: linear-gradient(135deg, var(--pink), var(--purple)); color: #fff; }
+button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
+.btn-row button { flex: 1 1 auto; min-width: 120px; }
+
+/* ═══ STATUS ═══ */
+.status {
+    text-align: center; padding: 12px; border-radius: 8px;
+    margin-top: 10px; font-size: 12px; display: none; font-weight: bold;
+    word-wrap: break-word; font-family: 'JetBrains Mono', monospace;
+}
+.status.success { background: rgba(0,255,100,0.1); border: 1px solid var(--green); color: var(--green); display: block; }
+.status.error { background: rgba(255,0,100,0.1); border: 1px solid var(--red); color: var(--red); display: block; }
+.status.info { background: rgba(0,240,255,0.1); border: 1px solid var(--cyan); color: var(--cyan); display: block; }
+.status.loading { background: rgba(255,215,0,0.1); border: 1px solid var(--gold); color: var(--gold); display: block; }
+
+/* ═══ FILE DROP ═══ */
+.file-drop {
+    border: 2px dashed rgba(0,240,255,0.4); border-radius: 12px;
+    padding: 26px 16px; text-align: center; color: var(--cyan);
+    cursor: pointer; transition: all 0.3s; margin-bottom: 10px;
+}
+.file-drop:hover, .file-drop.dragover {
+    background: rgba(0,240,255,0.08); border-color: var(--cyan);
+    box-shadow: 0 0 30px rgba(0,240,255,0.15);
+}
+.file-drop .icon { font-size: 36px; margin-bottom: 6px; }
+
+.file-list {
+    max-height: 240px; overflow-y: auto; margin-top: 10px; font-size: 12px;
+}
+.file-list::-webkit-scrollbar { width: 6px; }
+.file-list::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 3px; }
+.file-item {
+    background: rgba(0,255,100,0.05); border-left: 3px solid var(--green);
+    padding: 10px 12px; margin-bottom: 6px; border-radius: 6px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 8px; flex-wrap: wrap;
+}
+.file-item .name-wrap { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; flex: 1; }
+.file-item .fname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+.file-item .remove { color: var(--red); cursor: pointer; font-weight: bold; padding: 4px 10px; border-radius: 4px; transition: all 0.2s; flex-shrink: 0; }
+.file-item .remove:hover { background: rgba(255,0,100,0.2); }
+
+.badge-lang {
+    padding: 2px 8px; border-radius: 10px; font-size: 9px;
+    font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;
+}
+.badge-lang.html { background: #e34c26; color:#fff; }
+.badge-lang.css { background: #264de4; color:#fff; }
+.badge-lang.js { background: #f0db4f; color:#000; }
+.badge-lang.json { background: #00ff64; color:#000; }
+.badge-lang.py { background: #3776ab; color:#fff; }
+.badge-lang.php { background: #8892be; color:#fff; }
+.badge-lang.xml { background: #ff8c00; color:#000; }
+.badge-lang.txt { background: #888; color:#000; }
+
+/* ═══ STATS GRID ═══ */
+.stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px; margin-top: 12px;
+}
+.stat-card {
+    background: rgba(0,0,0,0.4); border: 1.5px solid rgba(0,240,255,0.15);
+    border-radius: 12px; padding: 14px; text-align: center; transition: 0.3s;
+}
+.stat-card:hover { border-color: var(--cyan); box-shadow: 0 0 20px rgba(0,240,255,0.15); transform: translateY(-3px); }
+.stat-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-weight: 600; margin-bottom: 6px; font-family: 'Orbitron', sans-serif; }
+.stat-value { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 900; color: var(--cyan); }
+.stat-value.gold { color: var(--gold); }
+.stat-value.green { color: var(--green); }
+.stat-value.pink { color: var(--pink); }
+
+/* ═══ HISTORY ═══ */
+.history-list {
+    max-height: 200px; overflow-y: auto;
+    background: rgba(0,0,0,0.4); border: 1px solid rgba(0,240,255,0.1);
+    border-radius: 10px; padding: 10px;
+}
+.history-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 11px; font-family: 'JetBrains Mono', monospace; color: #b0b0d0;
+}
+.history-item:last-child { border-bottom: none; }
+.history-time { color: var(--muted); font-size: 10px; flex-shrink: 0; min-width: 70px; }
+.history-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.history-dot.info { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+.history-dot.success { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.history-dot.error { background: var(--red); box-shadow: 0 0 8px var(--red); }
+.history-dot.warn { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+
+/* ═══ TOAST ═══ */
+.toast-container {
+    position: fixed; bottom: 20px; right: 20px; z-index: 99999;
+    display: flex; flex-direction: column; gap: 10px;
+    pointer-events: none; max-width: 400px;
+}
+.toast {
+    background: rgba(11,11,26,0.98); border: 2px solid var(--cyan);
+    border-radius: 12px; padding: 12px 18px; color: #fff;
+    font-size: 12px; font-weight: 600;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 30px rgba(0,240,255,0.2);
+    display: flex; align-items: center; gap: 10px;
+    pointer-events: auto; animation: toastIn 0.4s ease; min-width: 250px;
+}
+.toast.success { border-color: var(--green); box-shadow: 0 0 30px rgba(0,255,100,0.3); }
+.toast.error { border-color: var(--red); box-shadow: 0 0 30px rgba(255,0,100,0.3); }
+.toast.warn { border-color: var(--gold); box-shadow: 0 0 30px rgba(255,215,0,0.3); }
+.toast-icon { font-size: 18px; flex-shrink: 0; }
+.toast.success .toast-icon { color: var(--green); }
+.toast.error .toast-icon { color: var(--red); }
+.toast.warn .toast-icon { color: var(--gold); }
+@keyframes toastIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.toast.removing { animation: toastOut 0.3s ease forwards; }
+@keyframes toastOut { to { transform: translateX(400px); opacity: 0; } }
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 600px) {
+    body { font-size: 13px; }
+    .container { padding: 12px; }
+    .section { padding: 14px; }
+    textarea { min-height: 180px; font-size: 11px; }
+    .btn-row button { flex: 1 1 100%; }
+    h1 { font-size: 20px; letter-spacing: 2px; }
+    .progress-steps { display: none; }
+    .file-item .fname { max-width: 130px; }
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>🔐 Encrypt Tool</h1>
 
-        <div class="info">
-            <b>📌 How to use:</b><br>
-            1. Paste your <code>code.json</code> content in the first box<br>
-            2. Your SECRET_KEY should match the one in <code>index.html</code><br>
-            3. Click <b>ENCRYPT</b><br>
-            4. Copy the encrypted output<br>
-            5. Paste it in Firebase Realtime Database at <code>secure_app/data</code><br>
-            6. Set Firebase rules: <code>".read": "auth != null", ".write": false</code>
-        </div>
+<!-- TOP BAR -->
+<div class="topbar">
+    <div class="brand">
+        <span class="logo">🔐</span>
+        <span class="title">Universal Encrypt Pro</span>
+    </div>
+    <button class="menu-btn" id="menuBtn" onclick="toggleDrawer()" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+</div>
 
-        <div class="section">
-            <label>🔑 SECRET KEY (must match index.html)</label>
-            <input type="text" class="key-input" id="secretKey" value="GyidiBazar_2024_SuperSecret_!@#$%^&*_Key">
-        </div>
+<!-- DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+    <h3>🎯 Select Language</h3>
+    <button class="menu-item active" data-lang="auto" onclick="selectLang('auto', this)"><span class="ico">🔍</span><span class="label">Auto Detect</span><span class="ext">AUTO</span></button>
+    <button class="menu-item" data-lang="html" onclick="selectLang('html', this)"><span class="ico">🌐</span><span class="label">HTML</span><span class="ext">.html</span></button>
+    <button class="menu-item" data-lang="css" onclick="selectLang('css', this)"><span class="ico">🎨</span><span class="label">CSS</span><span class="ext">.css</span></button>
+    <button class="menu-item" data-lang="js" onclick="selectLang('js', this)"><span class="ico">⚡</span><span class="label">JavaScript</span><span class="ext">.js</span></button>
+    <button class="menu-item" data-lang="json" onclick="selectLang('json', this)"><span class="ico">📦</span><span class="label">JSON</span><span class="ext">.json</span></button>
+    <button class="menu-item" data-lang="py" onclick="selectLang('py', this)"><span class="ico">🐍</span><span class="label">Python</span><span class="ext">.py</span></button>
+    <button class="menu-item" data-lang="php" onclick="selectLang('php', this)"><span class="ico">🐘</span><span class="label">PHP</span><span class="ext">.php</span></button>
+    <button class="menu-item" data-lang="xml" onclick="selectLang('xml', this)"><span class="ico">📄</span><span class="label">XML</span><span class="ext">.xml</span></button>
+    <button class="menu-item" data-lang="txt" onclick="selectLang('txt', this)"><span class="ico">📝</span><span class="label">Plain Text</span><span class="ext">.txt</span></button>
+    <h3 style="margin-top:20px;">⚙️ Quick Actions</h3>
+    <button class="menu-item" onclick="openFilePicker()"><span class="ico">📁</span><span class="label">Upload Files</span><span class="ext">MULTI</span></button>
+    <button class="menu-item" onclick="clearAll()"><span class="ico">🗑️</span><span class="label">Clear All</span><span class="ext">RESET</span></button>
+</div>
 
-        <div class="section">
-            <label>📄 Paste code.json Here</label>
-            <textarea id="inputJson" placeholder='{"config": {...}, "html": "...", "css": "...", "js": "..."}'></textarea>
-        </div>
+<!-- MAIN -->
+<div class="container">
 
-        <div class="btn-row">
-            <button onclick="encryptNow()">🔐 ENCRYPT</button>
-            <button onclick="clearAll()">🗑️ CLEAR</button>
-        </div>
-
-        <div id="status" class="status"></div>
-
-        <div class="section">
-            <label>🔒 Encrypted Output (copy this to Firebase DB)</label>
-            <textarea id="outputEnc" placeholder="Encrypted output will appear here..." readonly></textarea>
-        </div>
-
-        <div class="btn-row">
-            <button onclick="copyOutput()">📋 COPY ENCRYPTED</button>
-            <button onclick="downloadOutput()">⬇️ DOWNLOAD</button>
+    <!-- HEADER CARD -->
+    <div class="header-card">
+        <h1>⚡ Universal Encrypt Pro</h1>
+        <div class="subtitle">NightOrbit CodeForge · Heavy Edition</div>
+        <div class="header-stats">
+            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v6 HEAVY</span>
+            <span class="header-stat gold"><i class="fa-solid fa-shield-halved"></i> AES-256</span>
+            <span class="header-stat pink"><i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Detect</span>
+            <span class="header-stat green"><i class="fa-solid fa-code"></i> Code-Preserving</span>
         </div>
     </div>
 
-    <script>
-        function showStatus(type, msg) {
-            var el = document.getElementById('status');
-            el.className = 'status ' + type;
-            el.textContent = msg;
+    <!-- PROGRESS -->
+    <div class="progress-wrap">
+        <div class="progress-label">Progress</div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-percent" id="progressPercent">0%</div>
+        <div class="progress-steps">
+            <div class="progress-step" id="step1">1</div>
+            <div class="progress-step" id="step2">2</div>
+            <div class="progress-step" id="step3">3</div>
+        </div>
+    </div>
+
+    <!-- MODE INDICATOR -->
+    <div class="mode-indicator">
+        <div class="left">
+            <span class="mode-icon" id="modeIcon">🔍</span>
+            <div>
+                <div class="mode-label">Current Mode</div>
+                <div class="mode-name" id="modeName">Auto Detect</div>
+            </div>
+        </div>
+        <button class="change-btn" onclick="toggleDrawer()">CHANGE ▸</button>
+    </div>
+
+    <!-- SAVE INSTRUCTIONS -->
+    <div class="save-box">
+        <h3>📌 WHERE TO SAVE — IMPORTANT</h3>
+        <div class="save-step">
+            <div class="num">1</div>
+            <div class="txt">Open <b>Notepad</b> (Windows), <b>TextEdit</b> (Mac), or <b>VS Code</b>.</div>
+        </div>
+        <div class="save-step">
+            <div class="num">2</div>
+            <div class="txt">Paste your code below, then click <span class="highlight">ENCRYPT</span>.</div>
+        </div>
+        <div class="save-step">
+            <div class="num">3</div>
+            <div class="txt">Save this tool itself as: <div><span class="filename">encrypt-tool.html</span></div><span style="opacity:0.7;">(Must end with <b>.html</b>)</span></div>
+        </div>
+        <div class="save-step">
+            <div class="num">4</div>
+            <div class="txt">After encrypting, save the output as: <div><span class="filename">encrypted-data.txt</span></div></div>
+        </div>
+        <div class="save-step">
+            <div class="num">5</div>
+            <div class="txt">Click <span class="highlight">🎁 DOWNLOAD DECRYPTOR</span> — save as: <div><span class="filename">decryptor.html</span></div><span style="opacity:0.7;">(Must end with <b>.html</b>)</span></div>
+        </div>
+        <div class="warn">⚠️ <b>CRITICAL:</b> The decryptor MUST be saved as <b>.html</b>. If saved without it, the browser will only show raw text and the page will NOT render.</div>
+    </div>
+
+    <!-- SECRET KEY -->
+    <div class="section">
+        <label>🔑 Secret Key (must match decryptor)</label>
+        <input type="text" id="secretKey" value="GyidiBazar_2024_SuperSecret_!@#$%^&*_Key" placeholder="Enter secret key...">
+    </div>
+
+    <!-- INPUT CODE -->
+    <div class="section">
+        <label>📄 Paste Code (any language — HTML / CSS / JS / JSON / PY / PHP / XML / TXT)</label>
+        <textarea id="inputCode" class="tall" placeholder="Paste your full code here... any size, any language."></textarea>
+        <div class="stats-grid" id="inputStats" style="display:none;">
+            <div class="stat-card"><div class="stat-label">Lines</div><div class="stat-value" id="statLines">0</div></div>
+            <div class="stat-card"><div class="stat-label">Characters</div><div class="stat-value gold" id="statChars">0</div></div>
+            <div class="stat-card"><div class="stat-label">Size</div><div class="stat-value green" id="statSize">0 B</div></div>
+            <div class="stat-card"><div class="stat-label">Detected</div><div class="stat-value pink" id="statLang">—</div></div>
+        </div>
+    </div>
+
+    <!-- FILE UPLOAD -->
+    <div class="section">
+        <label>📁 Upload Files (multiple allowed)</label>
+        <div class="file-drop" id="fileDrop">
+            <div class="icon">📥</div>
+            <div>Drag &amp; drop files here or <b>click to browse</b></div>
+            <div style="font-size:11px; opacity:0.7; margin-top:5px;">.html .css .js .json .py .php .xml .txt</div>
+            <input type="file" id="fileInput" multiple style="display:none;">
+        </div>
+        <div class="file-list" id="fileList"></div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="btn-row">
+        <button onclick="encryptNow()">🔐 ENCRYPT</button>
+        <button class="secondary" onclick="openFilePicker()">📂 LOAD FILES</button>
+        <button class="danger" onclick="clearAll()">🗑️ CLEAR ALL</button>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <!-- OUTPUT -->
+    <div class="section">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <label style="margin:0;">🔒 Encrypted Output</label>
+            <div id="outputFileInfo" style="color:var(--gold); font-size:11px;"></div>
+        </div>
+        <textarea id="outputEnc" class="tall" placeholder="Encrypted output will appear here..." readonly></textarea>
+        <div class="stats-grid" id="outputStatsGrid" style="display:none;">
+            <div class="stat-card"><div class="stat-label">Original</div><div class="stat-value" id="statOriginal">0 B</div></div>
+            <div class="stat-card"><div class="stat-label">Encrypted</div><div class="stat-value gold" id="statEncrypted">0 B</div></div>
+            <div class="stat-card"><div class="stat-label">Ratio</div><div class="stat-value green" id="statRatio">1.0x</div></div>
+            <div class="stat-card"><div class="stat-label">Mode</div><div class="stat-value pink" id="statMode">—</div></div>
+        </div>
+    </div>
+
+    <div class="btn-row">
+        <button class="green" onclick="copyOutput()">📋 COPY</button>
+        <button class="secondary" onclick="downloadOutput()">⬇️ DOWNLOAD ENCRYPTED</button>
+        <button class="pink" onclick="downloadDecryptor()">🎁 DOWNLOAD DECRYPTOR HTML</button>
+    </div>
+
+    <!-- ACTIVITY LOG -->
+    <div class="card">
+        <h3>📊 Activity Log <button class="mini-btn" style="background:transparent;border:1px solid var(--border);color:var(--cyan);padding:4px 10px;border-radius:6px;font-size:10px;cursor:pointer;" onclick="clearHistory()">🗑️ CLEAR</button></h3>
+        <div class="history-list" id="historyList">
+            <div class="history-item"><span class="history-time">--:--:--</span><span class="history-dot info"></span><span>Encrypt Pro initialized</span></div>
+        </div>
+    </div>
+
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   UNIVERSAL ENCRYPT PRO v6 — HEAVY EDITION
+   - Code-preserving encryption (no changes to content)
+   - Auto language detection
+   - Multi-file bundle
+   - Auto decryptor generator
+   - Mobile drawer + progress + stats + history + toast
+   ═══════════════════════════════════════════════════════════ */
+
+(function() {
+'use strict';
+
+/* ═══ STATE ═══ */
+var state = {
+    uploadedFiles: {},
+    currentLang: 'auto',
+    history: [],
+    lastEncrypt: null
+};
+
+var EXT_LANG = {
+    'html':'html','htm':'html','css':'css','js':'js','mjs':'js','cjs':'js',
+    'json':'json','py':'py','pyw':'py','php':'php','phtml':'php',
+    'xml':'xml','svg':'xml','txt':'txt','md':'txt','log':'txt'
+};
+var LANG_EXT = { html:'html', css:'css', js:'js', json:'json', py:'py', php:'php', xml:'xml', txt:'txt' };
+var LANG_ICON = { auto:'🔍', html:'🌐', css:'🎨', js:'⚡', json:'📦', py:'🐍', php:'🐘', xml:'📄', txt:'📝' };
+var LANG_NAME = { auto:'Auto Detect', html:'HTML', css:'CSS', js:'JavaScript', json:'JSON', py:'Python', php:'PHP', xml:'XML', txt:'Plain Text' };
+
+/* ═══ UTILITIES ═══ */
+function bytes(n) {
+    if (n < 1024) return n + ' B';
+    if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+    return (n / 1024 / 1024).toFixed(2) + ' MB';
+}
+function num(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function showStatus(type, msg) {
+    var el = document.getElementById('status');
+    el.className = 'status ' + type;
+    el.textContent = msg;
+}
+function toast(msg, type) {
+    type = type || 'info';
+    var c = document.getElementById('toastContainer');
+    var icons = { success:'fa-circle-check', error:'fa-circle-xmark', warn:'fa-triangle-exclamation', info:'fa-circle-info' };
+    var el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.innerHTML = '<i class="fa-solid ' + icons[type] + ' toast-icon"></i><span>' + msg + '</span>';
+    c.appendChild(el);
+    setTimeout(function() {
+        el.classList.add('removing');
+        setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
+    }, 3000);
+}
+function addHistory(msg, type) {
+    type = type || 'info';
+    var t = new Date().toLocaleTimeString('en-PK', { hour12: false });
+    state.history.unshift({ time: t, msg: msg, type: type });
+    if (state.history.length > 50) state.history.pop();
+    renderHistory();
+}
+function renderHistory() {
+    var list = document.getElementById('historyList');
+    if (!list) return;
+    if (state.history.length === 0) {
+        list.innerHTML = '<div class="history-item"><span class="history-time">--:--:--</span><span class="history-dot info"></span><span>No activity yet</span></div>';
+        return;
+    }
+    var html = '';
+    for (var i = 0; i < state.history.length; i++) {
+        var h = state.history[i];
+        html += '<div class="history-item"><span class="history-time">' + h.time + '</span><span class="history-dot ' + h.type + '"></span><span>' + h.msg + '</span></div>';
+    }
+    list.innerHTML = html;
+}
+function updateProgress() {
+    var steps = 0;
+    if (state.lastEncrypt) steps++;
+    if (document.getElementById('inputCode').value.trim() || Object.keys(state.uploadedFiles).length > 0) steps++;
+    if (state.lastEncrypt && state.lastEncrypt.data) steps++;
+    var percent = Math.round((steps / 3) * 100);
+    document.getElementById('progressFill').style.width = percent + '%';
+    document.getElementById('progressPercent').textContent = percent + '%';
+    for (var i = 1; i <= 3; i++) {
+        var el = document.getElementById('step' + i);
+        el.classList.remove('active', 'done');
+        if (i < steps) el.classList.add('done');
+        else if (i === steps) el.classList.add('active');
+    }
+}
+
+/* ═══ DRAWER ═══ */
+window.toggleDrawer = function() {
+    document.getElementById('drawer').classList.toggle('open');
+    document.getElementById('drawerOverlay').classList.toggle('open');
+    document.getElementById('menuBtn').classList.toggle('open');
+};
+window.closeDrawer = function() {
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('drawerOverlay').classList.remove('open');
+    document.getElementById('menuBtn').classList.remove('open');
+};
+window.selectLang = function(lang, btn) {
+    state.currentLang = lang;
+    document.querySelectorAll('.drawer .menu-item[data-lang]').forEach(function(b) { b.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    document.getElementById('modeIcon').textContent = LANG_ICON[lang];
+    document.getElementById('modeName').textContent = LANG_NAME[lang];
+    updateDetection();
+    closeDrawer();
+};
+
+/* ═══ AUTO LANGUAGE DETECTION ═══ */
+function detectLanguage(code) {
+    var t = code.trim();
+    if (!t) return 'txt';
+    if (t.startsWith('{') || t.startsWith('[')) {
+        try { JSON.parse(t); return 'json'; } catch(e) {}
+    }
+    if (/^<!DOCTYPE\s+html/i.test(t) || /<html[\s>]/i.test(t) || /<head[\s>]/i.test(t) || /<body[\s>]/i.test(t)) return 'html';
+    if (/^<\?xml/i.test(t)) return 'xml';
+    if (/<\?php/i.test(t)) return 'php';
+    if (/^\s*(def|class|import|from|print\s*\(|if\s+__name__)/m.test(t)) return 'py';
+    if (/@media|@keyframes|@import|:\s*root\s*\{/i.test(t)) return 'css';
+    if (/[.#]?[\w\-]+\s*\{[^}]*:[^}]*;[^}]*\}/s.test(t) && !/function|=>|<\/?[a-z]/i.test(t)) return 'css';
+    if (/\b(function|const|let|var|=>|document\.|window\.|console\.)\b/.test(t)) return 'js';
+    return 'txt';
+}
+
+var inputCodeEl = document.getElementById('inputCode');
+function updateDetection() {
+    var code = inputCodeEl.value;
+    var stats = document.getElementById('inputStats');
+    if (!code.trim()) {
+        stats.style.display = 'none';
+        updateProgress();
+        return;
+    }
+    var detected = detectLanguage(code);
+    var finalLang = (state.currentLang === 'auto') ? detected : state.currentLang;
+    stats.style.display = 'grid';
+    document.getElementById('statLines').textContent = num(code.split('\n').length);
+    document.getElementById('statChars').textContent = num(code.length);
+    document.getElementById('statSize').textContent = bytes(new Blob([code]).size);
+    document.getElementById('statLang').textContent = finalLang.toUpperCase();
+    updateProgress();
+}
+inputCodeEl.addEventListener('input', updateDetection);
+
+/* ═══ FILE HANDLING ═══ */
+var fileDrop = document.getElementById('fileDrop');
+var fileInput = document.getElementById('fileInput');
+fileDrop.addEventListener('click', window.openFilePicker);
+fileDrop.addEventListener('dragover', function(e) { e.preventDefault(); fileDrop.classList.add('dragover'); });
+fileDrop.addEventListener('dragleave', function() { fileDrop.classList.remove('dragover'); });
+fileDrop.addEventListener('drop', function(e) { e.preventDefault(); fileDrop.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', function(e) { handleFiles(e.target.files); });
+
+window.openFilePicker = function() { closeDrawer(); fileInput.click(); };
+
+function handleFiles(files) {
+    Array.prototype.forEach.call(files, function(file) {
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+            var content = ev.target.result;
+            var ext = (file.name.split('.').pop() || '').toLowerCase();
+            var lang = EXT_LANG[ext] || detectLanguage(content);
+            state.uploadedFiles[file.name] = { content: content, lang: lang };
+            renderFileList();
+            updateProgress();
+        };
+        reader.readAsText(file);
+    });
+}
+function renderFileList() {
+    var list = document.getElementById('fileList');
+    var names = Object.keys(state.uploadedFiles);
+    if (names.length === 0) { list.innerHTML = ''; return; }
+    list.innerHTML = names.map(function(name) {
+        var f = state.uploadedFiles[name];
+        return '<div class="file-item">' +
+            '<span class="name-wrap">📄 <span class="fname">' + name + '</span>' +
+            '<span class="badge-lang ' + f.lang + '">' + f.lang + '</span>' +
+            '<span style="opacity:0.6;font-size:10px;">(' + num(f.content.length) + ' chars)</span></span>' +
+            '<span class="remove" onclick="removeFile(\'' + name.replace(/'/g, "\\'") + '\')">✖</span></div>';
+    }).join('');
+}
+window.removeFile = function(name) { delete state.uploadedFiles[name]; renderFileList(); updateProgress(); };
+
+/* ═══ ENCRYPT ═══ */
+window.encryptNow = function() {
+    try {
+        var secretKey = document.getElementById('secretKey').value;
+        var pasted = inputCodeEl.value;
+        var fileNames = Object.keys(state.uploadedFiles);
+
+        if (!secretKey) { showStatus('error', '❌ Secret key is empty'); toast('Secret key empty', 'error'); return; }
+        if (!pasted.trim() && fileNames.length === 0) { showStatus('error', '❌ Paste code or upload files first'); toast('Nothing to encrypt', 'error'); return; }
+
+        showStatus('loading', '⏳ Encrypting...');
+        var t0 = performance.now();
+
+        var payload, mode, outExt, outName;
+        if (fileNames.length > 0) {
+            var bundle = {
+                __type: 'multi-file-bundle',
+                __version: '6.0',
+                __created: new Date().toISOString(),
+                __fileCount: fileNames.length,
+                files: {}
+            };
+            fileNames.forEach(function(name) {
+                bundle.files[name] = { lang: state.uploadedFiles[name].lang, content: state.uploadedFiles[name].content };
+            });
+            payload = JSON.stringify(bundle);
+            mode = 'Bundle (' + fileNames.length + ' files)';
+            outExt = 'bundle';
+            outName = 'encrypted-bundle.txt';
+            document.getElementById('outputFileInfo').textContent = '📦 ' + fileNames.length + ' files';
+        } else {
+            var detected = detectLanguage(pasted);
+            var finalLang = (state.currentLang === 'auto') ? detected : state.currentLang;
+            payload = pasted;
+            mode = 'Single ' + finalLang.toUpperCase();
+            outExt = LANG_EXT[finalLang] || 'txt';
+            outName = 'encrypted-' + finalLang + '.txt';
+            document.getElementById('outputFileInfo').textContent = '📄 ' + finalLang.toUpperCase() + ' → .' + outExt;
         }
 
-        function encryptNow() {
-            try {
-                var inputJson = document.getElementById('inputJson').value.trim();
-                var secretKey = document.getElementById('secretKey').value;
+        var encrypted = CryptoJS.AES.encrypt(payload, secretKey).toString();
+        var t1 = performance.now();
 
-                if (!inputJson) {
-                    showStatus('error', '❌ Please paste code.json');
-                    return;
-                }
-                if (!secretKey) {
-                    showStatus('error', '❌ Secret key is empty');
-                    return;
-                }
+        document.getElementById('outputEnc').value = encrypted;
 
-                // Validate JSON first
-                try {
-                    JSON.parse(inputJson);
-                } catch (e) {
-                    showStatus('error', '❌ Invalid JSON: ' + e.message);
-                    return;
-                }
+        /* Stats */
+        var origSize = new Blob([payload]).size;
+        var encSize = new Blob([encrypted]).size;
+        document.getElementById('outputStatsGrid').style.display = 'grid';
+        document.getElementById('statOriginal').textContent = bytes(origSize);
+        document.getElementById('statEncrypted').textContent = bytes(encSize);
+        document.getElementById('statRatio').textContent = (encSize / origSize).toFixed(2) + 'x';
+        document.getElementById('statMode').textContent = fileNames.length > 0 ? 'BUNDLE' : 'SINGLE';
 
-                // Encrypt
-                var encrypted = CryptoJS.AES.encrypt(inputJson, secretKey).toString();
+        state.lastEncrypt = {
+            data: encrypted,
+            ext: outExt,
+            name: outName,
+            lang: (fileNames.length === 0) ? ((state.currentLang === 'auto') ? detectLanguage(pasted) : state.currentLang) : 'bundle'
+        };
 
-                document.getElementById('outputEnc').value = encrypted;
-                showStatus('success', '✅ Encrypted! Size: ' + encrypted.length + ' chars. Copy & paste in Firebase DB.');
-            } catch (e) {
-                showStatus('error', '❌ Error: ' + e.message);
-            }
-        }
+        showStatus('success', '✅ Encrypted successfully! ' + mode + ' · ' + bytes(origSize) + ' → ' + bytes(encSize) + ' · ' + (t1 - t0).toFixed(0) + 'ms');
+        toast('Encrypted in ' + (t1 - t0).toFixed(0) + 'ms', 'success');
+        addHistory('Encrypted ' + mode + ' (' + bytes(origSize) + ' → ' + bytes(encSize) + ')', 'success');
+        updateProgress();
+    } catch (e) {
+        showStatus('error', '❌ ' + e.message);
+        toast('Error: ' + e.message, 'error');
+        addHistory('Encrypt error: ' + e.message, 'error');
+    }
+};
 
-        function copyOutput() {
-            var output = document.getElementById('outputEnc');
-            if (!output.value) {
-                showStatus('error', '❌ Nothing to copy');
-                return;
-            }
-            output.select();
-            document.execCommand('copy');
-            showStatus('success', '✅ Copied to clipboard!');
-        }
+/* ═══ COPY / DOWNLOAD ═══ */
+window.copyOutput = function() {
+    var out = document.getElementById('outputEnc');
+    if (!out.value) { toast('Nothing to copy', 'error'); return; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(out.value).then(function() {
+            showStatus('success', '✅ Copied to clipboard!'); toast('Copied!', 'success');
+            addHistory('Copied encrypted output', 'success');
+        }).catch(function() {
+            out.select(); document.execCommand('copy');
+            showStatus('success', '✅ Copied!'); toast('Copied!', 'success');
+        });
+    } else {
+        out.select(); document.execCommand('copy');
+        showStatus('success', '✅ Copied!'); toast('Copied!', 'success');
+    }
+};
 
-        function downloadOutput() {
-            var output = document.getElementById('outputEnc').value;
-            if (!output) {
-                showStatus('error', '❌ Nothing to download');
-                return;
-            }
-            var blob = new Blob([output], { type: 'text/plain' });
-            var a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'encrypted-data.txt';
-            a.click();
-        }
+window.downloadOutput = function() {
+    var out = document.getElementById('outputEnc').value;
+    if (!out) { toast('Nothing to download', 'error'); return; }
+    var info = state.lastEncrypt || { name: 'encrypted-data.txt' };
+    var blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = info.name;
+    a.click();
+    showStatus('success', '✅ Downloaded: ' + info.name);
+    toast('Downloaded: ' + info.name, 'success');
+    addHistory('Downloaded ' + info.name, 'success');
+};
 
-        function clearAll() {
-            document.getElementById('inputJson').value = '';
-            document.getElementById('outputEnc').value = '';
-            document.getElementById('status').className = 'status';
-        }
-    </script>
+/* ═══ DECRYPTOR GENERATOR ═══ */
+window.downloadDecryptor = function() {
+    var out = document.getElementById('outputEnc').value;
+    if (!out) { toast('Encrypt first!', 'error'); return; }
+    var secretKey = document.getElementById('secretKey').value;
+
+    /* Use array join to avoid template literal issues with embedded script tags */
+    var parts = [
+        '<!DOCTYPE html>',
+        '<html lang="en">',
+        '<head>',
+        '<meta charset="UTF-8">',
+        '<meta name="viewport" content="width=device-width,initial-scale=1">',
+        '<title>Decrypting...</title>',
+        '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
+        '<style>',
+        '*{margin:0;padding:0;box-sizing:border-box;}',
+        'body{background:#05050f;color:#fff;font-family:"Courier New",monospace;min-height:100vh;}',
+        '.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;}',
+        '.spinner{width:60px;height:60px;border:4px solid rgba(0,240,255,0.15);border-top-color:#00f0ff;border-radius:50%;animation:spin 1s linear infinite;}',
+        '@keyframes spin{to{transform:rotate(360deg);}}',
+        '.txt{color:#00f0ff;font-size:14px;letter-spacing:3px;text-transform:uppercase;}',
+        '.err{padding:40px;text-align:center;}',
+        '.err h2{color:#ff0064;margin-bottom:16px;font-size:22px;}',
+        '.err p{color:#b0b0d0;font-size:13px;line-height:1.6;}',
+        '.bundle-wrap{max-width:1000px;margin:0 auto;padding:30px 20px;}',
+        '.bundle-title{color:#00f0ff;text-align:center;font-size:20px;letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;}',
+        '.file-card{background:rgba(0,240,255,0.04);border-left:4px solid #00f0ff;border-radius:10px;padding:18px;margin-bottom:16px;}',
+        '.file-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;}',
+        '.file-name{color:#ffd700;font-weight:bold;font-size:14px;}',
+        '.file-lang{background:#00f0ff;color:#000;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:bold;text-transform:uppercase;}',
+        '.file-content{background:#000;color:#00ff64;padding:14px;border-radius:8px;font-family:"Courier New",monospace;font-size:12px;line-height:1.5;max-height:320px;overflow:auto;white-space:pre-wrap;word-break:break-word;}',
+        '.dl-btn{background:linear-gradient(135deg,#00f0ff,#b400ff);border:none;padding:10px 20px;border-radius:8px;color:#000;font-weight:bold;cursor:pointer;margin-top:12px;font-family:inherit;letter-spacing:1px;text-transform:uppercase;font-size:11px;}',
+        '.dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,240,255,0.3);}',
+        '<' + '/style>',
+        '<' + '/head>',
+        '<body>',
+        '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><' + '/div>',
+        '<script>',
+        'var SECRET_KEY=' + JSON.stringify(secretKey) + ';',
+        'var ENCRYPTED_DATA=' + JSON.stringify(out) + ';',
+        'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
+        'ready(function(){',
+        '  try{',
+        '    var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,SECRET_KEY).toString(CryptoJS.enc.Utf8);',
+        '    if(!dec||dec.length===0){throw new Error("Decryption failed — wrong key or corrupted data");}',
+        '    var isBundle=false,bundle=null;',
+        '    try{var p=JSON.parse(dec);if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}}catch(e){}',
+        '    if(isBundle){',
+        '      var h="<div class=\\"bundle-wrap\\">";',
+        '      h+="<div class=\\"bundle-title\\">📦 Multi-File Bundle ("+bundle.__fileCount+" files)<\\/div>";',
+        '      Object.keys(bundle.files).forEach(function(name){',
+        '        var f=bundle.files[name];',
+        '        h+="<div class=\\"file-card\\">";',
+        '        h+="<div class=\\"file-head\\"><span class=\\"file-name\\">📄 "+name+"<\\/span><span class=\\"file-lang\\">"+(f.lang||"?").toUpperCase()+"<\\/span><\\/div>";',
+        '        h+="<pre class=\\"file-content\\">"+f.content.replace(/</g,"&lt;")+"<\\/pre>";',
+        '        h+="<button class=\\"dl-btn\\" data-name=\\""+name+"\\">⬇ Download "+name+"<\\/button>";',
+        '        h+="<\\/div>";',
+        '      });',
+        '      h+="<\\/div>";',
+        '      document.body.innerHTML=h;',
+        '      document.body.querySelectorAll(".dl-btn").forEach(function(b){',
+        '        b.addEventListener("click",function(){',
+        '          var name=this.getAttribute("data-name");',
+        '          var f=bundle.files[name];',
+        '          var blob=new Blob([f.content],{type:"text/plain;charset=utf-8"});',
+        '          var a=document.createElement("a");',
+        '          a.href=URL.createObjectURL(blob);',
+        '          a.download=name;',
+        '          a.click();',
+        '        });',
+        '      });',
+        '    } else {',
+        '      /* Full HTML replacement — perfect render */',
+        '      document.open();',
+        '      document.write(dec);',
+        '      document.close();',
+        '    }',
+        '  }catch(e){',
+        '    document.body.innerHTML="<div class=\\"err\\"><h2>❌ Decryption Failed<\\/h2><p>"+e.message+"<\\/p><\\/div>";',
+        '  }',
+        '});',
+        '<' + '/script>',
+        '<' + '/body>',
+        '<' + '/html>'
+    ];
+
+    var html = parts.join('\n');
+    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'decryptor.html';
+    a.click();
+    showStatus('success', '🎁 Decryptor downloaded! Open in browser.');
+    toast('Decryptor downloaded!', 'success');
+    addHistory('Downloaded decryptor.html', 'success');
+};
+
+/* ═══ CLEAR ═══ */
+window.clearAll = function() {
+    inputCodeEl.value = '';
+    document.getElementById('outputEnc').value = '';
+    document.getElementById('outputStatsGrid').style.display = 'none';
+    document.getElementById('inputStats').style.display = 'none';
+    document.getElementById('outputFileInfo').textContent = '';
+    document.getElementById('status').className = 'status';
+    state.uploadedFiles = {};
+    state.lastEncrypt = null;
+    renderFileList();
+    fileInput.value = '';
+    closeDrawer();
+    showStatus('info', '🧹 Cleared');
+    toast('Cleared', 'info');
+    addHistory('Cleared all', 'warn');
+    updateProgress();
+};
+
+window.clearHistory = function() {
+    state.history = [];
+    renderHistory();
+    toast('History cleared', 'info');
+};
+
+/* ═══ INIT ═══ */
+renderHistory();
+addHistory('Universal Encrypt Pro v6 initialized', 'info');
+updateDetection();
+console.log('%c🔐 Universal Encrypt Pro v6 HEAVY loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+
+})();
+</script>
 </body>
 </html>
