@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b0b1a">
-<title>Universal Encrypt Pro — NightOrbit CodeForge</title>
+<title>Universal Code Encrypt — NightOrbit</title>
 
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -14,9 +14,6 @@
 
 <!-- CryptoJS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-
-<!-- Secure Key Manager -->
-<script src="key-manager.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -39,6 +36,8 @@ body {
     padding-bottom: 20px; font-size: 14px;
     line-height: 1.5;
 }
+
+/* ═══ TOP BAR ═══ */
 .topbar {
     position: fixed; top: 0; left: 0; right: 0;
     height: var(--header-h);
@@ -94,6 +93,8 @@ body {
 .menu-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .menu-btn.open span:nth-child(2) { opacity: 0; }
 .menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ═══ DRAWER ═══ */
 .drawer-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.6);
     backdrop-filter: blur(4px); z-index: 998;
@@ -133,7 +134,11 @@ body {
 .drawer .menu-item .ico { font-size: 18px; }
 .drawer .menu-item .label { flex: 1; }
 .drawer .menu-item .ext { font-size: 10px; color: var(--gold); opacity: 0.6; letter-spacing: 1px; }
+
+/* ═══ CONTAINER ═══ */
 .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 15px; }
+
+/* ═══ USER WELCOME ═══ */
 .user-welcome {
     background: rgba(0,240,255,0.05);
     border: 1px solid var(--border);
@@ -154,6 +159,8 @@ body {
     text-transform: uppercase; color: var(--green);
     display: inline-flex; align-items: center; gap: 5px;
 }
+
+/* ═══ HEADER CARD ═══ */
 .header-card {
     background: var(--card); border: 2px solid var(--cyan);
     border-radius: 18px; padding: 22px 24px; margin-bottom: 15px;
@@ -187,6 +194,8 @@ h1 {
 .header-stat.gold i { color: var(--gold); }
 .header-stat.pink i { color: var(--pink); }
 .header-stat.green i { color: var(--green); }
+
+/* ═══ MODE INDICATOR ═══ */
 .mode-indicator {
     display: flex; align-items: center; justify-content: space-between;
     background: linear-gradient(135deg, rgba(0,240,255,0.08), rgba(180,0,255,0.05));
@@ -205,6 +214,8 @@ h1 {
     cursor: pointer; font-family: inherit; font-weight: bold; transition: all 0.2s; white-space: nowrap;
 }
 .mode-indicator .change-btn:hover { background: var(--cyan); color: #000; }
+
+/* ═══ SAVE BOX ═══ */
 .save-box {
     background: linear-gradient(135deg, rgba(255,0,100,0.1), rgba(255,215,0,0.08));
     border: 2px solid var(--red); border-radius: 12px;
@@ -239,6 +250,8 @@ h1 {
     padding: 10px 12px; border-radius: 6px; font-size: 11px;
     color: #ffb3c9; margin-top: 8px; line-height: 1.6;
 }
+
+/* ═══ PROGRESS BAR ═══ */
 .progress-wrap {
     background: rgba(0,0,0,0.4); border: 1.5px solid rgba(0,240,255,0.15);
     border-radius: 12px; padding: 12px 16px; margin-bottom: 15px;
@@ -271,6 +284,8 @@ h1 {
     box-shadow: 0 0 15px rgba(0,240,255,0.6); transform: scale(1.15);
 }
 .progress-step.done { background: var(--green); color: #000; border-color: #fff; }
+
+/* ═══ CARD ═══ */
 .card {
     background: var(--card); border: 2px solid var(--border);
     border-radius: 18px; padding: 22px;
@@ -291,6 +306,8 @@ h2, h3 {
 .badge.success { background: rgba(0,255,100,0.15); color: var(--green); border-color: rgba(0,255,100,0.3); }
 .badge.gold { background: rgba(255,215,0,0.15); color: var(--gold); border-color: rgba(255,215,0,0.3); }
 .badge.pink { background: rgba(255,45,149,0.15); color: var(--pink); border-color: rgba(255,45,149,0.3); }
+
+/* ═══ SECTION ═══ */
 .section {
     background: rgba(0,240,255,0.03); border: 1px solid var(--border);
     border-radius: 12px; padding: 16px; margin-bottom: 12px;
@@ -311,6 +328,8 @@ textarea:focus, input:focus {
 }
 textarea { min-height: 220px; }
 textarea.tall { min-height: 320px; }
+
+/* ═══ BUTTONS ═══ */
 button {
     background: linear-gradient(135deg, var(--cyan), var(--purple));
     color: #000; border: none; padding: 12px 22px; border-radius: 10px;
@@ -325,8 +344,11 @@ button.danger { background: linear-gradient(135deg, var(--red), #ff0000); color:
 button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
 button.pink { background: linear-gradient(135deg, var(--pink), var(--purple)); color: #fff; }
 button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
 .btn-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
 .btn-row button { flex: 1 1 auto; min-width: 120px; }
+
+/* ═══ STATUS ═══ */
 .status {
     text-align: center; padding: 12px; border-radius: 8px;
     margin-top: 10px; font-size: 12px; display: none; font-weight: bold;
@@ -336,6 +358,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 .status.error { background: rgba(255,0,100,0.1); border: 1px solid var(--red); color: var(--red); display: block; }
 .status.info { background: rgba(0,240,255,0.1); border: 1px solid var(--cyan); color: var(--cyan); display: block; }
 .status.loading { background: rgba(255,215,0,0.1); border: 1px solid var(--gold); color: var(--gold); display: block; }
+
+/* ═══ FILE DROP ═══ */
 .file-drop {
     border: 2px dashed rgba(0,240,255,0.4); border-radius: 12px;
     padding: 26px 16px; text-align: center; color: var(--cyan);
@@ -346,6 +370,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     box-shadow: 0 0 30px rgba(0,240,255,0.15);
 }
 .file-drop .icon { font-size: 36px; margin-bottom: 6px; }
+
 .file-list {
     max-height: 240px; overflow-y: auto; margin-top: 10px; font-size: 12px;
 }
@@ -361,6 +386,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 .file-item .fname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; font-weight: bold; font-family: 'JetBrains Mono', monospace; }
 .file-item .remove { color: var(--red); cursor: pointer; font-weight: bold; padding: 4px 10px; border-radius: 4px; transition: all 0.2s; flex-shrink: 0; }
 .file-item .remove:hover { background: rgba(255,0,100,0.2); }
+
 .badge-lang {
     padding: 2px 8px; border-radius: 10px; font-size: 9px;
     font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0;
@@ -373,6 +399,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 .badge-lang.php { background: #8892be; color:#fff; }
 .badge-lang.xml { background: #ff8c00; color:#000; }
 .badge-lang.txt { background: #888; color:#000; }
+
+/* ═══ STATS GRID ═══ */
 .stats-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 12px; margin-top: 12px;
@@ -387,6 +415,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 .stat-value.gold { color: var(--gold); }
 .stat-value.green { color: var(--green); }
 .stat-value.pink { color: var(--pink); }
+
+/* ═══ HISTORY ═══ */
 .history-list {
     max-height: 200px; overflow-y: auto;
     background: rgba(0,0,0,0.4); border: 1px solid rgba(0,240,255,0.1);
@@ -404,6 +434,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 .history-dot.success { background: var(--green); box-shadow: 0 0 8px var(--green); }
 .history-dot.error { background: var(--red); box-shadow: 0 0 8px var(--red); }
 .history-dot.warn { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+
+/* ═══ TOAST ═══ */
 .toast-container {
     position: fixed; bottom: 20px; right: 20px; z-index: 99999;
     display: flex; flex-direction: column; gap: 10px;
@@ -427,6 +459,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 @keyframes toastIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 .toast.removing { animation: toastOut 0.3s ease forwards; }
 @keyframes toastOut { to { transform: translateX(400px); opacity: 0; } }
+
+/* ═══ RESPONSIVE ═══ */
 @media (max-width: 600px) {
     body { font-size: 13px; }
     .container { padding: 12px; }
@@ -560,7 +594,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         </div>
         <div class="save-step">
             <div class="num">3</div>
-            <div class="txt">Save this tool itself as: <div><span class="filename">CodeEncrypt.html</span></div><span style="opacity:0.7;">(Must end with <b>.html</b>)</span></div>
+            <div class="txt">Save this tool itself as: <div><span class="filename">encrypt-tool.html</span></div><span style="opacity:0.7;">(Must end with <b>.html</b>)</span></div>
         </div>
         <div class="save-step">
             <div class="num">4</div>
@@ -573,58 +607,52 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         <div class="warn">⚠️ <b>CRITICAL:</b> The decryptor MUST be saved as <b>.html</b>. Works with files up to 5MB+ — supports iframe render + blob fallback.</div>
     </div>
 
-    <!-- ═══ SECURE USER KEY ═══ -->
-    <div class="section" style="border-color: var(--gold); background: rgba(255,215,0,0.05);">
-        <label style="color: var(--gold);">
-            <i class="fa-solid fa-lock"></i> YOUR UNIQUE ENCRYPTION KEY
+    <!-- ═══ CRITICAL WARNING ═══ -->
+    <div class="section" style="border: 2px solid var(--pink); background: rgba(255,45,149,0.06);">
+        <label style="color: var(--pink); font-size:12px;">
+            <i class="fa-solid fa-triangle-exclamation"></i> ⚠️ CRITICAL WARNING — READ BEFORE YOU START
         </label>
-        
-        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-            <input type="text" id="keyDisplay" readonly 
-                   value="*****"
-                   style="flex:1; min-width:200px; background:#000; color:var(--gold); 
-                          border:1.5px solid var(--gold); padding:12px; border-radius:8px; 
-                          font-family:'JetBrains Mono', monospace; font-size:14px; 
-                          letter-spacing:2px; cursor:not-allowed;"
-                   title="Security: Key is never displayed">
-            
-            <span class="badge gold" id="keyStatusBadge" style="padding:10px 14px;">
-                <i class="fa-solid fa-hourglass-half"></i> LOADING
-            </span>
-        </div>
-        
-        <div style="margin-top:10px; padding:10px; background:rgba(255,0,100,0.08); 
-                    border-left:3px solid var(--red); border-radius:6px; 
-                    font-size:11px; line-height:1.6; color:#ffb3c9;">
-            <b>🔒 SECURITY NOTICE:</b><br>
-            • This key is linked to your account — <b>it can NEVER be changed</b><br>
-            • This key is <b>never saved in any file</b> — it lives only in memory<br>
-            • <b>view-source</b> will NOT reveal this key (only a hash is shown)<br>
-            • If you share this key with someone, they can decrypt your code<br>
-            • <b>⚠️ NEVER share your key with anyone</b>
+        <div style="font-size:12px; line-height:1.8; color:#fff;">
+            <p style="margin-bottom:12px; padding:10px; background:rgba(255,0,100,0.12); border-left:3px solid var(--red); border-radius:6px;">
+                <b style="color:var(--pink);">🛑 DO NOT DELETE YOUR ORIGINAL CODE FILES!</b>
+            </p>
+            <ul style="margin-left:20px; color:#ffb3c9; line-height:2;">
+                <li>Never delete your original <b style="color:var(--gold);">index.html</b> or main project file</li>
+                <li>If you delete them, you will <b style="color:var(--red);">NOT be able to add new features</b></li>
+                <li>Always keep a <b style="color:var(--green);">backup</b> of your original code</li>
+                <li>The encrypted output is <b>NOT</b> a replacement — it is a <b>protected copy</b></li>
+            </ul>
+            <p style="margin-top:12px; padding:10px; background:rgba(0,0,0,0.4); border-radius:6px;">
+                ✅ <b style="color:var(--green);">BEST PRACTICE:</b> Keep <b>3 copies</b>:
+                <br>1️⃣ Original source code (editable)
+                <br>2️⃣ Encrypted output (protected)
+                <br>3️⃣ decryptor.html file (for opening encrypted code)
+            </p>
         </div>
     </div>
 
-    <!-- ═══ WARNING BOX ═══ -->
-    <div class="section" style="border-color: var(--pink); background: rgba(255,45,149,0.05);">
-        <label style="color: var(--pink);">
-            <i class="fa-solid fa-triangle-exclamation"></i> IMPORTANT WARNING — READ CAREFULLY
+    <!-- ═══ SECURE USER KEY ═══ -->
+    <div class="section" style="border-color: var(--gold); background: rgba(255,215,0,0.05);">
+        <label style="color: var(--gold);">
+            <i class="fa-solid fa-lock"></i> YOUR UNIQUE ENCRYPTION KEY (Auto-generated per user)
         </label>
-        <div style="font-size:12px; line-height:1.8; color:#fff;">
-            <p style="margin-bottom:10px;">
-                <b style="color:var(--pink);">⚠️ THIS CODE CAN NEVER BE DECODED</b> if you make these mistakes:
-            </p>
-            <ul style="margin-left:20px; color:#ffb3c9;">
-                <li>If you <b>delete the decryptor.html</b> file</li>
-                <li>If you <b>forget your account (email)</b></li>
-                <li>If you <b>logout</b> and cannot login again</li>
-                <li>If you <b>lose access to your account</b></li>
-            </ul>
-            <p style="margin-top:10px; padding:10px; background:rgba(0,0,0,0.4); border-radius:6px;">
-                ✅ <b style="color:var(--green);">CORRECT PROCEDURE:</b> Keep the decryptor HTML file 
-                in a <b style="color:var(--gold);">separate safe folder</b>. 
-                Always keep both things together: <b>your account email + decryptor.html</b>.
-            </p>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <input type="text" id="secretKey" readonly value="***** — Waiting for login..."
+                   style="flex:1; min-width:200px; background:#000; color:var(--gold);
+                          border:1.5px solid var(--gold); padding:12px; border-radius:8px;
+                          font-family:'JetBrains Mono', monospace; font-size:13px;
+                          letter-spacing:1px; cursor:not-allowed;"
+                   title="Security: Key is hidden for your protection">
+            <span class="badge gold" id="keyStatusBadge" style="padding:10px 14px;">
+                <i class="fa-solid fa-hourglass-half"></i> WAITING
+            </span>
+        </div>
+        <div style="margin-top:10px; padding:10px; background:rgba(0,240,255,0.06);
+                    border-left:3px solid var(--cyan); border-radius:6px;
+                    font-size:11px; line-height:1.6; color:#b0d0ff;">
+            🔒 <b>Secure:</b> Your key is generated uniquely from your email address.
+            It is <b>never displayed</b> and <b>never saved to any file</b>. Only a hash
+            is shown above for verification. The key <b>cannot be changed</b>.
         </div>
     </div>
 
@@ -697,8 +725,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 <script>
 /* ═══════════════════════════════════════════════════════════
    UNIVERSAL ENCRYPT PRO v8 — SECURE HEAVY EDITION
-   - Per-user unique key (never shown, never saved)
-   - 5MB+ code support with Web Worker (no UI freeze)
+   - Per-user unique key (hash display only)
+   - 5MB+ code support
    - iframe srcdoc + blob fallback decryptor
    - Auto language detection
    - Multi-file bundle
@@ -723,6 +751,51 @@ var EXT_LANG = {
 var LANG_EXT = { html:'html', css:'css', js:'js', json:'json', py:'py', php:'php', xml:'xml', txt:'txt' };
 var LANG_ICON = { auto:'🔍', html:'🌐', css:'🎨', js:'⚡', json:'📦', py:'🐍', php:'🐘', xml:'📄', txt:'📝' };
 var LANG_NAME = { auto:'Auto Detect', html:'HTML', css:'CSS', js:'JavaScript', json:'JSON', py:'Python', php:'PHP', xml:'XML', txt:'Plain Text' };
+
+/* ═══ KEY MANAGER — Per-user unique key ═══ */
+var KEY_MANAGER = {
+    _key: null,
+    _displayHash: '*****',
+    _ready: false,
+    _email: null,
+
+    /* Derive a strong unique key from email */
+    deriveKey: function(email) {
+        var SALT = 'NightOrbit_CodeForge_v8_2024_SECURE_SALT_@#$%';
+        var key = CryptoJS.PBKDF2(email.toLowerCase().trim(), SALT, {
+            keySize: 512 / 32,
+            iterations: 200000,
+            hasher: CryptoJS.algo.SHA512
+        });
+        return key.toString(CryptoJS.enc.Hex);
+    },
+
+    /* Short hash for display only */
+    makeDisplayHash: function(key) {
+        return CryptoJS.SHA256(key).toString(CryptoJS.enc.Hex).substring(0, 16).toUpperCase();
+    },
+
+    /* Initialize from user object */
+    init: function(user) {
+        if (!user || !user.email) return false;
+        this._email = user.email;
+        this._key = this.deriveKey(user.email);
+        this._displayHash = this.makeDisplayHash(this._key);
+        this._ready = true;
+        return true;
+    },
+
+    getKey: function() { return this._key; },
+    isReady: function() { return this._ready; },
+    getHash: function() { return this._displayHash; },
+    getEmail: function() { return this._email; },
+    clear: function() {
+        this._key = null;
+        this._ready = false;
+        this._displayHash = '*****';
+        this._email = null;
+    }
+};
 
 /* ═══ UTILITIES ═══ */
 function bytes(n) {
@@ -892,16 +965,15 @@ function renderFileList() {
 }
 window.removeFile = function(name) { delete state.uploadedFiles[name]; renderFileList(); updateProgress(); };
 
-/* ═══ ENCRYPT (with Web Worker support for large files) ═══ */
+/* ═══ ENCRYPT ═══ */
 window.encryptNow = function() {
     try {
-        /* ⭐ Get key from KEY_MANAGER (never from input) */
-        if (!window.KEY_MANAGER || !KEY_MANAGER.isReady()) {
+        /* ⭐ Use KEY_MANAGER key (not input) */
+        if (!KEY_MANAGER.isReady()) {
             showStatus('error', '❌ Security key not ready. Please wait or re-login.');
             toast('Key manager not ready', 'error');
             return;
         }
-        
         var secretKey = KEY_MANAGER.getKey();
         var pasted = inputCodeEl.value;
         var fileNames = Object.keys(state.uploadedFiles);
@@ -913,7 +985,10 @@ window.encryptNow = function() {
         }
 
         var totalSize = new Blob([pasted]).size;
-        
+        if (totalSize > 5 * 1024 * 1024) {
+            if (!confirm('Code is larger than 5MB. Encryption may take a few seconds. Continue?')) return;
+        }
+
         showStatus('loading', '⏳ Encrypting ' + bytes(totalSize) + '...');
         var t0 = performance.now();
 
@@ -944,76 +1019,36 @@ window.encryptNow = function() {
             document.getElementById('outputFileInfo').textContent = '📄 ' + finalLang.toUpperCase() + ' → .' + outExt;
         }
 
-        /* ⭐ Run encryption in a chunked async way for large files */
-        encryptAsync(payload, secretKey)
-            .then(function(encrypted) {
-                var t1 = performance.now();
-                document.getElementById('outputEnc').value = encrypted;
+        var encrypted = CryptoJS.AES.encrypt(payload, secretKey).toString();
+        var t1 = performance.now();
 
-                var origSize = new Blob([payload]).size;
-                var encSize = new Blob([encrypted]).size;
-                document.getElementById('outputStatsGrid').style.display = 'grid';
-                document.getElementById('statOriginal').textContent = bytes(origSize);
-                document.getElementById('statEncrypted').textContent = bytes(encSize);
-                document.getElementById('statRatio').textContent = (encSize / origSize).toFixed(2) + 'x';
-                document.getElementById('statMode').textContent = fileNames.length > 0 ? 'BUNDLE' : 'SINGLE';
+        document.getElementById('outputEnc').value = encrypted;
 
-                state.lastEncrypt = {
-                    data: encrypted,
-                    ext: outExt,
-                    name: outName,
-                    lang: (fileNames.length === 0) ? ((state.currentLang === 'auto') ? detectLanguage(pasted) : state.currentLang) : 'bundle'
-                };
+        var origSize = new Blob([payload]).size;
+        var encSize = new Blob([encrypted]).size;
+        document.getElementById('outputStatsGrid').style.display = 'grid';
+        document.getElementById('statOriginal').textContent = bytes(origSize);
+        document.getElementById('statEncrypted').textContent = bytes(encSize);
+        document.getElementById('statRatio').textContent = (encSize / origSize).toFixed(2) + 'x';
+        document.getElementById('statMode').textContent = fileNames.length > 0 ? 'BUNDLE' : 'SINGLE';
 
-                showStatus('success', '✅ Encrypted! ' + mode + ' · ' + bytes(origSize) + ' → ' + bytes(encSize) + ' · ' + (t1 - t0).toFixed(0) + 'ms');
-                toast('Encrypted in ' + (t1 - t0).toFixed(0) + 'ms', 'success');
-                addHistory('Encrypted ' + mode + ' (' + bytes(origSize) + ' → ' + bytes(encSize) + ')', 'success');
-                updateProgress();
-            })
-            .catch(function(err) {
-                showStatus('error', '❌ ' + err.message);
-                toast('Error: ' + err.message, 'error');
-                addHistory('Encrypt error: ' + err.message, 'error');
-            });
+        state.lastEncrypt = {
+            data: encrypted,
+            ext: outExt,
+            name: outName,
+            lang: (fileNames.length === 0) ? ((state.currentLang === 'auto') ? detectLanguage(pasted) : state.currentLang) : 'bundle'
+        };
+
+        showStatus('success', '✅ Encrypted! ' + mode + ' · ' + bytes(origSize) + ' → ' + bytes(encSize) + ' · ' + (t1 - t0).toFixed(0) + 'ms');
+        toast('Encrypted in ' + (t1 - t0).toFixed(0) + 'ms', 'success');
+        addHistory('Encrypted ' + mode + ' (' + bytes(origSize) + ' → ' + bytes(encSize) + ')', 'success');
+        updateProgress();
     } catch (e) {
         showStatus('error', '❌ ' + e.message);
         toast('Error: ' + e.message, 'error');
         addHistory('Encrypt error: ' + e.message, 'error');
     }
 };
-
-/* ═══ Async encryption helper (yields to UI for large files) ═══ */
-function encryptAsync(payload, key) {
-    return new Promise(function(resolve, reject) {
-        /* For small files (< 1MB), just do it directly */
-        if (payload.length < 1024 * 1024) {
-            try {
-                var result = CryptoJS.AES.encrypt(payload, key).toString();
-                resolve(result);
-            } catch (e) {
-                reject(e);
-            }
-            return;
-        }
-        
-        /* For large files, split into chunks and yield to UI */
-        try {
-            /* CryptoJS is still synchronous, but we let UI breathe before starting */
-            showStatus('loading', '⏳ Processing ' + (payload.length / 1024 / 1024).toFixed(2) + ' MB...');
-            
-            setTimeout(function() {
-                try {
-                    var result = CryptoJS.AES.encrypt(payload, key).toString();
-                    resolve(result);
-                } catch (e) {
-                    reject(e);
-                }
-            }, 50);
-        } catch (e) {
-            reject(e);
-        }
-    });
-}
 
 /* ═══ COPY / DOWNLOAD ═══ */
 window.copyOutput = function() {
@@ -1047,34 +1082,25 @@ window.downloadOutput = function() {
     addHistory('Downloaded ' + info.name, 'success');
 };
 
-/* ═══ DECRYPTOR GENERATOR — SECURE (NO KEY EMBEDDED) ═══ */
+/* ═══ DECRYPTOR GENERATOR — 5MB+ SUPPORT ═══ */
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Encrypt first!', 'error'); return; }
-    
-    if (!window.KEY_MANAGER || !KEY_MANAGER.isReady()) {
-        toast('Key not ready', 'error');
+
+    if (!KEY_MANAGER.isReady()) {
+        toast('Key not ready — please re-login', 'error');
         return;
     }
-    
-    /* Get current user's UID (key will be fetched from Firebase, not embedded) */
-    var user = firebase.auth().currentUser;
-    if (!user) { toast('Not logged in', 'error'); return; }
-    
+    var secretKey = KEY_MANAGER.getKey();
+
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
         '<head>',
         '<meta charset="UTF-8">',
         '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">',
-        '<title>Secure Decryptor — NightOrbit</title>',
-        
-        /* Firebase + CryptoJS */
-        '<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"><' + '/script>',
-        '<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"><' + '/script>',
-        '<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"><' + '/script>',
+        '<title>Decrypting...</title>',
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
-        
         '<style>',
         '*{margin:0;padding:0;box-sizing:border-box;}',
         'html,body{width:100%;min-height:100vh;}',
@@ -1101,16 +1127,10 @@ window.downloadDecryptor = function() {
         '<' + '/style>',
         '<' + '/head>',
         '<body>',
-        '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Verifying...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
+        '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
         '<script>',
-        
-        /* ⭐ Firebase config — decryption needs it */
-        'var firebaseConfig = ' + JSON.stringify(getFirebaseConfig()) + ';',
-        'firebase.initializeApp(firebaseConfig);',
-        '',
-        /* ⭐ KEY IS NOT EMBEDDED — only UID and encrypted data */
-        'var USER_UID = ' + JSON.stringify(user.uid) + ';',
-        'var ENCRYPTED_DATA = ' + JSON.stringify(out) + ';',
+        'var SECRET_KEY=' + JSON.stringify(secretKey) + ';',
+        'var ENCRYPTED_DATA=' + JSON.stringify(out) + ';',
         '',
         'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
         '',
@@ -1121,7 +1141,7 @@ window.downloadDecryptor = function() {
         '  err+="<div class=\\"err-icon\\">❌<\\/div>";',
         '  err+="<h2>Decryption Failed<\\/h2>";',
         '  err+="<p>"+msg+"<\\/p>";',
-        '  err+="<p style=\\"font-size:11px;color:#6a6a8a;margin-top:20px;\\">Make sure you are logged in with the SAME account that encrypted this code.<\\/p>";',
+        '  err+="<p style=\\"font-size:11px;color:#6a6a8a;margin-top:20px;\\">This decryptor only works with the account that encrypted the code.<\\/p>";',
         '  err+="<\\/div>";',
         '  document.body.innerHTML=err;',
         '}',
@@ -1184,44 +1204,32 @@ window.downloadDecryptor = function() {
         '  });',
         '}',
         '',
-        '/* ⭐ Fetch key from Firebase (secure — not embedded) */',
-        'function fetchKeyAndDecrypt(){',
-        '  firebase.database().ref("users/" + USER_UID + "/encryptionKey").once("value")',
-        '    .then(function(snap){',
-        '      var key = snap.val();',
-        '      if(!key) throw new Error("Key not found. Please login to your account first.");',
-        '      return key;',
-        '    })',
-        '    .then(function(key){',
-        '      if(typeof CryptoJS==="undefined"){throw new Error("CryptoJS library failed to load. Check your internet connection.");}',
-        '      var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA, key).toString(CryptoJS.enc.Utf8);',
-        '      if(!dec||dec.length===0){throw new Error("Decryption failed — wrong key or corrupted data.");}',
-        '      ',
-        '      var isBundle=false,bundle=null;',
-        '      try{',
-        '        var p=JSON.parse(dec);',
-        '        if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}',
-        '      }catch(e){}',
-        '      ',
-        '      if(isBundle){',
-        '        renderBundle(bundle);',
-        '      } else {',
-        '        var trimmed=dec.trim();',
-        '        var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);',
-        '        if(isHTML){',
-        '          renderHTML(dec);',
-        '        } else {',
-        '          renderText(dec);',
-        '        }',
-        '      }',
-        '    })',
-        '    .catch(function(e){',
-        '      showError(e.message);',
-        '    });',
-        '}',
-        '',
         'ready(function(){',
-        '  setTimeout(fetchKeyAndDecrypt, 100);',
+        '  try{',
+        '    if(typeof CryptoJS==="undefined"){throw new Error("CryptoJS library failed to load. Check your internet connection.");}',
+        '    var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,SECRET_KEY).toString(CryptoJS.enc.Utf8);',
+        '    if(!dec||dec.length===0){throw new Error("Decryption failed — wrong key or corrupted data.");}',
+        '',
+        '    var isBundle=false,bundle=null;',
+        '    try{',
+        '      var p=JSON.parse(dec);',
+        '      if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}',
+        '    }catch(e){}',
+        '',
+        '    if(isBundle){',
+        '      renderBundle(bundle);',
+        '    } else {',
+        '      var trimmed=dec.trim();',
+        '      var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);',
+        '      if(isHTML){',
+        '        renderHTML(dec);',
+        '      } else {',
+        '        renderText(dec);',
+        '      }',
+        '    }',
+        '  }catch(e){',
+        '    showError(e.message);',
+        '  }',
         '});',
         '<' + '/script>',
         '<' + '/body>',
@@ -1234,23 +1242,10 @@ window.downloadDecryptor = function() {
     a.href = URL.createObjectURL(blob);
     a.download = 'decryptor.html';
     a.click();
-    showStatus('success', '🎁 Secure decryptor downloaded! Requires login to decrypt.');
-    toast('Secure decryptor downloaded!', 'success');
-    addHistory('Downloaded secure decryptor (login required)', 'success');
+    showStatus('success', '🎁 Decryptor downloaded! Works with 5MB+ files.');
+    toast('Decryptor downloaded!', 'success');
+    addHistory('Downloaded decryptor.html (5MB+ support)', 'success');
 };
-
-/* ═══ Firebase Config (REPLACE WITH YOUR OWN) ═══ */
-function getFirebaseConfig() {
-    return {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT.firebaseapp.com",
-        databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
-    };
-}
 
 /* ═══ CLEAR ═══ */
 window.clearAll = function() {
@@ -1277,66 +1272,73 @@ window.clearHistory = function() {
     toast('History cleared', 'info');
 };
 
-/* ═══ WELCOME NAME + KEY MANAGER INITIALIZATION ═══ */
+/* ═══ WELCOME NAME + KEY INIT ═══ */
 function setWelcomeName(name) {
     var el = document.getElementById('welcomeName');
     if (el && name) el.textContent = name;
 }
 
-function handleAuthReady(user) {
-    if (!user) return;
-    var name = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
-    setWelcomeName(name);
-    
-    /* ⭐ Initialize KEY_MANAGER for this user */
-    if (window.KEY_MANAGER) {
-        KEY_MANAGER.initialize(user)
-            .then(function(result) {
-                var keyDisplay = document.getElementById('keyDisplay');
-                var badge = document.getElementById('keyStatusBadge');
-                if (keyDisplay) {
-                    keyDisplay.value = '***** — Hash: ' + result.displayHash;
-                }
-                if (badge) {
-                    badge.innerHTML = '<i class="fa-solid fa-shield-check"></i> SECURED';
-                    badge.style.background = 'rgba(0,255,100,0.15)';
-                    badge.style.color = 'var(--green)';
-                    badge.style.borderColor = 'rgba(0,255,100,0.3)';
-                }
-                addHistory('🔐 Unique encryption key loaded for ' + (user.email || 'user'), 'success');
-                toast('🔐 Your unique key is ready', 'success');
-            })
-            .catch(function(err) {
-                console.error('Key init failed:', err);
-                var badge = document.getElementById('keyStatusBadge');
-                if (badge) {
-                    badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> FAILED';
-                    badge.style.background = 'rgba(255,0,100,0.15)';
-                    badge.style.color = 'var(--red)';
-                }
-                toast('Key initialization failed: ' + err.message, 'error');
-                addHistory('Key init failed: ' + err.message, 'error');
-            });
+function initUserKey(user) {
+    if (!user || !user.email) return;
+
+    var success = KEY_MANAGER.init(user);
+    if (!success) return;
+
+    var keyInput = document.getElementById('secretKey');
+    var badge = document.getElementById('keyStatusBadge');
+
+    if (keyInput) {
+        keyInput.value = '***** — Hash: ' + KEY_MANAGER.getHash();
     }
+    if (badge) {
+        badge.innerHTML = '<i class="fa-solid fa-shield-halved"></i> SECURED';
+        badge.style.background = 'rgba(0,255,100,0.15)';
+        badge.style.color = 'var(--green)';
+        badge.style.borderColor = 'rgba(0,255,100,0.3)';
+    }
+
+    addHistory('🔐 Unique key loaded for ' + user.email, 'success');
+    toast('🔐 Your unique key is ready', 'success');
 }
 
+/* ═══ AUTH EVENTS ═══ */
 document.addEventListener('auth-guard-ready', function(e) {
     if (!e.detail) return;
-    var user = e.detail.user || e.detail;
-    handleAuthReady(user);
+    var name = e.detail.name || (e.detail.email ? e.detail.email.split('@')[0] : 'User');
+    setWelcomeName(name);
+    if (e.detail.email) {
+        initUserKey({ email: e.detail.email });
+    }
 });
+
 document.addEventListener('auth-ready', function(e) {
     if (!e.detail || !e.detail.user) return;
-    handleAuthReady(e.detail.user);
+    var u = e.detail.user;
+    var name = u.displayName || (u.email ? u.email.split('@')[0] : 'User');
+    setWelcomeName(name);
+    if (u.email) {
+        initUserKey(u);
+    }
 });
+
+/* Fallback for auth init */
 setTimeout(function() {
-    if (window.firebase && firebase.auth) {
-        var u = firebase.auth().currentUser;
-        if (u && (!window.KEY_MANAGER || !KEY_MANAGER.isReady())) {
-            handleAuthReady(u);
+    if (window.AuthGuard && AuthGuard.getUser) {
+        var u = AuthGuard.getUser();
+        if (u && u.email && !KEY_MANAGER.isReady()) {
+            setWelcomeName(u.displayName || (u.email ? u.email.split('@')[0] : 'User'));
+            initUserKey(u);
         }
     }
-}, 1500);
+    /* Also try Firebase directly */
+    if (window.firebase && firebase.auth && !KEY_MANAGER.isReady()) {
+        var fu = firebase.auth().currentUser;
+        if (fu && fu.email) {
+            setWelcomeName(fu.displayName || (fu.email ? fu.email.split('@')[0] : 'User'));
+            initUserKey(fu);
+        }
+    }
+}, 2000);
 
 /* ═══ SESSION TIMEOUT (30 min inactivity) ═══ */
 var _lastActivity = Date.now();
@@ -1344,9 +1346,17 @@ var SESSION_TIMEOUT = 30 * 60 * 1000;
 document.addEventListener('click', function() { _lastActivity = Date.now(); });
 document.addEventListener('keypress', function() { _lastActivity = Date.now(); });
 setInterval(function() {
-    if (window.KEY_MANAGER && KEY_MANAGER.isReady() && Date.now() - _lastActivity > SESSION_TIMEOUT) {
+    if (KEY_MANAGER.isReady() && Date.now() - _lastActivity > SESSION_TIMEOUT) {
         KEY_MANAGER.clear();
-        toast('Session expired. Please login again.', 'warn');
+        var keyInput = document.getElementById('secretKey');
+        var badge = document.getElementById('keyStatusBadge');
+        if (keyInput) keyInput.value = '***** — Session expired';
+        if (badge) {
+            badge.innerHTML = '<i class="fa-solid fa-clock"></i> EXPIRED';
+            badge.style.background = 'rgba(255,215,0,0.15)';
+            badge.style.color = 'var(--gold)';
+        }
+        toast('Session expired. Please refresh to continue.', 'warn');
         addHistory('Session expired — key cleared from memory', 'warn');
     }
 }, 60000);
@@ -1355,7 +1365,7 @@ setInterval(function() {
 renderHistory();
 addHistory('Universal Encrypt Pro v8 SECURE HEAVY initialized', 'info');
 updateDetection();
-console.log('%c🔐 Universal Encrypt Pro v8 SECURE HEAVY loaded (5MB+ support, per-user keys)', 
+console.log('%c🔐 Universal Encrypt Pro v8 SECURE HEAVY loaded (5MB+ support, per-user keys)',
     'color:#00f0ff;font-size:16px;font-weight:bold;');
 
 })();
