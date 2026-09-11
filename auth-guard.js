@@ -1,10 +1,13 @@
 /**
- * ⚡ NightOrbit CodeForge — Auth Guard V14
+ * ⚡ NightOrbit CodeForge — Auth Guard V15 HEAVY
  * Include this in every protected page: <script src="auth-guard.js"></script>
  */
 (function() {
     'use strict';
 
+    /* ═══════════════════════════════════════════════════════════
+       FIREBASE CONFIG — databaseURL MUST for Realtime Database
+       ═══════════════════════════════════════════════════════════ */
     var firebaseConfig = {
         apiKey: "AIzaSyCMYIa1YwahQRF_EGizjR1Xjj4aD9uBN_o",
         authDomain: "nightorbitbuilder.firebaseapp.com",
@@ -15,6 +18,7 @@
         appId: "1:537115613677:web:6653804e11c47ed746efe4"
     };
 
+    /* ═══ INJECT LOADER STYLES ═══ */
     var style = document.createElement('style');
     style.id = 'auth-guard-style';
     style.textContent =
@@ -32,6 +36,7 @@
         '@keyframes ag-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }';
     document.head.appendChild(style);
 
+    /* ═══ INJECT LOADER ELEMENT ═══ */
     var loader = document.createElement('div');
     loader.id = 'auth-guard-loader';
     loader.innerHTML = '<div class="ag-spinner"></div><div class="ag-text">Verifying Access...</div>';
@@ -39,6 +44,7 @@
     if (document.body) document.body.appendChild(loader);
     else document.addEventListener('DOMContentLoaded', function() { document.body.appendChild(loader); });
 
+    /* ═══ REDIRECT TO LOGIN ═══ */
     function redirectToLogin() {
         try {
             var p = window.location.pathname.split('/').pop() || 'dashboard.html';
@@ -47,6 +53,7 @@
         window.location.replace('index.html');
     }
 
+    /* ═══ SHOW PAGE (REMOVE LOADER) ═══ */
     function showPage() {
         var s = document.getElementById('auth-guard-style');
         if (s) s.remove();
@@ -54,8 +61,13 @@
         if (l) l.remove();
         document.documentElement.style.visibility = 'visible';
         document.documentElement.style.opacity = '1';
+        if (document.body) {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = '1';
+        }
     }
 
+    /* ═══ DYNAMIC SCRIPT LOADER ═══ */
     function loadScript(src, cb) {
         var s = document.createElement('script');
         s.src = src;
@@ -64,31 +76,50 @@
         document.head.appendChild(s);
     }
 
+    /* ═══ AUTH GUARD INIT ═══ */
     function initGuard() {
         try {
-            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+                console.log('%c🔥 Firebase initialized', 'color:#ffd700;font-weight:bold;');
+            }
             var auth = firebase.auth();
             var resolved = false;
+
             var timeout = setTimeout(function() {
-                if (!resolved) { resolved = true; redirectToLogin(); }
+                if (!resolved) {
+                    console.warn('⚠️ Auth timeout — redirecting to login');
+                    resolved = true;
+                    redirectToLogin();
+                }
             }, 8000);
 
             auth.onAuthStateChanged(function(user) {
                 if (resolved) return;
                 resolved = true;
                 clearTimeout(timeout);
+
                 if (user) {
                     showPage();
                     window.__currentUser = user;
-                    document.dispatchEvent(new CustomEvent('auth-ready', { detail: { user: user } }));
-                    document.dispatchEvent(new CustomEvent('auth-guard-ready', { detail: { user: user } }));
+                    console.log('%c👤 Auth success:', 'color:#00ff64;font-weight:bold;', user.email);
+
+                    /* ═══ FIRE BOTH EVENTS FOR MAX COMPATIBILITY ═══ */
+                    var detail = { user: user, email: user.email, uid: user.uid };
+                    document.dispatchEvent(new CustomEvent('auth-ready', { detail: detail }));
+                    document.dispatchEvent(new CustomEvent('auth-guard-ready', { detail: detail }));
                 } else {
+                    console.warn('⚠️ No user — redirecting to login');
                     redirectToLogin();
                 }
             });
-        } catch (e) { redirectToLogin(); }
+        } catch (e) {
+            console.error('❌ Auth Guard error:', e);
+            redirectToLogin();
+        }
     }
 
+    /* ═══ SCRIPT LOADING STRATEGY ═══ */
     if (typeof firebase === 'undefined') {
         loadScript('https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js', function() {
             loadScript('https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js', function() {
