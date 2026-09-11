@@ -36,7 +36,6 @@
     var loader = document.createElement('div');
     loader.id = 'auth-guard-loader';
     loader.innerHTML = '<div class="spinner"></div><div class="text">Verifying Access...</div>';
-
     if (document.body) document.body.appendChild(loader);
     else document.addEventListener('DOMContentLoaded', function() { document.body.appendChild(loader); });
 
@@ -55,9 +54,7 @@
 
     function loadScript(src, cb) {
         var s = document.createElement('script');
-        s.src = src;
-        s.onload = cb;
-        s.onerror = redirect;
+        s.src = src; s.onload = cb; s.onerror = redirect;
         document.head.appendChild(s);
     }
 
@@ -77,7 +74,9 @@
                 if (user) {
                     showPage();
                     window.__currentUser = user;
+                    /* Fire BOTH events for compatibility */
                     document.dispatchEvent(new CustomEvent('auth-ready', { detail: { user: user } }));
+                    document.dispatchEvent(new CustomEvent('auth-guard-ready', { detail: { user: user } }));
                 } else {
                     redirect();
                 }
