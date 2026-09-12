@@ -1381,9 +1381,7 @@ window.downloadDecryptor = function() {
         return;
     }
 
-    /* ═══════════════════════════════════════════════════════
-       KEY FILE NAME — random prefix + 20 letters + 20 numbers
-       ═══════════════════════════════════════════════════════ */
+    /* ───── Key File Name Generator ───── */
     function randomLetters(len) {
         var c = 'abcdefghijklmnopqrstuvwxyz';
         var s = '';
@@ -1404,40 +1402,30 @@ window.downloadDecryptor = function() {
 
     var encData = out;
 
-    /* ═══════════════════════════════════════════════════════
-       HEAVY KEY OBFUSCATION — 8 LAYERS
-       ═══════════════════════════════════════════════════════ */
+    /* ───── Key Obfuscation (8 layers) ───── */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
     if (suffix.length < 60) { while (suffix.length < 60) suffix += '0'; }
     suffix = suffix.substring(0, 60);
     var fullKeyString = PREFIX + suffix;
 
-    /* ─── Random dynamic salt (per download) ─── */
     var salt1 = (Date.now() % 251) + 1;
     var salt2 = (Math.floor(Math.random() * 251)) + 1;
     var salt3 = (Math.floor(Math.random() * 251)) + 1;
     var salt4 = (Math.floor(Math.random() * 251)) + 1;
 
-    /* ─── Layer 1: XOR with 0x5A + salt1 ─── */
     var layer1 = [];
     for (var i = 0; i < fullKeyString.length; i++) {
         layer1.push((fullKeyString.charCodeAt(i) ^ 0x5A) ^ salt1);
     }
-
-    /* ─── Layer 2: Char shift by salt2 ─── */
     var layer2 = [];
     for (var j = 0; j < layer1.length; j++) {
         layer2.push((layer1[j] + salt2) % 256);
     }
-
-    /* ─── Layer 3: XOR with salt3 ─── */
     var layer3 = [];
     for (var k = 0; k < layer2.length; k++) {
         layer3.push(layer2[k] ^ salt3);
     }
-
-    /* ─── Layer 4: Byte swap (odd/even) ─── */
     var layer4 = [];
     var even = [], odd = [];
     for (var m = 0; m < layer3.length; m++) {
@@ -1445,61 +1433,37 @@ window.downloadDecryptor = function() {
         else odd.push(layer3[m]);
     }
     layer4 = even.concat(odd);
-
-    /* ─── Layer 5: Random padding ─── */
     var padding = [];
     var padCount = (Math.floor(Math.random() * 10) + 5);
     for (var p = 0; p < padCount; p++) {
         padding.push(Math.floor(Math.random() * 256));
     }
     var layer5 = padding.concat(layer4);
-
-    /* ─── Layer 6: Safe Base64 ─── */
     var binaryString = '';
     for (var b = 0; b < layer5.length; b++) {
         binaryString += String.fromCharCode(layer5[b]);
     }
     var layer6 = btoa(binaryString);
-
-    /* ─── Layer 7: Reverse ─── */
     var layer7 = layer6.split('').reverse().join('');
-
-    /* ─── Layer 8: Final XOR with 0x5A + salt4 → byte array ─── */
     var obfuscatedBytes = [];
     for (var bi = 0; bi < layer7.length; bi++) {
         obfuscatedBytes.push((layer7.charCodeAt(bi) ^ 0x5A) ^ salt4);
     }
     var byteArrayString = '[' + obfuscatedBytes.join(',') + ']';
 
-    /* ═══════════════════════════════════════════════════════
-       RANDOM VARIABLE NAMES
-       ═══════════════════════════════════════════════════════ */
+    /* ───── Random variable names ───── */
     function rndVar(len) {
         var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         var s = '';
         for (var i = 0; i < (len || 6); i++) s += c.charAt(Math.floor(Math.random() * c.length));
         return s;
     }
+    var vBytes = rndVar(6), vFinal = rndVar(7), vLoop = rndVar(5), vKey = rndVar(6);
+    var vDecode = rndVar(8), vRev = rndVar(6), vData = rndVar(5), vB = rndVar(4);
+    var vJ = rndVar(4), vOut = rndVar(5), vTemp = rndVar(5), vEven = rndVar(5);
+    var vOdd = rndVar(5), vPad = rndVar(4), vRes = rndVar(5);
 
-    var vBytes = rndVar(6);
-    var vFinal = rndVar(7);
-    var vLoop = rndVar(5);
-    var vKey = rndVar(6);
-    var vDecode = rndVar(8);
-    var vRev = rndVar(6);
-    var vData = rndVar(5);
-    var vB = rndVar(4);
-    var vJ = rndVar(4);
-    var vOut = rndVar(5);
-    var vTemp = rndVar(5);
-    var vEven = rndVar(5);
-    var vOdd = rndVar(5);
-    var vPad = rndVar(4);
-    var vRes = rndVar(5);
-
-    /* ═══════════════════════════════════════════════════════
-       KEY FILE CONTENT — 8-STEP REVERSE DECODE (SAFE)
-       ═══════════════════════════════════════════════════════ */
+    /* ───── Key File Content ───── */
     var keyFileContent =
         '(function(){\n' +
         '"use strict";\n' +
@@ -1546,14 +1510,8 @@ window.downloadDecryptor = function() {
         '}catch(e){window._0xSECRET="";}\n' +
         '})();\n';
 
-    /* ═══════════════════════════════════════════════════════
-       BASE64 DOUBLE-ENCODED FILENAME
-       ═══════════════════════════════════════════════════════ */
     var encodedKeyFileName = btoa(btoa(keyFileName));
 
-    /* ═══════════════════════════════════════════════════════
-       DECOY + ANTI-DEBUG
-       ═══════════════════════════════════════════════════════ */
     var r1 = rndVar(8), r2 = rndVar(8), r3 = rndVar(8);
     var r4 = rndVar(8), r5 = rndVar(8), r6 = rndVar(8);
 
@@ -1585,9 +1543,6 @@ window.downloadDecryptor = function() {
         '})();\n' +
         '<' + '/script>\n';
 
-    /* ═══════════════════════════════════════════════════════
-       DECRYPTOR HTML — FULLY FIXED
-       ═══════════════════════════════════════════════════════ */
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -1682,20 +1637,10 @@ window.downloadDecryptor = function() {
         '  }',
         '}',
         '',
-        /* ✅ FIXED injectBlocker — strip noscript + meta refresh + JS redirects */
+        /* ✅ injectBlocker — sirf noscript + meta refresh strip (BAQI SAB SAME) */
         'function injectBlocker(html){',
         '  html = html.replace(/<noscript[\\s\\S]*?<\\/noscript>/gi, "");',
         '  html = html.replace(/<meta[^>]*http-equiv=["\']refresh["\'][^>]*>/gi, "");',
-        '  html = html.replace(/<meta[^>]*http-equiv=["\']Content-Security-Policy["\'][^>]*>/gi, "");',
-        '  html = html.replace(/<meta[^>]*http-equiv=["\']X-Frame-Options["\'][^>]*>/gi, "");',
-        '  html = html.replace(/<base[^>]*>/gi, "");',
-        '  html = html.replace(/window\\.location\\.(href|replace|assign)\\s*=\\s*["\'][^"\']*["\']/gi, "");',
-        '  html = html.replace(/window\\.location\\.(href|replace|assign)\\s*=\\s*[^;\\n]+/gi, "");',
-        '  html = html.replace(/location\\.href\\s*=\\s*["\'][^"\']*["\']/gi, "");',
-        '  html = html.replace(/location\\.replace\\s*\\([^)]*\\)/gi, "");',
-        '  html = html.replace(/location\\.assign\\s*\\([^)]*\\)/gi, "");',
-        '  html = html.replace(/window\\.location\\.reload\\s*\\([^)]*\\)/gi, "");',
-        '  html = html.replace(/location\\.reload\\s*\\([^)]*\\)/gi, "");',
         '  var css = "<style>" +',
         '    "*{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}" +',
         '    "input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text;}" +',
@@ -1845,7 +1790,6 @@ window.downloadDecryptor = function() {
 
     var html = parts.join('\n');
 
-    /* Download decryptor.html */
     var htmlBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
     var htmlLink = document.createElement('a');
     htmlLink.href = URL.createObjectURL(htmlBlob);
@@ -1854,7 +1798,6 @@ window.downloadDecryptor = function() {
     htmlLink.click();
     document.body.removeChild(htmlLink);
 
-    /* Download key file */
     setTimeout(function() {
         var keyBlob = new Blob([keyFileContent], { type: 'text/javascript;charset=utf-8' });
         var keyLink = document.createElement('a');
