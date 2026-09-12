@@ -1365,31 +1365,6 @@ window.copyOutput = function() {
     toast('Copied!', 'success');
 };
 
-window.downloadOutput = function() {
-    var out = document.getElementById('outputEnc').value;
-    if (!out) { toast('Nothing to download', 'error'); return; }
-    var blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'encrypted-data.txt';
-    a.click();
-    toast('Downloaded!', 'success');
-};
-
-/* ═══════════════════════════════════════════════════════════
-   ENCRYPTED KEY FILE NAME GENERATOR
-   ═══════════════════════════════════════════════════════════ */
-function generateEncryptedKeyFileName() {
-    /* Generate encrypted-looking random filename */
-    var chars = 'abcdef0123456789';
-    var part1 = '', part2 = '', part3 = '';
-    for (var i = 0; i < 8; i++) part1 += chars.charAt(Math.floor(Math.random() * chars.length));
-    for (var j = 0; j < 4; j++) part2 += chars.charAt(Math.floor(Math.random() * chars.length));
-    for (var k = 0; k < 12; k++) part3 += chars.charAt(Math.floor(Math.random() * chars.length));
-    /* Looks like encrypted hash: nx_1a2b3c4d-5e6f-7a8b9c0d1e2f.js */
-    return 'nx_' + part1 + '-' + part2 + '-' + part3 + '.js';
-}
-
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Encrypt first!', 'error'); return; }
@@ -1406,58 +1381,100 @@ window.downloadDecryptor = function() {
         return;
     }
 
-    /* ───── Key File Name: {random prefix}_{20 letters}_{20 numbers}.js ───── */
-function randomLetters(len) {
-    var c = 'abcdefghijklmnopqrstuvwxyz';
-    var s = '';
-    for (var i = 0; i < len; i++) s += c.charAt(Math.floor(Math.random() * c.length));
-    return s;
-}
-function randomNumbers(len) {
-    var c = '0123456789';
-    var s = '';
-    for (var i = 0; i < len; i++) s += c.charAt(Math.floor(Math.random() * c.length));
-    return s;
-}
-function rndPrefix() {
-    var prefixes = ['nx', 'mn', 'kc', 'zk', 'vp', 'qt', 'br', 'dl', 'fx', 'hy', 'jw', 'ls'];
-    return prefixes[Math.floor(Math.random() * prefixes.length)];
-}
-var keyFileName = rndPrefix() + '_' + randomLetters(20) + '_' + randomNumbers(20) + '.js';
+    /* ═══════════════════════════════════════════════════════
+       KEY FILE NAME — random prefix + 20 letters + 20 numbers
+       ═══════════════════════════════════════════════════════ */
+    function randomLetters(len) {
+        var c = 'abcdefghijklmnopqrstuvwxyz';
+        var s = '';
+        for (var i = 0; i < len; i++) s += c.charAt(Math.floor(Math.random() * c.length));
+        return s;
+    }
+    function randomNumbers(len) {
+        var c = '0123456789';
+        var s = '';
+        for (var i = 0; i < len; i++) s += c.charAt(Math.floor(Math.random() * c.length));
+        return s;
+    }
+    function rndPrefix() {
+        var prefixes = ['nx', 'mn', 'kc', 'zk', 'vp', 'qt', 'br', 'dl', 'fx', 'hy', 'jw', 'ls'];
+        return prefixes[Math.floor(Math.random() * prefixes.length)];
+    }
+    var keyFileName = rndPrefix() + '_' + randomLetters(20) + '_' + randomNumbers(20) + '.js';
 
     var encData = out;
 
-    /* ───── Key obfuscation (SIMPLE + SAFE — no symbol injection) ───── */
+    /* ═══════════════════════════════════════════════════════
+       HEAVY KEY OBFUSCATION — 7 LAYERS
+       ═══════════════════════════════════════════════════════ */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
     if (suffix.length < 60) { while (suffix.length < 60) suffix += '0'; }
     suffix = suffix.substring(0, 60);
     var fullKeyString = PREFIX + suffix;
 
-    /* Layer 1: XOR with static key 0x5A */
+    /* ─── Random dynamic salt (per download) ─── */
+    var salt1 = (Date.now() % 251) + 1;
+    var salt2 = (Math.floor(Math.random() * 251)) + 1;
+    var salt3 = (Math.floor(Math.random() * 251)) + 1;
+    var salt4 = (Math.floor(Math.random() * 251)) + 1;
+
+    /* ─── Layer 1: XOR with salt1 ─── */
     var layer1 = [];
     for (var i = 0; i < fullKeyString.length; i++) {
-        layer1.push(fullKeyString.charCodeAt(i) ^ 0x5A);
+        layer1.push((fullKeyString.charCodeAt(i) ^ 0x5A) ^ salt1);
     }
 
-    /* Layer 2: Safe Base64 (manual loop — no stack overflow) */
+    /* ─── Layer 2: Char shift by salt2 ─── */
+    var layer2 = [];
+    for (var j = 0; j < layer1.length; j++) {
+        var shifted = (layer1[j] + salt2) % 256;
+        layer2.push(shifted);
+    }
+
+    /* ─── Layer 3: XOR with salt3 ─── */
+    var layer3 = [];
+    for (var k = 0; k < layer2.length; k++) {
+        layer3.push(layer2[k] ^ salt3);
+    }
+
+    /* ─── Layer 4: Byte swap (odd/even) ─── */
+    var layer4 = [];
+    var even = [], odd = [];
+    for (var m = 0; m < layer3.length; m++) {
+        if (m % 2 === 0) even.push(layer3[m]);
+        else odd.push(layer3[m]);
+    }
+    layer4 = even.concat(odd);
+
+    /* ─── Layer 5: Add random padding ─── */
+    var padding = [];
+    var padCount = (Math.floor(Math.random() * 10) + 5);
+    for (var p = 0; p < padCount; p++) {
+        padding.push(Math.floor(Math.random() * 256));
+    }
+    var layer5 = padding.concat(layer4);
+
+    /* ─── Layer 6: Safe Base64 ─── */
     var binaryString = '';
-    for (var k = 0; k < layer1.length; k++) {
-        binaryString += String.fromCharCode(layer1[k]);
+    for (var b = 0; b < layer5.length; b++) {
+        binaryString += String.fromCharCode(layer5[b]);
     }
-    var layer2 = btoa(binaryString);
+    var layer6 = btoa(binaryString);
 
-    /* Layer 3: Reverse base64 */
-    var layer3 = layer2.split('').reverse().join('');
+    /* ─── Layer 7: Reverse ─── */
+    var layer7 = layer6.split('').reverse().join('');
 
-    /* Layer 4: Final XOR with 0x5A → byte array */
+    /* ─── Layer 8: Final XOR with salt4 → byte array ─── */
     var obfuscatedBytes = [];
-    for (var bi = 0; bi < layer3.length; bi++) {
-        obfuscatedBytes.push(layer3.charCodeAt(bi) ^ 0x5A);
+    for (var bi = 0; bi < layer7.length; bi++) {
+        obfuscatedBytes.push((layer7.charCodeAt(bi) ^ 0x5A) ^ salt4);
     }
     var byteArrayString = '[' + obfuscatedBytes.join(',') + ']';
 
-    /* ───── Random variable names ───── */
+    /* ═══════════════════════════════════════════════════════
+       RANDOM VARIABLE NAMES
+       ═══════════════════════════════════════════════════════ */
     function rndVar(len) {
         var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         var s = '';
@@ -1475,15 +1492,23 @@ var keyFileName = rndPrefix() + '_' + randomLetters(20) + '_' + randomNumbers(20
     var vB = rndVar(4);
     var vJ = rndVar(4);
     var vOut = rndVar(5);
+    var vTemp = rndVar(5);
+    var vEven = rndVar(5);
+    var vOdd = rndVar(5);
+    var vPad = rndVar(4);
 
-    /* ───── Key file content — SAFE DECODE ───── */
+    /* ═══════════════════════════════════════════════════════
+       KEY FILE CONTENT — 8-STEP REVERSE DECODE
+       ═══════════════════════════════════════════════════════ */
     var keyFileContent =
         '(function(){\n' +
         '"use strict";\n' +
+        'var S1=' + salt1 + ',S2=' + salt2 + ',S3=' + salt3 + ',S4=' + salt4 + ';\n' +
+        'var ' + vPad + '=' + padCount + ';\n' +
         'var ' + vBytes + '=' + byteArrayString + ';\n' +
         'var ' + vFinal + '="";\n' +
         'for(var ' + vLoop + '=0;' + vLoop + '<' + vBytes + '.length;' + vLoop + '++){\n' +
-        vFinal + '+=String.fromCharCode(' + vBytes + '[' + vLoop + ']^0x5A);\n' +
+        vFinal + '+=String.fromCharCode((' + vBytes + '[' + vLoop + ']^0x5A)^S4);\n' +
         '}\n' +
         'var ' + vKey + '=' + vFinal + ';\n' +
         'function ' + vDecode + '(s){\n' +
@@ -1491,25 +1516,45 @@ var keyFileName = rndPrefix() + '_' + randomLetters(20) + '_' + randomNumbers(20
         'var ' + vData + '=atob(' + vRev + ');\n' +
         'var ' + vB + '=[];\n' +
         'for(var ' + vJ + '=0;' + vJ + '<' + vData + '.length;' + vJ + '++){\n' +
-        vB + '.push(' + vData + '.charCodeAt(' + vJ + ')^0x5A);\n' +
+        vB + '.push(' + vData + '.charCodeAt(' + vJ + '));\n' +
         '}\n' +
-        'var ' + vOut + '="";\n' +
-        'for(var i=0;i<' + vB + '.length;i++){\n' +
-        vOut + '+=String.fromCharCode(' + vB + '[i]);\n' +
+        'var ' + vTemp + '=' + vB + '.slice(' + vPad + ');\n' +
+        'var ' + vEven + '=' + vTemp + '.slice(0,Math.ceil(' + vTemp + '.length/2));\n' +
+        'var ' + vOdd + '=' + vTemp + '.slice(Math.ceil(' + vTemp + '.length/2));\n' +
+        'var ' + vOut + '=[];\n' +
+        'for(var i=0;i<' + vTemp + '.length;i++){\n' +
+        'if(i%2===0)' + vOut + '.push(' + vEven + '[Math.floor(i/2)]);\n' +
+        'else ' + vOut + '.push(' + vOdd + '[Math.floor(i/2)]);\n' +
         '}\n' +
-        'return ' + vOut + ';\n' +
+        'var ' + vB + '=[];\n' +
+        'for(var q=0;q<' + vOut + '.length;q++){\n' +
+        vB + '.push(' + vOut + '[q]^S3);\n' +
+        '}\n' +
+        'var ' + vOut + '2=[];\n' +
+        'for(var r=0;r<' + vB + '.length;r++){\n' +
+        'var sh=(' + vB + '[r]-S2+256)%256;\n' +
+        vOut + '2.push(sh^S1);\n' +
+        '}\n' +
+        'var res="";\n' +
+        'for(var f=0;f<' + vOut + '2.length;f++){\n' +
+        'res+=String.fromCharCode(' + vOut + '2[f]^0x5A);\n' +
+        '}\n' +
+        'return res;\n' +
         '}\n' +
         'window._0xSECRET=' + vDecode + '(' + vKey + ');\n' +
         '})();\n';
 
-    /* ───── Base64 double-encoded filename ───── */
+    /* ═══════════════════════════════════════════════════════
+       BASE64 DOUBLE-ENCODED FILENAME
+       ═══════════════════════════════════════════════════════ */
     var encodedKeyFileName = btoa(btoa(keyFileName));
 
-    /* ───── Decoy variable names ───── */
+    /* ═══════════════════════════════════════════════════════
+       DECOY + ANTI-DEBUG
+       ═══════════════════════════════════════════════════════ */
     var r1 = rndVar(8), r2 = rndVar(8), r3 = rndVar(8);
     var r4 = rndVar(8), r5 = rndVar(8), r6 = rndVar(8);
 
-    /* ───── Decoy functions ───── */
     var decoyFunctions =
         '<script>\n' +
         '(function(){\n' +
@@ -1522,7 +1567,6 @@ var keyFileName = rndPrefix() + '_' + randomLetters(20) + '_' + randomNumbers(20
         '})();\n' +
         '<' + '/script>\n';
 
-    /* ───── Anti-debugging ───── */
     var antiDebug =
         '<script>\n' +
         '(function(){\n' +
@@ -1540,7 +1584,7 @@ var keyFileName = rndPrefix() + '_' + randomLetters(20) + '_' + randomNumbers(20
         '<' + '/script>\n';
 
     /* ═══════════════════════════════════════════════════════
-       DECRYPTOR HTML — FIXED (Firebase Auth + no UTF-8 error)
+       DECRYPTOR HTML
        ═══════════════════════════════════════════════════════ */
     var parts = [
         '<!DOCTYPE html>',
@@ -1785,7 +1829,7 @@ var keyFileName = rndPrefix() + '_' + randomLetters(20) + '_' + randomNumbers(20
     htmlLink.click();
     document.body.removeChild(htmlLink);
 
-    /* Download key file (mn-key-XXXXXXXXXXXXXXXXXXXX-XXXXXXXXXX.js) */
+    /* Download key file */
     setTimeout(function() {
         var keyBlob = new Blob([keyFileContent], { type: 'text/javascript;charset=utf-8' });
         var keyLink = document.createElement('a');
