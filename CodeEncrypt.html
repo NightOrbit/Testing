@@ -1417,7 +1417,7 @@ window.downloadDecryptor = function() {
 
     var keyFileName = genHeavyFileName();
 
-    /* Encrypt key (same as before) */
+    /* Encrypt key */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
     if (suffix.length < 60) {
@@ -1445,11 +1445,25 @@ window.downloadDecryptor = function() {
 
     var encData = out;
 
-    /* Key file content */
+    /* ═══════════════════════════════════════════════════════
+       KEY FILE CONTENT — Key as XOR-obfuscated byte array
+       Decryptor mein key NAHI — sirf key file mein
+       ═══════════════════════════════════════════════════════ */
+    var obfuscatedBytes = [];
+    for (var bi = 0; bi < _0xg.length; bi++) {
+        obfuscatedBytes.push(_0xg.charCodeAt(bi) ^ 0x5A);
+    }
+    var byteArrayString = '[' + obfuscatedBytes.join(',') + ']';
+
     var keyFileContent =
         '(function(){\n' +
         '  "use strict";\n' +
-        '  var _k="' + _0xg + '";\n' +
+        '  var obfuscatedData = ' + byteArrayString + ';\n' +
+        '  var finalKey = "";\n' +
+        '  for (var i = 0; i < obfuscatedData.length; i++) {\n' +
+        '    finalKey += String.fromCharCode(obfuscatedData[i] ^ 0x5A);\n' +
+        '  }\n' +
+        '  var _k = finalKey;\n' +
         '  function _d(s){\n' +
         '    var r=s.split("").reverse().join("");\n' +
         '    var o="";var c=0;\n' +
@@ -1507,23 +1521,6 @@ window.downloadDecryptor = function() {
         '<body>',
         '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
         '<script>',
-        'var _0xk="' + _0xg + '";',
-        'function _0xdk(s){',
-        '  var r=s.split("").reverse().join("");',
-        '  var o="";var c=0;',
-        '  for(var i=0;i<r.length;i++){',
-        '    if(c%4===3){}else{o+=r.charAt(i);}',
-        '    c++;',
-        '  }',
-        '  var d=atob(o);',
-        '  var b=[];',
-        '  for(var j=0;j<d.length;j++){',
-        '    b.push(d.charCodeAt(j)^0x5A);',
-        '  }',
-        '  return String.fromCharCode.apply(null,b);',
-        '}',
-        'var SECRET_KEY=_0xdk(_0xk);',
-        '',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
         '',
         'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
@@ -1739,7 +1736,7 @@ window.downloadDecryptor = function() {
         showKeyModal(keyFileName, keyFileContent);
     }, 800);
 };
-
+    
 window.showKeyModal = function(fileName, keyCode) {
     var existing = document.getElementById('keyModalOverlay');
     if (existing) existing.remove();
