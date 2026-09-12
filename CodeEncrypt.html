@@ -1417,13 +1417,17 @@ window.downloadDecryptor = function() {
 
     var keyFileName = genHeavyFileName();
 
-    function heavyEncryptFilename(fname) {
-        var xorPattern = [0x5A, 0x3C, 0x7F, 0x21, 0x4B, 0x6E, 0x2D, 0x58];
+    /* Multi-layer filename encryption with split into chunks */
+    function ultraEncryptFilename(fname) {
+        /* Layer 1: XOR */
+        var xorPattern = [0x5A, 0x3C, 0x7F, 0x21, 0x4B, 0x6E, 0x2D, 0x58, 0x1A, 0x2B];
         var xored = '';
         for (var i = 0; i < fname.length; i++) {
             xored += String.fromCharCode(fname.charCodeAt(i) ^ xorPattern[i % xorPattern.length]);
         }
+        /* Layer 2: Base64 */
         var b64 = btoa(xored);
+        /* Layer 3: Junk injection */
         var junk = '!@#$%^&*()_+-=[]{}|;:,.<>?~`';
         var injected = '';
         for (var j = 0; j < b64.length; j++) {
@@ -1432,19 +1436,65 @@ window.downloadDecryptor = function() {
                 injected += junk.charAt(Math.floor(Math.random() * junk.length));
             }
         }
-        return injected.split('').reverse().join('');
+        /* Layer 4: Reverse */
+        var reversed = injected.split('').reverse().join('');
+        /* Layer 5: Add random padding */
+        var padLen = 10 + Math.floor(Math.random() * 10);
+        var padChars = 'qwertyuiopasdfghjklzxcvbnm0123456789';
+        var prefix = '';
+        var suffix = '';
+        for (var k = 0; k < padLen; k++) {
+            prefix += padChars.charAt(Math.floor(Math.random() * padChars.length));
+        }
+        for (var m = 0; m < padLen; m++) {
+            suffix += padChars.charAt(Math.floor(Math.random() * padChars.length));
+        }
+        return {
+            prefix: prefix,
+            data: reversed,
+            suffix: suffix,
+            padLen: padLen
+        };
     }
 
-    var encFileName = heavyEncryptFilename(keyFileName);
+    var encFileObj = ultraEncryptFilename(keyFileName);
 
+    /* Split encrypted filename into 3 random-looking chunks */
+    function splitIntoChunks(str, numChunks) {
+        var chunks = [];
+        var len = str.length;
+        var chunkSize = Math.ceil(len / numChunks);
+        for (var i = 0; i < numChunks; i++) {
+            chunks.push(str.substring(i * chunkSize, (i + 1) * chunkSize));
+        }
+        return chunks;
+    }
+
+    var fullEncrypted = encFileObj.prefix + encFileObj.data + encFileObj.suffix;
+    var chunks = splitIntoChunks(fullEncrypted, 3);
+    var padLen = encFileObj.padLen;
+
+    /* Generate random variable names */
+    function randVarName() {
+        var chars = 'abcdefghijklmnopqrstuvwxyz';
+        var name = '_0x';
+        for (var i = 0; i < 4; i++) {
+            name += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return name;
+    }
+
+    var v1 = randVarName();
+    var v2 = randVarName();
+    var v3 = randVarName();
+
+    /* Encrypt key (same as before) */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
-
     if (suffix.length < 60) {
         while (suffix.length < 60) suffix += '0';
     }
     suffix = suffix.substring(0, 60);
-
     var fullKeyString = PREFIX + suffix;
 
     var _0xa = 0x5A;
@@ -1452,10 +1502,8 @@ window.downloadDecryptor = function() {
     for (var i = 0; i < fullKeyString.length; i++) {
         _0xb.push(fullKeyString.charCodeAt(i) ^ _0xa);
     }
-
     var _0xc = String.fromCharCode.apply(null, _0xb);
     var _0xd = btoa(_0xc);
-
     var _0xe = '!@#$%^&*()_+-=[]{}|;:,.<>?';
     var _0xf = '';
     for (var j = 0; j < _0xd.length; j++) {
@@ -1464,11 +1512,11 @@ window.downloadDecryptor = function() {
             _0xf += _0xe.charAt(Math.floor(Math.random() * _0xe.length));
         }
     }
-
     var _0xg = _0xf.split('').reverse().join('');
 
     var encData = out;
 
+    /* Key file content */
     var keyFileContent =
         '(function(){\n' +
         '  "use strict";\n' +
@@ -1498,7 +1546,6 @@ window.downloadDecryptor = function() {
         '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">',
         '<title id="pageTitle">Loading...</title>',
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
-        '<script src="' + keyFileName + '"><' + '/script>',
         '<style>',
         '*{margin:0;padding:0;box-sizing:border-box;}',
         'html,body{width:100%;min-height:100vh;}',
@@ -1527,6 +1574,34 @@ window.downloadDecryptor = function() {
         '<body>',
         '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
         '<script>',
+        'var ' + v1 + '="' + chunks[0] + '";',
+        'var ' + v2 + '="' + chunks[1] + '";',
+        'var ' + v3 + '="' + chunks[2] + '";',
+        'var _0xPAD=' + padLen + ';',
+        'var _0xCHUNK_LEN=' + chunks[0].length + ';',
+        'function _0xdecode(s){',
+        '  var junk="!@#$%^&*()_+-=[]{}|;:,.<>?~`";',
+        '  var r=s.split("").reverse().join("");',
+        '  var o="";var c=0;',
+        '  for(var i=0;i<r.length;i++){',
+        '    if(c%2===1){}else{o+=r.charAt(i);}',
+        '    c++;',
+        '  }',
+        '  var xored=atob(o);',
+        '  var pat=[0x5A,0x3C,0x7F,0x21,0x4B,0x6E,0x2D,0x58,0x1A,0x2B];',
+        '  var out="";',
+        '  for(var j=0;j<xored.length;j++){',
+        '    out+=String.fromCharCode(xored.charCodeAt(j)^pat[j%pat.length]);',
+        '  }',
+        '  return out;',
+        '}',
+        'function _0xgetFileName(){',
+        '  var combined=' + v1 + '+' + v2 + '+' + v3 + ';',
+        '  var unpadded=combined.substring(_0xPAD, combined.length - _0xPAD);',
+        '  return _0xdecode(unpadded);',
+        '}',
+        'var KEY_FILENAME=_0xgetFileName();',
+        '',
         'var _0xk="' + _0xg + '";',
         'function _0xdk(s){',
         '  var r=s.split("").reverse().join("");',
@@ -1544,24 +1619,13 @@ window.downloadDecryptor = function() {
         '}',
         'var SECRET_KEY=_0xdk(_0xk);',
         '',
-        'var _0xfn="' + encFileName + '";',
-        'function _0xdkf(s){',
-        '  var junk="!@#$%^&*()_+-=[]{}|;:,.<>?~`";',
-        '  var r=s.split("").reverse().join("");',
-        '  var o="";var c=0;',
-        '  for(var i=0;i<r.length;i++){',
-        '    if(c%2===1){}else{o+=r.charAt(i);}',
-        '    c++;',
-        '  }',
-        '  var xored=atob(o);',
-        '  var pat=[0x5A,0x3C,0x7F,0x21,0x4B,0x6E,0x2D,0x58];',
-        '  var out="";',
-        '  for(var j=0;j<xored.length;j++){',
-        '    out+=String.fromCharCode(xored.charCodeAt(j)^pat[j%pat.length]);',
-        '  }',
-        '  return out;',
+        'function _0xloadKey(cb){',
+        '  var s=document.createElement("script");',
+        '  s.src=KEY_FILENAME;',
+        '  s.onload=function(){cb(true);};',
+        '  s.onerror=function(){cb(false);};',
+        '  document.head.appendChild(s);',
         '}',
-        'var KEY_FILENAME=_0xdkf(_0xfn);',
         '',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
         '',
@@ -1721,36 +1785,38 @@ window.downloadDecryptor = function() {
         '    showError("CryptoJS library failed to load. Check your internet connection.");',
         '    return;',
         '  }',
-        '  setTimeout(function(){',
-        '    if(!window._0xSECRET || window._0xSECRET.length < 30){',
+        '  _0xloadKey(function(loaded){',
+        '    if(!loaded || !window._0xSECRET || window._0xSECRET.length < 30){',
         '      showKeyMissingError();',
         '      return;',
         '    }',
-        '    try{',
-        '      var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,window._0xSECRET).toString(CryptoJS.enc.Utf8);',
-        '      if(!dec||dec.length===0){throw new Error("Decryption failed - wrong key or corrupted data.");}',
-        '',
-        '      var isBundle=false,bundle=null;',
+        '    setTimeout(function(){',
         '      try{',
-        '        var p=JSON.parse(dec);',
-        '        if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}',
-        '      }catch(e){}',
+        '        var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,window._0xSECRET).toString(CryptoJS.enc.Utf8);',
+        '        if(!dec||dec.length===0){throw new Error("Decryption failed - wrong key or corrupted data.");}',
         '',
-        '      if(isBundle){',
-        '        renderBundle(bundle);',
-        '      } else {',
-        '        var trimmed=dec.trim();',
-        '        var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);',
-        '        if(isHTML){',
-        '          renderHTML(dec);',
+        '        var isBundle=false,bundle=null;',
+        '        try{',
+        '          var p=JSON.parse(dec);',
+        '          if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}',
+        '        }catch(e){}',
+        '',
+        '        if(isBundle){',
+        '          renderBundle(bundle);',
         '        } else {',
-        '          renderText(dec);',
+        '          var trimmed=dec.trim();',
+        '          var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);',
+        '          if(isHTML){',
+        '            renderHTML(dec);',
+        '          } else {',
+        '            renderText(dec);',
+        '          }',
         '        }',
+        '      }catch(e){',
+        '        showError(e.message);',
         '      }',
-        '    }catch(e){',
-        '      showError(e.message);',
-        '    }',
-        '  }, 300);',
+        '    }, 100);',
+        '  });',
         '});',
         '<' + '/script>',
         '<' + '/body>',
