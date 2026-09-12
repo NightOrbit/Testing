@@ -1426,6 +1426,8 @@ window.downloadDecryptor = function() {
 
     var keyFileName = genHeavyFileName();
 
+    var encData = out;
+
     /* ───── Multi-layer key obfuscation ───── */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
