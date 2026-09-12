@@ -738,11 +738,11 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     </div>
     <div class="header-card">
         <h1>⚡ Universal Encrypt Pro</h1>
-        <div class="subtitle">NightOrbit CodeForge · v14 HEAVY · Per-User Key System</div>
+        <div class="subtitle">NightOrbit CodeForge · v15 ULTRA · Encrypted Key File System</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v14 HEAVY</span>
+            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v15 ULTRA</span>
             <span class="header-stat gold"><i class="fa-solid fa-shield-halved"></i> AES-256</span>
-            <span class="header-stat pink"><i class="fa-solid fa-user-lock"></i> Per-User Key</span>
+            <span class="header-stat pink"><i class="fa-solid fa-file-shield"></i> Encrypted Key File</span>
             <span class="header-stat green"><i class="fa-solid fa-database"></i> Firebase</span>
         </div>
     </div>
@@ -793,10 +793,10 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         <h3><i class="fa-solid fa-triangle-exclamation"></i> CRITICAL WARNINGS</h3>
         <ul>
             <li><b>DO NOT</b> forget your <b>password</b> — it's the only way to decrypt your key</li>
-            <li><b>DO NOT</b> delete the <b>decryptor.html</b> file — it's needed to decrypt your code</li>
+            <li><b>DO NOT</b> delete the <b>decryptor.html</b> or <b>key file</b> — both needed</li>
             <li>If you forget password, you must <b>DELETE KEY & REGENERATE</b> a new one</li>
             <li>Old encrypted code will be <b>LOCKED FOREVER</b> after key deletion</li>
-            <li>Keep <span class="green">3 backups</span>: original code, encrypted output, decryptor.html</li>
+            <li>Keep <span class="green">3 backups</span>: original code, encrypted output, decryptor + key file</li>
             <li>Password format: <span class="gold">20 chars (6 digits + 10 letters + 4 symbols)</span></li>
         </ul>
     </div>
@@ -841,7 +841,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     <div class="btn-row">
         <button class="green" onclick="copyOutput()">📋 COPY</button>
         <button class="secondary" onclick="downloadOutput()">⬇️ DOWNLOAD ENCRYPTED</button>
-        <button class="pink" onclick="downloadDecryptor()">🎁 DOWNLOAD DECRYPTOR HTML</button>
+        <button class="pink" onclick="downloadDecryptor()">🎁 DOWNLOAD DECRYPTOR + KEY FILE</button>
     </div>
 </div>
 
@@ -850,6 +850,11 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 <script>
 (function() {
 'use strict';
+
+/* ═══════════════════════════════════════════════════════════
+   UNIVERSAL ENCRYPT PRO v15 — ULTRA
+   With Encrypted Key File System
+   ═══════════════════════════════════════════════════════════ */
 
 var state = {
     uploadedFiles: {},
@@ -862,7 +867,7 @@ var state = {
     _pendingAction: null,
     authHandled: false
 };
-    
+
 var SESSION_TIMEOUT = 30 * 1000;
 
 function bytes(n) {
@@ -890,6 +895,36 @@ function toast(msg, type) {
     }, 3500);
 }
 
+/* ═══ UNIVERSAL COPY HELPER ═══ */
+function universalCopy(text, btn, originalText) {
+    if (!text) return;
+    function done() {
+        if (btn) {
+            btn.textContent = 'COPIED!';
+            setTimeout(function() { btn.textContent = originalText || 'COPY'; }, 1500);
+        }
+    }
+    function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        ta.style.top = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try { document.execCommand('copy'); } catch(e) {}
+        document.body.removeChild(ta);
+        done();
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else {
+        fallback();
+    }
+}
+
+/* ═══ DRAWER ═══ */
 window.toggleDrawer = function() {
     document.getElementById('drawer').classList.toggle('open');
     document.getElementById('drawerOverlay').classList.toggle('open');
@@ -908,6 +943,7 @@ window.selectLang = function(lang, btn) {
     updateDetection();
 };
 
+/* ═══ AUTO LANGUAGE DETECTION ═══ */
 function detectLanguage(code) {
     var t = code.trim();
     if (!t) return 'txt';
@@ -1034,7 +1070,7 @@ var pwdModalLabel = document.getElementById('pwdModalLabel');
 var reqList = document.getElementById('reqList');
 
 function openPwdModal(mode) {
-     state._pwdMode = mode;
+    state._pwdMode = mode;
     if (mode === 'create') {
         pwdModalTitle.textContent = '🔐 Create Your Password';
         pwdModalSub.textContent = 'This will generate your unique key';
@@ -1144,28 +1180,27 @@ pwdSubmitBtn.addEventListener('click', function() {
         setPwdStatus('loading', '⏳ Verifying password...');
         pwdSubmitBtn.disabled = true;
 
-      KEY_MANAGER.unlockKey(state.user, password)
-    .then(function(result) {
-        setPwdStatus('success', '✅ Key revealed!');
-        document.getElementById('secretKey').value = result.key;
-        showReveal(result.key);
-        
-        if (state._pendingAction === 'encrypt') {
-            state._pendingAction = null;
-            setTimeout(function() {
-                performEncrypt(result.key);
-            }, 500);
-        }
-        
-        if (state._pendingAction === 'downloadDecryptor') {
-            state._pendingAction = null;
-            setTimeout(function() {
-                downloadDecryptor();
-            }, 500);
-        }
-        
-        setTimeout(closePwdModal, 1000);
-    })
+        KEY_MANAGER.unlockKey(state.user, password)
+            .then(function(result) {
+                setPwdStatus('success', '✅ Key revealed!');
+                document.getElementById('secretKey').value = result.key;
+                showReveal(result.key);
+
+                var action = state._pendingAction;
+                state._pendingAction = null;
+
+                if (action === 'encrypt') {
+                    setTimeout(function() {
+                        performEncrypt(result.key);
+                    }, 500);
+                } else if (action === 'downloadDecryptor') {
+                    setTimeout(function() {
+                        downloadDecryptor();
+                    }, 500);
+                }
+
+                setTimeout(closePwdModal, 1000);
+            })
             .catch(function(err) {
                 setPwdStatus('error', '❌ ' + err.message);
                 pwdSubmitBtn.disabled = false;
@@ -1206,21 +1241,8 @@ window.hideReveal = function() {
 window.copyRevealedKey = function() {
     var key = document.getElementById('revealBox').textContent;
     if (!key) return;
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(key).then(function() {
-            toast('✅ Key copied!', 'success');
-        }).catch(fallbackCopy);
-    } else fallbackCopy();
-    function fallbackCopy() {
-        var ta = document.createElement('textarea');
-        ta.value = key;
-        ta.style.position = 'fixed'; ta.style.left = '-9999px';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        toast('✅ Key copied!', 'success');
-    }
+    universalCopy(key, null, null);
+    toast('✅ Key copied!', 'success');
 };
 
 function startSessionTimer() {
@@ -1316,7 +1338,7 @@ function performEncrypt(secretKey) {
     if (fileNames.length > 0) {
         var bundle = {
             __type: 'multi-file-bundle',
-            __version: '14.0',
+            __version: '15.0',
             __created: new Date().toISOString(),
             __fileCount: fileNames.length,
             files: {}
@@ -1341,14 +1363,9 @@ function performEncrypt(secretKey) {
 window.copyOutput = function() {
     var out = document.getElementById('outputEnc');
     if (!out.value) { toast('Nothing to copy', 'error'); return; }
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(out.value).then(function() {
-            showStatus('success', '✅ Copied!'); toast('Copied!', 'success');
-        });
-    } else {
-        out.select(); document.execCommand('copy');
-        showStatus('success', '✅ Copied!'); toast('Copied!', 'success');
-    }
+    universalCopy(out.value, null, null);
+    showStatus('success', '✅ Copied!');
+    toast('Copied!', 'success');
 };
 
 window.downloadOutput = function() {
@@ -1362,10 +1379,24 @@ window.downloadOutput = function() {
     toast('Downloaded!', 'success');
 };
 
+/* ═══════════════════════════════════════════════════════════
+   ENCRYPTED KEY FILE NAME GENERATOR
+   ═══════════════════════════════════════════════════════════ */
+function generateEncryptedKeyFileName() {
+    /* Generate encrypted-looking random filename */
+    var chars = 'abcdef0123456789';
+    var part1 = '', part2 = '', part3 = '';
+    for (var i = 0; i < 8; i++) part1 += chars.charAt(Math.floor(Math.random() * chars.length));
+    for (var j = 0; j < 4; j++) part2 += chars.charAt(Math.floor(Math.random() * chars.length));
+    for (var k = 0; k < 12; k++) part3 += chars.charAt(Math.floor(Math.random() * chars.length));
+    /* Looks like encrypted hash: nx_1a2b3c4d-5e6f-7a8b9c0d1e2f.js */
+    return 'nx_' + part1 + '-' + part2 + '-' + part3 + '.js';
+}
+
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Encrypt first!', 'error'); return; }
-    
+
     if (!KEY_MANAGER.isReady() || !KEY_MANAGER.getKey()) {
         state._pendingAction = 'downloadDecryptor';
         openPwdModal('reveal');
@@ -1373,67 +1404,68 @@ window.downloadDecryptor = function() {
         return;
     }
     var fullKey = KEY_MANAGER.getKey();
-    if (!fullKey || fullKey.length < 30) { 
-        toast('Key not found. Please unlock first.', 'error'); 
-        return; 
+    if (!fullKey || fullKey.length < 30) {
+        toast('Key not found. Please unlock first.', 'error');
+        return;
     }
-    
-    var randomChars = 'abcdef0123456789';
-    var randomPart = '';
-    for (var r = 0; r < 20; r++) {
-        randomPart += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
-    }
-    var keyFileName = 'nx_' + randomPart + '.js';
-    
+
+    /* Generate encrypted key file name */
+    var keyFileName = generateEncryptedKeyFileName();
+
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
-    
+
     if (suffix.length < 60) {
         while (suffix.length < 60) suffix += '0';
     }
     suffix = suffix.substring(0, 60);
-    
+
     var fullKeyString = PREFIX + suffix;
-    
-    var xorKey = 0x5A;
-    var xorBytes = [];
+
+    var _0xa = 0x5A;
+    var _0xb = [];
     for (var i = 0; i < fullKeyString.length; i++) {
-        xorBytes.push(fullKeyString.charCodeAt(i) ^ xorKey);
+        _0xb.push(fullKeyString.charCodeAt(i) ^ _0xa);
     }
-    
-    var xorString = String.fromCharCode.apply(null, xorBytes);
-    var base64Str = btoa(xorString);
-    
-    var fakeChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
-    var injected = '';
-    for (var j = 0; j < base64Str.length; j++) {
-        injected += base64Str.charAt(j);
+
+    var _0xc = String.fromCharCode.apply(null, _0xb);
+    var _0xd = btoa(_0xc);
+
+    var _0xe = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+    var _0xf = '';
+    for (var j = 0; j < _0xd.length; j++) {
+        _0xf += _0xd.charAt(j);
         if (j % 3 === 2) {
-            injected += fakeChars.charAt(Math.floor(Math.random() * fakeChars.length));
+            _0xf += _0xe.charAt(Math.floor(Math.random() * _0xe.length));
         }
     }
-    
-    var reversed = injected.split('').reverse().join('');
-    
-    var keyStoreCode = 'var _0xk="' + reversed + '";\n' +
-        'function _0xdk(s){\n' +
-        'var r=s.split("").reverse().join("");\n' +
-        'var o="";var c=0;\n' +
-        'for(var i=0;i<r.length;i++){\n' +
-        'if(c%4===3){}else{o+=r.charAt(i);}\n' +
-        'c++;\n' +
-        '}\n' +
-        'var d=atob(o);\n' +
-        'var b=[];\n' +
-        'for(var j=0;j<d.length;j++){\n' +
-        'b.push(d.charCodeAt(j)^0x5A);\n' +
-        '}\n' +
-        'return String.fromCharCode.apply(null,b);\n' +
-        '}\n' +
-        'window._0xSECRET=_0xdk(_0xk);';
-    
+
+    var _0xg = _0xf.split('').reverse().join('');
+
     var encData = out;
-    
+
+    /* Build the key file content */
+    var keyFileContent =
+        '/* Encrypted Key File — DO NOT EDIT */\n' +
+        '/* Keep this file in SAME folder as decryptor.html */\n' +
+        '/* File: ' + keyFileName + ' */\n' +
+        'var _0xk="' + _0xg + '";\n' +
+        'function _0xdk(s){\n' +
+        '  var r=s.split("").reverse().join("");\n' +
+        '  var o="";var c=0;\n' +
+        '  for(var i=0;i<r.length;i++){\n' +
+        '    if(c%4===3){}else{o+=r.charAt(i);}\n' +
+        '    c++;\n' +
+        '  }\n' +
+        '  var d=atob(o);\n' +
+        '  var b=[];\n' +
+        '  for(var j=0;j<d.length;j++){\n' +
+        '    b.push(d.charCodeAt(j)^0x5A);\n' +
+        '  }\n' +
+        '  return String.fromCharCode.apply(null,b);\n' +
+        '}\n' +
+        'window._0xSECRET=_0xdk(_0xk);\n';
+
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -1473,7 +1505,7 @@ window.downloadDecryptor = function() {
         '<script>',
         'var SECRET_KEY = window._0xSECRET;',
         'if (!SECRET_KEY || SECRET_KEY.length < 30) {',
-        '  document.body.innerHTML = "<div style=\\"color:#ff0064;text-align:center;padding:60px;font-family:monospace;font-size:14px;line-height:2;\\">Key file missing or invalid.<br><br>Save both files in the SAME FOLDER.<br>Do NOT rename the key file.<br><br>Expected: ' + keyFileName + '</div>";',
+        '  document.body.innerHTML = "<div style=\\"color:#ff0064;text-align:center;padding:60px;font-family:monospace;font-size:14px;line-height:2;background:#0b0b1a;min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;\\"><div style=\\"font-size:64px;margin-bottom:20px;\\">❌<\\/div><div style=\\"font-size:20px;letter-spacing:3px;text-transform:uppercase;margin-bottom:20px;\\">Key File Missing<\\/div><div style=\\"color:#b0b0d0;line-height:1.8;\\">Save both files in SAME folder:<br><br>1. decryptor.html<br>2. ' + keyFileName + '<br><br>Do NOT rename the key file.<\\/div><\\/div>";',
         '} else {',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
         '',
@@ -1487,7 +1519,7 @@ window.downloadDecryptor = function() {
         '  err+="<div class=\\"err-icon\\">❌<\\/div>";',
         '  err+="<h2>Decryption Failed<\\/h2>";',
         '  err+="<p>"+msg+"<\\/p>";',
-        '  err+="<p style=\\"font-size:11px;color:#6a6a8a;margin-top:20px;\\">Check: secret key, encrypted data, internet connection<\\/p>";',
+        '  err+="<p style=\\"font-size:11px;color:#6a6a8a;margin-top:20px;\\">Check: key file present, encrypted data, internet connection<\\/p>";',
         '  err+="<\\/div>";',
         '  document.body.innerHTML=err;',
         '}',
@@ -1585,13 +1617,13 @@ window.downloadDecryptor = function() {
         '  document.body.innerHTML="";',
         '  document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;padding:20px;margin:0;min-height:100vh;";',
         '  var h="<div class=\\"bundle-wrap\\">";',
-        '  h+="<div class=\\"bundle-title\\">Multi-File Bundle ("+bundle.__fileCount+" files)<\\/div>";',
+        '  h+="<div class=\\"bundle-title\\">📦 Multi-File Bundle ("+bundle.__fileCount+" files)<\\/div>";',
         '  Object.keys(bundle.files).forEach(function(name){',
         '    var f=bundle.files[name];',
         '    h+="<div class=\\"file-card\\">";',
-        '    h+="<div class=\\"file-head\\"><span class=\\"file-name\\">"+name+"<\\/span><span class=\\"file-lang\\">"+(f.lang||"?").toUpperCase()+"<\\/span><\\/div>";',
+        '    h+="<div class=\\"file-head\\"><span class=\\"file-name\\">📄 "+name+"<\\/span><span class=\\"file-lang\\">"+(f.lang||"?").toUpperCase()+"<\\/span><\\/div>";',
         '    h+="<pre class=\\"file-content\\">"+f.content.replace(/</g,"&lt;")+"<\\/pre>";',
-        '    h+="<button class=\\"dl-btn\\" data-name=\\""+name+"\\">Download "+name+"<\\/button>";',
+        '    h+="<button class=\\"dl-btn\\" data-name=\\""+name+"\\">⬇ Download "+name+"<\\/button>";',
         '    h+="<\\/div>";',
         '  });',
         '  h+="<\\/div>";',
@@ -1614,7 +1646,7 @@ window.downloadDecryptor = function() {
         '    if(typeof CryptoJS==="undefined"){throw new Error("CryptoJS library failed to load. Check your internet connection.");}',
         '    setTimeout(function(){',
         '      var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,SECRET_KEY).toString(CryptoJS.enc.Utf8);',
-        '      if(!dec||dec.length===0){throw new Error("Decryption failed - wrong key or corrupted data.");}',
+        '      if(!dec||dec.length===0){throw new Error("Decryption failed — wrong key or corrupted data.");}',
         '',
         '      var isBundle=false,bundle=null;',
         '      try{',
@@ -1643,79 +1675,82 @@ window.downloadDecryptor = function() {
         '<' + '/body>',
         '<' + '/html>'
     ];
-    
+
     var html = parts.join('\n');
-    
+
+    /* Download decryptor.html */
     var htmlBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
     var htmlLink = document.createElement('a');
     htmlLink.href = URL.createObjectURL(htmlBlob);
     htmlLink.download = 'decryptor.html';
     htmlLink.click();
-    
-    showStatus('success', 'Decryptor downloaded!');
-    toast('Decryptor downloaded!', 'success');
-    
+
+    /* Download encrypted key file */
+    var keyBlob = new Blob([keyFileContent], { type: 'text/javascript;charset=utf-8' });
+    var keyLink = document.createElement('a');
+    keyLink.href = URL.createObjectURL(keyBlob);
+    keyLink.download = keyFileName;
+    keyLink.click();
+
+    showStatus('success', '🎁 Decryptor + Key file downloaded! Keep both in same folder.');
+    toast('Decryptor + Key file downloaded!', 'success');
+
     setTimeout(function() {
-        showKeyModal(keyFileName, keyStoreCode);
-    }, 500);
+        showKeyModal(keyFileName, keyFileContent);
+    }, 800);
 };
 
 window.showKeyModal = function(fileName, keyCode) {
     var existing = document.getElementById('keyModalOverlay');
     if (existing) existing.remove();
-    
+
     var overlay = document.createElement('div');
     overlay.id = 'keyModalOverlay';
     overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
-    
+
     var modal = document.createElement('div');
-    modal.style.cssText = 'background:rgba(11,11,26,0.98);border:2px solid #00f0ff;border-radius:22px;padding:28px 24px;max-width:560px;width:100%;box-shadow:0 0 100px rgba(0,240,255,0.3);';
-    
-    modal.innerHTML = 
-        '<h2 style="font-family:Orbitron,sans-serif;font-size:16px;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:8px;background:linear-gradient(135deg,#00f0ff,#ff2d95);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">KEY FILE SETUP</h2>' +
-        '<p style="color:#6a6a8a;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:20px;">Follow these steps carefully</p>' +
-        
+    modal.style.cssText = 'background:rgba(11,11,26,0.98);border:2px solid #00f0ff;border-radius:22px;padding:28px 24px;max-width:580px;width:100%;box-shadow:0 0 100px rgba(0,240,255,0.3);';
+
+    modal.innerHTML =
+        '<h2 style="font-family:Orbitron,sans-serif;font-size:16px;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:8px;background:linear-gradient(135deg,#00f0ff,#ff2d95);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">KEY FILE BACKUP</h2>' +
+        '<p style="color:#6a6a8a;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:20px;">Files auto-downloaded. Backup below.</p>' +
+
+        '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
+        '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">✅ AUTO-DOWNLOADED</div>' +
+        '<div style="color:#b0d0ff;font-size:12px;line-height:1.7;">Two files have been downloaded:<br>1. <b style="color:#ffd700;">decryptor.html</b><br>2. <b style="color:#00f0ff;">' + fileName + '</b></div>' +
+        '</div>' +
+
         '<div style="background:rgba(255,215,0,0.08);border-left:3px solid #ffd700;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
-        '<div style="color:#ffd700;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">STEP 1 — CREATE THIS FILE</div>' +
+        '<div style="color:#ffd700;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📁 BACKUP — KEY FILE NAME</div>' +
         '<div style="color:#fff;font-size:13px;font-family:JetBrains Mono,monospace;word-break:break-all;background:#000;padding:10px;border-radius:6px;border:1px solid #333;">' + fileName + '</div>' +
         '<button onclick="copyToClipboard(\'' + fileName + '\', this)" style="margin-top:8px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">COPY FILE NAME</button>' +
         '</div>' +
-        
+
         '<div style="background:rgba(0,240,255,0.08);border-left:3px solid #00f0ff;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
-        '<div style="color:#00f0ff;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">STEP 2 — PASTE THIS CODE INSIDE THE FILE</div>' +
-        '<div id="keyCodeBox" style="color:#00ff64;font-size:11px;font-family:JetBrains Mono,monospace;word-break:break-all;background:#000;padding:10px;border-radius:6px;border:1px solid #333;max-height:200px;overflow-y:auto;white-space:pre-wrap;">' + keyCode.replace(/</g, '&lt;') + '</div>' +
-        '<button onclick="copyKeyCode()" style="margin-top:8px;background:linear-gradient(135deg,#00f0ff,#b400ff);color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">COPY KEY CODE</button>' +
+        '<div style="color:#00f0ff;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📝 BACKUP — KEY FILE CODE</div>' +
+        '<div id="keyCodeBox" style="color:#00ff64;font-size:10px;font-family:JetBrains Mono,monospace;word-break:break-all;background:#000;padding:10px;border-radius:6px;border:1px solid #333;max-height:180px;overflow-y:auto;white-space:pre-wrap;">' + keyCode.replace(/</g, '&lt;') + '</div>' +
+        '<button onclick="copyKeyCode(this)" style="margin-top:8px;background:linear-gradient(135deg,#00f0ff,#b400ff);color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">COPY KEY CODE</button>' +
         '</div>' +
-        
+
         '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:12px 14px;border-radius:8px;margin-bottom:20px;">' +
-        '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">STEP 3 — SAVE FILE IN SAME FOLDER</div>' +
-        '<div style="color:#b0d0ff;font-size:12px;line-height:1.7;">Save the file with the name from Step 1, in the SAME folder as decryptor.html. Do NOT rename it.</div>' +
+        '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">⚠️ IMPORTANT — SAME FOLDER</div>' +
+        '<div style="color:#b0d0ff;font-size:12px;line-height:1.7;">Place <b>decryptor.html</b> and <b>' + fileName + '</b> in the SAME folder. Do NOT rename the key file.</div>' +
         '</div>' +
-        
+
         '<button onclick="closeKeyModal()" style="width:100%;background:linear-gradient(135deg,#00ff64,#00aa44);color:#000;border:none;padding:15px 22px;border-radius:12px;font-weight:900;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">OK, I UNDERSTAND</button>';
-    
+
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 };
 
 window.copyToClipboard = function(text, btn) {
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).then(function() {
-            btn.textContent = 'COPIED!';
-            setTimeout(function() { btn.textContent = 'COPY FILE NAME'; }, 1500);
-        });
-    }
+    universalCopy(text, btn, 'COPY FILE NAME');
 };
 
-window.copyKeyCode = function() {
+window.copyKeyCode = function(btn) {
     var code = document.getElementById('keyCodeBox').textContent;
-    var btn = event.target;
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(code).then(function() {
-            btn.textContent = 'COPIED!';
-            setTimeout(function() { btn.textContent = 'COPY KEY CODE'; }, 1500);
-        });
-    }
+    if (!code) return;
+    universalCopy(code, btn, 'COPY KEY CODE');
 };
 
 window.closeKeyModal = function() {
@@ -1749,12 +1784,12 @@ function handleAuthReady(e) {
     if (!e.detail || !e.detail.user) return;
     if (state.authHandled) return;
     state.authHandled = true;
-    
+
     state.user = e.detail.user;
     var name = e.detail.name || (state.user.email ? state.user.email.split('@')[0] : 'User');
     document.getElementById('welcomeName').textContent = name;
     document.getElementById('authStatus').textContent = 'Authenticated';
-    
+
     console.log('👤 Auth ready:', state.user.email);
 
     KEY_MANAGER.checkKeyStatus(state.user.uid).then(function(result) {
@@ -1789,7 +1824,7 @@ setTimeout(function() {
 }, 3000);
 
 updateKeyUI();
-console.log('%c🔐 Universal Encrypt Pro v14 HEAVY loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c🔐 Universal Encrypt Pro v15 ULTRA loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
 
 })();
 </script>
