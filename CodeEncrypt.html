@@ -1261,7 +1261,7 @@ pwdSubmitBtn.addEventListener('click', function() {
         setPwdStatus('loading', '⏳ Verifying password...');
         pwdSubmitBtn.disabled = true;
 
-       KEY_MANAGER.unlockKey(state.user, password)
+      KEY_MANAGER.unlockKey(state.user, password)
     .then(function(result) {
         setPwdStatus('success', '✅ Key revealed!');
         document.getElementById('secretKey').value = result.key;
@@ -1275,8 +1275,17 @@ pwdSubmitBtn.addEventListener('click', function() {
             }, 500);
         }
         
+        /* ═══ YE NAYA CODE ADD KARO ═══ */
+        if (state._pendingAction === 'downloadDecryptor') {
+            state._pendingAction = null;
+            setTimeout(function() {
+                downloadDecryptor();
+            }, 500);
+        }
+        
         setTimeout(closePwdModal, 1000);
     })
+          
             .catch(function(err) {
                 setPwdStatus('error', '❌ ' + err.message);
                 pwdSubmitBtn.disabled = false;
@@ -1485,14 +1494,18 @@ window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Encrypt first!', 'error'); return; }
     
-    /* ═══ GET FULL KEY FROM KEY MANAGER ═══ */
-    var fullKey;
-    try {
-        fullKey = KEY_MANAGER.getKey ? KEY_MANAGER.getKey() : document.getElementById('secretKey').value;
-    } catch(e) {
-        fullKey = document.getElementById('secretKey').value;
+    /* ═══ KEY UNLOCK CHECK — YE NAYA CODE HAI ═══ */
+    if (!KEY_MANAGER.isReady() || !KEY_MANAGER.getKey()) {
+        state._pendingAction = 'downloadDecryptor';
+        openPwdModal('reveal');
+        toast('Enter password first, then decryptor will be created', 'info');
+        return;
     }
-    if (!fullKey || fullKey.length < 30) { toast('Key not available', 'error'); return; }
+    var fullKey = KEY_MANAGER.getKey();
+    if (!fullKey || fullKey.length < 30) { 
+        toast('Key not found. Please unlock first.', 'error'); 
+        return; 
+    }
     
     /* ═══ SPLIT KEY INTO PREFIX + 7 CHUNKS ═══ */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
@@ -1558,7 +1571,7 @@ window.downloadDecryptor = function() {
         '<body>',
         '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
         '<script>',
-        '/* ═══ KEY PREFIX (visible) ═══ */',
+        '/* ═══ KEY — FULLY ASSEMBLED ═══ */',
         'var SECRET_KEY = "NightOrbitGyidi_houperSecret_" + "' + c1 + '" + "' + c2 + '" + "' + c3 + '" + "' + c4 + '" + "' + c5 + '" + "' + c6 + '" + "' + c7 + '";',
         '',
         '/* ═══ ENCRYPTED DATA ═══ */',
@@ -1587,9 +1600,7 @@ window.downloadDecryptor = function() {
         '',
         '/* ═══ PART 2 — extract favicon ═══ */',
         'function extractFavicon(html){',
-        '  var _k2 = "' + c2 + '";',
         '  var m=html.match(/<link[^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\'][^>]*href=["\']([^"\']+)["\']/i);',
-        '  SECRET_KEY = SECRET_KEY + _k2;',
         '  if(m)return m[1];',
         '  m=html.match(/<link[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\']/i);',
         '  return m?m[1]:null;',
@@ -1597,8 +1608,6 @@ window.downloadDecryptor = function() {
         '',
         '/* ═══ PART 3 — apply branding ═══ */',
         'function applyOriginalBranding(html){',
-        '  var _k3 = "' + c3 + '";',
-        '  SECRET_KEY = SECRET_KEY + _k3;',
         '  var title=extractTitle(html);',
         '  document.title=title;',
         '  var fav=extractFavicon(html);',
@@ -1612,8 +1621,6 @@ window.downloadDecryptor = function() {
         '',
         '/* ═══ PART 4 — inject blocker ═══ */',
         'function injectBlocker(html){',
-        '  var _k4 = "' + c4 + '";',
-        '  SECRET_KEY = SECRET_KEY + _k4;',
         '  var css = "<style>" +',
         '    "*{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;}" +',
         '    "input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text;}" +',
@@ -1645,8 +1652,6 @@ window.downloadDecryptor = function() {
         '',
         '/* ═══ PART 5 — render HTML ═══ */',
         'function renderHTML(htmlContent){',
-        '  var _k5 = "' + c5 + '";',
-        '  SECRET_KEY = SECRET_KEY + _k5;',
         '  var loader=document.getElementById("loader");',
         '  if(loader)loader.style.display="none";',
         '  applyOriginalBranding(htmlContent);',
@@ -1672,8 +1677,6 @@ window.downloadDecryptor = function() {
         '',
         '/* ═══ PART 6 — render text ═══ */',
         'function renderText(textContent){',
-        '  var _k6 = "' + c6 + '";',
-        '  SECRET_KEY = SECRET_KEY + _k6;',
         '  document.title="Decrypted Text";',
         '  document.body.innerHTML="";',
         '  document.body.style.cssText="background:#000;color:#00ff64;font-family:\\"Courier New\\",monospace;padding:20px;margin:0;font-size:13px;line-height:1.6;";',
@@ -1685,8 +1688,6 @@ window.downloadDecryptor = function() {
         '',
         '/* ═══ PART 7 — render bundle ═══ */',
         'function renderBundle(bundle){',
-        '  var _k7 = "' + c7 + '";',
-        '  SECRET_KEY = SECRET_KEY + _k7;',
         '  document.title="Bundle ("+bundle.__fileCount+" Files)";',
         '  document.body.innerHTML="";',
         '  document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;padding:20px;margin:0;min-height:100vh;";',
