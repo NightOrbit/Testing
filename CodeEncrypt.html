@@ -1481,7 +1481,6 @@ window.downloadOutput = function() {
     toast('Downloaded!', 'success');
 };
 
-/* ═══ DECRYPTOR GENERATOR ═══ */
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Encrypt first!', 'error'); return; }
@@ -1564,20 +1563,53 @@ window.downloadDecryptor = function() {
         '  }',
         '}',
         '',
+        '/* ═══ INJECT SHORTCUT BLOCKER INTO IFRAME ═══ */',
+        'function injectBlocker(html){',
+        '  var css = "<style>" +',
+        '    "*{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;}" +',
+        '    "input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text;}" +',
+        '    "<\\/style>";',
+        '  var js = "<scr"+"ipt>" +',
+        '    "(function(){" +',
+        '      "function isEd(el){if(!el||!el.tagName)return false;var t=el.tagName.toLowerCase();return t===\'input\'||t===\'textarea\'||t===\'select\'||el.isContentEditable;}" +',
+        '      "document.addEventListener(\'contextmenu\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
+        '      "document.addEventListener(\'selectstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
+        '      "document.addEventListener(\'copy\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
+        '      "document.addEventListener(\'cut\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
+        '      "document.addEventListener(\'dragstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
+        '      "document.addEventListener(\'keydown\',function(e){" +',
+        '        "var t=e.target;var tag=t&&t.tagName?t.tagName.toLowerCase():\'\';" +',
+        '        "var ed=(tag===\'input\'||tag===\'textarea\'||tag===\'select\'||(t&&t.isContentEditable));" +',
+        '        "if(e.key===\'F12\'||e.keyCode===123){e.preventDefault();return false;}" +',
+        '        "if(e.ctrlKey&&e.shiftKey&&(e.key===\'I\'||e.key===\'J\'||e.key===\'C\'||e.keyCode===73||e.keyCode===74||e.keyCode===67)){e.preventDefault();return false;}" +',
+        '        "if(e.ctrlKey&&(e.key===\'U\'||e.keyCode===85)){e.preventDefault();return false;}" +',
+        '        "if(e.ctrlKey&&!ed&&(e.key===\'C\'||e.key===\'A\'||e.key===\'S\'||e.keyCode===67||e.keyCode===65||e.keyCode===83)){e.preventDefault();return false;}" +',
+        '        "if(!ed&&(e.key===\'Backspace\'||e.key===\'Tab\')){e.preventDefault();return false;}" +',
+        '      "},{capture:true});" +',
+        '      "window.addEventListener(\'load\',function(){try{document.body.focus();}catch(e){}});" +',
+        '    "})();" +',
+        '  "<\\/scr"+"ipt>";',
+        '  if(html.indexOf("</head>")!==-1){html=html.replace("</head>",css+"</head>");}else{html=css+html;}',
+        '  if(html.indexOf("</body>")!==-1){html=html.replace("</body>",js+"</body>");}else{html=html+js;}',
+        '  return html;',
+        '}',
+        '',
         'function renderHTML(htmlContent){',
         '  var loader=document.getElementById("loader");',
         '  if(loader)loader.style.display="none";',
         '  /* Extract original title + favicon from user code */',
         '  applyOriginalBranding(htmlContent);',
+        '  /* Inject blocker CSS + JS into iframe content */',
+        '  var finalHTML=injectBlocker(htmlContent);',
         '  var iframe=document.createElement("iframe");',
         '  iframe.id="renderFrame";',
         '  iframe.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-top-navigation-by-user-activation");',
         '  document.body.appendChild(iframe);',
         '  try{',
-        '    iframe.srcdoc=htmlContent;',
+        '    iframe.srcdoc=finalHTML;',
         '  }catch(e){',
         '    try{',
-        '      var blob=new Blob([htmlContent],{type:"text/html;charset=utf-8"});',
+        '      var blob=new Blob([finalHTML],{type:"text/html;charset=utf-8"});',
         '      var url=URL.createObjectURL(blob);',
         '      iframe.removeAttribute("srcdoc");',
         '      iframe.src=url;',
@@ -1585,6 +1617,8 @@ window.downloadDecryptor = function() {
         '      showError("Render failed: "+e2.message);',
         '    }',
         '  }',
+        '  /* Auto-focus iframe for immediate keyboard capture */',
+        '  setTimeout(function(){try{iframe.focus();}catch(e){}},100);',
         '}',
         '',
         'function renderText(textContent){',
@@ -1667,7 +1701,7 @@ window.downloadDecryptor = function() {
     showStatus('success', '🎁 Decryptor downloaded! Works with 1MB+ files.');
     toast('Decryptor downloaded!', 'success');
 };
-
+    
 /* ═══ CLEAR ═══ */
 window.clearAll = function() {
     inputCodeEl.value = '';
