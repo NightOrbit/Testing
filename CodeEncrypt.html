@@ -1417,7 +1417,7 @@ window.downloadDecryptor = function() {
 
     var keyFileName = genHeavyFileName();
 
-    /* Encrypt key */
+    /* ─── Encrypt key (XOR + Base64 + Symbol Injection + Reverse) ─── */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
     if (suffix.length < 60) {
@@ -1445,10 +1445,7 @@ window.downloadDecryptor = function() {
 
     var encData = out;
 
-    /* ═══════════════════════════════════════════════════════
-       KEY FILE CONTENT — Key as XOR-obfuscated byte array
-       Decryptor mein key NAHI — sirf key file mein
-       ═══════════════════════════════════════════════════════ */
+    /* ─── KEY FILE CONTENT — Key file banti hai alag, same obfuscation ─── */
     var obfuscatedBytes = [];
     for (var bi = 0; bi < _0xg.length; bi++) {
         obfuscatedBytes.push(_0xg.charCodeAt(bi) ^ 0x5A);
@@ -1484,6 +1481,12 @@ window.downloadDecryptor = function() {
     /* Filename: base64 double-encoded for obfuscation */
     var encodedKeyFileName = btoa(btoa(keyFileName));
 
+    /* ═══════════════════════════════════════════════════════════
+       DECRYPTOR HTML — FIXED VERSION
+       - iframe HATA diya → Firebase Auth chalega
+       - document.body.focus() HATA diya → popup block nahi hoga
+       - DOMParser + order-preserving script injection
+       ═══════════════════════════════════════════════════════════ */
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -1515,7 +1518,6 @@ window.downloadDecryptor = function() {
         '.file-content{background:#000;color:#00ff64;padding:14px;border-radius:8px;font-family:"Courier New",monospace;font-size:12px;line-height:1.5;max-height:400px;overflow:auto;white-space:pre-wrap;word-break:break-word;}',
         '.dl-btn{background:linear-gradient(135deg,#00f0ff,#b400ff);border:none;padding:10px 20px;border-radius:8px;color:#000;font-weight:bold;cursor:pointer;margin-top:12px;font-family:inherit;letter-spacing:1px;text-transform:uppercase;font-size:11px;}',
         '.dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,240,255,0.3);}',
-        '#renderFrame{width:100%;height:100vh;border:0;display:block;position:fixed;inset:0;z-index:10;}',
         '<' + '/style>',
         '<' + '/head>',
         '<body>',
@@ -1581,6 +1583,7 @@ window.downloadDecryptor = function() {
         '  }',
         '}',
         '',
+        /* ✅ injectBlocker — document.body.focus() HATA diya */
         'function injectBlocker(html){',
         '  var css = "<style>" +',
         '    "*{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;}" +',
@@ -1603,7 +1606,6 @@ window.downloadDecryptor = function() {
         '        "if(e.ctrlKey&&!ed&&(e.key===\'C\'||e.key===\'A\'||e.key===\'S\'||e.keyCode===67||e.keyCode===65||e.keyCode===83)){e.preventDefault();return false;}" +',
         '        "if(!ed&&(e.key===\'Backspace\'||e.key===\'Tab\')){e.preventDefault();return false;}" +',
         '      "},{capture:true});" +',
-        '      "window.addEventListener(\'load\',function(){try{document.body.focus();}catch(e){}});" +',
         '    "})();" +',
         '  "<\\/scr"+"ipt>";',
         '  if(html.indexOf("</head>")!==-1){html=html.replace("</head>",css+"</head>");}else{html=css+html;}',
@@ -1611,28 +1613,85 @@ window.downloadDecryptor = function() {
         '  return html;',
         '}',
         '',
+        /* ✅ renderHTML — iframe HATA diya, DOMParser + order-preserving script injection */
         'function renderHTML(htmlContent){',
-        '  var loader=document.getElementById("loader");',
-        '  if(loader)loader.style.display="none";',
+        '  var loader = document.getElementById("loader");',
+        '  if(loader) loader.style.display = "none";',
+        '  ',
         '  applyOriginalBranding(htmlContent);',
-        '  var finalHTML=injectBlocker(htmlContent);',
-        '  var iframe=document.createElement("iframe");',
-        '  iframe.id="renderFrame";',
-        '  iframe.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-top-navigation-by-user-activation");',
-        '  document.body.appendChild(iframe);',
-        '  try{',
-        '    iframe.srcdoc=finalHTML;',
-        '  }catch(e){',
-        '    try{',
-        '      var blob=new Blob([finalHTML],{type:"text/html;charset=utf-8"});',
-        '      var url=URL.createObjectURL(blob);',
-        '      iframe.removeAttribute("srcdoc");',
-        '      iframe.src=url;',
-        '    }catch(e2){',
-        '      showError("Render failed: "+e2.message);',
+        '  var finalHTML = injectBlocker(htmlContent);',
+        '  ',
+        '  var parser = new DOMParser();',
+        '  var doc = parser.parseFromString(finalHTML, "text/html");',
+        '  ',
+        '  document.head.innerHTML = "";',
+        '  document.body.innerHTML = "";',
+        '  document.body.removeAttribute("class");',
+        '  document.body.removeAttribute("style");',
+        '  ',
+        '  Array.from(doc.documentElement.attributes).forEach(function(attr){',
+        '    try { document.documentElement.setAttribute(attr.name, attr.value); } catch(e){}',
+        '  });',
+        '  ',
+        '  doc.head.querySelectorAll("meta, title, link, style").forEach(function(el){',
+        '    try {',
+        '      document.head.appendChild(document.importNode(el, true));',
+        '    } catch(e){',
+        '      try { document.head.appendChild(el.cloneNode(true)); } catch(e2){}',
         '    }',
-        '  }',
-        '  setTimeout(function(){try{iframe.focus();}catch(e){}},100);',
+        '  });',
+        '  ',
+        '  var bodyClone = doc.body.cloneNode(true);',
+        '  bodyClone.querySelectorAll("script").forEach(function(s){ s.remove(); });',
+        '  document.body.innerHTML = bodyClone.innerHTML;',
+        '  ',
+        '  Array.from(doc.body.attributes).forEach(function(attr){',
+        '    try { document.body.setAttribute(attr.name, attr.value); } catch(e){}',
+        '  });',
+        '  ',
+        '  var allScripts = [];',
+        '  doc.head.querySelectorAll("script").forEach(function(s){ allScripts.push(s); });',
+        '  doc.body.querySelectorAll("script").forEach(function(s){ allScripts.push(s); });',
+        '  ',
+        '  (function injectNext(index){',
+        '    if(index >= allScripts.length){',
+        '      setTimeout(function(){',
+        '        try {',
+        '          document.dispatchEvent(new Event("DOMContentLoaded", { bubbles: true, cancelable: true }));',
+        '        } catch(e){}',
+        '        try {',
+        '          window.dispatchEvent(new Event("load", { bubbles: false, cancelable: false }));',
+        '        } catch(e){}',
+        '      }, 50);',
+        '      return;',
+        '    }',
+        '    ',
+        '    var oldScript = allScripts[index];',
+        '    var newScript = document.createElement("script");',
+        '    ',
+        '    Array.from(oldScript.attributes).forEach(function(attr){',
+        '      try { newScript.setAttribute(attr.name, attr.value); } catch(e){}',
+        '    });',
+        '    ',
+        '    if(oldScript.src){',
+        '      newScript.src = oldScript.src;',
+        '      newScript.async = false;',
+        '      newScript.onload = function(){ injectNext(index + 1); };',
+        '      newScript.onerror = function(){',
+        '        console.warn("Script failed:", oldScript.src);',
+        '        injectNext(index + 1);',
+        '      };',
+        '      document.head.appendChild(newScript);',
+        '    } else {',
+        '      try {',
+        '        newScript.textContent = oldScript.textContent;',
+        '        document.head.appendChild(newScript);',
+        '      } catch(e){',
+        '        console.warn("Inline script error:", e);',
+        '      }',
+        '      setTimeout(function(){ injectNext(index + 1); }, 0);',
+        '    }',
+        '  })(0);',
         '}',
         '',
         'function renderText(textContent){',
@@ -1717,12 +1776,14 @@ window.downloadDecryptor = function() {
 
     var html = parts.join('\n');
 
+    /* Download decryptor.html */
     var htmlBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
     var htmlLink = document.createElement('a');
     htmlLink.href = URL.createObjectURL(htmlBlob);
     htmlLink.download = 'decryptor.html';
     htmlLink.click();
 
+    /* Download key file (nx_xxxx-xxxx-xxxx-xxxx.js) */
     var keyBlob = new Blob([keyFileContent], { type: 'text/javascript;charset=utf-8' });
     var keyLink = document.createElement('a');
     keyLink.href = URL.createObjectURL(keyBlob);
