@@ -1405,7 +1405,7 @@ window.downloadDecryptor = function() {
     var encData = out;
 
     /* ═══════════════════════════════════════════════════════
-       HEAVY KEY OBFUSCATION — 7 LAYERS
+       HEAVY KEY OBFUSCATION — 8 LAYERS
        ═══════════════════════════════════════════════════════ */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
@@ -1419,7 +1419,7 @@ window.downloadDecryptor = function() {
     var salt3 = (Math.floor(Math.random() * 251)) + 1;
     var salt4 = (Math.floor(Math.random() * 251)) + 1;
 
-    /* ─── Layer 1: XOR with salt1 ─── */
+    /* ─── Layer 1: XOR with 0x5A + salt1 ─── */
     var layer1 = [];
     for (var i = 0; i < fullKeyString.length; i++) {
         layer1.push((fullKeyString.charCodeAt(i) ^ 0x5A) ^ salt1);
@@ -1428,8 +1428,7 @@ window.downloadDecryptor = function() {
     /* ─── Layer 2: Char shift by salt2 ─── */
     var layer2 = [];
     for (var j = 0; j < layer1.length; j++) {
-        var shifted = (layer1[j] + salt2) % 256;
-        layer2.push(shifted);
+        layer2.push((layer1[j] + salt2) % 256);
     }
 
     /* ─── Layer 3: XOR with salt3 ─── */
@@ -1447,7 +1446,7 @@ window.downloadDecryptor = function() {
     }
     layer4 = even.concat(odd);
 
-    /* ─── Layer 5: Add random padding ─── */
+    /* ─── Layer 5: Random padding ─── */
     var padding = [];
     var padCount = (Math.floor(Math.random() * 10) + 5);
     for (var p = 0; p < padCount; p++) {
@@ -1465,7 +1464,7 @@ window.downloadDecryptor = function() {
     /* ─── Layer 7: Reverse ─── */
     var layer7 = layer6.split('').reverse().join('');
 
-    /* ─── Layer 8: Final XOR with salt4 → byte array ─── */
+    /* ─── Layer 8: Final XOR with 0x5A + salt4 → byte array ─── */
     var obfuscatedBytes = [];
     for (var bi = 0; bi < layer7.length; bi++) {
         obfuscatedBytes.push((layer7.charCodeAt(bi) ^ 0x5A) ^ salt4);
@@ -1496,13 +1495,15 @@ window.downloadDecryptor = function() {
     var vEven = rndVar(5);
     var vOdd = rndVar(5);
     var vPad = rndVar(4);
+    var vRes = rndVar(5);
 
     /* ═══════════════════════════════════════════════════════
-       KEY FILE CONTENT — 8-STEP REVERSE DECODE
+       KEY FILE CONTENT — 8-STEP REVERSE DECODE (SAFE)
        ═══════════════════════════════════════════════════════ */
     var keyFileContent =
         '(function(){\n' +
         '"use strict";\n' +
+        'try{\n' +
         'var S1=' + salt1 + ',S2=' + salt2 + ',S3=' + salt3 + ',S4=' + salt4 + ';\n' +
         'var ' + vPad + '=' + padCount + ';\n' +
         'var ' + vBytes + '=' + byteArrayString + ';\n' +
@@ -1535,13 +1536,14 @@ window.downloadDecryptor = function() {
         'var sh=(' + vB + '[r]-S2+256)%256;\n' +
         vOut + '2.push(sh^S1);\n' +
         '}\n' +
-        'var res="";\n' +
+        'var ' + vRes + '="";\n' +
         'for(var f=0;f<' + vOut + '2.length;f++){\n' +
-        'res+=String.fromCharCode(' + vOut + '2[f]^0x5A);\n' +
+        vRes + '+=String.fromCharCode(' + vOut + '2[f]^0x5A);\n' +
         '}\n' +
-        'return res;\n' +
+        'return ' + vRes + ';\n' +
         '}\n' +
         'window._0xSECRET=' + vDecode + '(' + vKey + ');\n' +
+        '}catch(e){window._0xSECRET="";}\n' +
         '})();\n';
 
     /* ═══════════════════════════════════════════════════════
@@ -1584,7 +1586,7 @@ window.downloadDecryptor = function() {
         '<' + '/script>\n';
 
     /* ═══════════════════════════════════════════════════════
-       DECRYPTOR HTML
+       DECRYPTOR HTML — FIXED
        ═══════════════════════════════════════════════════════ */
     var parts = [
         '<!DOCTYPE html>',
@@ -1594,7 +1596,8 @@ window.downloadDecryptor = function() {
         '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">',
         '<title id="pageTitle">Loading...</title>',
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
-        '<script>(function(){var _a="' + encodedKeyFileName + '";var _b=atob(atob(_a));var _s=document.createElement("script");_s.src=_b;_s.async=false;_s.onload=function(){window._kf=1;};_s.onerror=function(){window._kf=0;};document.head.appendChild(_s);})();<' + '/script>',
+        /* ✅ FIXED KEY LOADER — try/catch + validation + fallback */
+        '<script>(function(){try{var _a="' + encodedKeyFileName + '";var _b=atob(atob(_a));if(!_b||_b.length<3){window._kf=0;return;}var _s=document.createElement("script");_s.src=_b;_s.async=false;_s.onload=function(){setTimeout(function(){if(window._0xSECRET&&window._0xSECRET.length>=30){window._kf=1;}else{window._kf=0;}},100);};_s.onerror=function(){window._kf=0;};document.head.appendChild(_s);}catch(e){window._kf=0;}})();<' + '/script>',
         '<style>',
         '*{margin:0;padding:0;box-sizing:border-box;}',
         'html,body{width:100%;min-height:100vh;}',
@@ -1795,10 +1798,21 @@ window.downloadDecryptor = function() {
         '  });',
         '}',
         '',
+        /* ✅ FIXED: Polling for key file instead of one-shot 500ms timeout */
         'ready(function(){',
         '  if(typeof CryptoJS==="undefined"){ showError("Required library missing."); return; }',
-        '  setTimeout(function(){',
-        '    if(!window._0xSECRET || window._0xSECRET.length < 30){ showKeyMissingError(); return; }',
+        '  var _pollCount = 0;',
+        '  var _pollInterval = setInterval(function(){',
+        '    _pollCount++;',
+        '    if(window._0xSECRET && window._0xSECRET.length >= 30){',
+        '      clearInterval(_pollInterval);',
+        '      runDecrypt();',
+        '    } else if(_pollCount >= 40){',
+        '      clearInterval(_pollInterval);',
+        '      showKeyMissingError();',
+        '    }',
+        '  }, 250);',
+        '  function runDecrypt(){',
         '    try{',
         '      var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,window._0xSECRET).toString(CryptoJS.enc.Utf8);',
         '      if(!dec||dec.length===0){throw new Error("Decryption failed.");}',
@@ -1811,7 +1825,7 @@ window.downloadDecryptor = function() {
         '        if(isHTML){ renderHTML(dec); } else { renderText(dec); }',
         '      }',
         '    }catch(e){ showError(e.message); }',
-        '  }, 500);',
+        '  }',
         '});',
         '<' + '/script>',
         '<' + '/body>',
