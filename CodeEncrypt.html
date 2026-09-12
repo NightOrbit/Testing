@@ -1484,8 +1484,41 @@ window.downloadOutput = function() {
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Encrypt first!', 'error'); return; }
-    var secretKey = document.getElementById('secretKey').value;
-
+    
+    /* ═══ GET FULL KEY FROM KEY MANAGER ═══ */
+    var fullKey;
+    try {
+        fullKey = KEY_MANAGER.getKey ? KEY_MANAGER.getKey() : document.getElementById('secretKey').value;
+    } catch(e) {
+        fullKey = document.getElementById('secretKey').value;
+    }
+    if (!fullKey || fullKey.length < 30) { toast('Key not available', 'error'); return; }
+    
+    /* ═══ SPLIT KEY INTO PREFIX + 7 CHUNKS ═══ */
+    var PREFIX = 'NightOrbitGyidi_houperSecret_';
+    var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
+    
+    /* Key already 60 chars from key-manager */
+    suffix = suffix.substring(0, 60);
+    if (suffix.length < 60) {
+        showStatus('error', '❌ Key format invalid — length: ' + suffix.length);
+        toast('Key format invalid', 'error');
+        return;
+    }
+    
+    /* Split into 7 parts: 9+9+9+9+8+8+8 = 60 */
+    var c1 = suffix.substring(0, 9);
+    var c2 = suffix.substring(9, 18);
+    var c3 = suffix.substring(18, 27);
+    var c4 = suffix.substring(27, 36);
+    var c5 = suffix.substring(36, 44);
+    var c6 = suffix.substring(44, 52);
+    var c7 = suffix.substring(52, 60);
+    
+    /* ═══ ENCRYPTED DATA ═══ */
+    var encData = out;
+    
+    /* ═══ BUILD DECRYPTOR HTML ═══ */
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -1522,8 +1555,11 @@ window.downloadDecryptor = function() {
         '<body>',
         '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
         '<script>',
-        'var SECRET_KEY=' + JSON.stringify(secretKey) + ';',
-        'var ENCRYPTED_DATA=' + JSON.stringify(out) + ';',
+        '/* ═══ KEY PREFIX (visible) ═══ */',
+        'var SECRET_KEY = "NightOrbitGyidi_houperSecret_";',
+        '',
+        '/* ═══ ENCRYPTED DATA ═══ */',
+        'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
         '',
         'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
         '',
@@ -1540,18 +1576,28 @@ window.downloadDecryptor = function() {
         '  document.body.innerHTML=err;',
         '}',
         '',
-        '/* ═══ EXTRACT ORIGINAL WEB BRANDING ═══ */',
+        '/* ═══ PART 1 — extract title ═══ */',
         'function extractTitle(html){',
+        '  var _k1 = "' + c1 + '";',
         '  var m=html.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);',
+        '  SECRET_KEY = SECRET_KEY + _k1;',
         '  return m?m[1].trim():"Original Web";',
         '}',
+        '',
+        '/* ═══ PART 2 — extract favicon ═══ */',
         'function extractFavicon(html){',
+        '  var _k2 = "' + c2 + '";',
         '  var m=html.match(/<link[^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\'][^>]*href=["\']([^"\']+)["\']/i);',
+        '  SECRET_KEY = SECRET_KEY + _k2;',
         '  if(m)return m[1];',
         '  m=html.match(/<link[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\']/i);',
         '  return m?m[1]:null;',
         '}',
+        '',
+        '/* ═══ PART 3 — apply branding ═══ */',
         'function applyOriginalBranding(html){',
+        '  var _k3 = "' + c3 + '";',
+        '  SECRET_KEY = SECRET_KEY + _k3;',
         '  var title=extractTitle(html);',
         '  document.title=title;',
         '  var fav=extractFavicon(html);',
@@ -1563,8 +1609,10 @@ window.downloadDecryptor = function() {
         '  }',
         '}',
         '',
-        '/* ═══ INJECT SHORTCUT BLOCKER INTO IFRAME ═══ */',
+        '/* ═══ PART 4 — inject blocker ═══ */',
         'function injectBlocker(html){',
+        '  var _k4 = "' + c4 + '";',
+        '  SECRET_KEY = SECRET_KEY + _k4;',
         '  var css = "<style>" +',
         '    "*{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;}" +',
         '    "input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text;}" +',
@@ -1594,12 +1642,13 @@ window.downloadDecryptor = function() {
         '  return html;',
         '}',
         '',
+        '/* ═══ PART 5 — render HTML ═══ */',
         'function renderHTML(htmlContent){',
+        '  var _k5 = "' + c5 + '";',
+        '  SECRET_KEY = SECRET_KEY + _k5;',
         '  var loader=document.getElementById("loader");',
         '  if(loader)loader.style.display="none";',
-        '  /* Extract original title + favicon from user code */',
         '  applyOriginalBranding(htmlContent);',
-        '  /* Inject blocker CSS + JS into iframe content */',
         '  var finalHTML=injectBlocker(htmlContent);',
         '  var iframe=document.createElement("iframe");',
         '  iframe.id="renderFrame";',
@@ -1617,11 +1666,13 @@ window.downloadDecryptor = function() {
         '      showError("Render failed: "+e2.message);',
         '    }',
         '  }',
-        '  /* Auto-focus iframe for immediate keyboard capture */',
         '  setTimeout(function(){try{iframe.focus();}catch(e){}},100);',
         '}',
         '',
+        '/* ═══ PART 6 — render text ═══ */',
         'function renderText(textContent){',
+        '  var _k6 = "' + c6 + '";',
+        '  SECRET_KEY = SECRET_KEY + _k6;',
         '  document.title="Decrypted Text";',
         '  document.body.innerHTML="";',
         '  document.body.style.cssText="background:#000;color:#00ff64;font-family:\\"Courier New\\",monospace;padding:20px;margin:0;font-size:13px;line-height:1.6;";',
@@ -1631,7 +1682,10 @@ window.downloadDecryptor = function() {
         '  document.body.appendChild(pre);',
         '}',
         '',
+        '/* ═══ PART 7 — render bundle ═══ */',
         'function renderBundle(bundle){',
+        '  var _k7 = "' + c7 + '";',
+        '  SECRET_KEY = SECRET_KEY + _k7;',
         '  document.title="Bundle ("+bundle.__fileCount+" Files)";',
         '  document.body.innerHTML="";',
         '  document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;padding:20px;margin:0;min-height:100vh;";',
@@ -1663,26 +1717,29 @@ window.downloadDecryptor = function() {
         'ready(function(){',
         '  try{',
         '    if(typeof CryptoJS==="undefined"){throw new Error("CryptoJS library failed to load. Check your internet connection.");}',
-        '    var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,SECRET_KEY).toString(CryptoJS.enc.Utf8);',
-        '    if(!dec||dec.length===0){throw new Error("Decryption failed — wrong key or corrupted data.");}',
+        '    setTimeout(function(){',
+        '      if(SECRET_KEY.length < 30){showError("Key assembly failed");return;}',
+        '      var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,SECRET_KEY).toString(CryptoJS.enc.Utf8);',
+        '      if(!dec||dec.length===0){throw new Error("Decryption failed — wrong key or corrupted data.");}',
         '',
-        '    var isBundle=false,bundle=null;',
-        '    try{',
-        '      var p=JSON.parse(dec);',
-        '      if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}',
-        '    }catch(e){}',
+        '      var isBundle=false,bundle=null;',
+        '      try{',
+        '        var p=JSON.parse(dec);',
+        '        if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}',
+        '      }catch(e){}',
         '',
-        '    if(isBundle){',
-        '      renderBundle(bundle);',
-        '    } else {',
-        '      var trimmed=dec.trim();',
-        '      var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);',
-        '      if(isHTML){',
-        '        renderHTML(dec);',
+        '      if(isBundle){',
+        '        renderBundle(bundle);',
         '      } else {',
-        '        renderText(dec);',
+        '        var trimmed=dec.trim();',
+        '        var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);',
+        '        if(isHTML){',
+        '          renderHTML(dec);',
+        '        } else {',
+        '          renderText(dec);',
+        '        }',
         '      }',
-        '    }',
+        '    }, 50);',
         '  }catch(e){',
         '    showError(e.message);',
         '  }',
