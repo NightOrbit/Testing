@@ -1406,20 +1406,24 @@ window.downloadDecryptor = function() {
         return;
     }
 
-    /* ───── Key File Name: mn-key-{20 letters}-{10 numbers}.js ───── */
-    function randomLetters(len) {
-        var c = 'abcdefghijklmnopqrstuvwxyz';
-        var s = '';
-        for (var i = 0; i < len; i++) s += c.charAt(Math.floor(Math.random() * c.length));
-        return s;
-    }
-    function randomNumbers(len) {
-        var c = '0123456789';
-        var s = '';
-        for (var i = 0; i < len; i++) s += c.charAt(Math.floor(Math.random() * c.length));
-        return s;
-    }
-    var keyFileName = 'mn-key-' + randomLetters(20) + '-' + randomNumbers(10) + '.js';
+    /* ───── Key File Name: {random prefix}_{20 letters}_{20 numbers}.js ───── */
+function randomLetters(len) {
+    var c = 'abcdefghijklmnopqrstuvwxyz';
+    var s = '';
+    for (var i = 0; i < len; i++) s += c.charAt(Math.floor(Math.random() * c.length));
+    return s;
+}
+function randomNumbers(len) {
+    var c = '0123456789';
+    var s = '';
+    for (var i = 0; i < len; i++) s += c.charAt(Math.floor(Math.random() * c.length));
+    return s;
+}
+function rndPrefix() {
+    var prefixes = ['nx', 'mn', 'kc', 'zk', 'vp', 'qt', 'br', 'dl', 'fx', 'hy', 'jw', 'ls'];
+    return prefixes[Math.floor(Math.random() * prefixes.length)];
+}
+var keyFileName = rndPrefix() + '_' + randomLetters(20) + '_' + randomNumbers(20) + '.js';
 
     var encData = out;
 
