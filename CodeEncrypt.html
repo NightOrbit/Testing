@@ -949,7 +949,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 <!-- JAVASCRIPT PART 2 next message -->
     <script>
-(function() {
+  (function() {
 'use strict';
 
 /* ═══════════════════════════════════════════════════════════
@@ -1072,7 +1072,6 @@ function updateKeyUI() {
     var infoText = document.getElementById('keyInfoText');
 
     if (KEY_MANAGER.hasPassword()) {
-        /* Key exists → Show masked key + delete button + eye icon enabled */
         var masked = KEY_MANAGER.getDisplayKey();
         keyText.textContent = masked;
         createBtn.style.display = 'none';
@@ -1080,7 +1079,6 @@ function updateKeyUI() {
         eyeBtn.disabled = false;
         infoText.innerHTML = '🔐 Your key is <span class="gold">password-protected</span>. Click the <span class="gold">eye icon</span> to reveal your full key. Or click <span class="red">DELETE KEY & REGENERATE</span> to create a new one.';
     } else {
-        /* No key → Show create button */
         keyText.textContent = 'NightOrbitGyidi_houperSecret_************';
         createBtn.style.display = 'inline-flex';
         deleteBtn.style.display = 'none';
@@ -1267,7 +1265,6 @@ pwdSubmitBtn.addEventListener('click', function() {
         document.getElementById('secretKey').value = result.key;
         showReveal(result.key);
         
-        /* Check if user was trying to encrypt */
         if (state._pendingAction === 'encrypt') {
             state._pendingAction = null;
             setTimeout(function() {
@@ -1275,7 +1272,6 @@ pwdSubmitBtn.addEventListener('click', function() {
             }, 500);
         }
         
-        /* ═══ YE NAYA CODE ADD KARO ═══ */
         if (state._pendingAction === 'downloadDecryptor') {
             state._pendingAction = null;
             setTimeout(function() {
@@ -1285,7 +1281,6 @@ pwdSubmitBtn.addEventListener('click', function() {
         
         setTimeout(closePwdModal, 1000);
     })
-          
             .catch(function(err) {
                 setPwdStatus('error', '❌ ' + err.message);
                 pwdSubmitBtn.disabled = false;
@@ -1418,12 +1413,9 @@ window.encryptNow = function() {
             return;
         }
 
-        /* Check if key is already in RAM */
         if (KEY_MANAGER.isReady() && KEY_MANAGER.getKey()) {
-            /* Key already unlocked — encrypt directly */
             performEncrypt(KEY_MANAGER.getKey());
         } else {
-            /* Need to unlock first */
             state._pendingAction = 'encrypt';
             openPwdModal('reveal');
             toast('Enter password to encrypt', 'info');
@@ -1433,7 +1425,6 @@ window.encryptNow = function() {
     }
 };
 
-/* After password verified, encrypt */
 function performEncrypt(secretKey) {
     var pasted = inputCodeEl.value;
     var fileNames = Object.keys(state.uploadedFiles);
@@ -1479,6 +1470,7 @@ window.copyOutput = function() {
     }
 };
 
+/* ═══ YE NAYA FUNCTION ADD KARO ═══ */
 window.downloadOutput = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Nothing to download', 'error'); return; }
@@ -1494,7 +1486,6 @@ window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Encrypt first!', 'error'); return; }
     
-    /* ═══ KEY UNLOCK CHECK ═══ */
     if (!KEY_MANAGER.isReady() || !KEY_MANAGER.getKey()) {
         state._pendingAction = 'downloadDecryptor';
         openPwdModal('reveal');
@@ -1507,17 +1498,16 @@ window.downloadDecryptor = function() {
         return; 
     }
     
-    /* ═══ USER SE KEY FILE KA NAAM MAANGO ═══ */
     var keyFileName = prompt(
-        '🔑 KEY FILE KA NAAM RAKHO\n\n' +
+        '🔑 ENTER KEY FILE NAME\n\n' +
         'Rules:\n' +
         '• 10 LETTERS (a-z, A-Z)\n' +
         '• 20 NUMBERS (0-9)\n' +
         '• Total 30 characters\n' +
-        '• Koi space nahi\n' +
-        '• Koi symbol nahi\n\n' +
+        '• No spaces\n' +
+        '• No symbols\n\n' +
         'Example: abcdefghij12345678901234567890\n\n' +
-        'Apna naam likho:'
+        'Enter your name:'
     );
     
     if (!keyFileName) {
@@ -1525,7 +1515,6 @@ window.downloadDecryptor = function() {
         return;
     }
     
-    /* ═══ VALIDATION ═══ */
     keyFileName = keyFileName.trim();
     
     var letters = (keyFileName.match(/[a-zA-Z]/g) || []).length;
@@ -1534,26 +1523,25 @@ window.downloadDecryptor = function() {
     var totalLength = keyFileName.length;
     
     if (totalLength !== 30) {
-        toast('❌ Total 30 characters hone chahiye (abhi ' + totalLength + ' hain)', 'error');
+        toast('❌ Total must be 30 characters (currently ' + totalLength + ')', 'error');
         return;
     }
     if (letters !== 10) {
-        toast('❌ 10 letters hone chahiye (abhi ' + letters + ' hain)', 'error');
+        toast('❌ Must have 10 letters (currently ' + letters + ')', 'error');
         return;
     }
     if (numbers !== 20) {
-        toast('❌ 20 numbers hone chahiye (abhi ' + numbers + ' hain)', 'error');
+        toast('❌ Must have 20 numbers (currently ' + numbers + ')', 'error');
         return;
     }
     if (others > 0) {
-        toast('❌ Koi space ya symbol nahi hona chahiye', 'error');
+        toast('❌ No spaces or symbols allowed', 'error');
         return;
     }
     
     var finalFileName = keyFileName + '.js';
     console.log('🔑 Key file name:', finalFileName);
     
-    /* ═══ SPLIT KEY INTO PREFIX + SUFFIX ═══ */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
     
@@ -1564,24 +1552,15 @@ window.downloadDecryptor = function() {
     
     var fullKeyString = PREFIX + suffix;
     
-    /* ═══════════════════════════════════════════════════════
-       LAYER 1: XOR OBFUSCATION
-       ═══════════════════════════════════════════════════════ */
     var xorKey = 0x5A;
     var xorBytes = [];
     for (var i = 0; i < fullKeyString.length; i++) {
         xorBytes.push(fullKeyString.charCodeAt(i) ^ xorKey);
     }
     
-    /* ═══════════════════════════════════════════════════════
-       LAYER 2: BASE64 ENCODE
-       ═══════════════════════════════════════════════════════ */
     var xorString = String.fromCharCode.apply(null, xorBytes);
     var base64Str = btoa(xorString);
     
-    /* ═══════════════════════════════════════════════════════
-       LAYER 3: FAKE CHARS INJECT
-       ═══════════════════════════════════════════════════════ */
     var fakeChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
     var injected = '';
     for (var j = 0; j < base64Str.length; j++) {
@@ -1591,14 +1570,10 @@ window.downloadDecryptor = function() {
         }
     }
     
-    /* ═══════════════════════════════════════════════════════
-       LAYER 4: REVERSE + SHUFFLE
-       ═══════════════════════════════════════════════════════ */
     var reversed = injected.split('').reverse().join('');
     
     console.log('🔑 Obfuscated string length:', reversed.length);
     
-    /* ═══ KEY-STORE FILE CONTENT ═══ */
     var keyStoreCode = [
         'var _0xk="' + reversed + '";',
         'function _0xdk(s){',
@@ -1618,10 +1593,8 @@ window.downloadDecryptor = function() {
         'window._0xSECRET=_0xdk(_0xk);'
     ].join('\n');
     
-    /* ═══ ENCRYPTED DATA ═══ */
     var encData = out;
     
-    /* ═══ BUILD DECRYPTOR HTML ═══ */
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -1834,14 +1807,12 @@ window.downloadDecryptor = function() {
     
     var html = parts.join('\n');
     
-    /* ═══ DOWNLOAD KEY FILE ═══ */
     var keyBlob = new Blob([keyStoreCode], { type: 'application/javascript' });
     var keyLink = document.createElement('a');
     keyLink.href = URL.createObjectURL(keyBlob);
     keyLink.download = finalFileName;
     keyLink.click();
     
-    /* ═══ DOWNLOAD DECRYPTOR HTML ═══ */
     setTimeout(function() {
         var htmlBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
         var htmlLink = document.createElement('a');
@@ -1852,7 +1823,7 @@ window.downloadDecryptor = function() {
         toast('Decryptor + Key file downloaded!', 'success');
     }, 800);
 };
-    
+
 /* ═══ CLEAR ═══ */
 window.clearAll = function() {
     inputCodeEl.value = '';
@@ -1902,13 +1873,11 @@ function handleAuthReady(e) {
     });
 }
 
-/* Listen to BOTH events (auth-guard.js fires 'auth-ready') */
 document.addEventListener('auth-guard-ready', handleAuthReady);
 document.addEventListener('auth-ready', handleAuthReady);
 
 setTimeout(function() {
     if (!state.user) {
-        /* Fallback: check Firebase directly */
         if (window.firebase && firebase.auth && firebase.auth().currentUser) {
             handleAuthReady({ detail: { user: firebase.auth().currentUser } });
         } else if (window.AuthGuard && AuthGuard.getUser && AuthGuard.getUser()) {
