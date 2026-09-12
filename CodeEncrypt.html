@@ -1520,20 +1520,45 @@ window.downloadDecryptor = function() {
     }
     suffix = suffix.substring(0, 60);
     
-    console.log('🔑 Suffix (60 chars):', suffix.length);
-    
-    /* ═══ ENCRYPTED DATA ═══ */
-    var encData = out;
-    
-    /* ═══ XOR OBFUSCATE THE FULL KEY ═══ */
-    var xorKey = 0x5A;
     var fullKeyString = PREFIX + suffix;
+    
+    /* ═══════════════════════════════════════════════════════
+       LAYER 1: XOR OBFUSCATION
+       ═══════════════════════════════════════════════════════ */
+    var xorKey = 0x5A;
     var xorBytes = [];
     for (var i = 0; i < fullKeyString.length; i++) {
         xorBytes.push(fullKeyString.charCodeAt(i) ^ xorKey);
     }
     
-    console.log('🔑 XOR bytes count:', xorBytes.length);
+    /* ═══════════════════════════════════════════════════════
+       LAYER 2: BASE64 ENCODE
+       ═══════════════════════════════════════════════════════ */
+    var xorString = String.fromCharCode.apply(null, xorBytes);
+    var base64Str = btoa(xorString);
+    
+    /* ═══════════════════════════════════════════════════════
+       LAYER 3: FAKE CHARS INJECT
+       ═══════════════════════════════════════════════════════ */
+    var fakeChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+    var injected = '';
+    for (var j = 0; j < base64Str.length; j++) {
+        injected += base64Str.charAt(j);
+        /* Har 3 characters ke baad ek fake char daalo */
+        if (j % 3 === 2) {
+            injected += fakeChars.charAt(Math.floor(Math.random() * fakeChars.length));
+        }
+    }
+    
+    /* ═══════════════════════════════════════════════════════
+       LAYER 4: REVERSE + SHUFFLE
+       ═══════════════════════════════════════════════════════ */
+    var reversed = injected.split('').reverse().join('');
+    
+    console.log('🔑 Obfuscated string length:', reversed.length);
+    
+    /* ═══ ENCRYPTED DATA ═══ */
+    var encData = out;
     
     /* ═══ BUILD DECRYPTOR HTML ═══ */
     var parts = [
@@ -1572,9 +1597,32 @@ window.downloadDecryptor = function() {
         '<body>',
         '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
         '<script>',
-        '/* ═══ KEY — XOR OBFUSCATED ═══ */',
-        'var _0x4f2a = [' + xorBytes.join(',') + '];',
-        'var SECRET_KEY = _0x4f2a.map(function(b){return String.fromCharCode(b ^ 0x5A);}).join("");',
+        '/* ═══ KEY — MULTI-LAYER OBFUSCATED ═══ */',
+        'var _0xk = "' + reversed + '";',
+        'function _0xdk(s) {',
+        '  /* Layer 4: Reverse */',
+        '  var r = s.split("").reverse().join("");',
+        '  /* Layer 3: Remove fake chars (every 4th char) */',
+        '  var out = "";',
+        '  var counter = 0;',
+        '  for (var i = 0; i < r.length; i++) {',
+        '    if (counter % 4 === 3) {',
+        '      /* Skip fake char */',
+        '    } else {',
+        '      out += r.charAt(i);',
+        '    }',
+        '    counter++;',
+        '  }',
+        '  /* Layer 2: Base64 decode */',
+        '  var decoded = atob(out);',
+        '  /* Layer 1: XOR decode */',
+        '  var bytes = [];',
+        '  for (var j = 0; j < decoded.length; j++) {',
+        '    bytes.push(decoded.charCodeAt(j) ^ 0x5A);',
+        '  }',
+        '  return String.fromCharCode.apply(null, bytes);',
+        '}',
+        'var SECRET_KEY = _0xdk(_0xk);',
         '',
         '/* ═══ ENCRYPTED DATA ═══ */',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
