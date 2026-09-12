@@ -1381,85 +1381,107 @@ window.downloadDecryptor = function() {
         return;
     }
 
-    function genHeavyFileName() {
-        var c = 'abcdef0123456789';
-        var p1 = '', p2 = '', p3 = '', p4 = '';
-        for (var i = 0; i < 8; i++) p1 += c.charAt(Math.floor(Math.random() * c.length));
-        for (var j = 0; j < 4; j++) p2 += c.charAt(Math.floor(Math.random() * c.length));
-        for (var k = 0; k < 4; k++) p3 += c.charAt(Math.floor(Math.random() * c.length));
-        for (var l = 0; l < 12; l++) p4 += c.charAt(Math.floor(Math.random() * c.length));
-        return 'nx_' + p1 + '-' + p2 + '-' + p3 + '-' + p4 + '.js';
+    /* ═══════════════════════════════════════════════════════
+       KEY FILE NAME — 20 letters + 20 numbers
+       ═══════════════════════════════════════════════════════ */
+    function randomLetters(len) {
+        var c = 'abcdefghijklmnopqrstuvwxyz';
+        var s = '';
+        for (var i = 0; i < len; i++) s += c.charAt(Math.floor(Math.random() * c.length));
+        return s;
     }
-
-    var keyFileName = genHeavyFileName();
-
-    /* Encrypt key */
-    var PREFIX = 'NightOrbitGyidi_houperSecret_';
-    var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
-    if (suffix.length < 60) {
-        while (suffix.length < 60) suffix += '0';
+    function randomNumbers(len) {
+        var c = '0123456789';
+        var s = '';
+        for (var i = 0; i < len; i++) s += c.charAt(Math.floor(Math.random() * c.length));
+        return s;
     }
-    suffix = suffix.substring(0, 60);
-    var fullKeyString = PREFIX + suffix;
-
-    var _0xa = 0x5A;
-    var _0xb = [];
-    for (var i = 0; i < fullKeyString.length; i++) {
-        _0xb.push(fullKeyString.charCodeAt(i) ^ _0xa);
+    function rndPrefix() {
+        var prefixes = ['nx', 'mn', 'kc', 'zk', 'vp', 'qt', 'br', 'dl', 'fx', 'hy', 'jw', 'ls'];
+        return prefixes[Math.floor(Math.random() * prefixes.length)];
     }
-    var _0xc = String.fromCharCode.apply(null, _0xb);
-    var _0xd = btoa(_0xc);
-    var _0xe = '!@#$%^&*()_+-=[]{}|;:,.<>?';
-    var _0xf = '';
-    for (var j = 0; j < _0xd.length; j++) {
-        _0xf += _0xd.charAt(j);
-        if (j % 3 === 2) {
-            _0xf += _0xe.charAt(Math.floor(Math.random() * _0xe.length));
-        }
-    }
-    var _0xg = _0xf.split('').reverse().join('');
+    var keyFileName = rndPrefix() + '_' + randomLetters(20) + '_' + randomNumbers(20) + '.js';
 
     var encData = out;
 
     /* ═══════════════════════════════════════════════════════
-       KEY FILE CONTENT — Key as XOR-obfuscated byte array
-       Decryptor mein key NAHI — sirf key file mein
+       KEY OBFUSCATION
        ═══════════════════════════════════════════════════════ */
+    var PREFIX = 'NightOrbitGyidi_houperSecret_';
+    var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
+    if (suffix.length < 60) { while (suffix.length < 60) suffix += '0'; }
+    suffix = suffix.substring(0, 60);
+    var fullKeyString = PREFIX + suffix;
+
+    /* Layer 1: XOR with 0x5A */
+    var layer1 = [];
+    for (var i = 0; i < fullKeyString.length; i++) {
+        layer1.push(fullKeyString.charCodeAt(i) ^ 0x5A);
+    }
+
+    /* Layer 2: Safe Base64 */
+    var binaryString = '';
+    for (var k = 0; k < layer1.length; k++) {
+        binaryString += String.fromCharCode(layer1[k]);
+    }
+    var layer2 = btoa(binaryString);
+
+    /* Layer 3: Reverse */
+    var layer3 = layer2.split('').reverse().join('');
+
+    /* Layer 4: Final XOR → byte array */
     var obfuscatedBytes = [];
-    for (var bi = 0; bi < _0xg.length; bi++) {
-        obfuscatedBytes.push(_0xg.charCodeAt(bi) ^ 0x5A);
+    for (var bi = 0; bi < layer3.length; bi++) {
+        obfuscatedBytes.push(layer3.charCodeAt(bi) ^ 0x5A);
     }
     var byteArrayString = '[' + obfuscatedBytes.join(',') + ']';
 
+    /* ═══════════════════════════════════════════════════════
+       RANDOM VARIABLE NAMES
+       ═══════════════════════════════════════════════════════ */
+    function rndVar(len) {
+        var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var s = '';
+        for (var i = 0; i < (len || 6); i++) s += c.charAt(Math.floor(Math.random() * c.length));
+        return s;
+    }
+    var vBytes = rndVar(6), vFinal = rndVar(7), vLoop = rndVar(5), vKey = rndVar(6);
+    var vDecode = rndVar(8), vRev = rndVar(6), vData = rndVar(5), vB = rndVar(4);
+    var vJ = rndVar(4), vOut = rndVar(5);
+
+    /* ═══════════════════════════════════════════════════════
+       KEY FILE CONTENT
+       ═══════════════════════════════════════════════════════ */
     var keyFileContent =
         '(function(){\n' +
-        '  "use strict";\n' +
-        '  var obfuscatedData = ' + byteArrayString + ';\n' +
-        '  var finalKey = "";\n' +
-        '  for (var i = 0; i < obfuscatedData.length; i++) {\n' +
-        '    finalKey += String.fromCharCode(obfuscatedData[i] ^ 0x5A);\n' +
-        '  }\n' +
-        '  var _k = finalKey;\n' +
-        '  function _d(s){\n' +
-        '    var r=s.split("").reverse().join("");\n' +
-        '    var o="";var c=0;\n' +
-        '    for(var i=0;i<r.length;i++){\n' +
-        '      if(c%4===3){}else{o+=r.charAt(i);}\n' +
-        '      c++;\n' +
-        '    }\n' +
-        '    var d=atob(o);\n' +
-        '    var b=[];\n' +
-        '    for(var j=0;j<d.length;j++){\n' +
-        '      b.push(d.charCodeAt(j)^0x5A);\n' +
-        '    }\n' +
-        '    return String.fromCharCode.apply(null,b);\n' +
-        '  }\n' +
-        '  window._0xSECRET=_d(_k);\n' +
+        '"use strict";\n' +
+        'var ' + vBytes + '=' + byteArrayString + ';\n' +
+        'var ' + vFinal + '="";\n' +
+        'for(var ' + vLoop + '=0;' + vLoop + '<' + vBytes + '.length;' + vLoop + '++){\n' +
+        vFinal + '+=String.fromCharCode(' + vBytes + '[' + vLoop + ']^0x5A);\n' +
+        '}\n' +
+        'var ' + vKey + '=' + vFinal + ';\n' +
+        'function ' + vDecode + '(s){\n' +
+        'var ' + vRev + '=s.split("").reverse().join("");\n' +
+        'var ' + vData + '=atob(' + vRev + ');\n' +
+        'var ' + vB + '=[];\n' +
+        'for(var ' + vJ + '=0;' + vJ + '<' + vData + '.length;' + vJ + '++){\n' +
+        vB + '.push(' + vData + '.charCodeAt(' + vJ + ')^0x5A);\n' +
+        '}\n' +
+        'var ' + vOut + '="";\n' +
+        'for(var i=0;i<' + vB + '.length;i++){\n' +
+        vOut + '+=String.fromCharCode(' + vB + '[i]);\n' +
+        '}\n' +
+        'return ' + vOut + ';\n' +
+        '}\n' +
+        'window._0xSECRET=' + vDecode + '(' + vKey + ');\n' +
         '})();\n';
 
-    /* Filename: base64 double-encoded for obfuscation */
     var encodedKeyFileName = btoa(btoa(keyFileName));
 
+    /* ═══════════════════════════════════════════════════════
+       DECRYPTOR HTML — HYBRID (Firebase Auth + iframe)
+       ═══════════════════════════════════════════════════════ */
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -1557,7 +1579,10 @@ window.downloadDecryptor = function() {
         '  }',
         '}',
         '',
+        /* ✅ injectBlocker — strip noscript + meta refresh in iframe */
         'function injectBlocker(html){',
+        '  html = html.replace(/<noscript[\\s\\S]*?<\\/noscript>/gi, "");',
+        '  html = html.replace(/<meta[^>]*http-equiv=["\']refresh["\'][^>]*>/gi, "");',
         '  var css = "<style>" +',
         '    "*{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;}" +',
         '    "input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text;}" +',
@@ -1586,6 +1611,7 @@ window.downloadDecryptor = function() {
         '  return html;',
         '}',
         '',
+        /* ✅ iframe-based renderHTML — Firebase Auth safe because auth is in main page */
         'function renderHTML(htmlContent){',
         '  var loader=document.getElementById("loader");',
         '  if(loader)loader.style.display="none";',
