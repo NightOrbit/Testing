@@ -1409,9 +1409,55 @@ window.downloadDecryptor = function() {
         return;
     }
 
-    /* Generate encrypted key file name */
-    var keyFileName = generateEncryptedKeyFileName();
+    /* ═══════════════════════════════════════════════════════
+       HEAVY KEY FILE NAME GENERATOR (Double Encrypted)
+       ═══════════════════════════════════════════════════════ */
+    function genHeavyFileName() {
+        var c = 'abcdef0123456789';
+        var p1 = '', p2 = '', p3 = '', p4 = '';
+        for (var i = 0; i < 8; i++) p1 += c.charAt(Math.floor(Math.random() * c.length));
+        for (var j = 0; j < 4; j++) p2 += c.charAt(Math.floor(Math.random() * c.length));
+        for (var k = 0; k < 4; k++) p3 += c.charAt(Math.floor(Math.random() * c.length));
+        for (var l = 0; l < 12; l++) p4 += c.charAt(Math.floor(Math.random() * c.length));
+        return 'nx_' + p1 + '-' + p2 + '-' + p3 + '-' + p4 + '.js';
+    }
 
+    var keyFileName = genHeavyFileName();
+
+    /* ═══════════════════════════════════════════════════════
+       MULTI-LAYER FILENAME ENCRYPTION
+       Layer 1: XOR with rotating key
+       Layer 2: Base64
+       Layer 3: Reverse
+       Layer 4: Junk injection
+       ═══════════════════════════════════════════════════════ */
+    function heavyEncryptFilename(fname) {
+        /* Layer 1: XOR with rotating byte pattern */
+        var xorPattern = [0x5A, 0x3C, 0x7F, 0x21, 0x4B, 0x6E, 0x2D, 0x58];
+        var xored = '';
+        for (var i = 0; i < fname.length; i++) {
+            xored += String.fromCharCode(fname.charCodeAt(i) ^ xorPattern[i % xorPattern.length]);
+        }
+        /* Layer 2: Base64 */
+        var b64 = btoa(xored);
+        /* Layer 3: Reverse + junk inject */
+        var junk = '!@#$%^&*()_+-=[]{}|;:,.<>?~`';
+        var injected = '';
+        for (var j = 0; j < b64.length; j++) {
+            injected += b64.charAt(j);
+            if (j % 2 === 1) {
+                injected += junk.charAt(Math.floor(Math.random() * junk.length));
+            }
+        }
+        /* Layer 4: Reverse */
+        return injected.split('').reverse().join('');
+    }
+
+    var encFileName = heavyEncryptFilename(keyFileName);
+
+    /* ═══════════════════════════════════════════════════════
+       KEY ENCRYPTION (Same as before — proven working)
+       ═══════════════════════════════════════════════════════ */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
 
@@ -1444,28 +1490,36 @@ window.downloadDecryptor = function() {
 
     var encData = out;
 
-    /* Build the key file content */
+    /* ═══════════════════════════════════════════════════════
+       KEY FILE CONTENT (Heavy Obfuscated)
+       ═══════════════════════════════════════════════════════ */
     var keyFileContent =
-        '/* Encrypted Key File — DO NOT EDIT */\n' +
-        '/* Keep this file in SAME folder as decryptor.html */\n' +
-        '/* File: ' + keyFileName + ' */\n' +
-        'var _0xk="' + _0xg + '";\n' +
-        'function _0xdk(s){\n' +
-        '  var r=s.split("").reverse().join("");\n' +
-        '  var o="";var c=0;\n' +
-        '  for(var i=0;i<r.length;i++){\n' +
-        '    if(c%4===3){}else{o+=r.charAt(i);}\n' +
-        '    c++;\n' +
+        '/* Encrypted Key Module — Protected */\n' +
+        '/* DO NOT EDIT — DO NOT RENAME */\n' +
+        '(function(){\n' +
+        '  "use strict";\n' +
+        '  var _k="' + _0xg + '";\n' +
+        '  function _d(s){\n' +
+        '    var r=s.split("").reverse().join("");\n' +
+        '    var o="";var c=0;\n' +
+        '    for(var i=0;i<r.length;i++){\n' +
+        '      if(c%4===3){}else{o+=r.charAt(i);}\n' +
+        '      c++;\n' +
+        '    }\n' +
+        '    var d=atob(o);\n' +
+        '    var b=[];\n' +
+        '    for(var j=0;j<d.length;j++){\n' +
+        '      b.push(d.charCodeAt(j)^0x5A);\n' +
+        '    }\n' +
+        '    return String.fromCharCode.apply(null,b);\n' +
         '  }\n' +
-        '  var d=atob(o);\n' +
-        '  var b=[];\n' +
-        '  for(var j=0;j<d.length;j++){\n' +
-        '    b.push(d.charCodeAt(j)^0x5A);\n' +
-        '  }\n' +
-        '  return String.fromCharCode.apply(null,b);\n' +
-        '}\n' +
-        'window._0xSECRET=_0xdk(_0xk);\n';
+        '  window._0xSECRET=_d(_k);\n' +
+        '})();\n';
 
+    /* ═══════════════════════════════════════════════════════
+       DECRYPTOR HTML — Heavy Version
+       Filename loaded via encrypted payload
+       ═══════════════════════════════════════════════════════ */
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -1474,7 +1528,6 @@ window.downloadDecryptor = function() {
         '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">',
         '<title id="pageTitle">Loading...</title>',
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
-        '<script src="' + keyFileName + '"><' + '/script>',
         '<style>',
         '*{margin:0;padding:0;box-sizing:border-box;}',
         'html,body{width:100%;min-height:100vh;}',
@@ -1503,10 +1556,52 @@ window.downloadDecryptor = function() {
         '<body>',
         '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
         '<script>',
-        'var SECRET_KEY = window._0xSECRET;',
-        'if (!SECRET_KEY || SECRET_KEY.length < 30) {',
-        '  document.body.innerHTML = "<div style=\\"color:#ff0064;text-align:center;padding:60px;font-family:monospace;font-size:14px;line-height:2;background:#0b0b1a;min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;\\"><div style=\\"font-size:64px;margin-bottom:20px;\\">❌<\\/div><div style=\\"font-size:20px;letter-spacing:3px;text-transform:uppercase;margin-bottom:20px;\\">Key File Missing<\\/div><div style=\\"color:#b0b0d0;line-height:1.8;\\">Save both files in SAME folder:<br><br>1. decryptor.html<br>2. ' + keyFileName + '<br><br>Do NOT rename the key file.<\\/div><\\/div>";',
-        '} else {',
+        'var _0xk="' + _0xg + '";',
+        'function _0xdk(s){',
+        '  var r=s.split("").reverse().join("");',
+        '  var o="";var c=0;',
+        '  for(var i=0;i<r.length;i++){',
+        '    if(c%4===3){}else{o+=r.charAt(i);}',
+        '    c++;',
+        '  }',
+        '  var d=atob(o);',
+        '  var b=[];',
+        '  for(var j=0;j<d.length;j++){',
+        '    b.push(d.charCodeAt(j)^0x5A);',
+        '  }',
+        '  return String.fromCharCode.apply(null,b);',
+        '}',
+        'var SECRET_KEY=_0xdk(_0xk);',
+        '',
+        '/* ═══ HEAVY DECRYPT FILENAME ═══ */',
+        'var _0xfn="' + encFileName + '";',
+        'function _0xdkf(s){',
+        '  var junk="!@#$%^&*()_+-=[]{}|;:,.<>?~`";',
+        '  var r=s.split("").reverse().join("");',
+        '  var o="";var c=0;',
+        '  for(var i=0;i<r.length;i++){',
+        '    if(c%2===1){}else{o+=r.charAt(i);}',
+        '    c++;',
+        '  }',
+        '  var xored=atob(o);',
+        '  var pat=[0x5A,0x3C,0x7F,0x21,0x4B,0x6E,0x2D,0x58];',
+        '  var out="";',
+        '  for(var j=0;j<xored.length;j++){',
+        '    out+=String.fromCharCode(xored.charCodeAt(j)^pat[j%pat.length]);',
+        '  }',
+        '  return out;',
+        '}',
+        'var KEY_FILENAME=_0xdkf(_0xfn);',
+        '',
+        '/* ═══ DYNAMIC KEY FILE LOADER ═══ */',
+        'function loadKeyFile(cb){',
+        '  var s=document.createElement("script");',
+        '  s.src=KEY_FILENAME;',
+        '  s.onload=function(){cb(true);};',
+        '  s.onerror=function(){cb(false);};',
+        '  document.head.appendChild(s);',
+        '}',
+        '',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
         '',
         'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
@@ -1522,6 +1617,25 @@ window.downloadDecryptor = function() {
         '  err+="<p style=\\"font-size:11px;color:#6a6a8a;margin-top:20px;\\">Check: key file present, encrypted data, internet connection<\\/p>";',
         '  err+="<\\/div>";',
         '  document.body.innerHTML=err;',
+        '}',
+        '',
+        'function showKeyMissingError(){',
+        '  document.title="Key File Missing";',
+        '  document.body.innerHTML="";',
+        '  document.body.style.cssText="background:#0b0b1a;color:#fff;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:monospace;";',
+        '  var h="<div style=\\"text-align:center;padding:40px 20px;max-width:600px;\\">";',
+        '  h+="<div style=\\"font-size:80px;margin-bottom:24px;\\">🔐<\\/div>";',
+        '  h+="<div style=\\"font-size:24px;letter-spacing:4px;text-transform:uppercase;color:#ff0064;margin-bottom:20px;font-weight:bold;\\">Key File Missing<\\/div>";',
+        '  h+="<div style=\\"color:#b0b0d0;font-size:14px;line-height:2;margin-bottom:24px;\\">";',
+        '  h+="Required files not found in this folder.<br><br>";',
+        '  h+="Make sure <b style=\\"color:#ffd700;\\">BOTH</b> files are in the <b style=\\"color:#ffd700;\\">SAME folder</b>:<br><br>";',
+        '  h+="<div style=\\"background:rgba(0,240,255,0.08);border-left:3px solid #00f0ff;padding:12px 16px;border-radius:8px;text-align:left;margin:16px 0;\\">";',
+        '  h+="<div style=\\"color:#00f0ff;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;\\">Required Files<\\/div>";',
+        '  h+="<div style=\\"color:#fff;font-size:13px;line-height:1.9;\\">1. <b style=\\"color:#ffd700;\\">decryptor.html<\\/b><br>2. <b style=\\"color:#00f0ff;\\">The key file (.js)<\\/b><\\/div>";',
+        '  h+="<\\/div>";',
+        '  h+="<div style=\\"color:#ffb3c9;font-size:12px;margin-top:20px;\\">⚠️ Do NOT rename the key file.<\\/div>";',
+        '  h+="<\\/div><\\/div>";',
+        '  document.body.innerHTML=h;',
         '}',
         '',
         'function extractTitle(html){',
@@ -1641,36 +1755,45 @@ window.downloadDecryptor = function() {
         '  });',
         '}',
         '',
+        '/* ═══ MAIN DECRYPTION FLOW ═══ */',
         'ready(function(){',
-        '  try{',
-        '    if(typeof CryptoJS==="undefined"){throw new Error("CryptoJS library failed to load. Check your internet connection.");}',
+        '  if(typeof CryptoJS==="undefined"){',
+        '    showError("CryptoJS library failed to load. Check your internet connection.");',
+        '    return;',
+        '  }',
+        '  loadKeyFile(function(loaded){',
+        '    if(!loaded || !window._0xSECRET || window._0xSECRET.length < 30){',
+        '      showKeyMissingError();',
+        '      return;',
+        '    }',
         '    setTimeout(function(){',
-        '      var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,SECRET_KEY).toString(CryptoJS.enc.Utf8);',
-        '      if(!dec||dec.length===0){throw new Error("Decryption failed — wrong key or corrupted data.");}',
-        '',
-        '      var isBundle=false,bundle=null;',
         '      try{',
-        '        var p=JSON.parse(dec);',
-        '        if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}',
-        '      }catch(e){}',
+        '        var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,window._0xSECRET).toString(CryptoJS.enc.Utf8);',
+        '        if(!dec||dec.length===0){throw new Error("Decryption failed — wrong key or corrupted data.");}',
         '',
-        '      if(isBundle){',
-        '        renderBundle(bundle);',
-        '      } else {',
-        '        var trimmed=dec.trim();',
-        '        var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);',
-        '        if(isHTML){',
-        '          renderHTML(dec);',
+        '        var isBundle=false,bundle=null;',
+        '        try{',
+        '          var p=JSON.parse(dec);',
+        '          if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}',
+        '        }catch(e){}',
+        '',
+        '        if(isBundle){',
+        '          renderBundle(bundle);',
         '        } else {',
-        '          renderText(dec);',
+        '          var trimmed=dec.trim();',
+        '          var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);',
+        '          if(isHTML){',
+        '            renderHTML(dec);',
+        '          } else {',
+        '            renderText(dec);',
+        '          }',
         '        }',
+        '      }catch(e){',
+        '        showError(e.message);',
         '      }',
         '    }, 50);',
-        '  }catch(e){',
-        '    showError(e.message);',
-        '  }',
+        '  });',
         '});',
-        '}',
         '<' + '/script>',
         '<' + '/body>',
         '<' + '/html>'
@@ -1678,14 +1801,14 @@ window.downloadDecryptor = function() {
 
     var html = parts.join('\n');
 
-    /* Download decryptor.html */
+    /* ═══ DOWNLOAD DECRYPTOR ═══ */
     var htmlBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
     var htmlLink = document.createElement('a');
     htmlLink.href = URL.createObjectURL(htmlBlob);
     htmlLink.download = 'decryptor.html';
     htmlLink.click();
 
-    /* Download encrypted key file */
+    /* ═══ DOWNLOAD KEY FILE ═══ */
     var keyBlob = new Blob([keyFileContent], { type: 'text/javascript;charset=utf-8' });
     var keyLink = document.createElement('a');
     keyLink.href = URL.createObjectURL(keyBlob);
