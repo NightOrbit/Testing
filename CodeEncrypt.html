@@ -1486,7 +1486,6 @@ window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Encrypt first!', 'error'); return; }
     
-    /* ═══ KEY UNLOCK CHECK ═══ */
     if (!KEY_MANAGER.isReady() || !KEY_MANAGER.getKey()) {
         state._pendingAction = 'downloadDecryptor';
         openPwdModal('reveal');
@@ -1499,21 +1498,18 @@ window.downloadDecryptor = function() {
         return; 
     }
     
-    /* ═══ AUTO-GENERATE UNIQUE FILENAME FROM USER UID ═══ */
     var userUid = state.user && state.user.uid ? state.user.uid : 'default';
-    /* Short unique hash from UID */
-    var uidHash = 0;
-    for (var k = 0; k < userUid.length; k++) {
-        uidHash = ((uidHash << 5) - uidHash) + userUid.charCodeAt(k);
-        uidHash = uidHash & uidHash;
+    
+    var randomChars = 'abcdef0123456789';
+    var randomPart = '';
+    for (var r = 0; r < 20; r++) {
+        randomPart += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
     }
-    var uniqueNum = Math.abs(uidHash).toString(36);
-    var finalFileName = 'key_' + uniqueNum + '.js';
     
-    console.log('🔑 User UID:', userUid);
-    console.log('🔑 Key file name:', finalFileName);
+    var finalFileName = 'nx_' + randomPart + '.js';
     
-    /* ═══ SPLIT KEY INTO PREFIX + SUFFIX ═══ */
+    console.log('Key file name:', finalFileName);
+    
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
     
@@ -1524,18 +1520,15 @@ window.downloadDecryptor = function() {
     
     var fullKeyString = PREFIX + suffix;
     
-    /* ═══ LAYER 1: XOR OBFUSCATION ═══ */
     var xorKey = 0x5A;
     var xorBytes = [];
     for (var i = 0; i < fullKeyString.length; i++) {
         xorBytes.push(fullKeyString.charCodeAt(i) ^ xorKey);
     }
     
-    /* ═══ LAYER 2: BASE64 ENCODE ═══ */
     var xorString = String.fromCharCode.apply(null, xorBytes);
     var base64Str = btoa(xorString);
     
-    /* ═══ LAYER 3: FAKE CHARS INJECT ═══ */
     var fakeChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
     var injected = '';
     for (var j = 0; j < base64Str.length; j++) {
@@ -1545,12 +1538,10 @@ window.downloadDecryptor = function() {
         }
     }
     
-    /* ═══ LAYER 4: REVERSE + SHUFFLE ═══ */
     var reversed = injected.split('').reverse().join('');
     
-    console.log('🔑 Obfuscated string length:', reversed.length);
+    console.log('Obfuscated string length:', reversed.length);
     
-    /* ═══ KEY-STORE FILE CONTENT ═══ */
     var keyStoreCode = [
         'var _0xk="' + reversed + '";',
         'function _0xdk(s){',
@@ -1570,10 +1561,8 @@ window.downloadDecryptor = function() {
         'window._0xSECRET=_0xdk(_0xk);'
     ].join('\n');
     
-    /* ═══ ENCRYPTED DATA ═══ */
     var encData = out;
     
-    /* ═══ BUILD DECRYPTOR HTML ═══ */
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -1613,7 +1602,7 @@ window.downloadDecryptor = function() {
         '<script>',
         'var SECRET_KEY = window._0xSECRET;',
         'if (!SECRET_KEY || SECRET_KEY.length < 30) {',
-        '  document.body.innerHTML = "<div style=\\"color:#ff0064;text-align:center;padding:60px;font-family:monospace;font-size:14px;line-height:2;\\">❌ Key file missing or invalid.<br>Make sure the key file is in the same folder.</div>";',
+        '  document.body.innerHTML = "<div style=\\"color:#ff0064;text-align:center;padding:60px;font-family:monospace;font-size:14px;line-height:2;\\">Key file missing or invalid.<br><br>Save both files in the SAME FOLDER.<br>Do NOT rename the key file.<br><br>Expected: ' + finalFileName + '</div>";',
         '} else {',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
         '',
@@ -1725,13 +1714,13 @@ window.downloadDecryptor = function() {
         '  document.body.innerHTML="";',
         '  document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;padding:20px;margin:0;min-height:100vh;";',
         '  var h="<div class=\\"bundle-wrap\\">";',
-        '  h+="<div class=\\"bundle-title\\">📦 Multi-File Bundle ("+bundle.__fileCount+" files)<\\/div>";',
+        '  h+="<div class=\\"bundle-title\\">Multi-File Bundle ("+bundle.__fileCount+" files)<\\/div>";',
         '  Object.keys(bundle.files).forEach(function(name){',
         '    var f=bundle.files[name];',
         '    h+="<div class=\\"file-card\\">";',
-        '    h+="<div class=\\"file-head\\"><span class=\\"file-name\\">📄 "+name+"<\\/span><span class=\\"file-lang\\">"+(f.lang||"?").toUpperCase()+"<\\/span><\\/div>";',
+        '    h+="<div class=\\"file-head\\"><span class=\\"file-name\\">"+name+"<\\/span><span class=\\"file-lang\\">"+(f.lang||"?").toUpperCase()+"<\\/span><\\/div>";',
         '    h+="<pre class=\\"file-content\\">"+f.content.replace(/</g,"&lt;")+"<\\/pre>";',
-        '    h+="<button class=\\"dl-btn\\" data-name=\\""+name+"\\">⬇ Download "+name+"<\\/button>";',
+        '    h+="<button class=\\"dl-btn\\" data-name=\\""+name+"\\">Download "+name+"<\\/button>";',
         '    h+="<\\/div>";',
         '  });',
         '  h+="<\\/div>";',
@@ -1754,7 +1743,7 @@ window.downloadDecryptor = function() {
         '    if(typeof CryptoJS==="undefined"){throw new Error("CryptoJS library failed to load. Check your internet connection.");}',
         '    setTimeout(function(){',
         '      var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,SECRET_KEY).toString(CryptoJS.enc.Utf8);',
-        '      if(!dec||dec.length===0){throw new Error("Decryption failed — wrong key or corrupted data.");}',
+        '      if(!dec||dec.length===0){throw new Error("Decryption failed - wrong key or corrupted data.");}',
         '',
         '      var isBundle=false,bundle=null;',
         '      try{',
@@ -1786,14 +1775,12 @@ window.downloadDecryptor = function() {
     
     var html = parts.join('\n');
     
-    /* ═══ DOWNLOAD KEY FILE (unique name) ═══ */
     var keyBlob = new Blob([keyStoreCode], { type: 'application/javascript' });
     var keyLink = document.createElement('a');
     keyLink.href = URL.createObjectURL(keyBlob);
     keyLink.download = finalFileName;
     keyLink.click();
     
-    /* ═══ DOWNLOAD DECRYPTOR HTML (same name) ═══ */
     setTimeout(function() {
         var htmlBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
         var htmlLink = document.createElement('a');
@@ -1801,10 +1788,24 @@ window.downloadDecryptor = function() {
         htmlLink.download = 'decryptor.html';
         htmlLink.click();
         
-        showStatus('success', '🎁 2 files downloaded! Keep both in same folder.');
+        showStatus('success', '2 files downloaded! Keep both in same folder.');
         toast('Decryptor + Key file downloaded!', 'success');
+        
+        setTimeout(function() {
+            alert(
+                'FILES DOWNLOADED\n\n' +
+                '1. decryptor.html\n' +
+                '2. ' + finalFileName + '\n\n' +
+                'IMPORTANT:\n' +
+                '- Save BOTH files in the SAME FOLDER\n' +
+                '- Do NOT rename the key file\n' +
+                '- Do NOT move files to different folders\n\n' +
+                'If you rename or move the key file, decryption will FAIL.'
+            );
+        }, 500);
     }, 800);
 };
+      
 /* ═══ CLEAR ═══ */
 window.clearAll = function() {
     inputCodeEl.value = '';
