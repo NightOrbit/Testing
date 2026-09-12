@@ -1494,6 +1494,7 @@ window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Encrypt first!', 'error'); return; }
     
+    /* ═══ KEY UNLOCK CHECK ═══ */
     if (!KEY_MANAGER.isReady() || !KEY_MANAGER.getKey()) {
         state._pendingAction = 'downloadDecryptor';
         openPwdModal('reveal');
@@ -1506,6 +1507,53 @@ window.downloadDecryptor = function() {
         return; 
     }
     
+    /* ═══ USER SE KEY FILE KA NAAM MAANGO ═══ */
+    var keyFileName = prompt(
+        '🔑 KEY FILE KA NAAM RAKHO\n\n' +
+        'Rules:\n' +
+        '• 10 LETTERS (a-z, A-Z)\n' +
+        '• 20 NUMBERS (0-9)\n' +
+        '• Total 30 characters\n' +
+        '• Koi space nahi\n' +
+        '• Koi symbol nahi\n\n' +
+        'Example: abcdefghij12345678901234567890\n\n' +
+        'Apna naam likho:'
+    );
+    
+    if (!keyFileName) {
+        toast('Cancelled', 'warn');
+        return;
+    }
+    
+    /* ═══ VALIDATION ═══ */
+    keyFileName = keyFileName.trim();
+    
+    var letters = (keyFileName.match(/[a-zA-Z]/g) || []).length;
+    var numbers = (keyFileName.match(/\d/g) || []).length;
+    var others = (keyFileName.match(/[^a-zA-Z0-9]/g) || []).length;
+    var totalLength = keyFileName.length;
+    
+    if (totalLength !== 30) {
+        toast('❌ Total 30 characters hone chahiye (abhi ' + totalLength + ' hain)', 'error');
+        return;
+    }
+    if (letters !== 10) {
+        toast('❌ 10 letters hone chahiye (abhi ' + letters + ' hain)', 'error');
+        return;
+    }
+    if (numbers !== 20) {
+        toast('❌ 20 numbers hone chahiye (abhi ' + numbers + ' hain)', 'error');
+        return;
+    }
+    if (others > 0) {
+        toast('❌ Koi space ya symbol nahi hona chahiye', 'error');
+        return;
+    }
+    
+    var finalFileName = keyFileName + '.js';
+    console.log('🔑 Key file name:', finalFileName);
+    
+    /* ═══ SPLIT KEY INTO PREFIX + SUFFIX ═══ */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
     
@@ -1516,28 +1564,64 @@ window.downloadDecryptor = function() {
     
     var fullKeyString = PREFIX + suffix;
     
-    var _0xa = 0x5A;
-    var _0xb = [];
+    /* ═══════════════════════════════════════════════════════
+       LAYER 1: XOR OBFUSCATION
+       ═══════════════════════════════════════════════════════ */
+    var xorKey = 0x5A;
+    var xorBytes = [];
     for (var i = 0; i < fullKeyString.length; i++) {
-        _0xb.push(fullKeyString.charCodeAt(i) ^ _0xa);
+        xorBytes.push(fullKeyString.charCodeAt(i) ^ xorKey);
     }
     
-    var _0xc = String.fromCharCode.apply(null, _0xb);
-    var _0xd = btoa(_0xc);
+    /* ═══════════════════════════════════════════════════════
+       LAYER 2: BASE64 ENCODE
+       ═══════════════════════════════════════════════════════ */
+    var xorString = String.fromCharCode.apply(null, xorBytes);
+    var base64Str = btoa(xorString);
     
-    var _0xe = '!@#$%^&*()_+-=[]{}|;:,.<>?';
-    var _0xf = '';
-    for (var j = 0; j < _0xd.length; j++) {
-        _0xf += _0xd.charAt(j);
+    /* ═══════════════════════════════════════════════════════
+       LAYER 3: FAKE CHARS INJECT
+       ═══════════════════════════════════════════════════════ */
+    var fakeChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+    var injected = '';
+    for (var j = 0; j < base64Str.length; j++) {
+        injected += base64Str.charAt(j);
         if (j % 3 === 2) {
-            _0xf += _0xe.charAt(Math.floor(Math.random() * _0xe.length));
+            injected += fakeChars.charAt(Math.floor(Math.random() * fakeChars.length));
         }
     }
     
-    var _0xg = _0xf.split('').reverse().join('');
+    /* ═══════════════════════════════════════════════════════
+       LAYER 4: REVERSE + SHUFFLE
+       ═══════════════════════════════════════════════════════ */
+    var reversed = injected.split('').reverse().join('');
     
+    console.log('🔑 Obfuscated string length:', reversed.length);
+    
+    /* ═══ KEY-STORE FILE CONTENT ═══ */
+    var keyStoreCode = [
+        'var _0xk="' + reversed + '";',
+        'function _0xdk(s){',
+        'var r=s.split("").reverse().join("");',
+        'var o="";var c=0;',
+        'for(var i=0;i<r.length;i++){',
+        'if(c%4===3){}else{o+=r.charAt(i);}',
+        'c++;',
+        '}',
+        'var d=atob(o);',
+        'var b=[];',
+        'for(var j=0;j<d.length;j++){',
+        'b.push(d.charCodeAt(j)^0x5A);',
+        '}',
+        'return String.fromCharCode.apply(null,b);',
+        '}',
+        'window._0xSECRET=_0xdk(_0xk);'
+    ].join('\n');
+    
+    /* ═══ ENCRYPTED DATA ═══ */
     var encData = out;
     
+    /* ═══ BUILD DECRYPTOR HTML ═══ */
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -1546,6 +1630,7 @@ window.downloadDecryptor = function() {
         '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">',
         '<title id="pageTitle">Loading...</title>',
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
+        '<script src="' + finalFileName + '"><' + '/script>',
         '<style>',
         '*{margin:0;padding:0;box-sizing:border-box;}',
         'html,body{width:100%;min-height:100vh;}',
@@ -1574,23 +1659,10 @@ window.downloadDecryptor = function() {
         '<body>',
         '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
         '<script>',
-        'var _0xk="' + _0xg + '";',
-        'function _0xdk(s){',
-        'var r=s.split("").reverse().join("");',
-        'var o="";var c=0;',
-        'for(var i=0;i<r.length;i++){',
-        'if(c%4===3){}else{o+=r.charAt(i);}',
-        'c++;',
-        '}',
-        'var d=atob(o);',
-        'var b=[];',
-        'for(var j=0;j<d.length;j++){',
-        'b.push(d.charCodeAt(j)^0x5A);',
-        '}',
-        'return String.fromCharCode.apply(null,b);',
-        '}',
-        'var SECRET_KEY=_0xdk(_0xk);',
-        '',
+        'var SECRET_KEY = window._0xSECRET;',
+        'if (!SECRET_KEY || SECRET_KEY.length < 30) {',
+        '  document.body.innerHTML = "<div style=\\"color:#ff0064;text-align:center;padding:60px;font-family:monospace;font-size:14px;line-height:2;\\">❌ Key file missing or invalid.<br>Make sure the key file is in the same folder.<br><br>Expected file: ' + finalFileName + '</div>";',
+        '} else {',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
         '',
         'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
@@ -1754,19 +1826,31 @@ window.downloadDecryptor = function() {
         '    showError(e.message);',
         '  }',
         '});',
+        '}',
         '<' + '/script>',
         '<' + '/body>',
         '<' + '/html>'
     ];
-
+    
     var html = parts.join('\n');
-    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'decryptor.html';
-    a.click();
-    showStatus('success', '🎁 Decryptor downloaded! Works with 1MB+ files.');
-    toast('Decryptor downloaded!', 'success');
+    
+    /* ═══ DOWNLOAD KEY FILE ═══ */
+    var keyBlob = new Blob([keyStoreCode], { type: 'application/javascript' });
+    var keyLink = document.createElement('a');
+    keyLink.href = URL.createObjectURL(keyBlob);
+    keyLink.download = finalFileName;
+    keyLink.click();
+    
+    /* ═══ DOWNLOAD DECRYPTOR HTML ═══ */
+    setTimeout(function() {
+        var htmlBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        var htmlLink = document.createElement('a');
+        htmlLink.href = URL.createObjectURL(htmlBlob);
+        htmlLink.download = 'decryptor.html';
+        htmlLink.click();
+        showStatus('success', '🎁 2 files downloaded! Keep both in same folder.');
+        toast('Decryptor + Key file downloaded!', 'success');
+    }, 800);
 };
     
 /* ═══ CLEAR ═══ */
