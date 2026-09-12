@@ -1498,13 +1498,14 @@ window.downloadDecryptor = function() {
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
     
-    /* Key already 60 chars from key-manager */
-    suffix = suffix.substring(0, 60);
+    console.log('🔑 Full key length:', fullKey.length);
+    console.log('🔑 Suffix length:', suffix.length);
+    
+    /* ═══ MAKE 60-CHAR SUFFIX — PAD IF SHORTER ═══ */
     if (suffix.length < 60) {
-        showStatus('error', '❌ Key format invalid — length: ' + suffix.length);
-        toast('Key format invalid', 'error');
-        return;
+        while (suffix.length < 60) suffix += '0';
     }
+    suffix = suffix.substring(0, 60);
     
     /* Split into 7 parts: 9+9+9+9+8+8+8 = 60 */
     var c1 = suffix.substring(0, 9);
@@ -1514,6 +1515,8 @@ window.downloadDecryptor = function() {
     var c5 = suffix.substring(36, 44);
     var c6 = suffix.substring(44, 52);
     var c7 = suffix.substring(52, 60);
+    
+    console.log('🔑 Chunks:', c1.length, c2.length, c3.length, c4.length, c5.length, c6.length, c7.length);
     
     /* ═══ ENCRYPTED DATA ═══ */
     var encData = out;
@@ -1718,7 +1721,8 @@ window.downloadDecryptor = function() {
         '  try{',
         '    if(typeof CryptoJS==="undefined"){throw new Error("CryptoJS library failed to load. Check your internet connection.");}',
         '    setTimeout(function(){',
-        '      if(SECRET_KEY.length < 30){showError("Key assembly failed");return;}',
+        '      console.log("🔑 Decryptor key length:", SECRET_KEY.length);',
+        '      if(SECRET_KEY.length < 30){showError("Key assembly failed. Length: " + SECRET_KEY.length);return;}',
         '      var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,SECRET_KEY).toString(CryptoJS.enc.Utf8);',
         '      if(!dec||dec.length===0){throw new Error("Decryption failed — wrong key or corrupted data.");}',
         '',
