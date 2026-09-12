@@ -1501,9 +1501,10 @@ window.downloadDecryptor = function() {
     var keyFileName = prompt(
         '🔑 ENTER KEY FILE NAME\n\n' +
         'Rules:\n' +
-        '• 10 LETTERS (a-z, A-Z)\n' +
-        '• 20 NUMBERS (0-9)\n' +
-        '• Total 30 characters\n' +
+        '• Minimum 10 LETTERS (a-z, A-Z)\n' +
+        '• Minimum 20 NUMBERS (0-9)\n' +
+        '• Minimum 30 total characters\n' +
+        '• More is allowed (no upper limit)\n' +
         '• No spaces\n' +
         '• No symbols\n\n' +
         'Example: abcdefghij12345678901234567890\n\n' +
@@ -1522,24 +1523,26 @@ window.downloadDecryptor = function() {
     var others = (keyFileName.match(/[^a-zA-Z0-9]/g) || []).length;
     var totalLength = keyFileName.length;
     
-    if (totalLength !== 30) {
-        toast('❌ Total must be 30 characters (currently ' + totalLength + ')', 'error');
+    if (letters < 10) {
+        toast('❌ Minimum 10 letters required (currently ' + letters + ')', 'error');
         return;
     }
-    if (letters !== 10) {
-        toast('❌ Must have 10 letters (currently ' + letters + ')', 'error');
-        return;
-    }
-    if (numbers !== 20) {
-        toast('❌ Must have 20 numbers (currently ' + numbers + ')', 'error');
+    if (numbers < 20) {
+        toast('❌ Minimum 20 numbers required (currently ' + numbers + ')', 'error');
         return;
     }
     if (others > 0) {
         toast('❌ No spaces or symbols allowed', 'error');
         return;
     }
+    if (totalLength < 30) {
+        toast('❌ Minimum 30 characters required (currently ' + totalLength + ')', 'error');
+        return;
+    }
     
-    var finalFileName = keyFileName + '.js';
+    /* ═══ ENCRYPT FILENAME ═══ */
+    var finalFileName = 'nx_' + btoa(keyFileName).replace(/=/g, '') + '.js';
+    
     console.log('🔑 Key file name:', finalFileName);
     
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
@@ -1634,7 +1637,7 @@ window.downloadDecryptor = function() {
         '<script>',
         'var SECRET_KEY = window._0xSECRET;',
         'if (!SECRET_KEY || SECRET_KEY.length < 30) {',
-        '  document.body.innerHTML = "<div style=\\"color:#ff0064;text-align:center;padding:60px;font-family:monospace;font-size:14px;line-height:2;\\">❌ Key file missing or invalid.<br>Make sure the key file is in the same folder.<br><br>Expected file: ' + finalFileName + '</div>";',
+        '  document.body.innerHTML = "<div style=\\"color:#ff0064;text-align:center;padding:60px;font-family:monospace;font-size:14px;line-height:2;\\">❌ Key file missing or invalid.<br>Make sure the key file is in the same folder.</div>";',
         '} else {',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
         '',
