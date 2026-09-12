@@ -1,0 +1,24 @@
+{
+  "name": "Gyidi Bazar - Earn · Shop · Entertainment",
+  "short_name": "Gyidi Bazar",
+  "description": "Earn coins, watch ads, spin wheel, shop from Daraz & Foodpanda, withdraw via JazzCash. Enterprise-grade security with OTP verification.",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05070a",
+  "theme_color": "#00d2ff",
+  "icons": [
+    {
+      "src": "nightorbit-logo-225.png",
+      "sizes": "225x225",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "nightorbit-logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
