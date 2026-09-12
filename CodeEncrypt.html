@@ -1382,30 +1382,20 @@ window.downloadDecryptor = function() {
     }
 
     /* ═══════════════════════════════════════════════════════
-       KEY FILE NAME — 20 letters + 20 numbers
+       KEY FILE NAME — nx_xxxxxxxx-xxxx-xxxx-xxxxxxxxxxxx.js
        ═══════════════════════════════════════════════════════ */
-    function randomLetters(len) {
-        var c = 'abcdefghijklmnopqrstuvwxyz';
+    function rndHex(len) {
+        var c = 'abcdef0123456789';
         var s = '';
-        for (var i = 0; i < len; i++) s += c.charAt(Math.floor(Math.random() * c.length));
+        for (var i = 0; i < (len || 16); i++) s += c.charAt(Math.floor(Math.random() * c.length));
         return s;
     }
-    function randomNumbers(len) {
-        var c = '0123456789';
-        var s = '';
-        for (var i = 0; i < len; i++) s += c.charAt(Math.floor(Math.random() * c.length));
-        return s;
-    }
-    function rndPrefix() {
-        var prefixes = ['nx', 'mn', 'kc', 'zk', 'vp', 'qt', 'br', 'dl', 'fx', 'hy', 'jw', 'ls'];
-        return prefixes[Math.floor(Math.random() * prefixes.length)];
-    }
-    var keyFileName = rndPrefix() + '_' + randomLetters(20) + '_' + randomNumbers(20) + '.js';
+    var keyFileName = 'nx_' + rndHex(8) + '-' + rndHex(4) + '-' + rndHex(4) + '-' + rndHex(12) + '.js';
 
     var encData = out;
 
     /* ═══════════════════════════════════════════════════════
-       KEY OBFUSCATION
+       HEAVY OBFUSCATION — 8 LAYERS + 4 SALTS + PADDING
        ═══════════════════════════════════════════════════════ */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
@@ -1413,75 +1403,150 @@ window.downloadDecryptor = function() {
     suffix = suffix.substring(0, 60);
     var fullKeyString = PREFIX + suffix;
 
-    /* Layer 1: XOR with 0x5A */
-    var layer1 = [];
+    var s1 = (Date.now() % 251) + 1;
+    var s2 = (Math.floor(Math.random() * 251)) + 1;
+    var s3 = (Math.floor(Math.random() * 251)) + 1;
+    var s4 = (Math.floor(Math.random() * 251)) + 1;
+
+    /* Layer 1 */
+    var L1 = [];
     for (var i = 0; i < fullKeyString.length; i++) {
-        layer1.push(fullKeyString.charCodeAt(i) ^ 0x5A);
+        L1.push((fullKeyString.charCodeAt(i) ^ 0x5A) ^ s1);
     }
-
-    /* Layer 2: Safe Base64 */
-    var binaryString = '';
-    for (var k = 0; k < layer1.length; k++) {
-        binaryString += String.fromCharCode(layer1[k]);
+    /* Layer 2 */
+    var L2 = [];
+    for (var j = 0; j < L1.length; j++) {
+        L2.push((L1[j] + s2) % 256);
     }
-    var layer2 = btoa(binaryString);
-
-    /* Layer 3: Reverse */
-    var layer3 = layer2.split('').reverse().join('');
-
-    /* Layer 4: Final XOR → byte array */
-    var obfuscatedBytes = [];
-    for (var bi = 0; bi < layer3.length; bi++) {
-        obfuscatedBytes.push(layer3.charCodeAt(bi) ^ 0x5A);
+    /* Layer 3 */
+    var L3 = [];
+    for (var k = 0; k < L2.length; k++) {
+        L3.push(L2[k] ^ s3);
     }
-    var byteArrayString = '[' + obfuscatedBytes.join(',') + ']';
+    /* Layer 4 */
+    var even = [], odd = [];
+    for (var m = 0; m < L3.length; m++) {
+        if (m % 2 === 0) even.push(L3[m]);
+        else odd.push(L3[m]);
+    }
+    var L4 = even.concat(odd);
+    /* Layer 5 */
+    var padding = [];
+    var padCount = (Math.floor(Math.random() * 10) + 5);
+    for (var p = 0; p < padCount; p++) {
+        padding.push(Math.floor(Math.random() * 256));
+    }
+    var L5 = padding.concat(L4);
+    /* Layer 6 */
+    var bin = '';
+    for (var b = 0; b < L5.length; b++) {
+        bin += String.fromCharCode(L5[b]);
+    }
+    var L6 = btoa(bin);
+    /* Layer 7 */
+    var L7 = L6.split('').reverse().join('');
+    /* Layer 8 */
+    var obf = [];
+    for (var bi = 0; bi < L7.length; bi++) {
+        obf.push((L7.charCodeAt(bi) ^ 0x5A) ^ s4);
+    }
+    var byteArrayString = '[' + obf.join(',') + ']';
 
     /* ═══════════════════════════════════════════════════════
        RANDOM VARIABLE NAMES
        ═══════════════════════════════════════════════════════ */
-    function rndVar(len) {
+    function rv(len) {
         var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         var s = '';
         for (var i = 0; i < (len || 6); i++) s += c.charAt(Math.floor(Math.random() * c.length));
         return s;
     }
-    var vBytes = rndVar(6), vFinal = rndVar(7), vLoop = rndVar(5), vKey = rndVar(6);
-    var vDecode = rndVar(8), vRev = rndVar(6), vData = rndVar(5), vB = rndVar(4);
-    var vJ = rndVar(4), vOut = rndVar(5);
+    var qA = rv(6), qB = rv(7), qC = rv(5), qD = rv(6), qE = rv(8);
+    var qF = rv(6), qG = rv(5), qH = rv(4), qI = rv(4), qJ = rv(5);
+    var qK = rv(5), qL = rv(5), qM = rv(5), qN = rv(4), qO = rv(5);
 
     /* ═══════════════════════════════════════════════════════
-       KEY FILE CONTENT
+       KEY FILE CONTENT — Full reverse decode (8 steps)
        ═══════════════════════════════════════════════════════ */
     var keyFileContent =
         '(function(){\n' +
         '"use strict";\n' +
-        'var ' + vBytes + '=' + byteArrayString + ';\n' +
-        'var ' + vFinal + '="";\n' +
-        'for(var ' + vLoop + '=0;' + vLoop + '<' + vBytes + '.length;' + vLoop + '++){\n' +
-        vFinal + '+=String.fromCharCode(' + vBytes + '[' + vLoop + ']^0x5A);\n' +
+        'try{\n' +
+        'var S1=' + s1 + ',S2=' + s2 + ',S3=' + s3 + ',S4=' + s4 + ';\n' +
+        'var ' + qN + '=' + padCount + ';\n' +
+        'var ' + qA + '=' + byteArrayString + ';\n' +
+        'var ' + qB + '="";\n' +
+        'for(var ' + qC + '=0;' + qC + '<' + qA + '.length;' + qC + '++){\n' +
+        qB + '+=String.fromCharCode((' + qA + '[' + qC + ']^0x5A)^S4);\n' +
         '}\n' +
-        'var ' + vKey + '=' + vFinal + ';\n' +
-        'function ' + vDecode + '(s){\n' +
-        'var ' + vRev + '=s.split("").reverse().join("");\n' +
-        'var ' + vData + '=atob(' + vRev + ');\n' +
-        'var ' + vB + '=[];\n' +
-        'for(var ' + vJ + '=0;' + vJ + '<' + vData + '.length;' + vJ + '++){\n' +
-        vB + '.push(' + vData + '.charCodeAt(' + vJ + ')^0x5A);\n' +
+        'var ' + qD + '=' + qB + ';\n' +
+        'function ' + qE + '(s){\n' +
+        'var ' + qF + '=s.split("").reverse().join("");\n' +
+        'var ' + qG + '=atob(' + qF + ');\n' +
+        'var ' + qH + '=[];\n' +
+        'for(var ' + qI + '=0;' + qI + '<' + qG + '.length;' + qI + '++){\n' +
+        qH + '.push(' + qG + '.charCodeAt(' + qI + '));\n' +
         '}\n' +
-        'var ' + vOut + '="";\n' +
-        'for(var i=0;i<' + vB + '.length;i++){\n' +
-        vOut + '+=String.fromCharCode(' + vB + '[i]);\n' +
+        'var ' + qK + '=' + qH + '.slice(' + qN + ');\n' +
+        'var ' + qL + '=' + qK + '.slice(0,Math.ceil(' + qK + '.length/2));\n' +
+        'var ' + qM + '=' + qK + '.slice(Math.ceil(' + qK + '.length/2));\n' +
+        'var ' + qJ + '=[];\n' +
+        'for(var i=0;i<' + qK + '.length;i++){\n' +
+        'if(i%2===0)' + qJ + '.push(' + qL + '[Math.floor(i/2)]);\n' +
+        'else ' + qJ + '.push(' + qM + '[Math.floor(i/2)]);\n' +
         '}\n' +
-        'return ' + vOut + ';\n' +
+        'var ' + qH + '=[];\n' +
+        'for(var q=0;q<' + qJ + '.length;q++){\n' +
+        qH + '.push(' + qJ + '[q]^S3);\n' +
         '}\n' +
-        'window._0xSECRET=' + vDecode + '(' + vKey + ');\n' +
+        'var ' + qO + '=[];\n' +
+        'for(var r=0;r<' + qH + '.length;r++){\n' +
+        'var sh=(' + qH + '[r]-S2+256)%256;\n' +
+        qO + '.push(sh^S1);\n' +
+        '}\n' +
+        'var res="";\n' +
+        'for(var f=0;f<' + qO + '.length;f++){\n' +
+        'res+=String.fromCharCode(' + qO + '[f]^0x5A);\n' +
+        '}\n' +
+        'return res;\n' +
+        '}\n' +
+        'window._0xSECRET=' + qE + '(' + qD + ');\n' +
+        '}catch(e){window._0xSECRET="";}\n' +
         '})();\n';
 
     var encodedKeyFileName = btoa(btoa(keyFileName));
 
-    /* ═══════════════════════════════════════════════════════
-       DECRYPTOR HTML — HYBRID (Firebase Auth + iframe)
-       ═══════════════════════════════════════════════════════ */
+    var d1 = rv(8), d2 = rv(8), d3 = rv(8);
+    var d4 = rv(8), d5 = rv(8), d6 = rv(8);
+
+    var decoyFunctions =
+        '<script>\n' +
+        '(function(){\n' +
+        '  var ' + d1 + ' = [];\n' +
+        '  var ' + d2 + ' = {};\n' +
+        '  var ' + d3 + ' = function(x){ return x; };\n' +
+        '  window.__init = ' + d3 + ';\n' +
+        '  try { ' + d1 + '.push(Date.now()); } catch(e) {}\n' +
+        '  try { ' + d2 + '.start = 1; } catch(e) {}\n' +
+        '})();\n' +
+        '<' + '/script>\n';
+
+    var antiDebug =
+        '<script>\n' +
+        '(function(){\n' +
+        '  var ' + d4 + ' = 0;\n' +
+        '  var ' + d5 + ' = function(){\n' +
+        '    var ' + d6 + ' = new Date();\n' +
+        '    debugger;\n' +
+        '    if(new Date() - ' + d6 + ' > 100){\n' +
+        '      ' + d4 + '++;\n' +
+        '      if(' + d4 + ' > 3){ document.body.innerHTML = ""; }\n' +
+        '    }\n' +
+        '  };\n' +
+        '  setInterval(' + d5 + ', 1000);\n' +
+        '})();\n' +
+        '<' + '/script>\n';
+
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -1518,6 +1583,8 @@ window.downloadDecryptor = function() {
         '<' + '/head>',
         '<body>',
         '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
+        decoyFunctions,
+        antiDebug,
         '<script>',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
         '',
@@ -1579,7 +1646,6 @@ window.downloadDecryptor = function() {
         '  }',
         '}',
         '',
-        /* ✅ injectBlocker — strip noscript + meta refresh in iframe */
         'function injectBlocker(html){',
         '  html = html.replace(/<noscript[\\s\\S]*?<\\/noscript>/gi, "");',
         '  html = html.replace(/<meta[^>]*http-equiv=["\']refresh["\'][^>]*>/gi, "");',
@@ -1611,7 +1677,6 @@ window.downloadDecryptor = function() {
         '  return html;',
         '}',
         '',
-        /* ✅ iframe-based renderHTML — Firebase Auth safe because auth is in main page */
         'function renderHTML(htmlContent){',
         '  var loader=document.getElementById("loader");',
         '  if(loader)loader.style.display="none";',
