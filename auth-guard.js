@@ -1,6 +1,13 @@
 /**
- * ⚡ NightOrbit CodeForge — Auth Guard V15 HEAVY
+ * ⚡ NightOrbit CodeForge — Auth Guard V16 HEAVY
  * Include this in every protected page: <script src="auth-guard.js"></script>
+ *
+ * Changes from V15:
+ *  - Updates lastLogin + sessionStart on every page load
+ *  - Refreshes device info (in case user switched device)
+ *  - Dispatches auth-ready event WITH full user data
+ *  - Prevents redirect loops
+ *  - Silent error handling (won't break page if DB write fails)
  */
 (function() {
     'use strict';
@@ -44,11 +51,13 @@
     if (document.body) document.body.appendChild(loader);
     else document.addEventListener('DOMContentLoaded', function() { document.body.appendChild(loader); });
 
-    /* ═══ REDIRECT TO LOGIN ═══ */
+    /* ═══ REDIRECT TO LOGIN (loop-safe) ═══ */
     function redirectToLogin() {
         try {
-            var p = window.location.pathname.split('/').pop() || 'dashboard.html';
-            if (p && p !== 'index.html') sessionStorage.setItem('redirectAfterLogin', p);
+            var current = window.location.pathname.split('/').pop() || 'dashboard.html';
+            // Don't redirect if already on index.html (prevents loop)
+            if (current === 'index.html' || current === '' || current === '/') return;
+            sessionStorage.setItem('redirectAfterLogin', current);
         } catch (e) {}
         window.location.replace('index.html');
     }
@@ -76,6 +85,121 @@
         document.head.appendChild(s);
     }
 
+    /* ═══ TIME HELPER ═══ */
+    function getFullTime() {
+        var d = new Date();
+        return d.toLocaleString('en-PK', {
+            weekday: 'short',
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true
+        });
+    }
+
+    /* ═══ DEVICE HELPERS (mini version) ═══ */
+    function detectOS() {
+        var ua = navigator.userAgent;
+        var platform = navigator.platform || '';
+        if (/Windows NT 10/.test(ua)) return { name: 'Windows', version: '10/11' };
+        if (/Windows NT 6\.3/.test(ua)) return { name: 'Windows', version: '8.1' };
+        if (/Windows NT 6\.2/.test(ua)) return { name: 'Windows', version: '8' };
+        if (/Windows NT 6\.1/.test(ua)) return { name: 'Windows', version: '7' };
+        if (/Mac OS X ([\d_]+)/.test(ua)) {
+            var m = ua.match(/Mac OS X ([\d_]+)/);
+            return { name: 'macOS', version: m ? m[1].replace(/_/g, '.') : 'Unknown' };
+        }
+        if (/iPhone OS ([\d_]+)/.test(ua)) {
+            var m2 = ua.match(/iPhone OS ([\d_]+)/);
+            return { name: 'iOS', version: m2 ? m2[1].replace(/_/g, '.') : 'Unknown' };
+        }
+        if (/Android ([\d.]+)/.test(ua)) {
+            var m4 = ua.match(/Android ([\d.]+)/);
+            return { name: 'Android', version: m4 ? m4[1] : 'Unknown' };
+        }
+        if (/Linux/.test(ua)) return { name: 'Linux', version: 'Unknown' };
+        return { name: platform || 'Unknown', version: 'Unknown' };
+    }
+
+    function detectBrowser() {
+        var ua = navigator.userAgent;
+        if (/Edg\/([\d.]+)/.test(ua)) {
+            var m = ua.match(/Edg\/([\d.]+)/);
+            return { name: 'Edge', version: m[1] };
+        }
+        if (/OPR\/([\d.]+)/.test(ua)) {
+            var m2 = ua.match(/OPR\/([\d.]+)/);
+            return { name: 'Opera', version: m2[1] };
+        }
+        if (/Chrome\/([\d.]+)/.test(ua) && !/Edg|OPR/.test(ua)) {
+            var m3 = ua.match(/Chrome\/([\d.]+)/);
+            return { name: 'Chrome', version: m3[1] };
+        }
+        if (/Firefox\/([\d.]+)/.test(ua)) {
+            var m4 = ua.match(/Firefox\/([\d.]+)/);
+            return { name: 'Firefox', version: m4[1] };
+        }
+        if (/Safari\/([\d.]+)/.test(ua) && !/Chrome/.test(ua)) {
+            var m5 = ua.match(/Version\/([\d.]+)/);
+            return { name: 'Safari', version: m5 ? m5[1] : 'Unknown' };
+        }
+        return { name: 'Unknown', version: 'Unknown' };
+    }
+
+    function getDeviceName() {
+        var os = detectOS();
+        if (os.name === 'Android') {
+            var m = navigator.userAgent.match(/Android\s[\d.]+;\s([^)]+)/);
+            return m ? m[1].trim() : 'Android Device';
+        }
+        if (os.name === 'iOS') return 'iPhone';
+        if (os.name === 'Windows') return 'Windows ' + os.version + ' PC';
+        if (os.name === 'macOS') return 'Mac';
+        if (os.name === 'Linux') return 'Linux PC';
+        return navigator.platform || 'Unknown Device';
+    }
+
+    function getDeviceType() {
+        var ua = navigator.userAgent;
+        if (/iPad|Tablet/i.test(ua)) return 'Tablet';
+        if (/Mobi|Android|iPhone/i.test(ua)) return 'Mobile';
+        return 'Desktop';
+    }
+
+    /* ═══ UPDATE SESSION + LAST LOGIN ═══ */
+    async function updateSessionData(db, user) {
+        try {
+            var now = Date.now();
+            var nowStr = getFullTime();
+            var os = detectOS();
+            var browser = detectBrowser();
+
+            await db.ref('users/' + user.uid).update({
+                lastLogin: now,
+                lastLoginTime: nowStr,
+                sessionStart: now,
+                sessionStartTime: nowStr,
+                deviceName: getDeviceName(),
+                deviceType: getDeviceType(),
+                os: os.name,
+                osVersion: os.version,
+                browser: browser.name,
+                browserVersion: browser.version,
+                screenSize: window.screen.width + ' x ' + window.screen.height,
+                viewport: window.innerWidth + ' x ' + window.innerHeight,
+                language: navigator.language || 'Unknown',
+                lastActivePage: window.location.pathname.split('/').pop() || 'dashboard.html'
+            });
+            console.log('%c📝 Session updated', 'color:#ffd700;');
+        } catch (e) {
+            // Silent fail — don't break page
+            console.warn('⚠️ Session update failed (rules?):', e.message);
+        }
+    }
+
     /* ═══ AUTH GUARD INIT ═══ */
     function initGuard() {
         try {
@@ -84,6 +208,7 @@
                 console.log('%c🔥 Firebase initialized', 'color:#ffd700;font-weight:bold;');
             }
             var auth = firebase.auth();
+            var db = firebase.database();
             var resolved = false;
 
             var timeout = setTimeout(function() {
@@ -100,12 +225,36 @@
                 clearTimeout(timeout);
 
                 if (user) {
-                    showPage();
                     window.__currentUser = user;
+
+                    // Update session in background (non-blocking)
+                    updateSessionData(db, user);
+
+                    // Show page immediately
+                    showPage();
+
                     console.log('%c👤 Auth success:', 'color:#00ff64;font-weight:bold;', user.email);
 
-                    /* ═══ FIRE BOTH EVENTS FOR MAX COMPATIBILITY ═══ */
-                    var detail = { user: user, email: user.email, uid: user.uid };
+                    /* ═══ FIRE EVENTS WITH FULL CONTEXT ═══ */
+                    var detail = {
+                        user: user,
+                        email: user.email,
+                        uid: user.uid,
+                        displayName: user.displayName,
+                        photoURL: user.photoURL,
+                        emailVerified: user.emailVerified,
+                        deviceInfo: {
+                            deviceName: getDeviceName(),
+                            deviceType: getDeviceType(),
+                            os: detectOS(),
+                            browser: detectBrowser(),
+                            screenSize: window.screen.width + ' x ' + window.screen.height,
+                            language: navigator.language
+                        },
+                        sessionStartTime: getFullTime(),
+                        timestamp: Date.now()
+                    };
+
                     document.dispatchEvent(new CustomEvent('auth-ready', { detail: detail }));
                     document.dispatchEvent(new CustomEvent('auth-guard-ready', { detail: detail }));
                 } else {
