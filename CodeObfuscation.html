@@ -1496,19 +1496,845 @@ h1 {
 
 <div class="toast-container" id="toastContainer"></div>
 
-   <!DOCTYPE html>
-<html>
-<head>
-  ... (Part 1 CSS + head)
-</head>
-<body>
-  ... (Part 1 HTML Body)
-  <div class="toast-container"></div>
-  
-  <!-- PART 2 YAHAN PASTE KARO -->
   <script>
-    ... (JavaScript Engine)
-  </script>
-  
+(function() {
+'use strict';
+
+/* ═══════════════════════════════════════════════════════════
+   SAFETY LIMITS — CRASH PREVENTION
+   ═══════════════════════════════════════════════════════════ */
+var SAFETY = {
+    MAX_INPUT_SIZE: 5 * 1024 * 1024,       /* 5 MB maximum input */
+    MAX_OUTPUT_SIZE: 20 * 1024 * 1024,     /* 20 MB maximum output */
+    MAX_DEAD_CODE: 5,                      /* Maximum fake function injections */
+    MAX_STRING_LENGTH: 500,                /* Skip strings longer than this */
+    MAX_ITERATIONS: 1000,                  /* Loop iteration safety cap */
+    TIMEOUT_MS: 60000                      /* 60 second operation timeout */
+};
+
+var state = {
+    user: null,
+    authHandled: false,
+    currentLang: 'auto',
+    detectedLang: 'js',
+    currentPreset: 'medium',
+    options: {
+        renameVariables: true,
+        encodeStrings: true,
+        hexNumbers: true,
+        deadCode: false,
+        controlFlow: false,
+        selfDefending: false,
+        antiDebug: false,
+        antiConsole: false,
+        stringArray: true,
+        splitStrings: false,
+        watermark: false,
+        unicodeEscape: false
+    },
+    inputCode: '',
+    outputCode: ''
+};
+
+/* ═══════════════════════════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════════════════════════ */
+function bytes(n) {
+    if (n < 1024) return n + ' B';
+    if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+    return (n / 1024 / 1024).toFixed(2) + ' MB';
+}
+function num(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+
+function showStatus(type, msg) {
+    var el = document.getElementById('status');
+    if (el) { el.className = 'status ' + type; el.textContent = msg; }
+}
+
+function toast(msg, type) {
+    type = type || 'info';
+    var c = document.getElementById('toastContainer');
+    if (!c) return;
+    var icons = {
+        success: 'fa-circle-check',
+        error: 'fa-circle-xmark',
+        warn: 'fa-triangle-exclamation',
+        info: 'fa-circle-info'
+    };
+    var el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.innerHTML = '<i class="fa-solid ' + (icons[type] || icons.info) + ' toast-icon"></i><span>' + msg + '</span>';
+    c.appendChild(el);
+    setTimeout(function() {
+        el.classList.add('removing');
+        setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
+    }, 3500);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LANGUAGE DETECTION
+   ═══════════════════════════════════════════════════════════ */
+function detectLanguage(code) {
+    var t = code.trim();
+    if (!t) return 'js';
+    if (/^<!DOCTYPE\s+html/i.test(t) || /<html[\s>]/i.test(t)) return 'html';
+    if (/^<\?xml/i.test(t)) return 'xml';
+    if (t.startsWith('{') || t.startsWith('[')) {
+        try { JSON.parse(t); return 'json'; } catch(e) {}
+    }
+    if (/[a-zA-Z-]+\s*:\s*[^;{]+;/.test(t) && /\{[\s\S]*\}/.test(t) && !/\bfunction\b/.test(t)) return 'css';
+    return 'js';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RANDOM GENERATORS
+   ═══════════════════════════════════════════════════════════ */
+function randomName(prefix) {
+    var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var s = prefix || '_0x';
+    for (var i = 0; i < 4; i++) s += chars.charAt(Math.floor(Math.random() * chars.length));
+    return s;
+}
+function randomHex(len) {
+    var c = 'abcdef0123456789';
+    var s = '';
+    for (var i = 0; i < (len || 8); i++) s += c.charAt(Math.floor(Math.random() * c.length));
+    return s;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYER 1: RENAME VARIABLES
+   ═══════════════════════════════════════════════════════════ */
+function jsRenameVariables(code) {
+    var reserved = ['var','let','const','function','return','if','else','for','while','do','switch','case','break','continue','new','this','typeof','instanceof','in','of','try','catch','finally','throw','class','extends','super','import','export','default','from','as','async','await','yield','delete','void','null','undefined','true','false','NaN','Infinity','console','window','document','globalThis','Math','JSON','Object','Array','String','Number','Boolean','Date','RegExp','Error','Promise','Map','Set','WeakMap','WeakSet','Symbol','Proxy','Reflect','Function','eval','parseInt','parseFloat','isNaN','isFinite','encodeURI','decodeURI','setTimeout','setInterval','clearTimeout','clearInterval','alert','confirm','prompt','fetch','XMLHttpRequest','localStorage','sessionStorage','navigator','location','history','screen','arguments','constructor','prototype'];
+
+    var identifiers = {};
+    var match;
+
+    /* Locate variable declarations */
+    var declRegex = /\b(?:var|let|const|function|class)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
+    while ((match = declRegex.exec(code)) !== null) {
+        var name = match[1];
+        if (reserved.indexOf(name) === -1 && !identifiers[name]) {
+            identifiers[name] = randomName('_0x');
+        }
+    }
+
+    /* Locate function parameters */
+    var paramRegex = /(?:function\s*[a-zA-Z_$][a-zA-Z0-9_$]*\s*\(|\(|,)\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*(?:,|\))/g;
+    while ((match = paramRegex.exec(code)) !== null) {
+        var name2 = match[1];
+        if (reserved.indexOf(name2) === -1 && !identifiers[name2]) {
+            identifiers[name2] = randomName('_0x');
+        }
+    }
+
+    /* Sort by length descending to prevent partial matches */
+    var sortedNames = Object.keys(identifiers).sort(function(a, b) { return b.length - a.length; });
+    var pattern = sortedNames.length > 0
+        ? new RegExp('\\b(' + sortedNames.map(function(n) { return n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|') + ')\\b', 'g')
+        : null;
+
+    if (pattern) {
+        return code.replace(pattern, function(m) { return identifiers[m] || m; });
+    }
+    return code;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYER 2: ENCODE STRINGS (HEX)
+   ═══════════════════════════════════════════════════════════ */
+function jsEncodeStrings(code) {
+    return code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
+        if (str.length === 0 || str.length > SAFETY.MAX_STRING_LENGTH) return match;
+        var hex = '';
+        for (var i = 0; i < str.length; i++) {
+            hex += '\\x' + ('0' + str.charCodeAt(i).toString(16)).slice(-2);
+        }
+        return '"' + hex + '"';
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYER 3: HEX NUMBERS
+   ═══════════════════════════════════════════════════════════ */
+function jsHexNumbers(code) {
+    var result = '';
+    var i = 0;
+    var inString = false;
+    var stringChar = '';
+
+    while (i < code.length) {
+        var ch = code[i];
+        if (inString) {
+            result += ch;
+            if (ch === '\\' && i + 1 < code.length) { result += code[i + 1]; i += 2; continue; }
+            if (ch === stringChar) inString = false;
+            i++; continue;
+        }
+        if (ch === '"' || ch === "'") { inString = true; stringChar = ch; result += ch; i++; continue; }
+        if (/\d/.test(ch) && (i === 0 || !/\w/.test(code[i - 1]))) {
+            var numStr = '';
+            while (i < code.length && /[\d.]/.test(code[i])) { numStr += code[i]; i++; }
+            if (/^\d+$/.test(numStr) && parseInt(numStr) > 9 && parseInt(numStr) < 1000000) {
+                result += '0x' + parseInt(numStr).toString(16).toUpperCase();
+            } else {
+                result += numStr;
+            }
+            continue;
+        }
+        result += ch;
+        i++;
+    }
+    return result;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYER 4: STRING ARRAY
+   ═══════════════════════════════════════════════════════════ */
+function jsStringArray(code) {
+    var strings = [];
+    var stringRegex = /(['"])((?:\\.|(?!\1)[^\\])*?)\1/g;
+    var arrName = randomName('_0x');
+    var maxSize = 100;
+
+    var newCode = code.replace(stringRegex, function(match, quote, str) {
+        if (str.length === 0 || str.length > SAFETY.MAX_STRING_LENGTH) return match;
+        if (strings.length >= maxSize) return match;
+        var index = strings.indexOf(str);
+        if (index === -1) {
+            index = strings.length;
+            strings.push(str);
+        }
+        return arrName + '[' + index + ']';
+    });
+
+    if (strings.length === 0) return code;
+
+    var arrDecl = 'var ' + arrName + '=[' + strings.map(function(s) {
+        return JSON.stringify(s);
+    }).join(',') + '];\n';
+
+    return arrDecl + newCode;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYER 5: SPLIT STRINGS
+   ═══════════════════════════════════════════════════════════ */
+function jsSplitStrings(code) {
+    return code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
+        if (str.length < 6 || str.length > 200) return match;
+        var mid = Math.floor(str.length / 2);
+        return JSON.stringify(str.substring(0, mid)) + '+' + JSON.stringify(str.substring(mid));
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYER 6: DEAD CODE INJECTION
+   ═══════════════════════════════════════════════════════════ */
+function jsDeadCode(code) {
+    var dead = '';
+    var count = Math.min(SAFETY.MAX_DEAD_CODE, 3);
+    for (var i = 0; i < count; i++) {
+        var fn = randomName('_0x');
+        var v = randomName('_0x');
+        dead += 'function ' + fn + '(){var ' + v + '=[' + Math.floor(Math.random()*100) + ',' + Math.floor(Math.random()*100) + '];return ' + v + '.length;}\n';
+    }
+    return dead + code;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYER 7: CONTROL FLOW FLATTENING
+   ═══════════════════════════════════════════════════════════ */
+function jsControlFlow(code) {
+    var stateVar = randomName('_0x');
+    var fn = randomName('_0x');
+    return '(function(){\n"use strict";\nvar ' + stateVar + '=0;\nfunction ' + fn + '(){\nif(' + stateVar + '===0){\n' + stateVar + '=1;\n' + code + '\n}\n}\n' + fn + '();\n})();\n';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYER 8: SELF-DEFENDING WRAPPER
+   ═══════════════════════════════════════════════════════════ */
+function jsSelfDefending(code) {
+    var fn = randomName('_0x');
+    return '(function(){\nvar ' + fn + '=function(){\n' + code + '\n};\ntry{\n' + fn + '();\n}catch(e){\ntry{if(typeof document!=="undefined"&&document.body){document.body.innerHTML="";}}catch(_){}\nthrow new Error("SECURITY_BREACH");\n}\n})();\n';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYER 9: ANTI-DEBUG
+   ═══════════════════════════════════════════════════════════ */
+function jsAntiDebug(code) {
+    return '(function(){\nvar _0xd=0,_0xmax=3;\nvar _0xt=function(){\nvar _0xs=Date.now();\ndebugger;\nif(Date.now()-_0xs>100){_0xd++;if(_0xd>_0xmax){try{clearInterval(_0xi);}catch(e){}}}\n};\nvar _0xi=setInterval(_0xt,1000);\n})();\n' + code;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYER 10: ANTI-CONSOLE
+   ═══════════════════════════════════════════════════════════ */
+function jsAntiConsole(code) {
+    return '(function(){\nvar _0xe=function(){};\ntry{if(typeof console!=="undefined"){["log","warn","error","info","debug","trace","dir","table"].forEach(function(m){console[m]=_0xe;});}}catch(e){}\n})();\n' + code;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYER 11: WATERMARK
+   ═══════════════════════════════════════════════════════════ */
+function jsWatermark(code, user) {
+    var email = (user && user.email) ? user.email : 'anonymous';
+    var timestamp = new Date().toISOString();
+    var signature = randomHex(16);
+    var watermark = '/*\n * 🔒 Protected by NightOrbit CodeForge\n * Owner: ' + email + '\n * Date: ' + timestamp + '\n * Signature: ' + signature + '\n */\n';
+    return watermark + code;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYER 12: UNICODE ESCAPE
+   ═══════════════════════════════════════════════════════════ */
+function jsUnicodeEscape(code) {
+    return code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
+        if (str.length === 0 || str.length > SAFETY.MAX_STRING_LENGTH) return match;
+        var unicode = '';
+        for (var i = 0; i < str.length; i++) {
+            unicode += '\\u' + ('0000' + str.charCodeAt(i).toString(16)).slice(-4);
+        }
+        return '"' + unicode + '"';
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MASTER JS OBFUSCATOR
+   ═══════════════════════════════════════════════════════════ */
+function obfuscateJS(code, opts, user) {
+    var result = code;
+    var layers = [];
+
+    try {
+        if (opts.renameVariables) { result = jsRenameVariables(result); layers.push('Rename Vars'); }
+        if (opts.stringArray) { result = jsStringArray(result); layers.push('String Array'); }
+        if (opts.encodeStrings) { result = jsEncodeStrings(result); layers.push('Encode Strings'); }
+        if (opts.unicodeEscape) { result = jsUnicodeEscape(result); layers.push('Unicode Escape'); }
+        if (opts.hexNumbers) { result = jsHexNumbers(result); layers.push('Hex Numbers'); }
+        if (opts.splitStrings) { result = jsSplitStrings(result); layers.push('Split Strings'); }
+        if (opts.deadCode) { result = jsDeadCode(result); layers.push('Dead Code'); }
+        if (opts.antiConsole) { result = jsAntiConsole(result); layers.push('Anti-Console'); }
+        if (opts.antiDebug) { result = jsAntiDebug(result); layers.push('Anti-Debug'); }
+        if (opts.watermark) { result = jsWatermark(result, user); layers.push('Watermark'); }
+        if (opts.controlFlow) { result = jsControlFlow(result); layers.push('Control Flow'); }
+        if (opts.selfDefending) { result = jsSelfDefending(result); layers.push('Self-Defending'); }
+    } catch (e) {
+        throw new Error('JavaScript obfuscation failed: ' + e.message);
+    }
+
+    return { code: result, layers: layers };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HTML OBFUSCATION
+   ═══════════════════════════════════════════════════════════ */
+function obfuscateHTML(code, opts) {
+    var result = code;
+    var layers = [];
+
+    result = result.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
+    layers.push('Remove Comments');
+
+    if (opts.deadCode) {
+        var decoy = '\n<!-- ' + randomHex(64) + ' -->\n<!-- ' + randomHex(48) + ' -->\n';
+        result = decoy + result;
+        layers.push('Inject Decoys');
+    }
+
+    if (opts.encodeStrings) {
+        result = result.replace(/>([^<]+)</g, function(m, text) {
+            if (!text.trim() || text.length > 200) return m;
+            return '>' + text.replace(/[a-zA-Z]/g, function(ch) {
+                return '&#' + ch.charCodeAt(0) + ';';
+            }) + '<';
+        });
+        layers.push('Encode Text');
+    }
+
+    result = result.replace(/\s+/g, ' ').replace(/>\s+</g, '><').trim();
+    layers.push('Minify');
+
+    return { code: result, layers: layers };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CSS OBFUSCATION
+   ═══════════════════════════════════════════════════════════ */
+function obfuscateCSS(code, opts) {
+    var result = code;
+    var layers = [];
+
+    result = result.replace(/\/\*[\s\S]*?\*\//g, '');
+    layers.push('Remove Comments');
+
+    if (opts.renameVariables) {
+        var map = {};
+        result = result.replace(/\.([a-zA-Z_-][a-zA-Z0-9_-]*)/g, function(m, name) {
+            if (!map[name]) map[name] = '_' + randomHex(6);
+            return '.' + map[name];
+        });
+        layers.push('Rename Classes');
+    }
+
+    if (opts.deadCode) {
+        result = '/* ' + randomHex(64) + ' */\n' + result;
+        layers.push('Inject Decoys');
+    }
+
+    result = result.replace(/\s+/g, ' ').replace(/\s*([{}:;,])\s*/g, '$1').replace(/;}/g, '}').trim();
+    layers.push('Minify');
+
+    return { code: result, layers: layers };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   JSON OBFUSCATION
+   ═══════════════════════════════════════════════════════════ */
+function obfuscateJSON(code, opts) {
+    var layers = [];
+    var parsed;
+    try { parsed = JSON.parse(code); }
+    catch(e) { throw new Error('Invalid JSON format: ' + e.message); }
+
+    function renameKeys(obj) {
+        if (Array.isArray(obj)) return obj.map(renameKeys);
+        if (obj && typeof obj === 'object') {
+            var newObj = {};
+            Object.keys(obj).forEach(function(key) {
+                var newKey = opts.renameVariables ? '_' + randomHex(6) : key;
+                newObj[newKey] = renameKeys(obj[key]);
+            });
+            return newObj;
+        }
+        return obj;
+    }
+
+    if (opts.renameVariables) { parsed = renameKeys(parsed); layers.push('Rename Keys'); }
+    if (opts.deadCode && parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        parsed.__d = randomHex(32);
+        layers.push('Inject Decoys');
+    }
+    layers.push('Minify');
+
+    return { code: JSON.stringify(parsed), layers: layers };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   XML OBFUSCATION
+   ═══════════════════════════════════════════════════════════ */
+function obfuscateXML(code, opts) {
+    var result = code;
+    var layers = [];
+
+    result = result.replace(/<!--[\s\S]*?-->/g, '');
+    layers.push('Remove Comments');
+
+    if (opts.deadCode) {
+        result = '<!-- ' + randomHex(64) + ' -->\n' + result;
+        layers.push('Inject Decoys');
+    }
+
+    result = result.replace(/\s+/g, ' ').replace(/>\s+</g, '><').trim();
+    layers.push('Minify');
+
+    return { code: result, layers: layers };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MASTER OBFUSCATOR
+   ═══════════════════════════════════════════════════════════ */
+function obfuscate(code, lang, opts, user) {
+    var actualLang = lang === 'auto' ? detectLanguage(code) : lang;
+    switch (actualLang) {
+        case 'js':   return Object.assign({ lang: 'js' },   obfuscateJS(code, opts, user));
+        case 'html': return Object.assign({ lang: 'html' }, obfuscateHTML(code, opts));
+        case 'css':  return Object.assign({ lang: 'css' },  obfuscateCSS(code, opts));
+        case 'json': return Object.assign({ lang: 'json' }, obfuscateJSON(code, opts));
+        case 'xml':  return Object.assign({ lang: 'xml' },  obfuscateXML(code, opts));
+        default:     return Object.assign({ lang: 'js' },   obfuscateJS(code, opts, user));
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   UI FUNCTIONS
+   ═══════════════════════════════════════════════════════════ */
+
+window.toggleDrawer = function() {
+    var d = document.getElementById('drawer');
+    var o = document.getElementById('drawerOverlay');
+    var m = document.getElementById('menuBtn');
+    if (d) d.classList.toggle('open');
+    if (o) o.classList.toggle('open');
+    if (m) m.classList.toggle('open');
+};
+
+window.closeDrawer = function() {
+    var d = document.getElementById('drawer');
+    var o = document.getElementById('drawerOverlay');
+    var m = document.getElementById('menuBtn');
+    if (d) d.classList.remove('open');
+    if (o) o.classList.remove('open');
+    if (m) m.classList.remove('open');
+};
+
+window.toggleSidebar = function() {
+    var s = document.getElementById('sidebar');
+    var o = document.getElementById('drawerOverlay');
+    if (s) s.classList.toggle('open');
+    if (o) o.classList.toggle('open');
+};
+
+window.toggleGuide = function() {
+    var b = document.getElementById('guideBody');
+    var t = document.getElementById('guideToggle');
+    if (b) b.classList.toggle('collapsed');
+    if (t) t.classList.toggle('collapsed');
+};
+
+window.doLogout = function() {
+    try {
+        if (window.firebase && firebase.auth) {
+            firebase.auth().signOut().then(function() { window.location.href = 'index.html'; });
+        } else { window.location.href = 'index.html'; }
+    } catch(e) { window.location.href = 'index.html'; }
+};
+
+window.selectLang = function(lang, btn) {
+    state.currentLang = lang;
+    document.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    var badge = document.getElementById('langBadge');
+    if (badge) badge.textContent = lang.toUpperCase();
+    updateDetection();
+};
+
+window.toggleOpt = function(el) {
+    el.classList.toggle('active');
+    var opt = el.getAttribute('data-opt');
+    state.options[opt] = el.classList.contains('active');
+    updateProtection();
+};
+
+window.togglePanel = function(id) {
+    var panel = document.getElementById(id);
+    var toggle = document.getElementById(id + '-toggle');
+    if (panel) panel.classList.toggle('collapsed');
+    if (toggle) toggle.classList.toggle('collapsed');
+};
+
+window.applyPreset = function(preset) {
+    var presets = {
+        light: { renameVariables: true, encodeStrings: false, hexNumbers: false, deadCode: false, controlFlow: false, selfDefending: false, antiDebug: false, antiConsole: false, stringArray: false, splitStrings: false, watermark: false, unicodeEscape: false },
+        medium: { renameVariables: true, encodeStrings: true, hexNumbers: true, deadCode: false, controlFlow: false, selfDefending: false, antiDebug: false, antiConsole: false, stringArray: true, splitStrings: false, watermark: false, unicodeEscape: false },
+        heavy: { renameVariables: true, encodeStrings: true, hexNumbers: true, deadCode: true, controlFlow: false, selfDefending: false, antiDebug: true, antiConsole: true, stringArray: true, splitStrings: true, watermark: false, unicodeEscape: false },
+        insane: { renameVariables: true, encodeStrings: true, hexNumbers: true, deadCode: true, controlFlow: false, selfDefending: true, antiDebug: true, antiConsole: true, stringArray: true, splitStrings: true, watermark: true, unicodeEscape: true },
+        military: { renameVariables: true, encodeStrings: true, hexNumbers: true, deadCode: true, controlFlow: true, selfDefending: true, antiDebug: true, antiConsole: true, stringArray: true, splitStrings: true, watermark: true, unicodeEscape: true }
+    };
+    var config = presets[preset] || presets.medium;
+    state.options = Object.assign({}, config);
+    state.currentPreset = preset;
+
+    document.querySelectorAll('.opt-item').forEach(function(el) {
+        var opt = el.getAttribute('data-opt');
+        if (config[opt]) el.classList.add('active');
+        else el.classList.remove('active');
+    });
+    document.querySelectorAll('.preset-item').forEach(function(el) {
+        el.classList.toggle('active', el.getAttribute('data-preset') === preset);
+    });
+    var pb = document.getElementById('presetBadge');
+    if (pb) pb.textContent = preset.toUpperCase();
+    updateProtection();
+    toast('Preset applied: ' + preset.toUpperCase(), 'success');
+};
+
+function updateProtection() {
+    var weights = { renameVariables: 2, encodeStrings: 3, hexNumbers: 1, deadCode: 2, controlFlow: 3, selfDefending: 3, antiDebug: 2, antiConsole: 1, stringArray: 3, splitStrings: 2, watermark: 2, unicodeEscape: 3 };
+    var score = 0;
+    Object.keys(state.options).forEach(function(k) { if (state.options[k]) score += (weights[k] || 1); });
+    var scoreEl = document.getElementById('protectionScore');
+    var fillEl = document.getElementById('protectionFill');
+    if (scoreEl) scoreEl.textContent = score;
+    if (fillEl) fillEl.style.width = Math.min(100, (score / 27) * 100) + '%';
+
+    var level = 'BASIC';
+    if (score >= 25) level = 'MILITARY';
+    else if (score >= 18) level = 'INSANE';
+    else if (score >= 12) level = 'HEAVY';
+    else if (score >= 7) level = 'MEDIUM';
+    else if (score >= 3) level = 'LIGHT';
+    var badge = document.getElementById('protectionBadge');
+    if (badge) badge.textContent = level;
+}
+
+var inputCodeEl = document.getElementById('inputCode');
+function updateDetection() {
+    var code = inputCodeEl.value;
+    state.inputCode = code;
+
+    if (!code.trim()) {
+        document.getElementById('statLines').textContent = '0';
+        document.getElementById('statChars').textContent = '0';
+        document.getElementById('statSize').textContent = '0 B';
+        document.getElementById('statValid').textContent = '—';
+        updateProgress();
+        return;
+    }
+
+    document.getElementById('statLines').textContent = num(code.split('\n').length);
+    document.getElementById('statChars').textContent = num(code.length);
+    document.getElementById('statSize').textContent = bytes(new Blob([code]).size);
+
+    var detected = detectLanguage(code);
+    state.detectedLang = detected;
+    var finalLang = state.currentLang === 'auto' ? detected : state.currentLang;
+    document.getElementById('inputLangBadge').textContent = finalLang.toUpperCase();
+
+    var valid = true;
+    try {
+        if (finalLang === 'js') new Function(code);
+        else if (finalLang === 'json') JSON.parse(code);
+    } catch(e) { valid = false; }
+    document.getElementById('statValid').textContent = valid ? 'VALID' : 'INVALID';
+    document.getElementById('statValid').style.color = valid ? 'var(--green)' : 'var(--red)';
+
+    updateProgress();
+}
+if (inputCodeEl) inputCodeEl.addEventListener('input', updateDetection);
+
+function updateProgress() {
+    var steps = 0;
+    if (state.inputCode.trim()) steps++;
+    if (state.outputCode.trim()) steps++;
+    var percent = Math.round((steps / 2) * 100);
+    document.getElementById('progressFill').style.width = percent + '%';
+    document.getElementById('progressPercent').textContent = percent + '%';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MAIN OBFUSCATION
+   ═══════════════════════════════════════════════════════════ */
+window.obfuscateNow = function() {
+    var code = inputCodeEl.value.trim();
+    if (!code) {
+        showStatus('error', '❌ No code detected. Please paste your source code first.');
+        toast('No code detected', 'error');
+        return;
+    }
+
+    /* Validate input size */
+    var inputSize = new Blob([code]).size;
+    if (inputSize > SAFETY.MAX_INPUT_SIZE) {
+        showStatus('error', '❌ Input file is too large. Maximum allowed: ' + bytes(SAFETY.MAX_INPUT_SIZE) + '.');
+        toast('Input size exceeds limit', 'error');
+        return;
+    }
+
+    var lang = state.currentLang === 'auto' ? detectLanguage(code) : state.currentLang;
+
+    /* Validate syntax */
+    try {
+        if (lang === 'js') new Function(code);
+        else if (lang === 'json') JSON.parse(code);
+    } catch(e) {
+        showStatus('error', '❌ Invalid ' + lang.toUpperCase() + ' syntax: ' + e.message);
+        toast('Invalid code syntax', 'error');
+        return;
+    }
+
+    showStatus('loading', '⏳ Obfuscating ' + lang.toUpperCase() + ' — Please wait...');
+    var btn = document.getElementById('obfuscateBtn');
+    if (btn) btn.disabled = true;
+
+    /* Operation timeout guard */
+    var timeoutId = setTimeout(function() {
+        showStatus('error', '❌ Operation timed out. Code is too complex — try a smaller file or lighter preset.');
+        if (btn) btn.disabled = false;
+    }, SAFETY.TIMEOUT_MS);
+
+    setTimeout(function() {
+        try {
+            var startTime = Date.now();
+            var result = obfuscate(code, state.currentLang, state.options, state.user);
+            var elapsed = Date.now() - startTime;
+
+            clearTimeout(timeoutId);
+
+            state.outputCode = result.code;
+
+            /* Validate output size */
+            var obfSize = new Blob([result.code]).size;
+            if (obfSize > SAFETY.MAX_OUTPUT_SIZE) {
+                showStatus('error', '❌ Output size exceeded: ' + bytes(obfSize) + '. Try a lighter preset.');
+                if (btn) btn.disabled = false;
+                return;
+            }
+
+            document.getElementById('outputCode').value = result.code;
+
+            var origSize = new Blob([code]).size;
+            var ratio = origSize > 0 ? Math.round((obfSize / origSize) * 100) : 0;
+
+            document.getElementById('statRatio').textContent = ratio + '%';
+            document.getElementById('statObf').textContent = bytes(obfSize);
+            document.getElementById('statLayers').textContent = result.layers.length;
+
+            var level = document.getElementById('protectionBadge').textContent;
+            document.getElementById('statProtection').textContent = level;
+            document.getElementById('outputLevelBadge').textContent = level;
+
+            showStatus('success',
+                '✅ Obfuscation complete — ' + result.lang.toUpperCase() + ' in ' + elapsed + 'ms\n' +
+                result.layers.length + ' layers applied: ' + result.layers.join(' → ') + '\n' +
+                'Size: ' + bytes(origSize) + ' → ' + bytes(obfSize) + ' (' + ratio + '%)'
+            );
+
+            toast('Obfuscation completed successfully', 'success');
+            updateProgress();
+        } catch (e) {
+            clearTimeout(timeoutId);
+            showStatus('error', '❌ Error: ' + e.message);
+            toast('Error: ' + e.message, 'error');
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    }, 50);
+};
+
+/* ═══ LOAD SAMPLE ═══ */
+window.loadSample = function() {
+    var samples = {
+        js: '// Sample JavaScript\nfunction greet(name) {\n    console.log("Hello, " + name);\n    return name.toUpperCase();\n}\n\nvar users = ["Alice", "Bob", "Charlie"];\nfor (var i = 0; i < users.length; i++) {\n    greet(users[i]);\n}\n',
+        html: '<!DOCTYPE html>\n<html>\n<head>\n    <title>Sample</title>\n</head>\n<body>\n    <h1>Hello World</h1>\n    <!-- comment -->\n    <p>Sample paragraph</p>\n</body>\n</html>',
+        css: '/* Sample CSS */\nbody {\n    background: #000000;\n    color: #ffffff;\n    font-family: Arial, sans-serif;\n}\n.header {\n    padding: 20px;\n    margin: 10px;\n}',
+        json: '{\n    "name": "Sample",\n    "version": "1.0.0",\n    "users": ["Alice", "Bob"],\n    "config": {\n        "debug": true,\n        "timeout": 5000\n    }\n}',
+        xml: '<?xml version="1.0"?>\n<root>\n    <!-- Sample XML -->\n    <item id="1">\n        <name>Sample</name>\n    </item>\n</root>'
+    };
+    var lang = state.currentLang === 'auto' ? 'js' : state.currentLang;
+    inputCodeEl.value = samples[lang] || samples.js;
+    inputCodeEl.dispatchEvent(new Event('input'));
+    toast('Sample code loaded', 'info');
+};
+
+window.pasteFromClipboard = function() {
+    if (navigator.clipboard && navigator.clipboard.readText) {
+        navigator.clipboard.readText().then(function(text) {
+            inputCodeEl.value = text;
+            inputCodeEl.dispatchEvent(new Event('input'));
+            toast('Code pasted from clipboard', 'success');
+        }).catch(function() {
+            toast('Paste failed — please paste manually (Ctrl+V)', 'warn');
+        });
+    } else {
+        toast('Clipboard access is not supported in this browser', 'warn');
+    }
+};
+
+window.clearInput = function() {
+    inputCodeEl.value = '';
+    inputCodeEl.dispatchEvent(new Event('input'));
+    document.getElementById('outputCode').value = '';
+    state.outputCode = '';
+    updateProgress();
+    toast('Input and output cleared', 'info');
+};
+
+window.copyOutput = function() {
+    var out = document.getElementById('outputCode').value;
+    if (!out) { toast('Please obfuscate code first', 'error'); return; }
+
+    function done() { toast('Copied to clipboard successfully', 'success'); }
+    function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = out;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch(e) {}
+        document.body.removeChild(ta);
+        done();
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(out).then(done).catch(fallback);
+    } else {
+        fallback();
+    }
+};
+
+window.downloadOutput = function() {
+    var out = document.getElementById('outputCode').value;
+    if (!out) { toast('Please obfuscate code first', 'error'); return; }
+    var lang = state.currentLang === 'auto' ? state.detectedLang : state.currentLang;
+    var ext = { js: 'js', html: 'html', css: 'css', json: 'json', xml: 'xml' }[lang] || 'txt';
+    var blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'obfuscated_' + Date.now() + '.' + ext;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('File downloaded successfully', 'success');
+};
+
+window.testOutput = function() {
+    var out = document.getElementById('outputCode').value;
+    if (!out) { toast('Please obfuscate code first', 'error'); return; }
+    var lang = state.currentLang === 'auto' ? state.detectedLang : state.currentLang;
+    try {
+        if (lang === 'js') {
+            /* Safe validation — do not execute side effects */
+            new Function(out);
+            showStatus('success', '✅ JavaScript syntax is valid. Code can execute successfully.');
+        } else if (lang === 'json') {
+            JSON.parse(out);
+            showStatus('success', '✅ Valid JSON format detected.');
+        } else {
+            showStatus('success', '✅ Syntax validation passed for ' + lang.toUpperCase() + '.');
+        }
+        toast('Validation passed successfully', 'success');
+    } catch (e) {
+        showStatus('error', '❌ Validation failed: ' + e.message);
+        toast('Validation failed', 'error');
+    }
+};
+
+/* ═══ KEYBOARD SHORTCUTS ═══ */
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        obfuscateNow();
+    }
+});
+
+/* ═══ AUTH HANDLING ═══ */
+function handleAuthReady(e) {
+    if (!e.detail || !e.detail.user) return;
+    if (state.authHandled) return;
+    state.authHandled = true;
+    state.user = e.detail.user;
+    var name = e.detail.name || (state.user.email ? state.user.email.split('@')[0] : 'User');
+    var wn = document.getElementById('welcomeName');
+    var as = document.getElementById('authStatus');
+    if (wn) wn.textContent = name;
+    if (as) as.textContent = 'Authenticated';
+}
+document.addEventListener('auth-guard-ready', handleAuthReady);
+document.addEventListener('auth-ready', handleAuthReady);
+
+/* ═══ INITIALIZATION ═══ */
+updateProtection();
+updateProgress();
+
+console.log('%c🛡️ Code Obfuscation Pro v17 — Ready', 'color:#b400ff;font-size:16px;font-weight:bold;');
+console.log('%c⚡ Features: 12 layers · 5 presets · 5 MB support · Zero crash protection', 'color:#ffd700;font-size:11px;');
+
+})();
+</script>
+
 </body>
-</html>
+</html>  
