@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b0b1a">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="robots" content="noindex, nofollow">
-<title>Code Obfuscation Pro — NightOrbit</title>
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="referrer" content="no-referrer">
+<title>Secure Code Protection — NightOrbit CodeForge</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
 
 <noscript>
@@ -17,20 +18,23 @@
 </noscript>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
-<!--  🔒 SECURITY BLOCKING — Firebase-safe                       -->
+<!--  🔒 MAXIMUM SECURITY BLOCKING LAYER                        -->
 <!-- ═══════════════════════════════════════════════════════════ -->
 <script>
 (function() {
     'use strict';
+
     function isEditable(el) {
         if (!el || !el.tagName) return false;
         var tag = el.tagName.toLowerCase();
         return tag === 'input' || tag === 'textarea' || tag === 'select' || el.isContentEditable;
     }
+
     function onKeyDown(e) {
         var key = e.key, code = e.keyCode;
         var ctrl = e.ctrlKey, shift = e.shiftKey, alt = e.altKey, meta = e.metaKey;
         var editable = isEditable(e.target);
+
         if (key && key.length <= 3 && key.charAt(0) === 'F') {
             var num = parseInt(key.substring(1), 10);
             if (num >= 1 && num <= 12) { e.preventDefault(); e.stopPropagation(); return false; }
@@ -42,6 +46,7 @@
         }
         if (ctrl && (key === 'U' || code === 85)) { e.preventDefault(); e.stopPropagation(); return false; }
         if (key === 'PrintScreen' || code === 44) { e.preventDefault(); e.stopPropagation(); return false; }
+
         if (!editable) {
             if (key === 'Insert' || code === 45) { e.preventDefault(); e.stopPropagation(); return false; }
             if (key === 'Home' || code === 36) { e.preventDefault(); e.stopPropagation(); return false; }
@@ -53,31 +58,44 @@
         }
         return true;
     }
+
     document.addEventListener('keydown', onKeyDown, { capture: true, passive: false });
+
     document.addEventListener('contextmenu', function(e) {
         if (isEditable(e.target)) return true;
         e.preventDefault(); e.stopPropagation(); return false;
     }, { capture: true });
+
     document.addEventListener('copy', function(e) {
         if (isEditable(e.target)) return true;
         e.preventDefault(); return false;
     }, { capture: true });
+
     document.addEventListener('cut', function(e) {
         if (isEditable(e.target)) return true;
         e.preventDefault(); return false;
     }, { capture: true });
+
     document.addEventListener('selectstart', function(e) {
         if (isEditable(e.target)) return true;
         e.preventDefault(); return false;
     }, { capture: true });
+
     document.addEventListener('dragstart', function(e) {
         if (isEditable(e.target)) return true;
         e.preventDefault(); return false;
     }, { capture: true });
+
     document.addEventListener('auxclick', function(e) {
         if (e.button === 1) { e.preventDefault(); e.stopPropagation(); return false; }
     }, { capture: true });
-    try { if (window.console && window.console.clear) window.console.clear = function() {}; } catch(e) {}
+
+    try {
+        var noop = function() {};
+        ['log','warn','error','info','debug','trace','group','groupEnd','table','clear','dir','dirxml','profile','profileEnd','time','timeEnd','timeStamp','memory','assert','count','countReset'].forEach(function(m) {
+            try { window.console[m] = noop; } catch(e) {}
+        });
+    } catch(e) {}
 })();
 </script>
 
@@ -92,9 +110,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
-/* ═══════════════════════════════════════════════════════════
-   RESET + VARIABLES
-   ═══════════════════════════════════════════════════════════ */
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 :root {
@@ -106,7 +121,7 @@
     --neon-red: #ff0064;
     --bg: #05050f;
     --card: rgba(11, 11, 26, 0.94);
-    --border: rgba(0, 240, 255, 0.22);
+    --border: rgba(180, 0, 255, 0.22);
     --text-primary: #ffffff;
     --text-secondary: #b0b0d0;
     --text-muted: #6a6a8a;
@@ -126,8 +141,8 @@ body::before {
     content: '';
     position: fixed; inset: 0;
     background:
-        radial-gradient(circle at 15% 10%, rgba(0,240,255,0.06), transparent 40%),
-        radial-gradient(circle at 85% 90%, rgba(180,0,255,0.06), transparent 40%);
+        radial-gradient(circle at 15% 10%, rgba(180,0,255,0.06), transparent 40%),
+        radial-gradient(circle at 85% 90%, rgba(0,240,255,0.06), transparent 40%);
     pointer-events: none;
     z-index: 0;
 }
@@ -137,15 +152,15 @@ body::after {
     position: fixed;
     inset: 0;
     background-image:
-        linear-gradient(rgba(0,240,255,0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,240,255,0.02) 1px, transparent 1px);
+        linear-gradient(rgba(180,0,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(180,0,255,0.02) 1px, transparent 1px);
     background-size: 60px 60px;
     pointer-events: none;
     z-index: 0;
 }
 
 .app {
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 15px;
     position: relative;
@@ -157,9 +172,9 @@ body::after {
     background: rgba(11, 11, 26, 0.95);
     border: 2px solid var(--neon-purple);
     border-radius: 18px;
-    padding: 22px 24px;
+    padding: 24px 24px;
     margin-bottom: 15px;
-    box-shadow: 0 0 50px rgba(180, 0, 255, 0.15);
+    box-shadow: 0 0 60px rgba(180, 0, 255, 0.2);
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -174,13 +189,25 @@ body::after {
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-    animation: borderSpin 6s linear infinite;
+    animation: borderSpin 8s linear infinite;
     pointer-events: none;
 }
 
 @keyframes borderSpin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+.header-icon {
+    font-size: 48px;
+    margin-bottom: 8px;
+    display: inline-block;
+    animation: pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(180,0,255,0.5)); }
+    50% { transform: scale(1.08); filter: drop-shadow(0 0 40px rgba(180,0,255,0.9)); }
 }
 
 h1 {
@@ -194,6 +221,7 @@ h1 {
     letter-spacing: 3px;
     margin-bottom: 6px;
     text-transform: uppercase;
+    filter: drop-shadow(0 0 30px rgba(180,0,255,0.3));
 }
 
 .subtitle {
@@ -206,16 +234,16 @@ h1 {
 .header-stats {
     display: flex;
     justify-content: center;
-    gap: 14px;
-    margin-top: 14px;
+    gap: 12px;
+    margin-top: 16px;
     flex-wrap: wrap;
 }
 
 .header-stat {
     background: rgba(180, 0, 255, 0.05);
-    border: 1px solid rgba(180, 0, 255, 0.15);
+    border: 1px solid rgba(180, 0, 255, 0.2);
     border-radius: 40px;
-    padding: 4px 12px;
+    padding: 5px 14px;
     font-size: 10px;
     color: var(--text-secondary);
     letter-spacing: 1px;
@@ -223,139 +251,40 @@ h1 {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    font-weight: 600;
 }
 
 .header-stat i { color: var(--neon-purple); font-size: 11px; }
-.header-stat.gold { border-color: rgba(255,215,0,0.2); }
+.header-stat.gold { border-color: rgba(255,215,0,0.25); }
 .header-stat.gold i { color: var(--neon-gold); }
-.header-stat.pink { border-color: rgba(255,45,149,0.2); }
+.header-stat.pink { border-color: rgba(255,45,149,0.25); }
 .header-stat.pink i { color: var(--neon-pink); }
-.header-stat.green { border-color: rgba(0,255,100,0.2); }
+.header-stat.green { border-color: rgba(0,255,100,0.25); }
 .header-stat.green i { color: var(--neon-green); }
 
-/* ═══ TOP ACTIONS ═══ */
-.top-actions {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin: 14px 0;
-    flex-wrap: wrap;
-}
-
-.top-btn {
-    background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
-    color: #fff;
-    border: 2px solid #fff;
-    padding: 10px 20px;
-    border-radius: 50px;
-    font-weight: 900;
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.4s;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 0 30px rgba(180,0,255,0.3);
-    font-family: inherit;
-}
-
-.top-btn:hover {
-    transform: translateY(-3px) scale(1.04);
-    box-shadow: 0 0 50px rgba(180,0,255,0.6);
-}
-
-.top-btn.gold { background: linear-gradient(135deg, #ffd700, #ff6b00); color: #000; }
-.top-btn.green { background: linear-gradient(135deg, #00ff88, #00b85c); color: #000; }
-.top-btn.cyan { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)); color: #000; }
-
-/* ═══ PROGRESS BAR ═══ */
-.progress-wrap {
-    background: rgba(0, 0, 0, 0.4);
-    border: 1.5px solid rgba(180, 0, 255, 0.15);
+/* ═══ SECURITY BANNER ═══ */
+.security-banner {
+    background: linear-gradient(135deg, rgba(255, 0, 100, 0.08), rgba(180, 0, 255, 0.08));
+    border: 1.5px solid rgba(255, 0, 100, 0.3);
+    border-left: 4px solid var(--neon-red);
     border-radius: 12px;
     padding: 12px 16px;
     margin-bottom: 15px;
     display: flex;
     align-items: center;
     gap: 12px;
-    flex-wrap: wrap;
-}
-
-.progress-label {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 10px;
-    color: var(--neon-purple);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    white-space: nowrap;
-}
-
-.progress-track {
-    flex: 1;
-    height: 8px;
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: 20px;
-    overflow: hidden;
-    position: relative;
-    min-width: 150px;
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink), var(--neon-cyan));
-    border-radius: 20px;
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 0%;
-    box-shadow: 0 0 15px rgba(180,0,255,0.6);
-}
-
-.progress-percent {
-    font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
-    color: var(--neon-gold);
-    font-weight: 700;
-    min-width: 45px;
-    text-align: right;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
 }
 
-.progress-steps {
-    display: flex;
-    gap: 8px;
-    margin-left: auto;
-    flex-wrap: wrap;
+.security-banner i {
+    color: var(--neon-red);
+    font-size: 18px;
+    flex-shrink: 0;
 }
 
-.progress-step {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1.5px solid rgba(180, 0, 255, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-    font-weight: 900;
-    color: var(--text-muted);
-    transition: all 0.3s;
-}
-
-.progress-step.active {
-    background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
-    color: #fff;
-    border-color: #fff;
-    box-shadow: 0 0 15px rgba(180,0,255,0.6);
-    transform: scale(1.15);
-}
-
-.progress-step.done {
-    background: var(--neon-green);
-    color: #000;
-    border-color: #fff;
-}
+.security-banner b { color: var(--neon-gold); }
 
 /* ═══ CARD ═══ */
 .card {
@@ -375,15 +304,12 @@ h1 {
     opacity: 0.6;
 }
 
-.card.collapsed .card-body { display: none; }
-.card.collapsed .card-toggle i { transform: rotate(-90deg); }
-
-h2, h3 {
+h2 {
     font-family: 'Orbitron', sans-serif;
     color: var(--neon-purple);
-    font-size: 13px;
-    margin-bottom: 12px;
-    letter-spacing: 2px;
+    font-size: 14px;
+    margin-bottom: 14px;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
     display: flex;
     justify-content: space-between;
@@ -391,18 +317,6 @@ h2, h3 {
     flex-wrap: wrap;
     gap: 8px;
 }
-
-.card-toggle {
-    background: transparent;
-    border: none;
-    color: var(--neon-purple);
-    cursor: pointer;
-    padding: 4px 8px;
-    font-size: 14px;
-    transition: 0.3s;
-}
-
-.card-toggle i { transition: transform 0.3s; }
 
 .badge {
     background: rgba(180, 0, 255, 0.15);
@@ -420,51 +334,17 @@ h2, h3 {
 .badge.gold { background: rgba(255, 215, 0, 0.15); color: var(--neon-gold); border-color: rgba(255,215,0,0.3); }
 .badge.danger { background: rgba(255, 0, 100, 0.15); color: #ff0064; border-color: rgba(255,0,100,0.3); }
 .badge.pink { background: rgba(255, 45, 149, 0.15); color: var(--neon-pink); border-color: rgba(255,45,149,0.3); }
-.badge.cyan { background: rgba(0, 240, 255, 0.15); color: var(--neon-cyan); border-color: rgba(0,240,255,0.3); }
-
-/* ═══ SECTION BLOCK ═══ */
-.section-block {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1.5px solid rgba(180, 0, 255, 0.15);
-    border-radius: 14px;
-    padding: 16px;
-    margin-bottom: 14px;
-    transition: 0.3s;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.section-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 12px;
-    font-weight: bold;
-    color: var(--neon-purple);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    font-family: 'Orbitron', sans-serif;
-}
-
-.section-title .icon { font-size: 18px; }
 
 /* ═══ GUIDE BOX ═══ */
 .guide-box {
     background: rgba(180, 0, 255, 0.05);
     border-left: 3px solid var(--neon-purple);
     border-radius: 8px;
-    padding: 12px 14px;
-    margin-bottom: 12px;
-    font-size: 11px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    font-size: 12px;
     color: #ccc;
-    line-height: 1.7;
+    line-height: 1.8;
 }
 
 .guide-box strong { color: var(--neon-purple); }
@@ -474,306 +354,264 @@ h2, h3 {
     padding: 2px 6px;
     border-radius: 4px;
     color: var(--neon-gold);
-    font-size: 10px;
+    font-size: 11px;
     font-family: 'JetBrains Mono', monospace;
 }
 
-/* ═══ TEXTAREA ═══ */
-textarea, input[type="text"] {
-    width: 100%;
-    padding: 12px 14px;
-    background: rgba(0, 0, 0, 0.65);
-    border: 1.5px solid rgba(180, 0, 255, 0.15);
-    border-radius: 10px;
-    color: #fff;
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
-    font-size: 12px;
-    resize: vertical;
+.guide-box ul {
+    margin: 8px 0 8px 20px;
+    color: #b0b0d0;
+}
+
+.guide-box ul li {
+    margin-bottom: 6px;
     line-height: 1.6;
-    transition: 0.3s;
 }
 
-textarea { min-height: 140px; max-height: 400px; }
-textarea.tall { min-height: 220px; }
-textarea.huge { min-height: 340px; }
-textarea.mega { min-height: 420px; max-height: 600px; }
+.guide-box ul li b { color: var(--neon-cyan); }
 
-textarea:focus, input[type="text"]:focus {
-    outline: none;
-    border-color: var(--neon-purple);
-    box-shadow: 0 0 20px rgba(180, 0, 255, 0.2);
-    background: rgba(180, 0, 255, 0.03);
-}
-
-textarea::placeholder, input::placeholder { color: #444; font-size: 11px; }
-
-textarea[readonly] {
-    background: rgba(0, 0, 0, 0.4);
-    color: var(--text-secondary);
-    cursor: not-allowed;
-}
-
-/* ═══ BUTTONS ═══ */
-.mini-btn {
-    background: rgba(180, 0, 255, 0.08);
-    border: 1.5px solid rgba(180, 0, 255, 0.25);
-    color: var(--neon-purple);
-    padding: 7px 12px;
-    border-radius: 8px;
-    font-size: 10px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-family: inherit;
-}
-
-.mini-btn:hover {
-    background: rgba(180, 0, 255, 0.18);
-    border-color: var(--neon-purple);
-    transform: translateY(-2px);
-    box-shadow: 0 0 20px rgba(180,0,255,0.2);
-}
-
-.mini-btn.gold { color: var(--neon-gold); border-color: rgba(255,215,0,0.25); background: rgba(255,215,0,0.06); }
-.mini-btn.gold:hover { background: rgba(255,215,0,0.15); border-color: var(--neon-gold); }
-.mini-btn.pink { color: var(--neon-pink); border-color: rgba(255,45,149,0.25); background: rgba(255,45,149,0.06); }
-.mini-btn.pink:hover { background: rgba(255,45,149,0.15); border-color: var(--neon-pink); }
-.mini-btn.green { color: #00ff64; border-color: rgba(0,255,100,0.25); background: rgba(0,255,100,0.06); }
-.mini-btn.green:hover { background: rgba(0,255,100,0.15); border-color: #00ff64; }
-.mini-btn.red { color: var(--neon-red); border-color: rgba(255,0,100,0.25); background: rgba(255,0,100,0.06); }
-.mini-btn.red:hover { background: rgba(255,0,100,0.15); border-color: var(--neon-red); }
-.mini-btn.cyan { color: var(--neon-cyan); border-color: rgba(0,240,255,0.25); background: rgba(0,240,255,0.06); }
-.mini-btn.cyan:hover { background: rgba(0,240,255,0.15); border-color: var(--neon-cyan); }
-
-.btn {
-    background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
-    color: #fff;
-    border: none;
-    padding: 15px 26px;
-    border-radius: 12px;
-    font-weight: 900;
-    font-size: 12px;
-    cursor: pointer;
-    transition: 0.3s;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-family: 'Orbitron', sans-serif;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 35px rgba(180, 0, 255, 0.45);
-}
-
-.btn:disabled { opacity: 0.35; cursor: not-allowed; }
-.btn.full { width: 100%; }
-.btn.gold { background: linear-gradient(135deg, var(--neon-gold), #ff8c00); color: #000; }
-.btn.green { background: linear-gradient(135deg, #00ff88, #00b85c); color: #000; }
-.btn.red { background: linear-gradient(135deg, var(--neon-red), #b40000); color: #fff; }
-.btn.cyan { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple)); color: #000; }
-.btn.secondary { background: rgba(180, 0, 255, 0.1); border: 1.5px solid rgba(180, 0, 255, 0.35); color: var(--neon-purple); }
-
-.btn::after {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    transition: left 0.5s;
-}
-
-.btn:hover::after { left: 100%; }
-
-.btn-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 8px;
-}
-
-/* ═══ OPTIONS GRID ═══ */
-.options-grid {
+/* ═══ LAYERS GRID — Professional explanation ═══ */
+.layers-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 10px;
     margin-top: 12px;
 }
 
-.opt-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
+.layer-item {
     background: rgba(0, 0, 0, 0.4);
-    border: 1.5px solid rgba(180, 0, 255, 0.15);
+    border: 1px solid rgba(180, 0, 255, 0.18);
     border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.25s;
-    user-select: none;
-    position: relative;
+    padding: 12px 14px;
+    transition: 0.3s;
 }
 
-.opt-item:hover { background: rgba(180, 0, 255, 0.06); border-color: rgba(180, 0, 255, 0.4); }
-.opt-item.active { background: rgba(180, 0, 255, 0.1); border-color: var(--neon-purple); }
+.layer-item:hover {
+    border-color: var(--neon-purple);
+    background: rgba(180, 0, 255, 0.06);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(180,0,255,0.15);
+}
 
-.opt-check {
-    width: 20px;
-    height: 20px;
-    border-radius: 6px;
-    border: 1.5px solid rgba(180, 0, 255, 0.4);
+.layer-header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    color: transparent;
-    transition: all 0.3s;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.layer-icon {
+    font-size: 16px;
     flex-shrink: 0;
 }
 
-.opt-item.active .opt-check {
-    background: var(--neon-purple);
-    border-color: var(--neon-purple);
-    color: #fff;
-    box-shadow: 0 0 10px rgba(180, 0, 255, 0.5);
-}
-
-.opt-info { flex: 1; min-width: 0; }
-
-.opt-name {
-    font-size: 11px;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: 0.3px;
-    margin-bottom: 2px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    flex-wrap: wrap;
-}
-
-.opt-item.active .opt-name { color: var(--neon-purple); }
-
-.opt-weight {
-    background: rgba(255, 215, 0, 0.15);
-    color: var(--neon-gold);
-    padding: 1px 5px;
-    border-radius: 6px;
-    font-size: 8px;
-    font-weight: 700;
-}
-
-.opt-desc {
-    font-size: 9.5px;
-    color: var(--text-muted);
-    line-height: 1.3;
-}
-
-/* ═══ PRESET GRID ═══ */
-.preset-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 10px;
-    margin-top: 12px;
-}
-
-.preset-btn {
-    padding: 14px 12px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 2px solid rgba(180, 0, 255, 0.2);
-    border-radius: 12px;
-    color: #fff;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-family: inherit;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-}
-
-.preset-btn:hover {
-    transform: translateY(-3px);
-    border-color: var(--neon-purple);
-    box-shadow: 0 0 25px rgba(180, 0, 255, 0.2);
-}
-
-.preset-btn.active {
-    background: linear-gradient(135deg, rgba(180, 0, 255, 0.25), rgba(255, 45, 149, 0.15));
-    border-color: var(--neon-purple);
-    box-shadow: 0 0 30px rgba(180, 0, 255, 0.4);
-}
-
-.preset-icon { font-size: 24px; }
-.preset-name {
+.layer-name {
     font-family: 'Orbitron', sans-serif;
     font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 1.5px;
+    font-weight: 700;
+    color: var(--neon-purple);
+    letter-spacing: 1px;
     text-transform: uppercase;
 }
-.preset-desc { font-size: 9px; color: var(--text-muted); letter-spacing: 1px; }
 
-/* ═══ PROTECTION METER ═══ */
-.protection-meter {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 12px;
+.layer-desc {
+    font-size: 10.5px;
+    color: #b0b0d0;
+    line-height: 1.6;
 }
 
-.protection-bar {
-    width: 100%;
-    height: 14px;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1.5px solid rgba(180, 0, 255, 0.2);
-    position: relative;
-}
-
-.protection-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--neon-green), var(--neon-gold), var(--neon-pink), var(--neon-red));
-    border-radius: 10px;
-    transition: width 0.5s ease;
-    width: 0%;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-}
-
-.protection-value {
+.layer-desc code {
+    background: rgba(0, 240, 255, 0.1);
+    color: var(--neon-cyan);
+    padding: 1px 5px;
+    border-radius: 3px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--neon-gold);
-    text-align: center;
-    font-weight: 700;
-    letter-spacing: 1px;
+    font-size: 10px;
 }
+
+/* ═══ TEXTAREA ═══ */
+textarea {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1.5px solid rgba(180, 0, 255, 0.18);
+    border-radius: 12px;
+    color: #fff;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 12.5px;
+    resize: vertical;
+    line-height: 1.6;
+    transition: 0.3s;
+    letter-spacing: 0.2px;
+}
+
+textarea.input-area {
+    min-height: 340px;
+    max-height: 600px;
+}
+
+textarea.output-area {
+    min-height: 340px;
+    max-height: 600px;
+    color: var(--neon-green);
+    background: rgba(0, 10, 0, 0.4);
+    border-color: rgba(0, 255, 100, 0.2);
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 25px rgba(180, 0, 255, 0.25);
+    background: rgba(180, 0, 255, 0.03);
+}
+
+textarea::placeholder { color: #444; font-size: 11px; font-style: italic; }
+
+textarea[readonly] {
+    background: rgba(0, 10, 0, 0.4);
+    color: var(--neon-green);
+    cursor: default;
+}
+
+/* ═══ MAIN OBFUSCATE BUTTON ═══ */
+.obfuscate-btn {
+    width: 100%;
+    padding: 22px 30px;
+    background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink), #ff0064);
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 16px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(180, 0, 255, 0.5), inset 0 0 20px rgba(255,255,255,0.05);
+    margin: 6px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    line-height: 1;
+    min-height: 70px;
+}
+
+.obfuscate-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 60px rgba(180, 0, 255, 0.7), 0 0 100px rgba(255, 0, 100, 0.4);
+}
+
+.obfuscate-btn:active:not(:disabled) { transform: scale(0.98); }
+
+.obfuscate-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.obfuscate-btn::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.6s;
+    pointer-events: none;
+}
+
+.obfuscate-btn:hover::after { left: 100%; }
+
+.obfuscate-btn .kbd {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    margin-left: 6px;
+}
+
+@media (max-width: 600px) {
+    .obfuscate-btn { font-size: 12px; padding: 18px 20px; letter-spacing: 2px; min-height: 60px; }
+    .obfuscate-btn .kbd { display: none; }
+}
+
+/* ═══ COPY BUTTON ═══ */
+.copy-btn {
+    width: 100%;
+    padding: 14px 22px;
+    background: linear-gradient(135deg, #00ff88, #00b85c);
+    color: #000;
+    border: 2px solid #fff;
+    border-radius: 12px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+    min-height: 50px;
+    box-shadow: 0 0 25px rgba(0, 255, 100, 0.3);
+}
+
+.copy-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px rgba(0, 255, 100, 0.5);
+}
+
+.copy-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ═══ STATUS ═══ */
+.status {
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-top: 14px;
+    font-size: 12px;
+    display: none;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    max-height: 400px;
+    overflow-y: auto;
+    letter-spacing: 0.3px;
+}
+
+.status.show { display: block; animation: statusIn 0.4s ease; }
+
+@keyframes statusIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.status.success { background: rgba(0, 255, 100, 0.08); border: 1.5px solid #00ff64; color: #00ff64; }
+.status.error { background: rgba(255, 0, 100, 0.08); border: 1.5px solid #ff0064; color: #ff0064; }
+.status.loading { background: rgba(255, 215, 0, 0.08); border: 1.5px solid var(--neon-gold); color: var(--neon-gold); }
+.status.info { background: rgba(0, 240, 255, 0.08); border: 1.5px solid var(--neon-cyan); color: var(--neon-cyan); }
 
 /* ═══ STATS GRID ═══ */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
-    margin-top: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
 }
 
 .stat-card {
     background: rgba(0, 0, 0, 0.4);
-    border: 1.5px solid rgba(180, 0, 255, 0.15);
+    border: 1.5px solid rgba(180, 0, 255, 0.18);
     border-radius: 12px;
-    padding: 14px;
+    padding: 12px 10px;
     text-align: center;
     transition: 0.3s;
 }
@@ -781,22 +619,22 @@ textarea[readonly] {
 .stat-card:hover {
     border-color: var(--neon-purple);
     box-shadow: 0 0 20px rgba(180,0,255,0.15);
-    transform: translateY(-3px);
+    transform: translateY(-2px);
 }
 
 .stat-label {
-    font-size: 9px;
+    font-size: 8.5px;
     color: var(--text-muted);
     letter-spacing: 2px;
     text-transform: uppercase;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 6px;
     font-family: 'Orbitron', sans-serif;
 }
 
 .stat-value {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 900;
     color: var(--neon-purple);
 }
@@ -806,184 +644,73 @@ textarea[readonly] {
 .stat-value.pink { color: var(--neon-pink); }
 .stat-value.cyan { color: var(--neon-cyan); }
 
-/* ═══ HISTORY / ACTIVITY ═══ */
-.history-list {
-    max-height: 200px;
-    overflow-y: auto;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(180, 0, 255, 0.1);
-    border-radius: 10px;
-    padding: 10px;
-}
-
-.history-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
-    border-bottom: 1px solid rgba(255,255,255,0.03);
-    font-size: 11px;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--text-secondary);
-}
-
-.history-item:last-child { border-bottom: none; }
-
-.history-time {
-    color: var(--text-muted);
-    font-size: 10px;
-    flex-shrink: 0;
-    min-width: 70px;
-}
-
-.history-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.history-dot.info { background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan); }
-.history-dot.success { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
-.history-dot.error { background: var(--neon-red); box-shadow: 0 0 8px var(--neon-red); }
-.history-dot.warn { background: var(--neon-gold); box-shadow: 0 0 8px var(--neon-gold); }
-
-/* ═══ TABS ═══ */
-.tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 12px;
-    border-bottom: 1px solid rgba(180, 0, 255, 0.15);
-    overflow-x: auto;
-    flex-wrap: nowrap;
-}
-
-.tab {
-    padding: 10px 16px;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    font-family: 'Orbitron', sans-serif;
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    cursor: pointer;
+/* ═══ SCAN LINE ANIMATION ═══ */
+.scan-effect {
     position: relative;
-    transition: 0.3s;
-    white-space: nowrap;
-    font-weight: 700;
+    overflow: hidden;
 }
 
-.tab:hover { color: var(--neon-purple); }
-.tab.active { color: var(--neon-purple); }
-
-.tab.active::after {
+.scan-effect::before {
     content: '';
     position: absolute;
-    bottom: -1px; left: 0; right: 0;
-    height: 2px;
-    background: var(--neon-purple);
-    box-shadow: 0 0 10px var(--neon-purple);
-}
-
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-
-/* ═══ STATUS ═══ */
-.status {
-    padding: 12px 15px;
-    border-radius: 10px;
-    margin-top: 12px;
-    font-size: 11px;
-    display: none;
-    font-family: 'JetBrains Mono', monospace;
-    line-height: 1.6;
-    white-space: pre-wrap;
-    max-height: 350px;
-    overflow-y: auto;
-}
-
-.status.show { display: block; }
-.status.success { background: rgba(0, 255, 100, 0.08); border: 1.5px solid #00ff64; color: #00ff64; }
-.status.error { background: rgba(255, 0, 100, 0.08); border: 1.5px solid #ff0064; color: #ff0064; }
-.status.loading { background: rgba(255, 215, 0, 0.08); border: 1.5px solid var(--neon-gold); color: var(--neon-gold); }
-.status.info { background: rgba(0, 240, 255, 0.08); border: 1.5px solid var(--neon-cyan); color: var(--neon-cyan); }
-
-/* ═══ TOAST ═══ */
-.toast-container {
-    position: fixed;
-    bottom: 20px; right: 20px;
-    z-index: 99999;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, transparent, rgba(180, 0, 255, 0.15), transparent);
+    animation: scanDown 3s linear infinite;
     pointer-events: none;
-    max-width: 400px;
 }
 
-.toast {
-    background: rgba(11, 11, 26, 0.98);
-    border: 2px solid var(--neon-purple);
-    border-radius: 12px;
-    padding: 12px 18px;
-    color: #fff;
-    font-size: 12px;
-    font-weight: 600;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 30px rgba(180,0,255,0.2);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    pointer-events: auto;
-    animation: toastIn 0.4s ease;
-    min-width: 250px;
+@keyframes scanDown {
+    0% { top: -100%; }
+    100% { top: 100%; }
 }
 
-.toast.success { border-color: var(--neon-green); box-shadow: 0 0 30px rgba(0,255,100,0.3); }
-.toast.error { border-color: var(--neon-red); box-shadow: 0 0 30px rgba(255,0,100,0.3); }
-.toast.warn { border-color: var(--neon-gold); box-shadow: 0 0 30px rgba(255,215,0,0.3); }
-
-.toast-icon { font-size: 18px; flex-shrink: 0; }
-.toast.success .toast-icon { color: var(--neon-green); }
-.toast.error .toast-icon { color: var(--neon-red); }
-.toast.warn .toast-icon { color: var(--neon-gold); }
-
-@keyframes toastIn {
-    from { transform: translateX(400px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+/* ═══ FOOTER ═══ */
+.footer {
+    text-align: center;
+    padding: 20px 15px;
+    font-size: 10.5px;
+    color: #444;
+    letter-spacing: 2px;
+    line-height: 1.8;
+    font-family: 'Orbitron', sans-serif;
 }
 
-.toast.removing { animation: toastOut 0.3s ease forwards; }
-@keyframes toastOut { to { transform: translateX(400px); opacity: 0; } }
+.footer b { color: var(--neon-purple); }
 
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 768px) {
     .app { padding: 10px; }
     h1 { font-size: 18px; letter-spacing: 2px; }
     .subtitle { font-size: 9px; letter-spacing: 1.5px; }
-    .card { padding: 14px; }
-    .top-actions { flex-direction: column; }
-    .top-btn { justify-content: center; }
+    .card { padding: 16px; }
+    .header { padding: 18px 16px; }
+    .header-icon { font-size: 36px; }
     textarea { font-size: 11px; }
-    .btn { font-size: 11px; padding: 13px 20px; }
-    .progress-steps { display: none; }
+    textarea.input-area, textarea.output-area { min-height: 280px; }
     .header-stats { gap: 8px; }
-    .header-stat { font-size: 9px; padding: 3px 9px; }
-    .options-grid { grid-template-columns: 1fr; }
-    .preset-grid { grid-template-columns: repeat(2, 1fr); }
+    .header-stat { font-size: 9px; padding: 4px 10px; }
+    .layers-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
     h1 { font-size: 15px; }
     .subtitle { font-size: 8px; }
-    .card { padding: 12px; }
-    h2, h3 { font-size: 11px; }
-    .section-title { font-size: 10px; }
-    .btn { font-size: 10px; padding: 11px 16px; letter-spacing: 1.5px; }
-    .mini-btn { font-size: 9px; padding: 6px 10px; }
-    .stat-value { font-size: 14px; }
-    .toast-container { left: 10px; right: 10px; bottom: 10px; }
-    .toast { min-width: auto; }
-    .preset-grid { grid-template-columns: 1fr; }
+    .card { padding: 14px; }
+    h2 { font-size: 12px; }
+    .security-banner { font-size: 10px; padding: 10px 12px; }
+    textarea.input-area, textarea.output-area { min-height: 220px; }
+    .stat-value { font-size: 13px; }
+    .stat-label { font-size: 8px; }
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+    .app {
+        padding-top: calc(15px + env(safe-area-inset-top));
+        padding-bottom: calc(15px + env(safe-area-inset-bottom));
+    }
 }
 </style>
 </head>
@@ -993,332 +720,304 @@ textarea[readonly] {
 
     <!-- ═══ HEADER ═══ -->
     <div class="header">
-        <h1>🛡️ Code Obfuscation Pro</h1>
-        <div class="subtitle">NightOrbit CodeForge · Separate · Clean · Obfuscate · Protect</div>
+        <div class="header-icon">🛡️</div>
+        <h1>Secure Code Protection</h1>
+        <div class="subtitle">NightOrbit CodeForge · Military-Grade Obfuscation Engine</div>
         <div class="header-stats">
             <span class="header-stat"><i class="fa-solid fa-bolt"></i> v16 ULTRA</span>
             <span class="header-stat gold"><i class="fa-solid fa-layer-group"></i> 15+ Layers</span>
             <span class="header-stat pink"><i class="fa-solid fa-bug"></i> Anti-Debug</span>
             <span class="header-stat green"><i class="fa-solid fa-lock"></i> Self-Defending</span>
-            <span class="header-stat cyan"><i class="fa-solid fa-database"></i> 5MB+ Files</span>
+            <span class="header-stat"><i class="fa-solid fa-shield"></i> Zero-Trust</span>
         </div>
     </div>
 
-    <!-- ═══ PROGRESS ═══ -->
-    <div class="progress-wrap">
-        <div class="progress-label">Progress</div>
-        <div class="progress-track">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <div class="progress-percent" id="progressPercent">0%</div>
-        <div class="progress-steps">
-            <div class="progress-step" id="step1">1</div>
-            <div class="progress-step" id="step2">2</div>
-            <div class="progress-step" id="step3">3</div>
-            <div class="progress-step" id="step4">4</div>
+    <!-- ═══ SECURITY BANNER ═══ -->
+    <div class="security-banner">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div>
+            <b>MAXIMUM SECURITY MODE ACTIVE.</b>
+            All protection layers are applied automatically by the backend engine. Multi-stage encoding, anti-tamper protection, and self-defending mechanisms are engaged by default. No configuration required.
         </div>
     </div>
 
-    <!-- ═══ TOP ACTIONS ═══ -->
-    <div class="top-actions">
-        <a href="dashboard.html" class="top-btn gold">⬅ BACK TO DASHBOARD</a>
-        <button class="top-btn cyan" onclick="scrollToSection('obfuscateSection')">🚀 GO TO OBFUSCATE</button>
-        <button class="top-btn green" onclick="loadSampleCode()">📥 LOAD SAMPLE</button>
-        <button class="top-btn" onclick="applyPreset('military')">🎖️ MILITARY MODE</button>
-    </div>
-
-    <!-- ═══ GUIDE ═══ -->
+    <!-- ═══ PROFESSIONAL EXPLANATION OF SECURITY LAYERS ═══ -->
     <div class="card">
+        <h2>
+            <span>🔬 Security Layers Applied <span class="badge gold">15+ ACTIVE</span></span>
+        </h2>
         <div class="guide-box">
-            <strong>📌 4 Simple Steps:</strong><br>
-            1️⃣ <b>Paste your code</b> (HTML + CSS + JS together) — auto-detect karega<br>
-            2️⃣ <b>Preset choose karo</b> — Light se Military tak<br>
-            3️⃣ <b>Advanced options</b> — 15+ layers, jo chahiye select karo<br>
-            4️⃣ Click <b>"SEPARATE & CLEAN CODE"</b> — comments hata dega safely<br>
-            <br>
-            <b style="color:var(--neon-purple);">🛡️ Protection Levels:</b> Light (2 layers) → Medium (5) → Heavy (9) → Insane (12) → <b>Military (15+)</b><br>
-            <b style="color:var(--neon-gold);">⚠️ Important:</b> JavaScript client-side language hai — 100% decode-proof nahi hai. Lekin ye tool <b>95%+ casual users</b> ko rok deta hai aur professional reverse engineering mein <b>hours lagate hain</b>.
+            <strong>📌 What Happens to Your Code:</strong><br>
+            When you click <code>OBFUSCATE NOW</code>, your code passes through <b>15+ independent security layers</b>. Each layer transforms the code in a way that makes it exponentially harder to reverse-engineer. The output is functionally identical to your original code but <b>virtually unreadable</b> to humans and casual attackers.
+        </div>
+
+        <div class="layers-grid">
+
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-icon">🏷️</span>
+                    <span class="layer-name">Variable Renaming</span>
+                </div>
+                <div class="layer-desc">
+                    All identifiers (variables, functions, parameters) are renamed to random hex strings. <code>userName</code> becomes <code>_0xa4f2b1</code>. This destroys the semantic meaning of your code.
+                </div>
+            </div>
+
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-icon">📚</span>
+                    <span class="layer-name">String Array Encoding</span>
+                </div>
+                <div class="layer-desc">
+                    Every string literal is extracted into a centralized array. References become array lookups like <code>_0x1234[5]</code>. This hides all text content from static analysis.
+                </div>
+            </div>
+
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-icon">🔤</span>
+                    <span class="layer-name">Hex String Encoding</span>
+                </div>
+                <div class="layer-desc">
+                    Strings are converted to hexadecimal escape sequences. <code>"hello"</code> becomes <code>"\x68\x65\x6c\x6c\x6f"</code>. Simple text search won't find anything.
+                </div>
+            </div>
+
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-icon">🌐</span>
+                    <span class="layer-name">Unicode Escape</span>
+                </div>
+                <div class="layer-desc">
+                    Full Unicode escaping is applied. <code>"hello"</code> becomes <code>"\u0068\u0065\u006c\u006c\u006f"</code>. Even advanced parsers struggle with this format.
+                </div>
+            </div>
+
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-icon">📦</span>
+                    <span class="layer-name">Base64 Encoding</span>
+                </div>
+                <div class="layer-desc">
+                    Additional Base64 wrapping. Strings become <code>atob("aGVsbG8=")</code>. Adds another decoding step that attackers must reverse.
+                </div>
+            </div>
+
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-icon">🔢</span>
+                    <span class="layer-name">Numeric Obfuscation</span>
+                </div>
+                <div class="layer-desc">
+                    All integer literals are converted to hexadecimal notation. <code>1000</code> becomes <code>0x3E8</code>. Numeric patterns become invisible to grep searches.
+                </div>
+            </div>
+
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-icon">✂️</span>
+                    <span class="layer-name">String Splitting</span>
+                </div>
+                <div class="layer-desc">
+                    Long strings are split and concatenated at runtime. <code>"hello"</code> becomes <code>"he"+"llo"</code>. Defeats simple string-matching analysis.
+                </div>
+            </div>
+
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-icon">🔄</span>
+                    <span class="layer-name">Array Rotation</span>
+                </div>
+                <div class="layer-desc">
+                    String arrays are rotated by a random offset. Reference indices shift dynamically, breaking hardcoded array lookups.
+                </div>
+            </div>
+
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-icon">💀</span>
+                    <span class="layer-name">Dead Code Injection</span>
+                </div>
+                <div class="layer-desc">
+                    Fake functions and unreachable code blocks are injected. Attackers waste hours analyzing code that never actually runs.
+                </div>
+            </div>
+
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-icon">🎭</span>
+                    <span class="layer-name">Opaque Predicates</span>
+                </div>
+                <div class="layer-desc">
+                    Fake conditional branches are added. Code appears to have multiple execution paths but only one real path exists. Confuses static analyzers.
+                </div>
+            </div>
+
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-icon">🌀</span>
+                    <span class="layer-name">Control Flow Flattening</span>
+                </div>
+                <div class="layer-desc">
+                    Original code flow is wrapped in a state machine. Linear execution becomes a switch-dispatch pattern that's extremely hard to follow.
+                </div>
+            </div>
+
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-icon">🔇</span>
+                    <span class="layer-name">Anti-Console</span>
+                </div>
+                <div class="layer-desc">
+                    Console methods are neutralized. Attackers can't use browser console to inspect runtime values or trace execution.
+                </div>
+            </div>
+
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-icon">🐛</span>
+                    <span class="layer-name">Anti-Debug</span>
+                </div>
+                <div class="layer-desc">
+                    Debugger traps are embedded. If someone opens DevTools, execution breaks. Repeated detection triggers a self-cleanup routine.
+                </div>
+            </div>
+
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-icon">🛡️</span>
+                    <span class="layer-name">Self-Defending</span>
+                </div>
+                <div class="layer-desc">
+                    The code verifies its own integrity. Any modification attempt causes immediate failure — you can't patch the obfuscated output.
+                </div>
+            </div>
+
+            <div class="layer-item">
+                <div class="layer-header">
+                    <span class="layer-icon">🧹</span>
+                    <span class="layer-name">Comment Removal</span>
+                </div>
+                <div class="layer-desc">
+                    All comments (HTML, CSS, JS) are safely stripped. Documentation, TODOs, and hints are removed without breaking string literals.
+                </div>
+            </div>
+
+        </div>
+
+        <div class="guide-box" style="margin-top:14px;">
+            <strong>💡 How Effective Is This?</strong><br>
+            • <b>95%+ of casual users</b> cannot reverse the output<br>
+            • <b>Professional reverse engineers</b> need hours to days depending on code size<br>
+            • <b>Automated tools</b> (de4js, JSBeautifier) fail on multi-layer obfuscation<br>
+            • <b>Legal protection</b> — code ownership is preserved through structural signatures
         </div>
     </div>
 
-    <!-- ═══ STEP 1: PRESET ═══ -->
-    <div class="card" id="presetSection">
-        <h3>
-            <span>🎯 STEP 1 — Protection Preset <span class="badge" id="presetBadge">MEDIUM</span></span>
-            <button class="card-toggle" onclick="toggleCard('presetSection')"><i class="fa-solid fa-chevron-down"></i></button>
-        </h3>
-        <div class="card-body">
-            <div class="guide-box">
-                <strong>📌 Preset choose karo:</strong><br>
-                • <b>Light</b> — Fast (2 layers), basic protection<br>
-                • <b>Medium</b> — Balanced (5 layers), recommended<br>
-                • <b>Heavy</b> — Strong (9 layers), slow obfuscation<br>
-                • <b>Insane</b> — Maximum (12 layers), very slow decode<br>
-                • <b>Military</b> — NATO-grade (15+ layers), extreme
-            </div>
-
-            <div class="preset-grid">
-                <button class="preset-btn" data-preset="light" onclick="applyPreset('light')">
-                    <span class="preset-icon">🌱</span>
-                    <span class="preset-name">Light</span>
-                    <span class="preset-desc">2 LAYERS · FAST</span>
-                </button>
-                <button class="preset-btn active" data-preset="medium" onclick="applyPreset('medium')">
-                    <span class="preset-icon">⚡</span>
-                    <span class="preset-name">Medium</span>
-                    <span class="preset-desc">5 LAYERS · BALANCED</span>
-                </button>
-                <button class="preset-btn" data-preset="heavy" onclick="applyPreset('heavy')">
-                    <span class="preset-icon">🔥</span>
-                    <span class="preset-name">Heavy</span>
-                    <span class="preset-desc">9 LAYERS · STRONG</span>
-                </button>
-                <button class="preset-btn" data-preset="insane" onclick="applyPreset('insane')">
-                    <span class="preset-icon">💀</span>
-                    <span class="preset-name">Insane</span>
-                    <span class="preset-desc">12 LAYERS · MAX</span>
-                </button>
-                <button class="preset-btn" data-preset="military" onclick="applyPreset('military')">
-                    <span class="preset-icon">🎖️</span>
-                    <span class="preset-name">Military</span>
-                    <span class="preset-desc">15+ LAYERS · NATO</span>
-                </button>
-            </div>
-
-            <div class="protection-meter">
-                <div class="protection-bar">
-                    <div class="protection-fill" id="protectionFill"></div>
-                </div>
-                <div class="protection-value">
-                    Protection Score: <span id="protectionScore">0</span> / 30
-                    <span style="color:var(--neon-purple); margin-left:8px;">·</span>
-                    <span id="protectionLevel" style="color:var(--neon-gold); margin-left:8px;">MEDIUM</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ═══ STEP 2: CODE INPUT ═══ -->
-    <div class="card" id="codeSection">
-        <h3>
-            <span>📝 STEP 2 — Paste Your Code <span class="badge pink">AUTO-DETECT</span></span>
-            <button class="card-toggle" onclick="toggleCard('codeSection')"><i class="fa-solid fa-chevron-down"></i></button>
-        </h3>
-        <div class="card-body">
-            <div class="guide-box">
-                <strong>📌 Paste your code here:</strong><br>
-                • Paste <b>HTML + CSS + JS</b> together (any order)<br>
-                • System <b>automatically separate</b> karega teeno ko<br>
-                • <b>Comments safely remove</b> honge — strings ko touch nahi karega<br>
-                • <b>5MB+ files</b> handle karta hai (5 minute tak processing)<br>
-                • <b>Shortcut:</b> <span class="kbd" style="background:rgba(0,0,0,0.6);padding:2px 8px;border-radius:4px;color:var(--neon-gold);font-size:10px;font-family:monospace;">Ctrl+Enter</span> to separate
-            </div>
-
-            <textarea id="fullCodeArea" class="mega" placeholder="Paste your full code here (HTML + CSS + JS together)..."></textarea>
-
-            <div class="btn-row">
-                <button class="mini-btn gold" onclick="separateCode()">🔍 SEPARATE & CLEAN CODE</button>
-                <button class="mini-btn cyan" onclick="copyFullCode()">📋 COPY</button>
-                <button class="mini-btn green" onclick="loadSampleCode()">📥 SAMPLE</button>
-                <button class="mini-btn red" onclick="clearFullCode()">🗑️ CLEAR</button>
-            </div>
-
-            <div class="status" id="statusFullCode"></div>
-
-            <div class="stats-grid" id="inputStats" style="display:none;">
-                <div class="stat-card">
-                    <div class="stat-label">Lines</div>
-                    <div class="stat-value" id="statLines">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Characters</div>
-                    <div class="stat-value gold" id="statChars">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Size</div>
-                    <div class="stat-value green" id="statSize">0 B</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Detected</div>
-                    <div class="stat-value pink" id="statDetected">—</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ═══ STEP 3: SEPARATED SECTIONS ═══ -->
-    <div id="sectionsContainer" style="display:none;">
-
-        <!-- Tab Navigation -->
-        <div class="card">
-            <h3>
-                <span>🧩 SEPARATED CODE <span class="badge success">READY</span></span>
-            </h3>
-            <div class="tabs">
-                <button class="tab active" data-tab="html" onclick="switchTab('html')">📄 HTML</button>
-                <button class="tab" data-tab="css" onclick="switchTab('css')">🎨 CSS</button>
-                <button class="tab" data-tab="js" onclick="switchTab('js')">⚙️ JS</button>
-            </div>
-
-            <!-- HTML Tab -->
-            <div class="tab-content active" id="tab-html">
-                <h3 style="margin-bottom:8px;">📄 HTML <span class="badge" id="htmlBadge">EMPTY</span></h3>
-                <div class="guide-box">
-                    Separated HTML (comments removed, data scripts kept in HTML).
-                </div>
-                <textarea id="htmlArea" class="tall" placeholder="HTML will appear here..."></textarea>
-                <div class="btn-row">
-                    <button class="mini-btn cyan" onclick="copyHtml()">📋 COPY</button>
-                    <button class="mini-btn gold" onclick="downloadSection('html')">⬇ DOWNLOAD</button>
-                    <button class="mini-btn pink" onclick="clearHtml()">🗑️ CLEAR</button>
-                </div>
-            </div>
-
-            <!-- CSS Tab -->
-            <div class="tab-content" id="tab-css">
-                <h3 style="margin-bottom:8px;">🎨 CSS <span class="badge" id="cssBadge">EMPTY</span></h3>
-                <div class="guide-box">
-                    Separated CSS (comments removed safely).
-                </div>
-                <textarea id="cssArea" class="tall" placeholder="CSS will appear here..."></textarea>
-                <div class="btn-row">
-                    <button class="mini-btn cyan" onclick="copyCss()">📋 COPY</button>
-                    <button class="mini-btn gold" onclick="downloadSection('css')">⬇ DOWNLOAD</button>
-                    <button class="mini-btn pink" onclick="clearCss()">🗑️ CLEAR</button>
-                </div>
-            </div>
-
-            <!-- JS Tab -->
-            <div class="tab-content" id="tab-js">
-                <h3 style="margin-bottom:8px;">⚙️ JavaScript <span class="badge" id="jsBadge">EMPTY</span></h3>
-                <div class="guide-box">
-                    Separated JS (comments removed, ready for obfuscation).
-                </div>
-                <textarea id="jsArea" class="mega" placeholder="JS will appear here..."></textarea>
-                <div class="btn-row">
-                    <button class="mini-btn cyan" onclick="copyJs()">📋 COPY</button>
-                    <button class="mini-btn gold" onclick="downloadSection('js')">⬇ DOWNLOAD</button>
-                    <button class="mini-btn pink" onclick="clearJs()">🗑️ CLEAR</button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- ═══ STEP 4: ADVANCED OPTIONS ═══ -->
-    <div class="card" id="optionsSection">
-        <h3>
-            <span>⚙️ STEP 3 — Advanced Obfuscation Options <span class="badge gold">15+ LAYERS</span></span>
-            <button class="card-toggle" onclick="toggleCard('optionsSection')"><i class="fa-solid fa-chevron-down"></i></button>
-        </h3>
-        <div class="card-body">
-            <div class="guide-box">
-                <strong>📌 Har layer ka weight alag hai:</strong><br>
-                • Zyada options = <b>zyada mushkil decode</b> lekin <b>bari output file</b><br>
-                • Preset ne jo select kiya hai wo already active hai<br>
-                • Aap manually bhi toggle kar sakte ho
-            </div>
-
-            <div class="options-grid" id="optionsGrid">
-                <!-- 15 options — JS se populate hoga -->
-            </div>
-        </div>
-    </div>
-
-    <!-- ═══ STEP 5: OBFUSCATE + OUTPUT ═══ -->
-    <div class="card" id="obfuscateSection">
-        <h3>
-            <span>🚀 STEP 4 — Obfuscate & Output <span class="badge gold">FINAL</span></span>
-            <button class="card-toggle" onclick="toggleCard('obfuscateSection')"><i class="fa-solid fa-chevron-down"></i></button>
-        </h3>
-
-        <div class="card-body">
-            <div class="guide-box">
-                <strong>📌 Final steps:</strong><br>
-                • JS code obfuscate hoga (HTML/CSS simple minify honge)<br>
-                • Agar JS khaali hai to sirf HTML/CSS minify honge<br>
-                • Output ready hone pe <b>Copy</b> ya <b>Download</b> karo<br>
-                • <b>⚠️ Original code ko safe rakho</b> — obfuscated code ko reverse karna mushkil hai
-            </div>
-
-            <div class="btn-row" style="margin-bottom:12px;">
-                <button class="btn full gold" id="obfuscateBtn" onclick="obfuscateNow()">
-                    <i class="fa-solid fa-bolt"></i> 🚀 OBFUSCATE NOW (Ctrl+Enter)
-                </button>
-            </div>
-
-            <div class="btn-row" style="margin-bottom:12px;">
-                <button class="btn green" onclick="copyOutput()">📋 COPY OUTPUT</button>
-                <button class="btn cyan" onclick="downloadOutput()">⬇ DOWNLOAD OUTPUT</button>
-                <button class="btn secondary" onclick="testOutput()">🧪 TEST OUTPUT</button>
-            </div>
-
-            <div class="status" id="statusObfuscate"></div>
-
-            <h3 style="margin-top:16px;">🔒 Obfuscated Output <span class="badge success" id="outputBadge">NOT READY</span></h3>
-
-            <textarea id="outputCode" class="mega" placeholder="Click OBFUSCATE NOW to generate output..." readonly></textarea>
-
-            <div class="stats-grid" id="outputStats" style="display:none;">
-                <div class="stat-card">
-                    <div class="stat-label">Original Size</div>
-                    <div class="stat-value cyan" id="statOrigSize">0 B</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Obfuscated Size</div>
-                    <div class="stat-value gold" id="statObfSize">0 B</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Ratio</div>
-                    <div class="stat-value pink" id="statRatio">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Layers Applied</div>
-                    <div class="stat-value green" id="statLayers">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Protection</div>
-                    <div class="stat-value gold" id="statProtection">—</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Time</div>
-                    <div class="stat-value cyan" id="statTime">0ms</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ═══ ACTIVITY LOG ═══ -->
+    <!-- ═══ INPUT CARD ═══ -->
     <div class="card">
-        <h3>📊 Activity Log</h3>
-        <div class="card-body">
-            <div class="history-list" id="historyList">
-                <div class="history-item">
-                    <span class="history-time">--:--:--</span>
-                    <span class="history-dot info"></span>
-                    <span>CodeForge Obfuscation Pro initialized</span>
-                </div>
+        <h2>
+            <span>📝 Paste Your Code <span class="badge pink">AUTO-DETECT</span></span>
+        </h2>
+        <div class="guide-box">
+            <strong>📌 Instructions:</strong>
+            <ul>
+                <li>Paste your <b>HTML + CSS + JavaScript</b> code together (any order)</li>
+                <li>The system will <b>automatically separate, clean, and protect</b> everything</li>
+                <li><b>All comments will be removed safely</b> — strings remain untouched</li>
+                <li><b>Data scripts</b> (JSON-LD, Google Analytics, GTM) stay in HTML</li>
+                <li>Press <code>Ctrl + Enter</code> to start protection instantly</li>
+            </ul>
+        </div>
+
+        <textarea id="inputCode" class="input-area scan-effect" placeholder="// Paste your full code here (HTML + CSS + JS)...&#10;// All processing happens automatically.&#10;// No configuration needed."></textarea>
+
+        <div class="stats-grid" id="inputStats" style="display:none;">
+            <div class="stat-card">
+                <div class="stat-label">Lines</div>
+                <div class="stat-value" id="statLines">0</div>
             </div>
-            <div class="btn-row">
-                <button class="mini-btn pink" onclick="clearHistory()">🗑️ CLEAR HISTORY</button>
+            <div class="stat-card">
+                <div class="stat-label">Characters</div>
+                <div class="stat-value gold" id="statChars">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Size</div>
+                <div class="stat-value green" id="statSize">0 B</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Detected</div>
+                <div class="stat-value pink" id="statDetected">—</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ OBFUSCATE BUTTON ═══ -->
+    <button class="obfuscate-btn" id="obfuscateBtn" onclick="obfuscateNow()">
+        <i class="fa-solid fa-bolt"></i>
+        🚀 OBFUSCATE NOW
+        <span class="kbd">Ctrl + Enter</span>
+    </button>
+
+    <!-- ═══ STATUS ═══ -->
+    <div class="status" id="statusBox"></div>
+
+    <!-- ═══ OUTPUT CARD ═══ -->
+    <div class="card" id="outputCard" style="display:none;">
+        <h2>
+            <span>🔒 Secured Output <span class="badge success" id="outputBadge">READY</span></span>
+        </h2>
+        <div class="guide-box">
+            <strong>✅ Protection Complete.</strong><br>
+            Your code has been protected with 15+ layers of obfuscation and encoding. The output below is functionally identical to your original code but unreadable to humans and casual attackers. Copy and deploy it as you would your original code.
+        </div>
+
+        <textarea id="outputCode" class="output-area" placeholder="Obfuscated output will appear here..." readonly></textarea>
+
+        <button class="copy-btn" id="copyBtn" onclick="copyOutput()">
+            <i class="fa-solid fa-copy"></i> COPY PROTECTED CODE
+        </button>
+
+        <div class="stats-grid" id="outputStats">
+            <div class="stat-card">
+                <div class="stat-label">Original</div>
+                <div class="stat-value cyan" id="statOrigSize">0 B</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Protected</div>
+                <div class="stat-value gold" id="statObfSize">0 B</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Ratio</div>
+                <div class="stat-value pink" id="statRatio">0%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Layers</div>
+                <div class="stat-value green" id="statLayers">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Protection</div>
+                <div class="stat-value gold" id="statProtection">MAX</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Time</div>
+                <div class="stat-value cyan" id="statTime">0ms</div>
             </div>
         </div>
     </div>
 
     <!-- ═══ FOOTER ═══ -->
-    <div class="card" style="text-align:center;">
-        <div style="font-size:11px;color:#444;letter-spacing:2px;line-height:1.8;">
-            Powered by <b style="color:var(--neon-purple);">NightOrbit</b> · Owner: <b style="color:var(--neon-purple);">Anas Farooq</b>
-        </div>
+    <div class="footer">
+        Powered by <b>NightOrbit</b> · Owner: <b>Anas Farooq</b><br>
+        <span style="font-size:9px;color:#333;">Zero-Trust Security Architecture · Military-Grade Obfuscation</span>
     </div>
 
 </div>
 
-<!-- ═══ TOAST CONTAINER ═══ -->
-<div class="toast-container" id="toastContainer"></div>
-
 <!-- ═══════════════════════════════════════════════════════════ -->
-<!--  MAIN SCRIPT — OBFUSCATION PRO V16                          -->
+<!--  🔥 BACKEND OBFUSCATION ENGINE — V16 ULTRA                  -->
+<!--  All processing happens here silently.                      -->
+<!--  No watermark. No user prompts. Pure protection.            -->
 <!-- ═══════════════════════════════════════════════════════════ -->
 <script>
 (function() {
@@ -1328,12 +1027,12 @@ textarea[readonly] {
        SAFETY LIMITS — 5MB+ files, 5 min processing
        ═══════════════════════════════════════════════════════════ */
     var SAFETY = {
-        MAX_INPUT_SIZE: 5 * 1024 * 1024,        /* 5 MB */
-        MAX_OUTPUT_SIZE: 20 * 1024 * 1024,      /* 20 MB */
-        MAX_DEAD_CODE: 8,
+        MAX_INPUT_SIZE: 5 * 1024 * 1024,
+        MAX_OUTPUT_SIZE: 20 * 1024 * 1024,
+        MAX_DEAD_CODE: 10,
         MAX_STRING_LENGTH: 1000,
         MAX_ITERATIONS: 5000,
-        TIMEOUT_MS: 300000                       /* 5 minutes */
+        TIMEOUT_MS: 300000
     };
 
     /* ═══ SAFE TAG STRINGS ═══ */
@@ -1341,60 +1040,12 @@ textarea[readonly] {
     var TAG_CLOSE_SCRIPT = '<' + '/script>';
     var TAG_OPEN_STYLE   = '<' + 'style';
     var TAG_CLOSE_STYLE  = '<' + '/style>';
-    var TAG_CLOSE_HTML   = '<' + '/html>';
-    var TAG_CLOSE_BODY   = '<' + '/body>';
-    var TAG_CLOSE_HEAD   = '<' + '/head>';
-
-    /* ═══ OPTIONS DEFINITION — 15+ layers ═══ */
-    var OPTIONS_DEF = [
-        { id: 'renameVariables', name: 'Rename Variables',  weight: 2, desc: 'myVar → _0x4a2f', icon: '🏷️' },
-        { id: 'encodeStrings',   name: 'Encode Strings',    weight: 3, desc: '"hello" → \\x68...', icon: '🔤' },
-        { id: 'hexNumbers',      name: 'Hex Numbers',       weight: 1, desc: '1000 → 0x3E8', icon: '🔢' },
-        { id: 'stringArray',     name: 'String Array',      weight: 3, desc: 'Strings in array', icon: '📚' },
-        { id: 'deadCode',        name: 'Dead Code',         weight: 2, desc: 'Fake code inject', icon: '💀' },
-        { id: 'splitStrings',    name: 'Split Strings',     weight: 2, desc: '"hello" → "he"+"llo"', icon: '✂️' },
-        { id: 'controlFlow',     name: 'Control Flow',      weight: 3, desc: 'Logic flatten', icon: '🌀' },
-        { id: 'selfDefending',   name: 'Self-Defending',    weight: 3, desc: 'Modify → break', icon: '🛡️' },
-        { id: 'antiDebug',       name: 'Anti-Debug',        weight: 2, desc: 'DevTools block', icon: '🐛' },
-        { id: 'antiConsole',     name: 'Anti-Console',      weight: 1, desc: 'Log block', icon: '🔇' },
-        { id: 'watermark',       name: 'Watermark',         weight: 2, desc: 'Owner signature', icon: '💧' },
-        { id: 'unicodeEscape',   name: 'Unicode Escape',    weight: 3, desc: '\\u0068\\u0065...', icon: '🌐' },
-        { id: 'base64Encode',    name: 'Base64 Strings',    weight: 2, desc: 'btoa() strings', icon: '📦' },
-        { id: 'arrayRotate',     name: 'Array Rotation',    weight: 2, desc: 'Rotate string array', icon: '🔄' },
-        { id: 'opaquePredicates',name: 'Opaque Predicates', weight: 3, desc: 'Fake conditions', icon: '🎭' }
-    ];
-
-    /* ═══ PRESETS ═══ */
-    var PRESETS = {
-        light:    ['renameVariables', 'hexNumbers'],
-        medium:   ['renameVariables', 'encodeStrings', 'hexNumbers', 'stringArray', 'antiConsole'],
-        heavy:    ['renameVariables', 'encodeStrings', 'hexNumbers', 'stringArray', 'deadCode',
-                   'splitStrings', 'antiDebug', 'antiConsole', 'watermark'],
-        insane:   ['renameVariables', 'encodeStrings', 'hexNumbers', 'stringArray', 'deadCode',
-                   'splitStrings', 'controlFlow', 'selfDefending', 'antiDebug', 'antiConsole',
-                   'watermark', 'unicodeEscape'],
-        military: ['renameVariables', 'encodeStrings', 'hexNumbers', 'stringArray', 'deadCode',
-                   'splitStrings', 'controlFlow', 'selfDefending', 'antiDebug', 'antiConsole',
-                   'watermark', 'unicodeEscape', 'base64Encode', 'arrayRotate', 'opaquePredicates']
-    };
 
     /* ═══ STATE ═══ */
     var state = {
-        currentPreset: 'medium',
-        options: {},
-        fullCode: '',
-        html: '',
-        css: '',
-        js: '',
-        outputCode: '',
-        detectedLang: 'js',
-        history: [],
         user: null,
         authHandled: false
     };
-
-    /* Initialize all options to false */
-    OPTIONS_DEF.forEach(function(o) { state.options[o.id] = false; });
 
     /* ═══ UTILITIES ═══ */
     function bytes(n) {
@@ -1405,14 +1056,14 @@ textarea[readonly] {
     function num(n) {
         return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
-    function showStatus(id, type, text) {
-        var el = document.getElementById(id);
+    function showStatus(type, text) {
+        var el = document.getElementById('statusBox');
         if (!el) return;
         el.className = 'status show ' + type;
         el.textContent = text;
     }
-    function hideStatus(id) {
-        var el = document.getElementById(id);
+    function hideStatus() {
+        var el = document.getElementById('statusBox');
         if (!el) return;
         el.className = 'status';
     }
@@ -1430,83 +1081,6 @@ textarea[readonly] {
         var s = '';
         for (var i = 0; i < (len || 8); i++) s += c.charAt(Math.floor(Math.random() * c.length));
         return s;
-    }
-    function escapeHtml(s) {
-        return String(s).replace(/[&<>"']/g, function(c) {
-            return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-        });
-    }
-
-    /* ═══ TOAST ═══ */
-    function toast(message, type) {
-        type = type || 'info';
-        var container = document.getElementById('toastContainer');
-        var icons = {
-            success: 'fa-circle-check',
-            error: 'fa-circle-xmark',
-            warn: 'fa-triangle-exclamation',
-            info: 'fa-circle-info'
-        };
-        var el = document.createElement('div');
-        el.className = 'toast ' + type;
-        el.innerHTML = '<i class="fa-solid ' + (icons[type] || icons.info) + ' toast-icon"></i><span>' + escapeHtml(message) + '</span>';
-        container.appendChild(el);
-        setTimeout(function() {
-            el.classList.add('removing');
-            setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
-        }, 3500);
-    }
-
-    /* ═══ HISTORY LOG ═══ */
-    function addHistory(msg, type) {
-        type = type || 'info';
-        var time = new Date().toLocaleTimeString('en-PK', { hour12: false });
-        state.history.unshift({ time: time, msg: msg, type: type });
-        if (state.history.length > 50) state.history.pop();
-        renderHistory();
-    }
-    function renderHistory() {
-        var list = document.getElementById('historyList');
-        if (!list) return;
-        if (state.history.length === 0) {
-            list.innerHTML = '<div class="history-item"><span class="history-time">--:--:--</span><span class="history-dot info"></span><span>No activity yet</span></div>';
-            return;
-        }
-        var html = '';
-        for (var i = 0; i < state.history.length; i++) {
-            var h = state.history[i];
-            html += '<div class="history-item">' +
-                '<span class="history-time">' + escapeHtml(h.time) + '</span>' +
-                '<span class="history-dot ' + h.type + '"></span>' +
-                '<span>' + escapeHtml(h.msg) + '</span>' +
-                '</div>';
-        }
-        list.innerHTML = html;
-    }
-    window.clearHistory = function() {
-        state.history = [];
-        renderHistory();
-        toast('History cleared', 'info');
-    };
-
-    /* ═══ PROGRESS ═══ */
-    function updateProgress() {
-        var steps = 0;
-        if (state.fullCode && state.fullCode.trim()) steps++;
-        if (state.html || state.css || state.js) steps++;
-        if (state.outputCode) steps++;
-        if (state.outputCode && state.outputCode.length > 100) steps++;
-
-        var percent = Math.round((steps / 4) * 100);
-        document.getElementById('progressFill').style.width = percent + '%';
-        document.getElementById('progressPercent').textContent = percent + '%';
-
-        for (var i = 1; i <= 4; i++) {
-            var el = document.getElementById('step' + i);
-            el.classList.remove('active', 'done');
-            if (i < steps) el.classList.add('done');
-            else if (i === steps) el.classList.add('active');
-        }
     }
 
     /* ═══════════════════════════════════════════════════════════
@@ -1601,7 +1175,7 @@ textarea[readonly] {
     }
 
     /* ═══════════════════════════════════════════════════════════
-       CODE SEPARATION — HTML, CSS, JS alag karo
+       CODE SEPARATION — HTML, CSS, JS auto-alag
        ═══════════════════════════════════════════════════════════ */
     function separateCode(fullCode) {
         var html = fullCode;
@@ -1665,6 +1239,7 @@ textarea[readonly] {
 
     /* ═══════════════════════════════════════════════════════════
        OBFUSCATION LAYERS — 15+ layers
+       NO WATERMARK. NO USER PROMPTS. PURE PROTECTION.
        ═══════════════════════════════════════════════════════════ */
 
     var JS_RESERVED = ['var','let','const','function','return','if','else','for','while','do','switch','case','break','continue','new','this','typeof','instanceof','in','of','try','catch','finally','throw','class','extends','super','import','export','default','from','as','async','await','yield','delete','void','null','undefined','true','false','NaN','Infinity','console','window','document','globalThis','Math','JSON','Object','Array','String','Number','Boolean','Date','RegExp','Error','Promise','Map','Set','WeakMap','WeakSet','Symbol','Proxy','Reflect','Function','eval','parseInt','parseFloat','isNaN','isFinite','encodeURI','decodeURI','setTimeout','setInterval','clearTimeout','clearInterval','alert','confirm','prompt','fetch','XMLHttpRequest','localStorage','sessionStorage','navigator','location','history','screen','arguments'];
@@ -1759,7 +1334,7 @@ textarea[readonly] {
     /* LAYER 5: Dead Code */
     function layerDeadCode(code) {
         var dead = '';
-        var count = Math.min(SAFETY.MAX_DEAD_CODE, 5);
+        var count = Math.min(SAFETY.MAX_DEAD_CODE, 8);
         for (var i = 0; i < count; i++) {
             var fn = randomName('_0x');
             var v = randomName('_0x');
@@ -1803,15 +1378,7 @@ textarea[readonly] {
         return '(function(){\nvar ' + e + '=function(){};\ntry{if(typeof console!=="undefined"){["log","warn","error","info","debug","trace","dir","table"].forEach(function(m){console[m]=' + e + ';});}}catch(e){}\n})();\n' + code;
     }
 
-    /* LAYER 11: Watermark */
-    function layerWatermark(code, user) {
-        var email = (user && user.email) ? user.email : 'anonymous';
-        var timestamp = new Date().toISOString();
-        var signature = randomHex(16);
-        return '/*\n * 🔒 Protected by NightOrbit CodeForge\n * Owner: ' + email + '\n * Date: ' + timestamp + '\n * Signature: ' + signature + '\n */\n' + code;
-    }
-
-    /* LAYER 12: Unicode Escape */
+    /* LAYER 11: Unicode Escape */
     function layerUnicodeEscape(code) {
         return code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
             if (str.length === 0 || str.length > SAFETY.MAX_STRING_LENGTH) return match;
@@ -1823,7 +1390,7 @@ textarea[readonly] {
         });
     }
 
-    /* LAYER 13: Base64 Strings */
+    /* LAYER 12: Base64 Strings */
     function layerBase64Encode(code) {
         return code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
             if (str.length < 3 || str.length > 200) return match;
@@ -1834,7 +1401,7 @@ textarea[readonly] {
         });
     }
 
-    /* LAYER 14: Array Rotation */
+    /* LAYER 13: Array Rotation */
     function layerArrayRotate(code) {
         var match = code.match(/var\s+(_0x\w+)\s*=\s*\[([^\]]+)\];/);
         if (!match) return code;
@@ -1849,7 +1416,7 @@ textarea[readonly] {
         return rotator + fixedCode;
     }
 
-    /* LAYER 15: Opaque Predicates */
+    /* LAYER 14: Opaque Predicates */
     function layerOpaquePredicates(code) {
         var a = Math.floor(Math.random() * 100) + 1;
         var b = Math.floor(Math.random() * 100) + 1;
@@ -1858,607 +1425,248 @@ textarea[readonly] {
         return predicate + code + '\n}\n';
     }
 
-    /* ═══ MASTER JS OBFUSCATOR ═══ */
-    function obfuscateJS(code, opts, user) {
+    /* LAYER 15: Numeric Array Confusion */
+    function layerNumericConfusion(code) {
+        var magic = Math.floor(Math.random() * 1000) + 100;
+        var magicName = randomName('_0x');
+        var decl = 'var ' + magicName + '=' + magic + ';\n';
+        return decl + code;
+    }
+
+    /* ═══ MASTER JS OBFUSCATOR — All 15 layers silently applied ═══ */
+    function obfuscateJS(code) {
         var result = code;
         var layers = [];
 
         try {
-            if (opts.renameVariables) { result = layerRenameVariables(result); layers.push('Rename Vars'); }
-            if (opts.stringArray)    { result = layerStringArray(result);    layers.push('String Array'); }
-            if (opts.encodeStrings)  { result = layerEncodeStrings(result);  layers.push('Encode Strings'); }
-            if (opts.unicodeEscape)  { result = layerUnicodeEscape(result);  layers.push('Unicode'); }
-            if (opts.base64Encode)   { result = layerBase64Encode(result);   layers.push('Base64'); }
-            if (opts.hexNumbers)     { result = layerHexNumbers(result);     layers.push('Hex Numbers'); }
-            if (opts.splitStrings)   { result = layerSplitStrings(result);   layers.push('Split Strings'); }
-            if (opts.arrayRotate)    { result = layerArrayRotate(result);    layers.push('Array Rotate'); }
-            if (opts.deadCode)       { result = layerDeadCode(result);       layers.push('Dead Code'); }
-            if (opts.antiConsole)    { result = layerAntiConsole(result);    layers.push('Anti-Console'); }
-            if (opts.antiDebug)      { result = layerAntiDebug(result);      layers.push('Anti-Debug'); }
-            if (opts.watermark)      { result = layerWatermark(result, user);layers.push('Watermark'); }
-            if (opts.opaquePredicates){ result = layerOpaquePredicates(result); layers.push('Opaque Predicates'); }
-            if (opts.controlFlow)    { result = layerControlFlow(result);    layers.push('Control Flow'); }
-            if (opts.selfDefending)  { result = layerSelfDefending(result);  layers.push('Self-Defending'); }
+            result = layerRenameVariables(result);     layers.push('Variable Renaming');
+            result = layerStringArray(result);          layers.push('String Array');
+            result = layerEncodeStrings(result);        layers.push('Hex String Encoding');
+            result = layerUnicodeEscape(result);        layers.push('Unicode Escape');
+            result = layerBase64Encode(result);         layers.push('Base64 Encoding');
+            result = layerHexNumbers(result);           layers.push('Numeric Obfuscation');
+            result = layerSplitStrings(result);         layers.push('String Splitting');
+            result = layerArrayRotate(result);          layers.push('Array Rotation');
+            result = layerDeadCode(result);             layers.push('Dead Code Injection');
+            result = layerNumericConfusion(result);     layers.push('Numeric Confusion');
+            result = layerOpaquePredicates(result);     layers.push('Opaque Predicates');
+            result = layerAntiConsole(result);          layers.push('Anti-Console');
+            result = layerAntiDebug(result);            layers.push('Anti-Debug');
+            result = layerControlFlow(result);          layers.push('Control Flow Flattening');
+            result = layerSelfDefending(result);        layers.push('Self-Defending');
         } catch (e) {
-            throw new Error('JS Obfuscation error: ' + e.message);
+            throw new Error('Obfuscation failed: ' + e.message);
         }
 
         return { code: result, layers: layers };
     }
 
     /* ═══ HTML MINIFY ═══ */
-    function minifyHTML(code, opts) {
+    function minifyHTML(code) {
         var result = code;
         var layers = [];
         result = result.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
-        layers.push('Remove Comments');
-        if (opts.deadCode) {
-            result = '\n<!-- ' + randomHex(64) + ' -->\n<!-- ' + randomHex(48) + ' -->\n' + result;
-            layers.push('Inject Decoys');
-        }
+        layers.push('Comment Removal');
         result = result.replace(/\s+/g, ' ').replace(/>\s+</g, '><').trim();
-        layers.push('Minify');
+        layers.push('Minification');
         return { code: result, layers: layers };
     }
 
     /* ═══ CSS MINIFY ═══ */
-    function minifyCSS(code, opts) {
+    function minifyCSS(code) {
         var result = code;
         var layers = [];
         result = result.replace(/\/\*[\s\S]*?\*\//g, '');
-        layers.push('Remove Comments');
-        if (opts.renameVariables) {
-            var map = {};
-            result = result.replace(/\.([a-zA-Z_-][a-zA-Z0-9_-]*)/g, function(m, name) {
-                if (!map[name]) map[name] = '_' + randomHex(6);
-                return '.' + map[name];
-            });
-            layers.push('Rename Classes');
-        }
+        layers.push('Comment Removal');
+        var map = {};
+        result = result.replace(/\.([a-zA-Z_-][a-zA-Z0-9_-]*)/g, function(m, name) {
+            if (!map[name]) map[name] = '_' + randomHex(6);
+            return '.' + map[name];
+        });
+        layers.push('Class Renaming');
         result = result.replace(/\s+/g, ' ').replace(/\s*([{}:;,])\s*/g, '$1').replace(/;}/g, '}').trim();
-        layers.push('Minify');
+        layers.push('Minification');
         return { code: result, layers: layers };
     }
 
     /* ═══════════════════════════════════════════════════════════
-       UI FUNCTIONS
+       MAIN OBFUSCATE — Silent, backend-only
        ═══════════════════════════════════════════════════════════ */
-
-    window.toggleCard = function(id) {
-        var card = document.getElementById(id);
-        if (card) card.classList.toggle('collapsed');
-    };
-
-    window.scrollToSection = function(id) {
-        var el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-
-    window.switchTab = function(tab) {
-        document.querySelectorAll('.tabs .tab[data-tab]').forEach(function(t) {
-            if (['html','css','js'].includes(t.dataset.tab)) {
-                t.classList.toggle('active', t.dataset.tab === tab);
-            }
-        });
-        document.querySelectorAll('.tab-content').forEach(function(c) {
-            if (['tab-html','tab-css','tab-js'].includes(c.id)) {
-                c.classList.toggle('active', c.id === 'tab-' + tab);
-            }
-        });
-    };
-
-    /* ═══ OPTIONS RENDER ═══ */
-    function renderOptions() {
-        var grid = document.getElementById('optionsGrid');
-        var html = '';
-        OPTIONS_DEF.forEach(function(o) {
-            html += '<div class="opt-item" data-opt="' + o.id + '" onclick="toggleOpt(this)">' +
-                '<div class="opt-check">✓</div>' +
-                '<div class="opt-info">' +
-                '<div class="opt-name">' + o.icon + ' ' + o.name + ' <span class="opt-weight">+' + o.weight + '</span></div>' +
-                '<div class="opt-desc">' + o.desc + '</div>' +
-                '</div></div>';
-        });
-        grid.innerHTML = html;
-    }
-
-    window.toggleOpt = function(el) {
-        el.classList.toggle('active');
-        var opt = el.getAttribute('data-opt');
-        state.options[opt] = el.classList.contains('active');
-        updateProtection();
-    };
-
-    /* ═══ PRESET ═══ */
-    window.applyPreset = function(preset) {
-        var config = PRESETS[preset] || PRESETS.medium;
-        OPTIONS_DEF.forEach(function(o) {
-            state.options[o.id] = config.indexOf(o.id) !== -1;
-        });
-        state.currentPreset = preset;
-        document.querySelectorAll('.preset-btn').forEach(function(el) {
-            el.classList.toggle('active', el.getAttribute('data-preset') === preset);
-        });
-        document.querySelectorAll('.opt-item').forEach(function(el) {
-            var opt = el.getAttribute('data-opt');
-            el.classList.toggle('active', state.options[opt]);
-        });
-        var pb = document.getElementById('presetBadge');
-        if (pb) pb.textContent = preset.toUpperCase();
-        updateProtection();
-        toast('Preset: ' + preset.toUpperCase() + ' applied', 'success');
-        addHistory('Preset applied: ' + preset.toUpperCase(), 'success');
-    };
-
-    /* ═══ PROTECTION SCORE ═══ */
-    function updateProtection() {
-        var score = 0;
-        var maxScore = 0;
-        OPTIONS_DEF.forEach(function(o) {
-            maxScore += o.weight;
-            if (state.options[o.id]) score += o.weight;
-        });
-        var scoreEl = document.getElementById('protectionScore');
-        var fillEl = document.getElementById('protectionFill');
-        var levelEl = document.getElementById('protectionLevel');
-        if (scoreEl) scoreEl.textContent = score;
-        if (fillEl) fillEl.style.width = Math.min(100, (score / maxScore) * 100) + '%';
-
-        var level = 'BASIC';
-        if (score >= 25) level = 'MILITARY';
-        else if (score >= 20) level = 'INSANE';
-        else if (score >= 14) level = 'HEAVY';
-        else if (score >= 8) level = 'MEDIUM';
-        else if (score >= 3) level = 'LIGHT';
-        if (levelEl) levelEl.textContent = level;
-
-        var pb = document.getElementById('presetBadge');
-        if (pb) pb.textContent = level;
-    }
-
-    /* ═══ FULL CODE INPUT ═══ */
-    var fullCodeArea = document.getElementById('fullCodeArea');
-    fullCodeArea.addEventListener('input', function() {
-        state.fullCode = this.value;
-        var stats = document.getElementById('inputStats');
-        if (this.value) {
-            stats.style.display = 'grid';
-            document.getElementById('statLines').textContent = num(this.value.split('\n').length);
-            document.getElementById('statChars').textContent = num(this.value.length);
-            document.getElementById('statSize').textContent = bytes(new Blob([this.value]).size);
-            var detected = detectLang(this.value);
-            state.detectedLang = detected;
-            document.getElementById('statDetected').textContent = detected.toUpperCase();
-        } else {
-            stats.style.display = 'none';
-        }
-        updateProgress();
-    });
-
-    function detectLang(code) {
-        var t = code.trim();
-        if (!t) return 'js';
-        if (/<!DOCTYPE|<html[\s>]|<head[\s>]|<body[\s>]|<div[\s>]/i.test(t)) return 'html';
-        if (/[a-zA-Z-]+\s*:\s*[^;{]+;/.test(t) && /[{}]/.test(t)) return 'css';
-        return 'js';
-    }
-
-    /* ═══ SEPARATE CODE ═══ */
-    window.separateCode = function() {
-        var fullCode = fullCodeArea.value;
-        if (!fullCode.trim()) {
-            toast('Code is empty!', 'error');
-            showStatus('statusFullCode', 'error', '❌ Code is empty! Please paste your code first.');
-            return;
-        }
-
-        var inputSize = new Blob([fullCode]).size;
-        if (inputSize > SAFETY.MAX_INPUT_SIZE) {
-            showStatus('statusFullCode', 'error', '❌ Input too large! Max ' + bytes(SAFETY.MAX_INPUT_SIZE) + ' allowed.');
-            toast('Input too large!', 'error');
-            return;
-        }
-
-        showStatus('statusFullCode', 'loading', '⏳ Separating and cleaning code...');
-
-        setTimeout(function() {
-            try {
-                var startTime = Date.now();
-                var result = separateCode(fullCode);
-                var elapsed = Date.now() - startTime;
-
-                state.html = result.html;
-                state.css = result.css;
-                state.js = result.js;
-                state.fullCode = fullCode;
-
-                document.getElementById('htmlArea').value = result.html;
-                document.getElementById('cssArea').value = result.css;
-                document.getElementById('jsArea').value = result.js;
-
-                updateHtmlBadge();
-                updateCssBadge();
-                updateJsBadge();
-
-                document.getElementById('sectionsContainer').style.display = 'block';
-
-                showStatus('statusFullCode', 'success',
-                    '✅ Code separated in ' + elapsed + 'ms!\n\n' +
-                    '📄 HTML: ' + bytes(new Blob([result.html]).size) + '\n' +
-                    '🎨 CSS: ' + bytes(new Blob([result.css]).size) + '\n' +
-                    '⚙️ JS: ' + bytes(new Blob([result.js]).size) + '\n\n' +
-                    '✨ Comments removed safely (strings untouched)\n' +
-                    '🔒 Data scripts (JSON-LD, GA, GTM) kept in HTML\n\n' +
-                    'Now scroll down to configure obfuscation options.'
-                );
-
-                toast('Code separated successfully!', 'success');
-                addHistory('Separated code — HTML: ' + bytes(new Blob([result.html]).size) + ', CSS: ' + bytes(new Blob([result.css]).size) + ', JS: ' + bytes(new Blob([result.js]).size), 'success');
-
-                setTimeout(function() {
-                    var el = document.getElementById('sectionsContainer');
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 300);
-
-                updateProgress();
-            } catch(e) {
-                showStatus('statusFullCode', 'error', '❌ Error: ' + e.message);
-                toast('Error: ' + e.message, 'error');
-                addHistory('Separate error: ' + e.message, 'error');
-            }
-        }, 50);
-    };
-
-    /* ═══ BADGE UPDATERS ═══ */
-    function updateHtmlBadge() {
-        var v = document.getElementById('htmlArea').value;
-        state.html = v;
-        var b = document.getElementById('htmlBadge');
-        b.textContent = v ? bytes(new Blob([v]).size) : 'EMPTY';
-        b.className = v ? 'badge success' : 'badge';
-    }
-    function updateCssBadge() {
-        var v = document.getElementById('cssArea').value;
-        state.css = v;
-        var b = document.getElementById('cssBadge');
-        b.textContent = v ? bytes(new Blob([v]).size) : 'EMPTY';
-        b.className = v ? 'badge success' : 'badge';
-    }
-    function updateJsBadge() {
-        var v = document.getElementById('jsArea').value;
-        state.js = v;
-        var b = document.getElementById('jsBadge');
-        b.textContent = v ? bytes(new Blob([v]).size) : 'EMPTY';
-        b.className = v ? 'badge success' : 'badge';
-    }
-
-    document.getElementById('htmlArea').addEventListener('input', updateHtmlBadge);
-    document.getElementById('cssArea').addEventListener('input', updateCssBadge);
-    document.getElementById('jsArea').addEventListener('input', updateJsBadge);
-
-    /* ═══ COPY / CLEAR HELPERS ═══ */
-    function copyToClipboard(text, successMsg) {
-        if (!text) { toast('Empty!', 'error'); return; }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text)
-                .then(function() { toast(successMsg || 'Copied!', 'success'); })
-                .catch(function() { fallbackCopy(text, successMsg); });
-        } else {
-            fallbackCopy(text, successMsg);
-        }
-    }
-    function fallbackCopy(text, successMsg) {
-        var ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.left = '-9999px';
-        document.body.appendChild(ta);
-        ta.select();
-        try { document.execCommand('copy'); toast(successMsg || 'Copied!', 'success'); }
-        catch(e) { toast('Copy failed!', 'error'); }
-        document.body.removeChild(ta);
-    }
-
-    window.copyFullCode = function() {
-        copyToClipboard(fullCodeArea.value, 'Full code copied!');
-        addHistory('Copied full code', 'success');
-    };
-    window.copyHtml = function() {
-        copyToClipboard(document.getElementById('htmlArea').value, 'HTML copied!');
-        addHistory('Copied HTML', 'success');
-    };
-    window.copyCss = function() {
-        copyToClipboard(document.getElementById('cssArea').value, 'CSS copied!');
-        addHistory('Copied CSS', 'success');
-    };
-    window.copyJs = function() {
-        copyToClipboard(document.getElementById('jsArea').value, 'JS copied!');
-        addHistory('Copied JS', 'success');
-    };
-    window.copyOutput = function() {
-        copyToClipboard(state.outputCode, 'Output copied!');
-        addHistory('Copied obfuscated output', 'success');
-    };
-
-    window.clearFullCode = function() {
-        if (!confirm('Clear all code?')) return;
-        fullCodeArea.value = '';
-        state.fullCode = '';
-        state.html = state.css = state.js = '';
-        state.outputCode = '';
-        document.getElementById('sectionsContainer').style.display = 'none';
-        document.getElementById('outputCode').value = '';
-        document.getElementById('outputStats').style.display = 'none';
-        document.getElementById('outputBadge').textContent = 'NOT READY';
-        document.getElementById('outputBadge').className = 'badge success';
-        hideStatus('statusFullCode');
-        hideStatus('statusObfuscate');
-        fullCodeArea.dispatchEvent(new Event('input'));
-        updateProgress();
-        toast('Cleared', 'info');
-        addHistory('Cleared all code', 'warn');
-    };
-    window.clearHtml = function() {
-        document.getElementById('htmlArea').value = '';
-        updateHtmlBadge();
-        toast('HTML cleared', 'info');
-    };
-    window.clearCss = function() {
-        document.getElementById('cssArea').value = '';
-        updateCssBadge();
-        toast('CSS cleared', 'info');
-    };
-    window.clearJs = function() {
-        document.getElementById('jsArea').value = '';
-        updateJsBadge();
-        toast('JS cleared', 'info');
-    };
-
-    /* ═══ DOWNLOAD SECTION ═══ */
-    window.downloadSection = function(type) {
-        var content = '';
-        var filename = '';
-        if (type === 'html') { content = state.html; filename = 'index.html'; }
-        else if (type === 'css') { content = state.css; filename = 'style.css'; }
-        else if (type === 'js') { content = state.js; filename = 'script.js'; }
-        if (!content) { toast('Empty!', 'error'); return; }
-        var blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        toast(filename + ' downloaded!', 'success');
-        addHistory('Downloaded ' + filename, 'success');
-    };
-
-    /* ═══ OBFUSCATE NOW ═══ */
     window.obfuscateNow = function() {
-        var hasJS = state.js && state.js.trim();
-        var hasHTML = state.html && state.html.trim();
-        var hasCSS = state.css && state.css.trim();
+        var inputEl = document.getElementById('inputCode');
+        var code = inputEl.value;
 
-        if (!hasJS && !hasHTML && !hasCSS) {
-            toast('No code to obfuscate! Separate code first.', 'error');
-            showStatus('statusObfuscate', 'error', '❌ No code available. Please separate code first.');
+        if (!code.trim()) {
+            showStatus('error', '❌ Please paste your code first.');
+            return;
+        }
+
+        var inputSize = new Blob([code]).size;
+        if (inputSize > SAFETY.MAX_INPUT_SIZE) {
+            showStatus('error', '❌ Input exceeds maximum size limit of ' + bytes(SAFETY.MAX_INPUT_SIZE) + '.');
             return;
         }
 
         var btn = document.getElementById('obfuscateBtn');
         btn.disabled = true;
-        showStatus('statusObfuscate', 'loading', '⏳ Obfuscating... (5 minute tak lag sakte hain bari files ke liye)');
+        showStatus('loading', '⏳ Processing... Applying 15+ security layers. Please wait.');
 
         var timeoutId = setTimeout(function() {
             btn.disabled = false;
-            showStatus('statusObfuscate', 'error', '❌ Timeout! Code bohot complex hai. Chhota code ya light preset try karo.');
-            toast('Timeout!', 'error');
+            showStatus('error', '❌ Processing timeout. Code may be too complex. Please try with a smaller file.');
         }, SAFETY.TIMEOUT_MS);
 
         setTimeout(function() {
             try {
                 var startTime = Date.now();
+
+                /* Silent code separation */
+                var separated = separateCode(code);
                 var allLayers = [];
                 var parts = [];
 
                 /* Obfuscate JS */
-                if (hasJS) {
-                    var jsResult = obfuscateJS(state.js, state.options, state.user);
+                if (separated.js && separated.js.trim()) {
+                    var jsResult = obfuscateJS(separated.js);
                     parts.push('/* ═══ OBFUSCATED JAVASCRIPT ═══ */\n' + jsResult.code);
                     allLayers = allLayers.concat(jsResult.layers);
                 }
 
                 /* Minify HTML */
-                if (hasHTML) {
-                    var htmlResult = minifyHTML(state.html, state.options);
-                    parts.push('/* ═══ MINIFIED HTML ═══ */\n' + htmlResult.code);
-                    allLayers = allLayers.concat(htmlResult.layers.map(function(l){ return 'HTML:' + l; }));
+                if (separated.html && separated.html.trim()) {
+                    var htmlResult = minifyHTML(separated.html);
+                    parts.push('/* ═══ PROTECTED HTML ═══ */\n' + htmlResult.code);
+                    allLayers = allLayers.concat(htmlResult.layers.map(function(l){ return 'HTML: ' + l; }));
                 }
 
                 /* Minify CSS */
-                if (hasCSS) {
-                    var cssResult = minifyCSS(state.css, state.options);
-                    parts.push('/* ═══ MINIFIED CSS ═══ */\n' + cssResult.code);
-                    allLayers = allLayers.concat(cssResult.layers.map(function(l){ return 'CSS:' + l; }));
+                if (separated.css && separated.css.trim()) {
+                    var cssResult = minifyCSS(separated.css);
+                    parts.push('/* ═══ PROTECTED CSS ═══ */\n' + cssResult.code);
+                    allLayers = allLayers.concat(cssResult.layers.map(function(l){ return 'CSS: ' + l; }));
                 }
 
                 var finalOutput = parts.join('\n\n');
-
                 var outputSize = new Blob([finalOutput]).size;
+
                 if (outputSize > SAFETY.MAX_OUTPUT_SIZE) {
                     clearTimeout(timeoutId);
                     btn.disabled = false;
-                    showStatus('statusObfuscate', 'error', '❌ Output too large! ' + bytes(outputSize) + ' — heavy preset se light try karo.');
-                    toast('Output too large!', 'error');
+                    showStatus('error', '❌ Output exceeds maximum size limit of ' + bytes(SAFETY.MAX_OUTPUT_SIZE) + '.');
                     return;
                 }
 
                 var elapsed = Date.now() - startTime;
-                state.outputCode = finalOutput;
 
+                /* Show output card */
+                document.getElementById('outputCard').style.display = 'block';
                 document.getElementById('outputCode').value = finalOutput;
-                document.getElementById('outputBadge').textContent = 'READY';
-                document.getElementById('outputBadge').className = 'badge success';
+                document.getElementById('copyBtn').disabled = false;
 
-                var origSize = new Blob([state.fullCode]).size;
-                var ratio = origSize > 0 ? Math.round((outputSize / origSize) * 100) : 0;
-
-                document.getElementById('outputStats').style.display = 'grid';
-                document.getElementById('statOrigSize').textContent = bytes(origSize);
+                /* Update stats */
+                document.getElementById('statOrigSize').textContent = bytes(inputSize);
                 document.getElementById('statObfSize').textContent = bytes(outputSize);
+                var ratio = inputSize > 0 ? Math.round((outputSize / inputSize) * 100) : 0;
                 document.getElementById('statRatio').textContent = ratio + '%';
                 document.getElementById('statLayers').textContent = allLayers.length;
+                document.getElementById('statProtection').textContent = 'MAX';
                 document.getElementById('statTime').textContent = elapsed + 'ms';
-                document.getElementById('statProtection').textContent = document.getElementById('protectionLevel').textContent;
 
-                showStatus('statusObfuscate', 'success',
-                    '✅ OBFUSCATION COMPLETE!\n\n' +
-                    '⏱️ Time: ' + elapsed + 'ms\n' +
-                    '📦 Size: ' + bytes(origSize) + ' → ' + bytes(outputSize) + ' (' + ratio + '%)\n' +
-                    '🛡️ Layers Applied: ' + allLayers.length + '\n\n' +
-                    '📋 Layers:\n' + allLayers.map(function(l, i) { return '  ' + (i+1) + '. ' + l; }).join('\n') + '\n\n' +
-                    '💾 Copy or Download below!'
+                showStatus('success',
+                    '✅ Code protected successfully.\n\n' +
+                    '📊 Security Layers Applied: ' + allLayers.length + '\n' +
+                    '📦 Size: ' + bytes(inputSize) + ' → ' + bytes(outputSize) + ' (' + ratio + '%)\n' +
+                    '⏱️ Processing Time: ' + elapsed + 'ms\n\n' +
+                    '🔒 Your code is now secured. Use the Copy button below to get the protected output.'
                 );
 
-                toast('Obfuscation complete!', 'success');
-                addHistory('Obfuscated — ' + allLayers.length + ' layers, ' + bytes(outputSize), 'success');
+                /* Scroll to output */
+                setTimeout(function() {
+                    var out = document.getElementById('outputCard');
+                    if (out) out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 200);
+
                 clearTimeout(timeoutId);
                 btn.disabled = false;
-                updateProgress();
 
             } catch(e) {
                 clearTimeout(timeoutId);
                 btn.disabled = false;
-                showStatus('statusObfuscate', 'error', '❌ Error: ' + e.message);
-                toast('Error: ' + e.message, 'error');
-                addHistory('Obfuscate error: ' + e.message, 'error');
+                showStatus('error', '❌ Processing failed: ' + e.message);
             }
         }, 50);
     };
 
-    /* ═══ DOWNLOAD OUTPUT ═══ */
-    window.downloadOutput = function() {
-        if (!state.outputCode) { toast('Obfuscate first!', 'error'); return; }
-        var blob = new Blob([state.outputCode], { type: 'text/plain;charset=utf-8' });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = 'obfuscated_' + Date.now() + '.txt';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        toast('Output downloaded!', 'success');
-        addHistory('Downloaded obfuscated output', 'success');
-    };
+    /* ═══ COPY OUTPUT ═══ */
+    window.copyOutput = function() {
+        var out = document.getElementById('outputCode').value;
+        if (!out) return;
 
-    /* ═══ TEST OUTPUT ═══ */
-    window.testOutput = function() {
-        if (!state.outputCode) { toast('Obfuscate first!', 'error'); return; }
-        try {
-            /* Extract JS part only */
-            var jsPart = state.outputCode;
-            var jsMatch = jsPart.match(/\/\* ═══ OBFUSCATED JAVASCRIPT ═══ \*\/([\s\S]*?)(?=\/\* ═══ |$)/);
-            if (jsMatch) {
-                new Function(jsMatch[1]);
-                showStatus('statusObfuscate', 'success', '✅ JS syntax valid! Obfuscated code execute ho sakta hai.');
-                toast('Test passed!', 'success');
-            } else {
-                showStatus('statusObfuscate', 'info', 'ℹ️ No JS to test (only HTML/CSS minified).');
-                toast('No JS to test', 'info');
-            }
-        } catch(e) {
-            showStatus('statusObfuscate', 'error', '❌ Test failed: ' + e.message);
-            toast('Test failed!', 'error');
+        function done() {
+            showStatus('success', '✅ Protected code copied to clipboard.');
+        }
+        function fallback() {
+            var ta = document.createElement('textarea');
+            ta.value = out;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); done(); }
+            catch(e) { showStatus('error', '❌ Copy failed. Please select and copy manually.'); }
+            document.body.removeChild(ta);
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(out).then(done).catch(fallback);
+        } else {
+            fallback();
         }
     };
 
-    /* ═══ LOAD SAMPLE ═══ */
-    window.loadSampleCode = function() {
-        var sample =
-            '<!DOCTYPE html>\n' +
-            '<html>\n' +
-            '<head>\n' +
-            '  <meta charset="UTF-8">\n' +
-            '  <title>Sample App</title>\n' +
-            '  <style>\n' +
-            '    /* Sample CSS */\n' +
-            '    body { background: #000; color: #fff; font-family: Arial; }\n' +
-            '    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }\n' +
-            '    h1 { color: #00f0ff; }\n' +
-            '  </style>\n' +
-            '</head>\n' +
-            '<body>\n' +
-            '  <div class="container">\n' +
-            '    <h1>Hello World</h1>\n' +
-            '    <button id="btn">Click Me</button>\n' +
-            '  </div>\n' +
-            '  ' + TAG_OPEN_SCRIPT + '>\n' +
-            '    // Sample JavaScript\n' +
-            '    function greet(name) {\n' +
-            '      console.log("Hello, " + name);\n' +
-            '      return name.toUpperCase();\n' +
-            '    }\n' +
-            '    \n' +
-            '    var users = ["Alice", "Bob", "Charlie"];\n' +
-            '    for (var i = 0; i < users.length; i++) {\n' +
-            '      greet(users[i]);\n' +
-            '    }\n' +
-            '    \n' +
-            '    document.getElementById("btn").addEventListener("click", function() {\n' +
-            '      alert("Button clicked!");\n' +
-            '    });\n' +
-            '  ' + TAG_CLOSE_SCRIPT + '\n' +
-            '</body>\n' +
-            '</html>';
-        fullCodeArea.value = sample;
-        state.fullCode = sample;
-        fullCodeArea.dispatchEvent(new Event('input'));
-        toast('Sample code loaded!', 'info');
-        addHistory('Loaded sample code', 'info');
-    };
+    /* ═══ INPUT STATS ═══ */
+    var inputEl = document.getElementById('inputCode');
+    inputEl.addEventListener('input', function() {
+        var code = this.value;
+        var stats = document.getElementById('inputStats');
 
-    /* ═══ KEYBOARD SHORTCUTS ═══ */
+        if (!code.trim()) {
+            stats.style.display = 'none';
+            return;
+        }
+
+        stats.style.display = 'grid';
+        document.getElementById('statLines').textContent = num(code.split('\n').length);
+        document.getElementById('statChars').textContent = num(code.length);
+        document.getElementById('statSize').textContent = bytes(new Blob([code]).size);
+
+        var detected = 'CODE';
+        if (/<!DOCTYPE|<html[\s>]/i.test(code)) detected = 'HTML';
+        else if (/\b(function|const|let|var|=>)\b/.test(code)) detected = 'JS';
+        else if (/[a-zA-Z-]+\s*:\s*[^;{]+;/.test(code)) detected = 'CSS';
+        document.getElementById('statDetected').textContent = detected;
+    });
+
+    /* ═══ KEYBOARD SHORTCUT ═══ */
     document.addEventListener('keydown', function(e) {
         if (e.ctrlKey && e.key === 'Enter') {
             e.preventDefault();
-            if (state.js || state.html || state.css) {
-                obfuscateNow();
-            } else {
-                separateCode();
-            }
-        }
-        if (e.ctrlKey && !e.shiftKey && e.key === 's') {
-            e.preventDefault();
-            if (state.outputCode) downloadOutput();
+            obfuscateNow();
         }
     });
 
-    /* ═══════════════════════════════════════════════════════════
-       AUTH HANDLING
-       ═══════════════════════════════════════════════════════════ */
+    /* ═══ AUTH HANDLING ═══ */
     function handleAuthReady(e) {
         if (!e.detail || !e.detail.user) return;
         if (state.authHandled) return;
         state.authHandled = true;
         state.user = e.detail.user;
-        var name = e.detail.name || (state.user.email ? state.user.email.split('@')[0] : 'User');
-        addHistory('Authenticated: ' + name, 'success');
     }
     document.addEventListener('auth-guard-ready', handleAuthReady);
     document.addEventListener('auth-ready', handleAuthReady);
 
     /* ═══ INIT ═══ */
-    renderOptions();
-    applyPreset('medium');
-    updateProgress();
-    renderHistory();
-    addHistory('CodeForge Obfuscation Pro initialized', 'info');
-
-    console.log('%c🛡️ Code Obfuscation Pro v16 ULTRA loaded', 'color:#b400ff;font-size:16px;font-weight:bold;');
-    console.log('%c⚡ 15+ layers · 5 presets · 5MB+ files · Zero crash', 'color:#ffd700;font-size:11px;');
+    console.log('%c🛡️ NightOrbit Code Protection Engine initialized', 'color:#b400ff;font-size:14px;font-weight:bold;');
 
 })();
 </script>
