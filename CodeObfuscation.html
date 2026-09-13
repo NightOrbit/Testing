@@ -134,7 +134,6 @@
     --red: #ff0064;
     --orange: #ff8c00;
     --blue: #0088ff;
-    --teal: #00ffcc;
     --dark: #05050f;
     --card: rgba(11, 11, 26, 0.94);
     --border: rgba(0, 240, 255, 0.22);
@@ -152,7 +151,6 @@ html, body {
     overflow-x: hidden;
     -webkit-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -381,7 +379,7 @@ h1 {
 .guide-header .guide-toggle.collapsed { transform: rotate(-90deg); }
 .guide-body {
     padding: 18px;
-    max-height: 5000px;
+    max-height: 8000px;
     transition: max-height 0.4s ease, padding 0.3s;
     overflow: hidden;
 }
@@ -423,6 +421,40 @@ h1 {
     font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
 }
 
+.info-section {
+    background: rgba(0, 240, 255, 0.04);
+    border: 2px solid var(--cyan);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 14px;
+}
+.info-section h4 {
+    color: var(--cyan);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.info-section ul {
+    margin: 8px 0 8px 20px;
+    color: #b0d0ff;
+    font-size: 11.5px;
+    line-height: 1.9;
+}
+.info-section ul li b { color: var(--cyan); }
+.info-section ul li code {
+    background: rgba(0, 0, 0, 0.4);
+    color: var(--gold);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+}
+
 .reality-box {
     background: rgba(255, 0, 100, 0.08);
     border: 2px solid var(--red);
@@ -445,11 +477,6 @@ h1 {
 .reality-box .red { color: var(--red); font-weight: bold; }
 .reality-box ul { margin: 8px 0 8px 20px; color: #ffb3c9; font-size: 11.5px; line-height: 1.8; }
 .reality-box ul li b { color: var(--red); }
-.reality-box ul li code {
-    background: rgba(0, 0, 0, 0.4); color: var(--gold);
-    padding: 1px 5px; border-radius: 4px;
-    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
-}
 .reality-table {
     width: 100%; border-collapse: collapse;
     margin-top: 10px; font-size: 11px;
@@ -481,26 +508,39 @@ h1 {
 }
 
 .sidebar {
-    position: fixed; top: 0; left: -100%; bottom: 0;
-    width: 340px; max-width: 88vw;
+    position: fixed;
+    top: 0;
+    left: -100%;
+    bottom: 0;
+    width: 340px;
+    max-width: 88vw;
     z-index: 1997;
     overflow-y: auto;
-    padding: calc(var(--header-h) + 15px) 14px 20px;
+    padding: calc(var(--header-h) + 15px) 14px 40px;
     background: rgba(8, 8, 18, 0.99);
     backdrop-filter: blur(20px);
     transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 5px 0 40px rgba(0, 0, 0, 0.9);
-    display: flex; flex-direction: column; gap: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    -webkit-overflow-scrolling: touch;
 }
 .sidebar.open { left: 0; }
 @media (min-width: 1024px) {
     .sidebar {
-        position: sticky; top: calc(var(--header-h) + 15px); left: auto;
-        width: 100%; max-width: 100%;
+        position: sticky;
+        top: calc(var(--header-h) + 15px);
+        left: auto;
+        bottom: auto;
+        width: 100%;
+        max-width: 100%;
         max-height: calc(100vh - var(--header-h) - 30px);
-        padding: 0 4px 0 0;
-        background: transparent; backdrop-filter: none;
-        box-shadow: none; overflow-y: auto;
+        padding: 0 4px 20px 0;
+        background: transparent;
+        backdrop-filter: none;
+        box-shadow: none;
+        overflow-y: auto;
     }
     .sidebar::-webkit-scrollbar { width: 6px; }
     .sidebar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); border-radius: 3px; }
@@ -524,7 +564,8 @@ h1 {
     background: var(--card);
     border: 1.5px solid var(--border);
     border-radius: 12px;
-    overflow: hidden; flex-shrink: 0;
+    overflow: hidden;
+    flex-shrink: 0;
     transition: 0.3s;
 }
 .sidebar-panel:hover { border-color: rgba(0, 240, 255, 0.4); box-shadow: 0 0 25px rgba(0, 240, 255, 0.1); }
@@ -992,6 +1033,7 @@ h1 {
 </head>
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
     <div class="brand">
         <span class="logo">🛡️</span>
@@ -1012,6 +1054,7 @@ h1 {
     </div>
 </div>
 
+<!-- DRAWER -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
     <h3>🏠 Navigation</h3>
@@ -1046,15 +1089,18 @@ h1 {
     </button>
 </div>
 
+<!-- SIDEBAR MOBILE TOGGLE -->
 <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" aria-label="Options">
     <i class="fa-solid fa-sliders"></i>
 </button>
 
+<!-- APP CONTAINER -->
 <div class="app-container">
 
+    <!-- HEADER -->
     <div class="header-card">
         <h1>🛡️ Code Obfuscation Pro</h1>
-        <div class="subtitle">NightOrbit CodeForge · v17 · Multi-Language · 15 Layers · 5 MB Support</div>
+        <div class="subtitle">NightOrbit CodeForge · v18 · Multi-Language · 15 Layers · 5 MB Support</div>
         <div class="header-stats">
             <span class="header-stat"><i class="fa-solid fa-code"></i> 6 Languages</span>
             <span class="header-stat gold"><i class="fa-solid fa-shield-halved"></i> 15 Layers</span>
@@ -1064,14 +1110,16 @@ h1 {
         </div>
     </div>
 
+    <!-- USER GUIDE -->
     <div class="guide-section">
         <div class="guide-header" onclick="toggleGuide()">
             <i class="fa-solid fa-book-open"></i>
-            <span class="guide-title">📖 Complete User Guide — Please Read Before Use</span>
+            <span class="guide-title">📖 Complete User Guide & Information — Please Read</span>
             <i class="fa-solid fa-chevron-down guide-toggle collapsed" id="guideToggle"></i>
         </div>
         <div class="guide-body collapsed" id="guideBody">
 
+            <!-- Steps -->
             <div class="guide-steps">
                 <div class="guide-step">
                     <div class="guide-step-num">1</div>
@@ -1091,14 +1139,14 @@ h1 {
                     <div class="guide-step-num">3</div>
                     <div class="guide-step-title">Paste Your Code</div>
                     <div class="guide-step-text">
-                        Insert your source code into the input field. Supports files up to <b>5 MB</b>. Use the <code>Sample</code> button to test with example code.
+                        Insert your source code into the input field. Supports files up to <b>5 MB</b>. HTML input is automatically parsed and separated into HTML, CSS, and JS.
                     </div>
                 </div>
                 <div class="guide-step">
                     <div class="guide-step-num">4</div>
                     <div class="guide-step-title">Start Obfuscation</div>
                     <div class="guide-step-text">
-                        Click <code>OBFUSCATE NOW</code> or press <code>Ctrl+Enter</code>. The obfuscated result will appear in the output field.
+                        Click <code>OBFUSCATE NOW</code> or press <code>Ctrl+Enter</code>. The system parses comments safely (never touches strings) and applies your selected layers.
                     </div>
                 </div>
                 <div class="guide-step">
@@ -1112,13 +1160,44 @@ h1 {
                     <div class="guide-step-num">6</div>
                     <div class="guide-step-title">Export Result</div>
                     <div class="guide-step-text">
-                        Use <code>Copy</code> to save the code to clipboard, or <code>Download</code> to save it as a file.
+                        Use <code>Copy</code> to save the code to clipboard, or <code>Download</code> to save it as a file. Extension adapts to detected language.
                     </div>
                 </div>
             </div>
 
+            <!-- Info Section -->
+            <div class="info-section">
+                <h4><i class="fa-solid fa-circle-info"></i> 📌 Information — What This Tool Does</h4>
+                <ul>
+                    <li><b>Multi-Language Support</b> — Works with <code>JavaScript</code>, <code>HTML</code>, <code>CSS</code>, <code>JSON</code>, and <code>XML</code></li>
+                    <li><b>Smart Parsing</b> — HTML input is automatically split into HTML, CSS, and JS sections</li>
+                    <li><b>Safe Comment Removal</b> — Uses state-machine parsers that never touch comments inside strings</li>
+                    <li><b>Data Script Preservation</b> — <code>JSON-LD</code>, <code>Google Analytics</code>, and <code>GTM</code> scripts stay in HTML untouched</li>
+                    <li><b>Real-time Detection</b> — Language and syntax validated as you type</li>
+                    <li><b>Preset System</b> — 5 presets from Light to Military with progressive strength</li>
+                    <li><b>Large File Support</b> — Handles files up to <b>5 MB</b> input, <b>20 MB</b> output</li>
+                    <li><b>Zero-Crash Protection</b> — Multiple safety guards prevent browser freeze</li>
+                    <li><b>Firebase Authenticated</b> — Only logged-in users can access the tool</li>
+                </ul>
+            </div>
+
+            <!-- How to Use Section -->
+            <div class="info-section" style="border-color: var(--green); background: rgba(0,255,100,0.04);">
+                <h4 style="color: var(--green);"><i class="fa-solid fa-wand-magic-sparkles"></i> 🎯 How to Use — Step by Step</h4>
+                <ul>
+                    <li><b>Step 1:</b> Open the sidebar (mobile: bottom-left button) and select your language. For mixed HTML files, use <code>AUTO</code>.</li>
+                    <li><b>Step 2:</b> Pick a preset. <code>Medium</code> is the balanced default. Use <code>Military</code> for maximum protection.</li>
+                    <li><b>Step 3:</b> Paste your code into the INPUT box. Use <code>Sample</code> to test with example code first.</li>
+                    <li><b>Step 4:</b> Click <code>OBFUSCATE NOW</code>. Watch the progress bar and status message for results.</li>
+                    <li><b>Step 5:</b> Click <code>Test</code> to verify the output syntax is valid and executable.</li>
+                    <li><b>Step 6:</b> Use <code>Copy</code> or <code>Download</code> to export the obfuscated code.</li>
+                    <li><b>Shortcuts:</b> <code>Ctrl+Enter</code> = Obfuscate · <code>Ctrl+S</code> = Download · <code>Ctrl+D</code> = Download output</li>
+                </ul>
+            </div>
+
+            <!-- Reality Box -->
             <div class="reality-box">
-                <h4><i class="fa-solid fa-triangle-exclamation"></i> ⚠️ IMPORTANT — Understanding Obfuscation Limits</h4>
+                <h4><i class="fa-solid fa-triangle-exclamation"></i> ⚠️ Important — Understanding Obfuscation Limits</h4>
                 <p>
                     <b>JavaScript obfuscation can be fully decoded.</b> This is a fundamental reality of client-side code.
                     JavaScript runs in the <b>browser</b>, which means the code must remain <b>executable</b> — and therefore readable to the runtime engine.
@@ -1177,10 +1256,13 @@ h1 {
         </div>
     </div>
 
+    <!-- MAIN LAYOUT -->
     <div class="main-layout">
 
+        <!-- SIDEBAR -->
         <aside class="sidebar" id="sidebar">
 
+            <!-- Language -->
             <div class="sidebar-panel">
                 <div class="panel-header">
                     <i class="fa-solid fa-code"></i>
@@ -1223,6 +1305,7 @@ h1 {
                 </div>
             </div>
 
+            <!-- Preset -->
             <div class="sidebar-panel">
                 <div class="panel-header">
                     <i class="fa-solid fa-sliders"></i>
@@ -1275,6 +1358,7 @@ h1 {
                 </div>
             </div>
 
+            <!-- Advanced -->
             <div class="sidebar-panel">
                 <div class="panel-header collapsible" onclick="togglePanel('advancedPanel')">
                     <i class="fa-solid fa-gears"></i>
@@ -1371,6 +1455,7 @@ h1 {
                 </div>
             </div>
 
+            <!-- Protection -->
             <div class="sidebar-panel">
                 <div class="panel-header">
                     <i class="fa-solid fa-shield-halved"></i>
@@ -1391,6 +1476,7 @@ h1 {
 
         </aside>
 
+        <!-- MAIN CONTENT -->
         <main class="content">
 
             <div class="user-welcome">
@@ -1407,6 +1493,7 @@ h1 {
                 <div class="progress-percent" id="progressPercent">0%</div>
             </div>
 
+            <!-- INPUT -->
             <div class="code-card">
                 <div class="code-card-header">
                     <div class="code-card-title">
@@ -1441,6 +1528,7 @@ h1 {
                 </div>
             </div>
 
+            <!-- ACTIONS -->
             <div class="action-bar">
                 <button class="main-action-btn" id="obfuscateBtn" onclick="obfuscateNow()">
                     <i class="fa-solid fa-bolt"></i>
@@ -1460,6 +1548,7 @@ h1 {
 
             <div id="status" class="status"></div>
 
+            <!-- OUTPUT -->
             <div class="code-card">
                 <div class="code-card-header">
                     <div class="code-card-title">
@@ -1496,7 +1585,7 @@ h1 {
 
 <div class="toast-container" id="toastContainer"></div>
 
-  <script>
+<script>
 (function() {
 'use strict';
 
@@ -1504,13 +1593,24 @@ h1 {
    SAFETY LIMITS — CRASH PREVENTION
    ═══════════════════════════════════════════════════════════ */
 var SAFETY = {
-    MAX_INPUT_SIZE: 5 * 1024 * 1024,       /* 5 MB maximum input */
-    MAX_OUTPUT_SIZE: 20 * 1024 * 1024,     /* 20 MB maximum output */
-    MAX_DEAD_CODE: 5,                      /* Maximum fake function injections */
-    MAX_STRING_LENGTH: 500,                /* Skip strings longer than this */
-    MAX_ITERATIONS: 1000,                  /* Loop iteration safety cap */
-    TIMEOUT_MS: 60000                      /* 60 second operation timeout */
+    MAX_INPUT_SIZE: 5 * 1024 * 1024,
+    MAX_OUTPUT_SIZE: 20 * 1024 * 1024,
+    MAX_DEAD_CODE: 5,
+    MAX_STRING_LENGTH: 500,
+    MAX_ITERATIONS: 1000,
+    TIMEOUT_MS: 60000
 };
+
+/* ═══════════════════════════════════════════════════════════
+   SAFE TAG STRINGS (avoid parsing issues)
+   ═══════════════════════════════════════════════════════════ */
+var TAG_OPEN_SCRIPT  = '<' + 'script';
+var TAG_CLOSE_SCRIPT = '<' + '/script>';
+var TAG_OPEN_STYLE   = '<' + 'style';
+var TAG_CLOSE_STYLE  = '<' + '/style>';
+var TAG_CLOSE_HTML   = '<' + '/html>';
+var TAG_CLOSE_BODY   = '<' + '/body>';
+var TAG_CLOSE_HEAD   = '<' + '/head>';
 
 var state = {
     user: null,
@@ -1571,19 +1671,179 @@ function toast(msg, type) {
     }, 3500);
 }
 
+function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 /* ═══════════════════════════════════════════════════════════
    LANGUAGE DETECTION
    ═══════════════════════════════════════════════════════════ */
 function detectLanguage(code) {
     var t = code.trim();
     if (!t) return 'js';
-    if (/^<!DOCTYPE\s+html/i.test(t) || /<html[\s>]/i.test(t)) return 'html';
+    if (/^<!DOCTYPE\s+html/i.test(t) || /<html[\s>]/i.test(t) || /<head[\s>]/i.test(t) || /<body[\s>]/i.test(t)) return 'html';
     if (/^<\?xml/i.test(t)) return 'xml';
     if (t.startsWith('{') || t.startsWith('[')) {
         try { JSON.parse(t); return 'json'; } catch(e) {}
     }
     if (/[a-zA-Z-]+\s*:\s*[^;{]+;/.test(t) && /\{[\s\S]*\}/.test(t) && !/\bfunction\b/.test(t)) return 'css';
     return 'js';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SAFE COMMENT STRIPPERS — Never touches strings
+   ═══════════════════════════════════════════════════════════ */
+function stripCssComments(code) {
+    if (!code) return '';
+    var result = '';
+    var i = 0, len = code.length;
+    var inString = false, stringChar = '';
+    while (i < len) {
+        var ch = code[i];
+        var next = code[i + 1];
+        if (inString) {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === stringChar) inString = false;
+            i++; continue;
+        }
+        if (ch === '"' || ch === "'") { inString = true; stringChar = ch; result += ch; i++; continue; }
+        if (ch === '/' && next === '*') {
+            i += 2;
+            while (i < len) {
+                if (code[i] === '*' && code[i + 1] === '/') { i += 2; break; }
+                i++;
+            }
+            continue;
+        }
+        result += ch;
+        i++;
+    }
+    return result;
+}
+
+function stripJsComments(code) {
+    if (!code) return '';
+    var result = '';
+    var i = 0, len = code.length;
+    var st = 'code';
+    while (i < len) {
+        var ch = code[i];
+        var next = code[i + 1];
+        if (st === 'lineComment') { if (ch === '\n') { st = 'code'; result += ch; } i++; continue; }
+        if (st === 'blockComment') { if (ch === '*' && next === '/') { st = 'code'; i += 2; continue; } i++; continue; }
+        if (st === 'single') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === "'") st = 'code';
+            i++; continue;
+        }
+        if (st === 'double') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === '"') st = 'code';
+            i++; continue;
+        }
+        if (st === 'template') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === '`') st = 'code';
+            i++; continue;
+        }
+        if (ch === '/' && next === '/') { st = 'lineComment'; i += 2; continue; }
+        if (ch === '/' && next === '*') { st = 'blockComment'; i += 2; continue; }
+        if (ch === "'") { st = 'single'; result += ch; i++; continue; }
+        if (ch === '"') { st = 'double'; result += ch; i++; continue; }
+        if (ch === '`') { st = 'template'; result += ch; i++; continue; }
+        result += ch;
+        i++;
+    }
+    return result;
+}
+
+function stripHtmlComments(code) {
+    if (!code) return '';
+    return code.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
+}
+
+function escapeForJson(str) {
+    if (!str) return '';
+    return String(str)
+        .split(TAG_CLOSE_SCRIPT).join('<\\/script>')
+        .split(TAG_CLOSE_STYLE).join('<\\/style>')
+        .split(TAG_CLOSE_HTML).join('<\\/html>')
+        .split(TAG_CLOSE_BODY).join('<\\/body>')
+        .split(TAG_CLOSE_HEAD).join('<\\/head>');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PARSE & SEPARATE — Split HTML into HTML / CSS / JS
+   ═══════════════════════════════════════════════════════════ */
+function parseAndSeparate(fullCode) {
+    var html = fullCode;
+    var css = '';
+    var js = '';
+
+    var escStyle  = escapeRegex(TAG_CLOSE_STYLE);
+    var escScript = escapeRegex(TAG_CLOSE_SCRIPT);
+
+    /* Extract CSS from <style> tags */
+    var styleRegex = new RegExp(TAG_OPEN_STYLE + '[^>]*>([\\s\\S]*?)' + escStyle, 'gi');
+    var styleMatch;
+    while ((styleMatch = styleRegex.exec(fullCode)) !== null) {
+        if (css) css += '\n\n';
+        css += stripCssComments(styleMatch[1]).trim();
+    }
+
+    /* Extract JS from <script> tags (skip external & data scripts) */
+    var scriptRegex = new RegExp(
+        TAG_OPEN_SCRIPT +
+        '(?![^>]*\\bsrc\\s*=)' +
+        '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template|application\\/json\\+ld)[^>]*)' +
+        '[^>]*>([\\s\\S]*?)' + escScript,
+        'gi'
+    );
+    var scriptMatch;
+    while ((scriptMatch = scriptRegex.exec(fullCode)) !== null) {
+        if (js) js += '\n\n';
+        js += stripJsComments(scriptMatch[1]).trim();
+    }
+
+    /* Remove CSS blocks from HTML */
+    html = html.replace(new RegExp(TAG_OPEN_STYLE + '[^>]*>[\\s\\S]*?' + escStyle, 'gi'), '');
+
+    /* Remove inline JS blocks from HTML (keep data scripts) */
+    html = html.replace(
+        new RegExp(
+            TAG_OPEN_SCRIPT +
+            '(?![^>]*\\bsrc\\s*=)' +
+            '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template|application\\/json\\+ld)[^>]*)' +
+            '[^>]*>[\\s\\S]*?' + escScript,
+            'gi'
+        ),
+        ''
+    );
+
+    /* Strip HTML comments */
+    html = stripHtmlComments(html);
+    html = html.replace(/\n{3,}/g, '\n\n').trim();
+
+    /* Pure CSS/JS fallback (no HTML tags detected) */
+    var hasHtmlTags = /<[a-z][\s\S]*>/i.test(fullCode);
+    if (!hasHtmlTags) {
+        if (fullCode.indexOf('function') !== -1 || fullCode.indexOf('const ') !== -1 ||
+            fullCode.indexOf('let ') !== -1 || fullCode.indexOf('var ') !== -1 ||
+            fullCode.indexOf('=>') !== -1) {
+            js = stripJsComments(fullCode).trim();
+            html = ''; css = '';
+        } else if (fullCode.indexOf('{') !== -1 && fullCode.indexOf('}') !== -1 &&
+                   (fullCode.indexOf(':') !== -1 || fullCode.indexOf(';') !== -1)) {
+            css = stripCssComments(fullCode).trim();
+            html = ''; js = '';
+        }
+    }
+
+    return { html: html, css: css, js: js };
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1611,7 +1871,6 @@ function jsRenameVariables(code) {
     var identifiers = {};
     var match;
 
-    /* Locate variable declarations */
     var declRegex = /\b(?:var|let|const|function|class)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
     while ((match = declRegex.exec(code)) !== null) {
         var name = match[1];
@@ -1620,7 +1879,6 @@ function jsRenameVariables(code) {
         }
     }
 
-    /* Locate function parameters */
     var paramRegex = /(?:function\s*[a-zA-Z_$][a-zA-Z0-9_$]*\s*\(|\(|,)\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*(?:,|\))/g;
     while ((match = paramRegex.exec(code)) !== null) {
         var name2 = match[1];
@@ -1629,7 +1887,6 @@ function jsRenameVariables(code) {
         }
     }
 
-    /* Sort by length descending to prevent partial matches */
     var sortedNames = Object.keys(identifiers).sort(function(a, b) { return b.length - a.length; });
     var pattern = sortedNames.length > 0
         ? new RegExp('\\b(' + sortedNames.map(function(n) { return n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|') + ')\\b', 'g')
@@ -1730,7 +1987,7 @@ function jsSplitStrings(code) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   LAYER 6: DEAD CODE INJECTION
+   LAYER 6: DEAD CODE
    ═══════════════════════════════════════════════════════════ */
 function jsDeadCode(code) {
     var dead = '';
@@ -1744,7 +2001,7 @@ function jsDeadCode(code) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   LAYER 7: CONTROL FLOW FLATTENING
+   LAYER 7: CONTROL FLOW
    ═══════════════════════════════════════════════════════════ */
 function jsControlFlow(code) {
     var stateVar = randomName('_0x');
@@ -1753,7 +2010,7 @@ function jsControlFlow(code) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   LAYER 8: SELF-DEFENDING WRAPPER
+   LAYER 8: SELF-DEFENDING
    ═══════════════════════════════════════════════════════════ */
 function jsSelfDefending(code) {
     var fn = randomName('_0x');
@@ -1781,7 +2038,7 @@ function jsWatermark(code, user) {
     var email = (user && user.email) ? user.email : 'anonymous';
     var timestamp = new Date().toISOString();
     var signature = randomHex(16);
-    var watermark = '/*\n * 🔒 Protected by NightOrbit CodeForge\n * Owner: ' + email + '\n * Date: ' + timestamp + '\n * Signature: ' + signature + '\n */\n';
+    var watermark = '/*\n * Protected by NightOrbit CodeForge\n * Owner: ' + email + '\n * Date: ' + timestamp + '\n * Signature: ' + signature + '\n */\n';
     return watermark + code;
 }
 
@@ -2070,6 +2327,7 @@ function updateProtection() {
 
 var inputCodeEl = document.getElementById('inputCode');
 function updateDetection() {
+    if (!inputCodeEl) return;
     var code = inputCodeEl.value;
     state.inputCode = code;
 
@@ -2116,38 +2374,35 @@ function updateProgress() {
    MAIN OBFUSCATION
    ═══════════════════════════════════════════════════════════ */
 window.obfuscateNow = function() {
-    var code = inputCodeEl.value.trim();
-    if (!code) {
+    var rawCode = inputCodeEl.value.trim();
+    if (!rawCode) {
         showStatus('error', '❌ No code detected. Please paste your source code first.');
         toast('No code detected', 'error');
         return;
     }
 
-    /* Validate input size */
-    var inputSize = new Blob([code]).size;
+    var inputSize = new Blob([rawCode]).size;
     if (inputSize > SAFETY.MAX_INPUT_SIZE) {
         showStatus('error', '❌ Input file is too large. Maximum allowed: ' + bytes(SAFETY.MAX_INPUT_SIZE) + '.');
         toast('Input size exceeds limit', 'error');
         return;
     }
 
-    var lang = state.currentLang === 'auto' ? detectLanguage(code) : state.currentLang;
+    var lang = state.currentLang === 'auto' ? detectLanguage(rawCode) : state.currentLang;
 
-    /* Validate syntax */
     try {
-        if (lang === 'js') new Function(code);
-        else if (lang === 'json') JSON.parse(code);
+        if (lang === 'js') new Function(rawCode);
+        else if (lang === 'json') JSON.parse(rawCode);
     } catch(e) {
         showStatus('error', '❌ Invalid ' + lang.toUpperCase() + ' syntax: ' + e.message);
         toast('Invalid code syntax', 'error');
         return;
     }
 
-    showStatus('loading', '⏳ Obfuscating ' + lang.toUpperCase() + ' — Please wait...');
+    showStatus('loading', '⏳ Parsing and obfuscating ' + lang.toUpperCase() + ' — Please wait...');
     var btn = document.getElementById('obfuscateBtn');
     if (btn) btn.disabled = true;
 
-    /* Operation timeout guard */
     var timeoutId = setTimeout(function() {
         showStatus('error', '❌ Operation timed out. Code is too complex — try a smaller file or lighter preset.');
         if (btn) btn.disabled = false;
@@ -2156,14 +2411,46 @@ window.obfuscateNow = function() {
     setTimeout(function() {
         try {
             var startTime = Date.now();
-            var result = obfuscate(code, state.currentLang, state.options, state.user);
-            var elapsed = Date.now() - startTime;
+            var result;
 
+            /* If HTML — parse & separate first, then obfuscate each part */
+            if (lang === 'html') {
+                var separated = parseAndSeparate(rawCode);
+                var obfHtml = obfuscateHTML(separated.html, state.options);
+                var obfCss  = obfuscateCSS(separated.css, state.options);
+                var obfJs   = obfuscateJS(separated.js, state.options, state.user);
+
+                /* Rebuild combined HTML */
+                var combined = obfHtml.code;
+                if (obfCss.code.trim()) {
+                    if (/<\/head>/i.test(combined)) {
+                        combined = combined.replace(/<\/head>/i, '<style>' + obfCss.code + '</style></head>');
+                    } else {
+                        combined = '<style>' + obfCss.code + '</style>' + combined;
+                    }
+                }
+                if (obfJs.code.trim()) {
+                    if (/<\/body>/i.test(combined)) {
+                        combined = combined.replace(/<\/body>/i, '<script>' + obfJs.code + '<\/script></body>');
+                    } else {
+                        combined = combined + '<script>' + obfJs.code + '<\/script>';
+                    }
+                }
+
+                result = {
+                    code: combined,
+                    lang: 'html',
+                    layers: obfHtml.layers.concat(obfCss.layers, obfJs.layers)
+                };
+            } else {
+                result = obfuscate(rawCode, state.currentLang, state.options, state.user);
+            }
+
+            var elapsed = Date.now() - startTime;
             clearTimeout(timeoutId);
 
             state.outputCode = result.code;
 
-            /* Validate output size */
             var obfSize = new Blob([result.code]).size;
             if (obfSize > SAFETY.MAX_OUTPUT_SIZE) {
                 showStatus('error', '❌ Output size exceeded: ' + bytes(obfSize) + '. Try a lighter preset.');
@@ -2173,7 +2460,7 @@ window.obfuscateNow = function() {
 
             document.getElementById('outputCode').value = result.code;
 
-            var origSize = new Blob([code]).size;
+            var origSize = new Blob([rawCode]).size;
             var ratio = origSize > 0 ? Math.round((obfSize / origSize) * 100) : 0;
 
             document.getElementById('statRatio').textContent = ratio + '%';
@@ -2206,7 +2493,7 @@ window.obfuscateNow = function() {
 window.loadSample = function() {
     var samples = {
         js: '// Sample JavaScript\nfunction greet(name) {\n    console.log("Hello, " + name);\n    return name.toUpperCase();\n}\n\nvar users = ["Alice", "Bob", "Charlie"];\nfor (var i = 0; i < users.length; i++) {\n    greet(users[i]);\n}\n',
-        html: '<!DOCTYPE html>\n<html>\n<head>\n    <title>Sample</title>\n</head>\n<body>\n    <h1>Hello World</h1>\n    <!-- comment -->\n    <p>Sample paragraph</p>\n</body>\n</html>',
+        html: '<!DOCTYPE html>\n<html>\n<head>\n    <title>Sample</title>\n    <style>\n        /* Sample CSS comment */\n        body { background: #000; color: #fff; }\n    </style>\n</head>\n<body>\n    <h1>Hello World</h1>\n    <!-- HTML comment -->\n    <p>Sample paragraph</p>\n    <script>\n        // Sample JS comment\n        console.log("Hello from JS");\n    <\/script>\n</body>\n</html>',
         css: '/* Sample CSS */\nbody {\n    background: #000000;\n    color: #ffffff;\n    font-family: Arial, sans-serif;\n}\n.header {\n    padding: 20px;\n    margin: 10px;\n}',
         json: '{\n    "name": "Sample",\n    "version": "1.0.0",\n    "users": ["Alice", "Bob"],\n    "config": {\n        "debug": true,\n        "timeout": 5000\n    }\n}',
         xml: '<?xml version="1.0"?>\n<root>\n    <!-- Sample XML -->\n    <item id="1">\n        <name>Sample</name>\n    </item>\n</root>'
@@ -2287,7 +2574,6 @@ window.testOutput = function() {
     var lang = state.currentLang === 'auto' ? state.detectedLang : state.currentLang;
     try {
         if (lang === 'js') {
-            /* Safe validation — do not execute side effects */
             new Function(out);
             showStatus('success', '✅ JavaScript syntax is valid. Code can execute successfully.');
         } else if (lang === 'json') {
@@ -2308,6 +2594,14 @@ document.addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.key === 'Enter') {
         e.preventDefault();
         obfuscateNow();
+    }
+    if (e.ctrlKey && !e.shiftKey && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault();
+        downloadOutput();
+    }
+    if (e.ctrlKey && !e.shiftKey && (e.key === 'd' || e.key === 'D')) {
+        e.preventDefault();
+        downloadOutput();
     }
 });
 
@@ -2330,11 +2624,11 @@ document.addEventListener('auth-ready', handleAuthReady);
 updateProtection();
 updateProgress();
 
-console.log('%c🛡️ Code Obfuscation Pro v17 — Ready', 'color:#b400ff;font-size:16px;font-weight:bold;');
-console.log('%c⚡ Features: 12 layers · 5 presets · 5 MB support · Zero crash protection', 'color:#ffd700;font-size:11px;');
+console.log('%c🛡️ Code Obfuscation Pro v18 — Ready', 'color:#b400ff;font-size:16px;font-weight:bold;');
+console.log('%c⚡ Features: 12 layers · 5 presets · 5 MB input · 20 MB output · Parse & Separate', 'color:#ffd700;font-size:11px;');
 
 })();
 </script>
 
 </body>
-</html>  
+</html>
