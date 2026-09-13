@@ -18,6 +18,8 @@
 <!-- Key Manager -->
 <script src="key-manager.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/zxcvbn@4.4.2/dist/zxcvbn.js"></script>    
+
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -660,17 +662,18 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         <div class="sub" id="pwdModalSub">Required to access your key</div>
         <label id="pwdModalLabel">Your 20-Character Password</label>
         <div class="input-wrap">
-            <input type="password" id="pwdInput" maxlength="20" placeholder="••••••••••••••••••••" autocomplete="off">
+            <input type="password" id="pwdInput" maxlength="64" placeholder="Enter password (16-64 chars)" autocomplete="off">
             <button class="eye-btn" id="pwdEyeBtn" type="button">
                 <i class="fa-solid fa-eye"></i>
             </button>
         </div>
-        <div class="req-list" id="reqList" style="display:none;">
-            <div class="req-item" id="req-length"><i class="fa-solid fa-circle-xmark"></i>20 characters total</div>
-            <div class="req-item" id="req-digits"><i class="fa-solid fa-circle-xmark"></i>6 digits (0-9)</div>
-            <div class="req-item" id="req-letters"><i class="fa-solid fa-circle-xmark"></i>10 letters (a-z, A-Z)</div>
-            <div class="req-item" id="req-symbols"><i class="fa-solid fa-circle-xmark"></i>4 symbols (e.g., @#$%)</div>
-        </div>
+     <div class="req-list" id="reqList" style="display:none;">
+             <div class="req-item" id="req-length"><i class="fa-solid fa-circle-xmark"></i>16-64 characters</div>
+             <div class="req-item" id="req-digits"><i class="fa-solid fa-circle-xmark"></i>At least 3 digits</div>
+             <div class="req-item" id="req-letters"><i class="fa-solid fa-circle-xmark"></i>At least 4 lower + 3 upper</div>
+             <div class="req-item" id="req-symbols"><i class="fa-solid fa-circle-xmark"></i>At least 3 symbols</div>
+             <div class="req-item" id="req-strength"><i class="fa-solid fa-circle-xmark"></i>Strong password (no patterns)</div>
+       </div>
         <div class="btn-row">
             <button id="pwdSubmitBtn" disabled>🔓 Unlock</button>
             <button class="cancel" id="pwdCancelBtn" style="display:none;">✖ Cancel</button>
@@ -797,7 +800,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
             <li>If you forget password, you must <b>DELETE KEY & REGENERATE</b> a new one</li>
             <li>Old encrypted code will be <b>LOCKED FOREVER</b> after key deletion</li>
             <li>Keep <span class="green">3 backups</span>: original code, encrypted output, decryptor + key file</li>
-            <li>Password format: <span class="gold">20 chars (6 digits + 10 letters + 4 symbols)</span></li>
+           <li>Password format: <span class="gold">16-64 chars with digits + upper + lower + symbols</span></li>
         </ul>
     </div>
     <div class="progress-wrap">
@@ -1070,14 +1073,14 @@ function openPwdModal(mode) {
     if (mode === 'create') {
         pwdModalTitle.textContent = '🔐 Create Your Password';
         pwdModalSub.textContent = 'This will generate your unique key';
-        pwdModalLabel.textContent = 'Create Your 20-Character Password';
+        pwdModalLabel.textContent = 'Create Your Strong Password (16-64 chars)';
         pwdSubmitBtn.innerHTML = '🔐 Create Key';
         reqList.style.display = 'block';
         pwdCancelBtn.style.display = 'none';
     } else {
         pwdModalTitle.textContent = '🔐 Enter Your Password';
         pwdModalSub.textContent = 'Required to reveal your key';
-        pwdModalLabel.textContent = 'Your 20-Character Password';
+        pwdModalLabel.textContent = 'Your Password';
         pwdSubmitBtn.innerHTML = '👁️ Reveal Key';
         reqList.style.display = 'none';
         pwdCancelBtn.style.display = 'inline-flex';
@@ -1110,20 +1113,36 @@ pwdEyeBtn.addEventListener('click', function() {
 
 pwdInput.addEventListener('input', function() {
     var v = this.value;
-    var rLen = v.length === 20;
-    var rDig = (v.match(/\d/g) || []).length === 6;
-    var rLet = (v.match(/[a-zA-Z]/g) || []).length === 10;
-    var rSym = (v.match(/[^a-zA-Z0-9]/g) || []).length === 4;
+
+    var digits = (v.match(/\d/g) || []).length;
+    var lower = (v.match(/[a-z]/g) || []).length;
+    var upper = (v.match(/[A-Z]/g) || []).length;
+    var symbols = (v.match(/[^a-zA-Z0-9]/g) || []).length;
+
+    var rLen = v.length >= 16 && v.length <= 64;
+    var rDig = digits >= 3;
+    var rLet = lower >= 4 && upper >= 3;
+    var rSym = symbols >= 3;
+
+    /* ✅ Real strength check (zxcvbn) */
+    var rStrength = false;
+    if (rLen && rDig && rLet && rSym && typeof zxcvbn !== 'undefined') {
+        try {
+            rStrength = zxcvbn(v).score >= 3;
+        } catch(e) { rStrength = false; }
+    }
 
     updateReq('req-length', rLen);
     updateReq('req-digits', rDig);
     updateReq('req-letters', rLet);
     updateReq('req-symbols', rSym);
+    updateReq('req-strength', rStrength);
 
     if (state._pwdMode === 'create') {
-        pwdSubmitBtn.disabled = !(rLen && rDig && rLet && rSym);
+        pwdSubmitBtn.disabled = !(rLen && rDig && rLet && rSym && rStrength);
     } else {
-        pwdSubmitBtn.disabled = v.length !== 20;
+        /* Unlock mode: sirf minimum length check */
+        pwdSubmitBtn.disabled = v.length < 16;
     }
 });
 
@@ -1156,7 +1175,7 @@ pwdSubmitBtn.addEventListener('click', function() {
     var isCreate = state._pwdMode === 'create';
 
     if (isCreate) {
-        if (!confirm('⚠️ FINAL WARNING:\n\nYour password CANNOT be changed.\nIf you forget it, your key will be LOCKED FOREVER.\n\nYou can later DELETE & REGENERATE.\n\nCreate this password?')) return;
+        if (!confirm('⚠️ FINAL WARNING:\n\nYour password CANNOT be changed.\nIf you forget it, your key will be LOCKED FOREVER.\n\nYou can later DELETE & REGENERATE.\n\nPassword: 16-64 chars with digits, upper, lower, symbols.\n\nCreate this password?')) return;
         setPwdStatus('loading', '⏳ Generating your unique key...');
         pwdSubmitBtn.disabled = true;
 
