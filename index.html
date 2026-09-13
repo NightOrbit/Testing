@@ -24,10 +24,6 @@
     (function() {
         'use strict';
 
-        // ============================================================
-        //  SMART BLOCKING — Firebase-safe (V14)
-        // ============================================================
-
         function isEditableElement(el) {
             if (!el || !el.tagName) return false;
             var tag = el.tagName.toLowerCase();
@@ -43,7 +39,6 @@
             var meta = e.metaKey;
             var editable = isEditableElement(e.target);
 
-            // ---- F-KEYS (F1-F12) ----
             if (key && key.startsWith('F') && key.length <= 3) {
                 var num = parseInt(key.replace('F', ''));
                 if (num >= 1 && num <= 12) {
@@ -52,19 +47,16 @@
                 }
             }
 
-            // ---- DEVTOOLS ----
             if (key === 'F12' || code === 123) {
                 e.preventDefault(); e.stopPropagation();
                 return false;
             }
 
-            // ---- PRINT SCREEN ----
             if (key === 'PrintScreen' || code === 44) {
                 e.preventDefault(); e.stopPropagation();
                 return false;
             }
 
-            // ---- INSERT, HOME, PAGE UP/DOWN ----
             if (key === 'Insert' || code === 45) {
                 e.preventDefault(); e.stopPropagation();
                 return false;
@@ -78,15 +70,11 @@
                 return false;
             }
 
-            // ---- CTRL COMBOS ----
             if (ctrl) {
                 var c = key ? key.toUpperCase() : '';
-
-                // Input mein paste/copy/select/cut/undo ALLOW karo
                 if (editable && ['V', 'C', 'A', 'X', 'Z', 'Y'].includes(c)) {
                     return true;
                 }
-
                 if (c.length === 1 && c >= 'A' && c <= 'Z') {
                     e.preventDefault(); e.stopPropagation();
                     return false;
@@ -101,7 +89,6 @@
                 }
             }
 
-            // ---- CTRL + SHIFT ----
             if (ctrl && shift) {
                 var c = key ? key.toUpperCase() : '';
                 if (c.length === 1 && c >= 'A' && c <= 'Z') {
@@ -110,7 +97,6 @@
                 }
             }
 
-            // ---- ALT COMBOS ----
             if (alt) {
                 var c = key ? key.toUpperCase() : '';
                 if (c.length === 1 && c >= 'A' && c <= 'Z') {
@@ -123,10 +109,8 @@
                 }
             }
 
-            // ---- META (Mac) ----
             if (meta) {
                 var c = key ? key.toUpperCase() : '';
-                // Input mein paste/copy/select/cut ALLOW karo
                 if (editable && ['V', 'C', 'A', 'X', 'Z'].includes(c)) {
                     return true;
                 }
@@ -136,20 +120,15 @@
                 }
             }
 
-            // ---- BACKSPACE (sirf non-input mein block) ----
             if (key === 'Backspace' && !editable) {
                 e.preventDefault(); e.stopPropagation();
                 return false;
             }
 
-            // ---- TAB (sirf non-input mein block) ----
             if (key === 'Tab' && !editable) {
                 e.preventDefault(); e.stopPropagation();
                 return false;
             }
-
-            // ---- ESCAPE — ALLOW (Google popup close ke liye zaroori) ----
-            // Escape ko block NAHI karo
 
             return true;
         }
@@ -157,34 +136,28 @@
         document.addEventListener('keydown', blockKey, { capture: true, passive: false });
         window.addEventListener('keydown', blockKey, { capture: true, passive: false });
 
-        // ---- CONTEXT MENU (sirf non-input par block) ----
         document.addEventListener('contextmenu', function(e) {
             if (isEditableElement(e.target)) return true;
             e.preventDefault(); e.stopPropagation();
             return false;
         }, { capture: true });
 
-        // ---- CONSOLE — SIRF CLEAR BLOCK KARO ----
-        // Firebase ko error/warn/log chahiye — inhe block mat karo
         try {
             window.console.clear = function() {};
         } catch(e) {}
 
-        // ---- SELECT START ----
         document.addEventListener('selectstart', function(e) {
             if (isEditableElement(e.target)) return true;
             e.preventDefault();
             return false;
         }, { capture: true });
 
-        // ---- DRAG START ----
         document.addEventListener('dragstart', function(e) {
             if (isEditableElement(e.target)) return true;
             e.preventDefault();
             return false;
         }, { capture: true });
 
-        // ---- COPY / CUT (sirf non-input par block) ----
         document.addEventListener('copy', function(e) {
             if (isEditableElement(e.target)) return true;
             e.preventDefault();
@@ -197,7 +170,6 @@
             return false;
         }, { capture: true });
 
-        // ---- MIDDLE CLICK ----
         document.addEventListener('auxclick', function(e) {
             if (e.button === 1) {
                 e.preventDefault(); e.stopPropagation();
@@ -625,9 +597,23 @@
         border: 1px solid rgba(0,240,255,0.15);
         text-align: left;
         animation: statusIn 0.4s ease;
+        max-height: 420px;
+        overflow-y: auto;
     }
 
     .user-info.show { display: block; }
+
+    .user-info::-webkit-scrollbar {
+        width: 6px;
+    }
+    .user-info::-webkit-scrollbar-track {
+        background: rgba(0,240,255,0.05);
+        border-radius: 3px;
+    }
+    .user-info::-webkit-scrollbar-thumb {
+        background: rgba(0,240,255,0.3);
+        border-radius: 3px;
+    }
 
     .user-info .row {
         display: flex;
@@ -657,6 +643,19 @@
         word-break: break-all;
         font-size: 11px;
     }
+
+    .section-title {
+        font-size: 10px;
+        color: var(--neon-gold);
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        margin: 14px 0 8px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+        font-weight: 700;
+    }
+
+    .section-title:first-child { margin-top: 0; }
 
     .footer {
         text-align: center;
@@ -714,7 +713,7 @@
         .btn-google img { width: 20px; height: 20px; }
         .feature-item { padding: 12px 16px; font-size: 11px; gap: 12px; }
         .feature-item i { font-size: 16px; width: 20px; }
-        .user-info { padding: 16px; }
+        .user-info { padding: 16px; max-height: 360px; }
         .user-info .row { font-size: 11px; }
         .user-info .label { font-size: 9px; }
         .user-info .value { font-size: 10px; }
@@ -813,7 +812,10 @@
 
                     <div class="status-box" id="statusBox"></div>
 
+                    <!-- ============= UPDATED USER INFO ============= -->
                     <div class="user-info" id="userInfo">
+
+                        <div class="section-title">👤 Account Info</div>
                         <div class="row">
                             <span class="label">Email</span>
                             <span class="value" id="infoEmail">--</span>
@@ -823,9 +825,153 @@
                             <span class="value" id="infoUsername">--</span>
                         </div>
                         <div class="row">
+                            <span class="label">UID</span>
+                            <span class="value" id="infoUid">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Provider</span>
+                            <span class="value" id="infoProvider">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Email Verified</span>
+                            <span class="value" id="infoEmailVerified">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Photo URL</span>
+                            <span class="value" id="infoPhoto">--</span>
+                        </div>
+
+                        <div class="section-title">🌍 Location & Network</div>
+                        <div class="row">
+                            <span class="label">IP Address</span>
+                            <span class="value" id="infoIP">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">City</span>
+                            <span class="value" id="infoCity">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Region</span>
+                            <span class="value" id="infoRegion">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Country</span>
+                            <span class="value" id="infoCountry">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Postal Code</span>
+                            <span class="value" id="infoPostal">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Latitude</span>
+                            <span class="value" id="infoLat">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Longitude</span>
+                            <span class="value" id="infoLng">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">ISP / Org</span>
+                            <span class="value" id="infoISP">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Timezone</span>
+                            <span class="value" id="infoTimezone">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Network Type</span>
+                            <span class="value" id="infoNetwork">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Connection Speed</span>
+                            <span class="value" id="infoSpeed">--</span>
+                        </div>
+
+                        <div class="section-title">💻 Device Info</div>
+                        <div class="row">
                             <span class="label">Device</span>
                             <span class="value" id="infoDevice">--</span>
                         </div>
+                        <div class="row">
+                            <span class="label">Device Type</span>
+                            <span class="value" id="infoDeviceType">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Operating System</span>
+                            <span class="value" id="infoOS">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">OS Version</span>
+                            <span class="value" id="infoOSVersion">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Browser</span>
+                            <span class="value" id="infoBrowser">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Browser Version</span>
+                            <span class="value" id="infoBrowserVersion">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Screen Size</span>
+                            <span class="value" id="infoScreen">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Viewport</span>
+                            <span class="value" id="infoViewport">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Pixel Ratio</span>
+                            <span class="value" id="infoPixelRatio">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Color Depth</span>
+                            <span class="value" id="infoColorDepth">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Touch Support</span>
+                            <span class="value" id="infoTouch">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">CPU Cores</span>
+                            <span class="value" id="infoCores">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Device Memory</span>
+                            <span class="value" id="infoMemory">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Battery</span>
+                            <span class="value" id="infoBattery">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">GPU</span>
+                            <span class="value" id="infoGPU">--</span>
+                        </div>
+
+                        <div class="section-title">🌐 Language & Locale</div>
+                        <div class="row">
+                            <span class="label">Language</span>
+                            <span class="value" id="infoLanguage">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Languages</span>
+                            <span class="value" id="infoLanguages">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Platform</span>
+                            <span class="value" id="infoPlatform">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Cookies Enabled</span>
+                            <span class="value" id="infoCookies">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Do Not Track</span>
+                            <span class="value" id="infoDNT">--</span>
+                        </div>
+
+                        <div class="section-title">⏰ Login Times</div>
                         <div class="row">
                             <span class="label">First Login</span>
                             <span class="value" id="infoFirstLogin">--</span>
@@ -834,6 +980,15 @@
                             <span class="label">Last Login</span>
                             <span class="value" id="infoLastLogin">--</span>
                         </div>
+                        <div class="row">
+                            <span class="label">Total Logins</span>
+                            <span class="value" id="infoTotalLogins">--</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">Session Start</span>
+                            <span class="value" id="infoSessionStart">--</span>
+                        </div>
+
                     </div>
 
                     <div class="footer">
