@@ -9,7 +9,7 @@
    - Separate salts for password hash & AES key
    - Timing-safe password comparison
    - Generic error messages (no info leakage)
-   - Flexible password format (16-64 chars, mixed)
+   - Flexible password format (16-64 chars, strong requirements)
    ═══════════════════════════════════════════════════════════ */
 
 (function() {
@@ -247,7 +247,15 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       PASSWORD VALIDATION (Flexible, 16-64 chars)
+       PASSWORD VALIDATION (STRONG — matches CodeEncrypt.html)
+       
+       Requirements:
+       - 16-64 characters
+       - At least 3 digits
+       - At least 4 lowercase letters
+       - At least 3 uppercase letters
+       - At least 3 symbols
+       - zxcvbn score >= 3 (strong, no patterns)
        ═══════════════════════════════════════════════════════ */
 
     validatePasswordFormat: function(pwd) {
@@ -255,12 +263,24 @@ var KEY_MANAGER = {
         if (pwd.length < this._PASSWORD_MIN) return false;
         if (pwd.length > this._PASSWORD_MAX) return false;
 
-        var hasDigit = /\d/.test(pwd);
-        var hasLower = /[a-z]/.test(pwd);
-        var hasUpper = /[A-Z]/.test(pwd);
-        var hasSymbol = /[^a-zA-Z0-9]/.test(pwd);
+        var digits = (pwd.match(/\d/g) || []).length;
+        var lower = (pwd.match(/[a-z]/g) || []).length;
+        var upper = (pwd.match(/[A-Z]/g) || []).length;
+        var symbols = (pwd.match(/[^a-zA-Z0-9]/g) || []).length;
 
-        return hasDigit && hasLower && hasUpper && hasSymbol;
+        /* Minimum counts — weak passwords blocked */
+        if (digits < 3 || lower < 4 || upper < 3 || symbols < 3) {
+            return false;
+        }
+
+        /* Real strength check via zxcvbn (if loaded) */
+        if (typeof zxcvbn !== 'undefined') {
+            try {
+                if (zxcvbn(pwd).score < 3) return false;
+            } catch (e) { /* ignore zxcvbn errors */ }
+        }
+
+        return true;
     },
 
     /* ═══════════════════════════════════════════════════════
@@ -337,7 +357,7 @@ var KEY_MANAGER = {
             if (!self.validatePasswordFormat(password)) {
                 reject(new Error(
                     'Password must be ' + self._PASSWORD_MIN + '-' + self._PASSWORD_MAX +
-                    ' characters with at least 1 digit, 1 uppercase, 1 lowercase, and 1 symbol'
+                    ' characters with at least 3 digits, 4 lowercase, 3 uppercase, and 3 symbols (strong password)'
                 ));
                 return;
             }
