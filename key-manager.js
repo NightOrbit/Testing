@@ -1,19 +1,37 @@
 /* ═══════════════════════════════════════════════════════════
-   key-manager.js — v17 FINAL
+   key-manager.js — v18 STRONG
    NightOrbit CodeForge
 
+   UPGRADE FROM V17:
+   ✅ HMAC-SHA256 integrity check (tamper-proof)
+   ✅ Rate limiting (5 attempts → 15 min lock)
+   ✅ Audit history (last 50 events)
+   ✅ Device fingerprinting
+   ✅ File size tracking (bytes + formatted)
+   ✅ Generation count (kitni baar banayi)
+   ✅ Encryption count (kitni baar encrypt)
+   ✅ Total bytes encrypted (cumulative)
+   ✅ Legacy migration (auto upgrade)
+   ✅ Zero-knowledge preserved
+
    DATA STORAGE (Firebase):
-   - users/{uid}/profile/    → email, name, createdAt, lastLogin
-   - users/{uid}/keyData/    → passwordHash, salt, encryptedKey (NO original password)
-   - users/{uid}/settings/   → language, theme
+   users/{uid}/
+   ├── profile/          → email, name, timestamps, device
+   ├── keyData/          → passwordHash, salt, encryptedKey (HMAC)
+   │   ├── stats/        → generations, encryptions, history
+   │   └── rateLimit/    → attempts, lockedUntil
+   └── settings/         → preferences
 
    SECURITY:
-   - Crypto-secure RNG
-   - AES-256-CBC with random IV
+   - Crypto-secure RNG (window.crypto)
+   - AES-256-CBC + HMAC-SHA256
    - PBKDF2-SHA256 600K iterations
+   - Random 256-bit salt + 128-bit IV
    - Timing-safe comparison
    - Original password NEVER stored
-   - Original key NEVER stored in plain
+   - Original key NEVER stored plain
+   - Rate limiting (brute-force protection)
+   - Audit logging (last 50 events)
    ═══════════════════════════════════════════════════════════ */
 
 (function() {
@@ -26,7 +44,10 @@ var KEY_MANAGER = {
     _AES_KEY_ITER: 100000,
     _PASSWORD_MIN: 16,
     _PASSWORD_MAX: 64,
-    _KEY_VERSION: 17,
+    _KEY_VERSION: 18,
+    _MAX_ATTEMPTS: 5,
+    _LOCKOUT_DURATION: 15 * 60 * 1000,  /* 15 minutes */
+    _MAX_HISTORY: 50,
 
     /* ═══ STATE ═══ */
     _key: null,
@@ -37,11 +58,11 @@ var KEY_MANAGER = {
     _initialized: false,
     _hasPassword: false,
     _userSalt: null,
+    _deviceFingerprint: null,
 
     /* ═══════════════════════════════════════════════════════
        SECURE RANDOM
        ═══════════════════════════════════════════════════════ */
-
     _secureRandomBytes: function(length) {
         var arr = new Uint8Array(length);
         if (window.crypto && window.crypto.getRandomValues) {
@@ -76,9 +97,79 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
+       DEVICE FINGERPRINT (NEW in v18)
+       ═══════════════════════════════════════════════════════ */
+    _getDeviceFingerprint: function() {
+        if (this._deviceFingerprint) return this._deviceFingerprint;
+
+        var components = [
+            navigator.userAgent || '',
+            navigator.language || '',
+            navigator.platform || '',
+            window.screen.width + 'x' + window.screen.height,
+            window.screen.colorDepth || '',
+            new Date().getTimezoneOffset(),
+            navigator.hardwareConcurrency || '',
+            navigator.deviceMemory || ''
+        ];
+
+        var raw = components.join('|||');
+        var hash = 0;
+        for (var i = 0; i < raw.length; i++) {
+            var char = raw.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+
+        this._deviceFingerprint = 'fp_' + Math.abs(hash).toString(36);
+        return this._deviceFingerprint;
+    },
+
+    _getDeviceInfo: function() {
+        var ua = navigator.userAgent;
+        var device = 'Unknown';
+        var os = 'Unknown';
+        var browser = 'Unknown';
+
+        if (/Windows NT 10/.test(ua)) os = 'Windows 10/11';
+        else if (/Windows NT 6\.3/.test(ua)) os = 'Windows 8.1';
+        else if (/Windows NT 6\.2/.test(ua)) os = 'Windows 8';
+        else if (/Windows NT 6\.1/.test(ua)) os = 'Windows 7';
+        else if (/Mac OS X/.test(ua)) os = 'macOS';
+        else if (/iPhone/.test(ua)) os = 'iOS';
+        else if (/iPad/.test(ua)) os = 'iPadOS';
+        else if (/Android/.test(ua)) os = 'Android';
+        else if (/Linux/.test(ua)) os = 'Linux';
+
+        if (/Edg\//.test(ua)) browser = 'Edge';
+        else if (/OPR\//.test(ua)) browser = 'Opera';
+        else if (/Chrome\//.test(ua)) browser = 'Chrome';
+        else if (/Firefox\//.test(ua)) browser = 'Firefox';
+        else if (/Safari\//.test(ua)) browser = 'Safari';
+
+        if (/iPhone/.test(ua)) device = 'iPhone';
+        else if (/iPad/.test(ua)) device = 'iPad';
+        else if (/Android/.test(ua)) {
+            var m = ua.match(/Android\s[\d.]+;\s([^)]+)/);
+            device = m ? m[1].trim() : 'Android Device';
+        } else {
+            device = os + ' Device';
+        }
+
+        return {
+            device: device,
+            os: os,
+            browser: browser,
+            screen: window.screen.width + 'x' + window.screen.height,
+            language: navigator.language || 'unknown',
+            fingerprint: this._getDeviceFingerprint(),
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown'
+        };
+    },
+
+    /* ═══════════════════════════════════════════════════════
        KEY GENERATION
        ═══════════════════════════════════════════════════════ */
-
     generateRandomKey: function() {
         var digits = '0123456789';
         var letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -101,7 +192,6 @@ var KEY_MANAGER = {
     /* ═══════════════════════════════════════════════════════
        PASSWORD HASHING (PBKDF2-SHA256 600K)
        ═══════════════════════════════════════════════════════ */
-
     hashPassword: function(password, salt) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -152,7 +242,6 @@ var KEY_MANAGER = {
         });
     },
 
-    /* Legacy hash (250K) — for migration */
     _hashPasswordLegacy: function(password, salt) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -204,9 +293,8 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       AES-256 ENCRYPTION
+       AES-256 ENCRYPTION (WITH HMAC — NEW in v18)
        ═══════════════════════════════════════════════════════ */
-
     _deriveAESKey: function(password, salt) {
         return CryptoJS.PBKDF2(password, salt, {
             keySize: 256 / 32,
@@ -215,6 +303,7 @@ var KEY_MANAGER = {
         });
     },
 
+    /* ✅ NEW: AES-256-CBC + HMAC-SHA256 */
     encryptKey: function(originalKey, password) {
         try {
             var aesSalt = CryptoJS.lib.WordArray.random(16);
@@ -227,38 +316,90 @@ var KEY_MANAGER = {
                 padding: CryptoJS.pad.Pkcs7
             });
 
-            return aesSalt.toString() + ':' + iv.toString() + ':' + encrypted.toString();
+            /* ✅ HMAC for integrity */
+            var hmacKey = CryptoJS.PBKDF2(password, aesSalt, {
+                keySize: 256 / 32,
+                iterations: this._AES_KEY_ITER,
+                hasher: CryptoJS.algo.SHA256
+            });
+            var hmac = CryptoJS.HmacSHA256(
+                aesSalt.toString() + ':' + iv.toString() + ':' + encrypted.toString(),
+                hmacKey
+            ).toString();
+
+            /* v2 format: v2:salt:iv:ciphertext:hmac */
+            return 'v2:' + aesSalt.toString() + ':' + iv.toString() + 
+                   ':' + encrypted.toString() + ':' + hmac;
         } catch (e) {
             throw new Error('Encryption failed');
         }
     },
 
+    /* ✅ NEW: Decrypt with HMAC verification + legacy support */
     decryptKey: function(encryptedKey, password) {
         try {
             var parts = encryptedKey.split(':');
-            if (parts.length !== 3) throw new Error('Invalid format');
+            
+            /* v2 format with HMAC */
+            if (parts[0] === 'v2' && parts.length === 5) {
+                var aesSalt = CryptoJS.enc.Hex.parse(parts[1]);
+                var iv = CryptoJS.enc.Hex.parse(parts[2]);
+                var ciphertext = parts[3];
+                var storedHmac = parts[4];
 
-            var aesSalt = CryptoJS.enc.Hex.parse(parts[0]);
-            var iv = CryptoJS.enc.Hex.parse(parts[1]);
-            var ciphertext = parts[2];
+                /* Verify HMAC first */
+                var hmacKey = CryptoJS.PBKDF2(password, aesSalt, {
+                    keySize: 256 / 32,
+                    iterations: this._AES_KEY_ITER,
+                    hasher: CryptoJS.algo.SHA256
+                });
+                var computedHmac = CryptoJS.HmacSHA256(
+                    parts[1] + ':' + parts[2] + ':' + ciphertext,
+                    hmacKey
+                ).toString();
 
-            var aesKey = this._deriveAESKey(password, aesSalt);
-            var decrypted = CryptoJS.AES.decrypt(ciphertext, aesKey, {
-                iv: iv,
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7
-            }).toString(CryptoJS.enc.Utf8);
+                if (!this._timingSafeEqual(storedHmac, computedHmac)) {
+                    throw new Error('Integrity check failed');
+                }
 
-            if (!decrypted || decrypted.length === 0) {
-                throw new Error('Decryption failed');
+                var aesKey = this._deriveAESKey(password, aesSalt);
+                var decrypted = CryptoJS.AES.decrypt(ciphertext, aesKey, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                }).toString(CryptoJS.enc.Utf8);
+
+                if (!decrypted || decrypted.length === 0) {
+                    throw new Error('Decryption failed');
+                }
+                return decrypted;
             }
-            return decrypted;
+
+            /* v1 format (legacy) */
+            if (parts.length === 3) {
+                var aesSalt2 = CryptoJS.enc.Hex.parse(parts[0]);
+                var iv2 = CryptoJS.enc.Hex.parse(parts[1]);
+                var ciphertext2 = parts[2];
+
+                var aesKey2 = this._deriveAESKey(password, aesSalt2);
+                var decrypted2 = CryptoJS.AES.decrypt(ciphertext2, aesKey2, {
+                    iv: iv2,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                }).toString(CryptoJS.enc.Utf8);
+
+                if (!decrypted2 || decrypted2.length === 0) {
+                    throw new Error('Decryption failed');
+                }
+                return decrypted2;
+            }
+
+            throw new Error('Invalid format');
         } catch (e) {
             throw new Error('Wrong password');
         }
     },
 
-    /* Legacy decrypt (AES-128, no salt/IV) */
     _decryptKeyLegacy: function(encryptedKey, password) {
         try {
             var decrypted = CryptoJS.AES.decrypt(encryptedKey, password).toString(CryptoJS.enc.Utf8);
@@ -272,7 +413,6 @@ var KEY_MANAGER = {
     /* ═══════════════════════════════════════════════════════
        PASSWORD VALIDATION
        ═══════════════════════════════════════════════════════ */
-
     validatePasswordFormat: function(pwd) {
         if (!pwd) return false;
         if (pwd.length < this._PASSWORD_MIN) return false;
@@ -296,7 +436,6 @@ var KEY_MANAGER = {
     /* ═══════════════════════════════════════════════════════
        TIMING-SAFE COMPARE
        ═══════════════════════════════════════════════════════ */
-
     _timingSafeEqual: function(a, b) {
         if (typeof a !== 'string' || typeof b !== 'string') return false;
         if (a.length !== b.length) return false;
@@ -308,13 +447,88 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
+       RATE LIMITING (NEW in v18)
+       ═══════════════════════════════════════════════════════ */
+    _checkRateLimit: function(userId) {
+        return firebase.database()
+            .ref('users/' + userId + '/keyData/rateLimit')
+            .once('value')
+            .then(function(snap) {
+                var data = snap.val() || { attempts: 0, lockedUntil: 0 };
+                
+                if (data.lockedUntil > Date.now()) {
+                    var remaining = Math.ceil((data.lockedUntil - Date.now()) / 60000);
+                    throw new Error('Too many attempts. Try again in ' + remaining + ' minute(s).');
+                }
+                
+                return data;
+            });
+    },
+
+    _recordFailedAttempt: function(userId) {
+        var self = this;
+        var ref = firebase.database().ref('users/' + userId + '/keyData/rateLimit');
+        
+        return ref.transaction(function(current) {
+            current = current || { attempts: 0, lockedUntil: 0 };
+            
+            /* Reset if lock expired */
+            if (current.lockedUntil && current.lockedUntil < Date.now()) {
+                current.attempts = 0;
+                current.lockedUntil = 0;
+            }
+            
+            current.attempts = (current.attempts || 0) + 1;
+            current.lastAttempt = Date.now();
+            
+            if (current.attempts >= self._MAX_ATTEMPTS) {
+                current.lockedUntil = Date.now() + self._LOCKOUT_DURATION;
+                current.attempts = 0;
+            }
+            
+            return current;
+        });
+    },
+
+    _clearRateLimit: function(userId) {
+        return firebase.database()
+            .ref('users/' + userId + '/keyData/rateLimit')
+            .update({ attempts: 0, lockedUntil: 0, lastSuccess: Date.now() });
+    },
+
+    /* ═══════════════════════════════════════════════════════
+       AUDIT LOGGING (NEW in v18)
+       ═══════════════════════════════════════════════════════ */
+    _logEvent: function(userId, action) {
+        var deviceInfo = this._getDeviceInfo();
+        var ref = firebase.database()
+            .ref('users/' + userId + '/keyData/stats/history');
+        
+        return ref.once('value').then(function(snap) {
+            var history = snap.val() || [];
+            history.push({
+                action: action,
+                timestamp: new Date().toISOString(),
+                device: deviceInfo.device,
+                browser: deviceInfo.browser,
+                os: deviceInfo.os,
+                fingerprint: deviceInfo.fingerprint
+            });
+
+            if (history.length > KEY_MANAGER._MAX_HISTORY) {
+                history = history.slice(-KEY_MANAGER._MAX_HISTORY);
+            }
+            return ref.set(history);
+        });
+    },
+
+    /* ═══════════════════════════════════════════════════════
        FIREBASE OPERATIONS
        ═══════════════════════════════════════════════════════ */
-
-    /* ═══ ENSURE USER PROFILE EXISTS ═══ */
     ensureUserProfile: function(user) {
         if (!user || !user.uid) return Promise.resolve();
         var profileRef = firebase.database().ref('users/' + user.uid + '/profile');
+        var deviceInfo = this._getDeviceInfo();
 
         return profileRef.once('value').then(function(snap) {
             var data = snap.val();
@@ -323,18 +537,26 @@ var KEY_MANAGER = {
                     email: user.email || '',
                     name: (user.email || '').split('@')[0] || 'User',
                     createdAt: new Date().toISOString(),
-                    lastLogin: new Date().toISOString()
+                    lastLogin: new Date().toISOString(),
+                    lastDevice: deviceInfo.device,
+                    lastBrowser: deviceInfo.browser,
+                    lastOS: deviceInfo.os,
+                    lastFingerprint: deviceInfo.fingerprint
                 });
             } else {
-                /* Update last login */
                 return profileRef.update({
-                    lastLogin: new Date().toISOString()
+                    email: user.email || data.email,
+                    name: (user.email || '').split('@')[0] || data.name,
+                    lastLogin: new Date().toISOString(),
+                    lastDevice: deviceInfo.device,
+                    lastBrowser: deviceInfo.browser,
+                    lastOS: deviceInfo.os,
+                    lastFingerprint: deviceInfo.fingerprint
                 });
             }
         });
     },
 
-    /* ═══ CHECK KEY STATUS ═══ */
     checkKeyStatus: function(userId) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -355,6 +577,8 @@ var KEY_MANAGER = {
                             salt: data.salt,
                             encryptedKey: data.encryptedKey,
                             keyVersion: data.keyVersion,
+                            stats: data.stats || null,
+                            rateLimit: data.rateLimit || null,
                             meta: data
                         });
                     } else {
@@ -373,7 +597,7 @@ var KEY_MANAGER = {
         });
     },
 
-    /* ═══ CREATE KEY + PASSWORD ═══ */
+    /* ═══ CREATE KEY + PASSWORD (v18 with stats + audit) ═══ */
     createKeyAndPassword: function(user, password) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -390,22 +614,78 @@ var KEY_MANAGER = {
             var userSalt = self.generateUserSalt();
             var originalKey = self.generateRandomKey();
             var encryptedKey = self.encryptKey(originalKey, password);
+            var now = new Date().toISOString();
+            var deviceInfo = self._getDeviceInfo();
 
             self.hashPassword(password, userSalt)
                 .then(function(passwordHash) {
-                    /* ═══ KEY DATA SECTION ═══ */
-                    return firebase.database().ref('users/' + user.uid + '/keyData').set({
-                        passwordHash: passwordHash,   /* ← Hash only, NOT original password */
-                        salt: userSalt,
-                        encryptedKey: encryptedKey,   /* ← Encrypted key, NOT plain */
-                        keyVersion: self._KEY_VERSION,
-                        algorithm: 'aes-256-cbc-pbkdf2-sha256-600k',
-                        iterations: self._PBKDF2_ITER,
-                        createdAt: new Date().toISOString()
-                    });
+                    return firebase.database()
+                        .ref('users/' + user.uid + '/keyData')
+                        .once('value')
+                        .then(function(snap) {
+                            var existing = snap.val();
+                            var generationCount = 1;
+                            var history = [];
+
+                            if (existing && existing.stats) {
+                                generationCount = (existing.stats.totalGenerations || 0) + 1;
+                                history = existing.stats.history || [];
+                            }
+
+                            history.push({
+                                action: 'create',
+                                timestamp: now,
+                                device: deviceInfo.device,
+                                browser: deviceInfo.browser,
+                                os: deviceInfo.os,
+                                fingerprint: deviceInfo.fingerprint
+                            });
+
+                            if (history.length > self._MAX_HISTORY) {
+                                history = history.slice(-self._MAX_HISTORY);
+                            }
+
+                            var keyData = {
+                                /* 🔐 Security (HASHED/ENCRYPTED) */
+                                passwordHash: passwordHash,
+                                salt: userSalt,
+                                encryptedKey: encryptedKey,
+                                keyVersion: self._KEY_VERSION,
+                                algorithm: 'aes-256-cbc-pbkdf2-sha256-600k-hmac',
+                                iterations: self._PBKDF2_ITER,
+
+                                /* 📊 Stats (ALAG SECTION) */
+                                stats: {
+                                    totalGenerations: generationCount,
+                                    totalEncryptions: existing && existing.stats 
+                                        ? (existing.stats.totalEncryptions || 0) : 0,
+                                    totalBytesEncrypted: existing && existing.stats 
+                                        ? (existing.stats.totalBytesEncrypted || 0) : 0,
+                                    totalFilesEncrypted: existing && existing.stats 
+                                        ? (existing.stats.totalFilesEncrypted || 0) : 0,
+                                    firstGeneratedAt: existing && existing.stats 
+                                        ? existing.stats.firstGeneratedAt : now,
+                                    lastGeneratedAt: now,
+                                    history: history
+                                },
+
+                                /* 🚫 Rate limit reset on new key */
+                                rateLimit: {
+                                    attempts: 0,
+                                    lockedUntil: 0,
+                                    lastSuccess: Date.now()
+                                },
+
+                                createdAt: now,
+                                updatedAt: now
+                            };
+
+                            return firebase.database()
+                                .ref('users/' + user.uid + '/keyData')
+                                .set(keyData);
+                        });
                 })
                 .then(function() {
-                    /* ═══ ENSURE PROFILE SECTION ═══ */
                     return self.ensureUserProfile(user);
                 })
                 .then(function() {
@@ -424,19 +704,26 @@ var KEY_MANAGER = {
                         displayKey: self._displayKey
                     });
                 })
-                .catch(function() {
+                .catch(function(err) {
+                    console.error('createKeyAndPassword error:', err);
                     reject(new Error('Failed to create key. Please try again.'));
                 });
         });
     },
 
-    /* ═══ UNLOCK KEY (with legacy migration) ═══ */
+    /* ═══ UNLOCK KEY (v18 with rate limiting + audit) ═══ */
     unlockKey: function(user, password) {
         var self = this;
         return new Promise(function(resolve, reject) {
             if (!user || !user.uid) { reject(new Error('User required')); return; }
 
-            firebase.database().ref('users/' + user.uid + '/keyData').once('value')
+            /* Step 1: Check rate limit */
+            self._checkRateLimit(user.uid)
+                .then(function() {
+                    return firebase.database()
+                        .ref('users/' + user.uid + '/keyData')
+                        .once('value');
+                })
                 .then(function(snap) {
                     var data = snap.val();
                     if (!data || !data.passwordHash || !data.salt || !data.encryptedKey) {
@@ -447,60 +734,81 @@ var KEY_MANAGER = {
                     var isLegacy = !data.keyVersion || data.keyVersion < 17;
 
                     if (isLegacy) {
-                        /* ═══ MIGRATE LEGACY KEY ═══ */
-                        return self._hashPasswordLegacy(password, data.salt).then(function(computedLegacy) {
-                            if (!self._timingSafeEqual(computedLegacy, data.passwordHash)) {
-                                reject(new Error('Incorrect password'));
-                                return;
-                            }
-
-                            try {
-                                var originalKey = self._decryptKeyLegacy(data.encryptedKey, password);
-                                var newEncryptedKey = self.encryptKey(originalKey, password);
-
-                                return self.hashPassword(password, data.salt).then(function(newHash) {
-                                    return firebase.database().ref('users/' + user.uid + '/keyData').update({
-                                        passwordHash: newHash,
-                                        encryptedKey: newEncryptedKey,
-                                        keyVersion: self._KEY_VERSION,
-                                        algorithm: 'aes-256-cbc-pbkdf2-sha256-600k',
-                                        iterations: self._PBKDF2_ITER,
-                                        migratedAt: new Date().toISOString()
-                                    }).then(function() {
-                                        self._key = originalKey;
-                                        self._encryptedKey = newEncryptedKey;
-                                        self._email = user.email;
-                                        self._userId = user.uid;
-                                        self._userSalt = data.salt;
-                                        self._hasPassword = true;
-                                        self._initialized = true;
-                                        self._displayKey = self._makeMaskedKey(originalKey);
-
-                                        resolve({
-                                            success: true,
-                                            key: originalKey,
-                                            displayKey: self._displayKey,
-                                            migrated: true
-                                        });
-                                    });
-                                });
-                            } catch (e) {
-                                reject(new Error('Incorrect password'));
-                            }
-                        });
+                        return self._handleLegacyUnlock(user, password, data);
                     }
 
-                    /* ═══ NORMAL UNLOCK ═══ */
-                    return self.hashPassword(password, data.salt).then(function(computed) {
-                        if (!self._timingSafeEqual(computed, data.passwordHash)) {
-                            reject(new Error('Incorrect password'));
-                            return;
-                        }
+                    return self._handleNormalUnlock(user, password, data);
+                })
+                .then(function(result) {
+                    if (result) {
+                        self._clearRateLimit(user.uid).catch(function() {});
+                        resolve(result);
+                    }
+                })
+                .catch(function(err) {
+                    self._recordFailedAttempt(user.uid).catch(function() {});
+                    reject(err);
+                });
+        });
+    },
 
-                        try {
-                            var originalKey = self.decryptKey(data.encryptedKey, password);
+    _handleNormalUnlock: function(user, password, data) {
+        var self = this;
+        return self.hashPassword(password, data.salt).then(function(computed) {
+            if (!self._timingSafeEqual(computed, data.passwordHash)) {
+                throw new Error('Incorrect password');
+            }
+
+            try {
+                var originalKey = self.decryptKey(data.encryptedKey, password);
+                self._key = originalKey;
+                self._encryptedKey = data.encryptedKey;
+                self._email = user.email;
+                self._userId = user.uid;
+                self._userSalt = data.salt;
+                self._hasPassword = true;
+                self._initialized = true;
+                self._displayKey = self._makeMaskedKey(originalKey);
+
+                self._logEvent(user.uid, 'unlock_success').catch(function() {});
+
+                return {
+                    success: true,
+                    key: originalKey,
+                    displayKey: self._displayKey,
+                    migrated: false
+                };
+            } catch (e) {
+                throw new Error('Incorrect password');
+            }
+        });
+    },
+
+    _handleLegacyUnlock: function(user, password, data) {
+        var self = this;
+        return self._hashPasswordLegacy(password, data.salt).then(function(computedLegacy) {
+            if (!self._timingSafeEqual(computedLegacy, data.passwordHash)) {
+                throw new Error('Incorrect password');
+            }
+
+            try {
+                var originalKey = self._decryptKeyLegacy(data.encryptedKey, password);
+                var newEncryptedKey = self.encryptKey(originalKey, password);
+
+                return self.hashPassword(password, data.salt).then(function(newHash) {
+                    return firebase.database()
+                        .ref('users/' + user.uid + '/keyData')
+                        .update({
+                            passwordHash: newHash,
+                            encryptedKey: newEncryptedKey,
+                            keyVersion: self._KEY_VERSION,
+                            algorithm: 'aes-256-cbc-pbkdf2-sha256-600k-hmac',
+                            iterations: self._PBKDF2_ITER,
+                            migratedAt: new Date().toISOString()
+                        })
+                        .then(function() {
                             self._key = originalKey;
-                            self._encryptedKey = data.encryptedKey;
+                            self._encryptedKey = newEncryptedKey;
                             self._email = user.email;
                             self._userId = user.uid;
                             self._userSalt = data.salt;
@@ -508,20 +816,19 @@ var KEY_MANAGER = {
                             self._initialized = true;
                             self._displayKey = self._makeMaskedKey(originalKey);
 
-                            resolve({
+                            self._logEvent(user.uid, 'unlock_migrated').catch(function() {});
+
+                            return {
                                 success: true,
                                 key: originalKey,
                                 displayKey: self._displayKey,
-                                migrated: false
-                            });
-                        } catch (e) {
-                            reject(new Error('Incorrect password'));
-                        }
-                    });
-                })
-                .catch(function() {
-                    reject(new Error('Failed to unlock key'));
+                                migrated: true
+                            };
+                        });
                 });
+            } catch (e) {
+                throw new Error('Incorrect password');
+            }
         });
     },
 
@@ -539,6 +846,30 @@ var KEY_MANAGER = {
         });
     },
 
+    /* ═══════════════════════════════════════════════════════
+       UPDATE STATS (called from script.js after encryption)
+       ═══════════════════════════════════════════════════════ */
+    updateEncryptionStats: function(userId, data) {
+        if (!userId || !data) return Promise.resolve();
+        
+        var ref = firebase.database()
+            .ref('users/' + userId + '/keyData/stats');
+        
+        return ref.transaction(function(current) {
+            if (!current) return current;
+            
+            current.totalEncryptions = (current.totalEncryptions || 0) + 1;
+            current.totalBytesEncrypted = (current.totalBytesEncrypted || 0) + (data.size || 0);
+            current.totalFilesEncrypted = (current.totalFilesEncrypted || 0) + (data.fileCount || 1);
+            current.lastEncryptedAt = new Date().toISOString();
+            current.lastEncryptionSize = data.size || 0;
+            current.lastEncryptionSizeFormatted = data.sizeFormatted || '0 B';
+            current.lastEncryptionDuration = data.duration || 0;
+            
+            return current;
+        });
+    },
+
     /* ═══ GETTERS ═══ */
     getKey: function() {
         if (!this._initialized || !this._key) throw new Error('Key not initialized');
@@ -552,6 +883,7 @@ var KEY_MANAGER = {
     getUserSalt: function() { return this._userSalt; },
     isReady: function() { return this._initialized; },
     hasPassword: function() { return this._hasPassword; },
+    getDeviceFingerprint: function() { return this._getDeviceFingerprint(); },
 
     clear: function() {
         this._key = null;
@@ -567,9 +899,11 @@ var KEY_MANAGER = {
 
 window.KEY_MANAGER = KEY_MANAGER;
 
-console.log('%c🔐 Key Manager v17 FINAL loaded',
+console.log('%c🔐 Key Manager v18 STRONG loaded',
     'color:#00ff64;font-weight:bold;font-size:14px;');
-console.log('%c⚡ AES-256-CBC | PBKDF2-SHA256 600K | Crypto-Secure RNG',
+console.log('%c⚡ AES-256-CBC + HMAC-SHA256 | PBKDF2-SHA256 600K | Rate Limiting',
     'color:#ffd700;font-size:11px;');
+console.log('%c📊 Audit Logging | Device Fingerprint | File Size Tracking',
+    'color:#00f0ff;font-size:11px;');
 
 })();
