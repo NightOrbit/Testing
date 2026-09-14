@@ -653,12 +653,406 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     .file-item .fname { max-width: 130px; }
     .topbar-btn { padding: 7px 11px; font-size: 10px; }
 }
+
+ .heavy-block {
+    border-radius: 16px;
+    padding: 22px 26px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    animation: blockIn 0.5s ease;
+}
+@keyframes blockIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.heavy-block.critical {
+    background: linear-gradient(135deg, rgba(255,0,100,0.12), rgba(180,0,255,0.08));
+    border: 2px solid #ff0064;
+    box-shadow: 0 0 50px rgba(255,0,100,0.25);
+}
+.heavy-block.standards {
+    background: linear-gradient(135deg, rgba(0,240,255,0.10), rgba(180,0,255,0.06));
+    border: 2px solid #00f0ff;
+    box-shadow: 0 0 50px rgba(0,240,255,0.20);
+}
+.heavy-block.checklist {
+    background: rgba(0,240,255,0.05);
+    border: 1.5px solid #00f0ff;
+}
+.heavy-block.output-alert {
+    background: linear-gradient(135deg, rgba(255,215,0,0.10), rgba(255,140,0,0.06));
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 40px rgba(255,215,0,0.20);
+    margin-bottom: 14px;
+}
+
+.heavy-block-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+.heavy-block-icon { font-size: 28px; flex-shrink: 0; }
+.heavy-block-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    flex: 1;
+}
+.heavy-block.critical .heavy-block-title { color: #ff0064; text-shadow: 0 0 20px rgba(255,0,100,0.6); }
+.heavy-block.standards .heavy-block-title { color: #00f0ff; text-shadow: 0 0 20px rgba(0,240,255,0.6); }
+.heavy-block.checklist .heavy-block-title { color: #00f0ff; }
+.heavy-block.output-alert .heavy-block-title { color: #ffd700; text-shadow: 0 0 20px rgba(255,215,0,0.6); }
+
+.heavy-block-badge {
+    background: #ff0064;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    font-family: 'Orbitron', sans-serif;
+    text-transform: uppercase;
+}
+.heavy-block-badge.gold { background: #ffd700; color: #000; }
+.heavy-block-badge.red { background: #ff0064; color: #fff; }
+
+.heavy-block-lead {
+    color: #b0d0ff;
+    font-size: 13px;
+    line-height: 1.8;
+    margin-bottom: 14px;
+}
+
+.heavy-block-requirements {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.req-card {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,0,100,0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.req-icon { font-size: 24px; flex-shrink: 0; }
+.req-card strong {
+    display: block;
+    color: #ffd700;
+    font-size: 12px;
+    margin-bottom: 2px;
+    font-family: 'JetBrains Mono', monospace;
+}
+.req-card span {
+    color: #b0b0d0;
+    font-size: 11px;
+}
+
+.heavy-block-warning {
+    background: rgba(255,0,100,0.10);
+    border-left: 4px solid #ff0064;
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #ffb3c9;
+    font-size: 12px;
+    line-height: 1.7;
+}
+.heavy-block-warning strong { color: #ff0064; }
+.warn-icon { font-size: 20px; flex-shrink: 0; }
+
+.standards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.standard-card {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(0,240,255,0.15);
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+    transition: all 0.3s;
+}
+.standard-card:hover {
+    border-color: #00f0ff;
+    background: rgba(0,240,255,0.06);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,240,255,0.15);
+}
+.standard-icon { font-size: 22px; margin-bottom: 6px; }
+.standard-name {
+    color: #00f0ff;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 4px;
+}
+.standard-desc {
+    color: #8a8aaa;
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.heavy-block-footer {
+    background: rgba(0,255,100,0.06);
+    border-left: 4px solid #00ff64;
+    border-radius: 8px;
+    padding: 10px 16px;
+    color: #b0d0ff;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.heavy-block-footer strong { color: #00ff64; }
+.footer-icon { font-size: 18px; }
+
+.checklist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+.checklist-step {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(0,240,255,0.15);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all 0.3s;
+}
+.checklist-step:hover {
+    border-color: #00f0ff;
+    background: rgba(0,240,255,0.06);
+}
+.checklist-step.critical {
+    border-color: rgba(255,0,100,0.3);
+    background: rgba(255,0,100,0.05);
+}
+.checklist-step.critical:hover {
+    border-color: #ff0064;
+    background: rgba(255,0,100,0.10);
+}
+.step-number {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #00f0ff, #b400ff);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+}
+.checklist-step.critical .step-number {
+    background: linear-gradient(135deg, #ff0064, #b400ff);
+    color: #fff;
+}
+.step-content strong {
+    display: block;
+    color: #00f0ff;
+    font-size: 13px;
+    margin-bottom: 3px;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1px;
+}
+.checklist-step.critical .step-content strong { color: #ff0064; }
+.step-content span {
+    color: #8a8aaa;
+    font-size: 11px;
+}
+
+.output-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+}
+.output-option {
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 12px;
+    line-height: 1.7;
+}
+.output-option.correct {
+    background: rgba(0,255,100,0.08);
+    border-left: 4px solid #00ff64;
+}
+.output-option.incorrect {
+    background: rgba(255,0,100,0.08);
+    border-left: 4px solid #ff0064;
+}
+.option-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.option-header strong {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+.output-option.correct .option-header strong { color: #00ff64; }
+.output-option.incorrect .option-header strong { color: #ff0064; }
+.option-icon { font-size: 16px; }
+.output-option ol {
+    padding-left: 20px;
+    color: #b0d0ff;
+}
+.output-option ol li { margin-bottom: 3px; }
+.output-option code {
+    background: #000;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #00f0ff;
+    font-family: 'JetBrains Mono', monospace;
+}
+.output-option p { color: #ffb3c9; }
+.output-option strong { color: #ff0064; }
+
+.pulse-glow {
+    animation: pulseGlow 2s infinite;
+}
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(255,45,149,0.4); }
+    50% { box-shadow: 0 0 40px rgba(255,45,149,0.8); }
+}
+
+@media (max-width: 600px) {
+    .heavy-block { padding: 18px 18px; border-radius: 14px; }
+    .heavy-block-title { font-size: 12px; letter-spacing: 2px; }
+    .heavy-block-badge { font-size: 8px; padding: 3px 9px; }
+    .heavy-block-lead { font-size: 12px; }
+    .standards-grid { grid-template-columns: 1fr 1fr; }
+    .standard-name { font-size: 10px; }
+    .standard-desc { font-size: 9px; }
+    .req-card { padding: 10px 12px; }
+    .req-card strong { font-size: 11px; }
+    .req-card span { font-size: 10px; }
+    .output-options { grid-template-columns: 1fr; }
+}   
 </style>
 </head>
 <body>
 
 <div class="session-bar" id="sessionBar">
     <div class="session-bar-fill" id="sessionBarFill"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HEAVY BLOCK 1 — CRITICAL SECURITY NOTICE
+     ═══════════════════════════════════════════════════════════ -->
+<div class="heavy-block critical" id="securityNotice">
+    <div class="heavy-block-header">
+        <span class="heavy-block-icon">🔴</span>
+        <span class="heavy-block-title">CRITICAL SECURITY NOTICE</span>
+        <span class="heavy-block-badge">READ FIRST</span>
+    </div>
+    <div class="heavy-block-body">
+        <p class="heavy-block-lead">
+            <strong>BEFORE USING THIS TOOL:</strong> This platform generates <strong>encrypted files</strong> using military-grade cryptography. To decrypt your data, you <strong>MUST</strong> have the following files:
+        </p>
+        <div class="heavy-block-requirements">
+            <div class="req-card">
+                <span class="req-icon">📄</span>
+                <div>
+                    <strong>decryptor.html</strong>
+                    <span>System-generated decryption engine</span>
+                </div>
+            </div>
+            <div class="req-card">
+                <span class="req-icon">🔑</span>
+                <div>
+                    <strong>nx_xxxx.js</strong>
+                    <span>Unique encryption key file</span>
+                </div>
+            </div>
+            <div class="req-card">
+                <span class="req-icon">📁</span>
+                <div>
+                    <strong>Same Folder</strong>
+                    <span>Both files must be together</span>
+                </div>
+            </div>
+        </div>
+        <div class="heavy-block-warning">
+            <span class="warn-icon">⚠️</span>
+            <div>
+                <strong>DATA LOSS WARNING:</strong> If you lose either file, your encrypted data will be <strong>PERMANENTLY LOCKED</strong>. No recovery is possible — not even by us.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HEAVY BLOCK 2 — SECURITY STANDARDS
+     ═══════════════════════════════════════════════════════════ -->
+<div class="heavy-block standards" id="securityStandards">
+    <div class="heavy-block-header">
+        <span class="heavy-block-icon">🛡️</span>
+        <span class="heavy-block-title">SECURITY STANDARDS</span>
+        <span class="heavy-block-badge gold">BANK-GRADE</span>
+    </div>
+    <div class="heavy-block-body">
+        <p class="heavy-block-lead">
+            This platform implements the same cryptographic algorithms used by <strong>banks, government agencies, and financial institutions</strong> worldwide.
+        </p>
+        <div class="standards-grid">
+            <div class="standard-card">
+                <div class="standard-icon">🔐</div>
+                <div class="standard-name">AES-256-CBC</div>
+                <div class="standard-desc">US Government standard encryption</div>
+            </div>
+            <div class="standard-card">
+                <div class="standard-icon">🔑</div>
+                <div class="standard-name">PBKDF2-SHA256</div>
+                <div class="standard-desc">600,000 key derivation iterations</div>
+            </div>
+            <div class="standard-card">
+                <div class="standard-icon">✅</div>
+                <div class="standard-name">HMAC-SHA256</div>
+                <div class="standard-desc">Tamper-proof integrity verification</div>
+            </div>
+            <div class="standard-card">
+                <div class="standard-icon">🎲</div>
+                <div class="standard-name">CSPRNG</div>
+                <div class="standard-desc">Cryptographically secure randomness</div>
+            </div>
+            <div class="standard-card">
+                <div class="standard-icon">🧂</div>
+                <div class="standard-name">256-bit Salt</div>
+                <div class="standard-desc">Unique per user, prevents rainbow tables</div>
+            </div>
+            <div class="standard-card">
+                <div class="standard-icon">📐</div>
+                <div class="standard-name">128-bit IV</div>
+                <div class="standard-desc">Random per encryption, prevents patterns</div>
+            </div>
+        </div>
+        <div class="heavy-block-footer">
+            <span class="footer-icon">🏆</span>
+            <span>Security Rating: <strong>9/10 Cryptographic</strong> · Zero-Knowledge Architecture</span>
+        </div>
+    </div>
 </div>
 
 <div class="pwd-overlay" id="pwdOverlay">
@@ -672,13 +1066,13 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
                 <i class="fa-solid fa-eye"></i>
             </button>
         </div>
-     <div class="req-list" id="reqList" style="display:none;">
-             <div class="req-item" id="req-length"><i class="fa-solid fa-circle-xmark"></i>16-64 characters</div>
-             <div class="req-item" id="req-digits"><i class="fa-solid fa-circle-xmark"></i>At least 3 digits</div>
-             <div class="req-item" id="req-letters"><i class="fa-solid fa-circle-xmark"></i>At least 4 lower + 3 upper</div>
-             <div class="req-item" id="req-symbols"><i class="fa-solid fa-circle-xmark"></i>At least 3 symbols</div>
-             <div class="req-item" id="req-strength"><i class="fa-solid fa-circle-xmark"></i>Strong password (no patterns)</div>
-       </div>
+        <div class="req-list" id="reqList" style="display:none;">
+            <div class="req-item" id="req-length"><i class="fa-solid fa-circle-xmark"></i>16-64 characters</div>
+            <div class="req-item" id="req-digits"><i class="fa-solid fa-circle-xmark"></i>At least 3 digits</div>
+            <div class="req-item" id="req-letters"><i class="fa-solid fa-circle-xmark"></i>At least 4 lower + 3 upper</div>
+            <div class="req-item" id="req-symbols"><i class="fa-solid fa-circle-xmark"></i>At least 3 symbols</div>
+            <div class="req-item" id="req-strength"><i class="fa-solid fa-circle-xmark"></i>Strong password (no patterns)</div>
+        </div>
         <div class="btn-row">
             <button id="pwdSubmitBtn" disabled>🔓 Unlock</button>
             <button class="cancel" id="pwdCancelBtn" style="display:none;">✖ Cancel</button>
@@ -723,6 +1117,12 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     <h3 style="margin-top:20px;">⚙️ Quick Actions</h3>
     <button class="menu-item" onclick="openFilePicker()"><span class="ico">📁</span><span class="label">Upload Files</span><span class="ext">MULTI</span></button>
     <button class="menu-item" onclick="clearAll()"><span class="ico">🗑️</span><span class="label">Clear All</span><span class="ext">RESET</span></button>
+    <h3 style="margin-top:20px;">🛡️ Security</h3>
+    <a href="security-info.html" class="menu-item" target="_blank">
+        <span class="ico">🛡️</span>
+        <span class="label">Security Information</span>
+        <span class="ext">INFO</span>
+    </a>
     <h3 style="margin-top:20px;">🏠 Navigation</h3>
     <a href="dashboard.html" class="menu-item dashboard">
         <span class="ico">🏠</span>
@@ -805,7 +1205,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
             <li>If you forget password, you must <b>DELETE KEY & REGENERATE</b> a new one</li>
             <li>Old encrypted code will be <b>LOCKED FOREVER</b> after key deletion</li>
             <li>Keep <span class="green">3 backups</span>: original code, encrypted output, decryptor + key file</li>
-           <li>Password format: <span class="gold">16-64 chars with digits + upper + lower + symbols</span></li>
+            <li>Password format: <span class="gold">16-64 chars with digits + upper + lower + symbols</span></li>
         </ul>
     </div>
     <div class="progress-wrap">
@@ -836,24 +1236,100 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         </div>
         <div class="file-list" id="fileList"></div>
     </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         HEAVY BLOCK 3 — PRE-ENCRYPT CHECKLIST
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="heavy-block checklist" id="preEncryptChecklist">
+        <div class="heavy-block-header">
+            <span class="heavy-block-icon">📋</span>
+            <span class="heavy-block-title">ENCRYPTION CHECKLIST</span>
+            <span class="heavy-block-badge">3 STEPS</span>
+        </div>
+        <div class="heavy-block-body">
+            <div class="checklist-grid">
+                <div class="checklist-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Prepare Data</strong>
+                        <span>Paste code or upload files</span>
+                    </div>
+                </div>
+                <div class="checklist-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <strong>Encrypt</strong>
+                        <span>Click ENCRYPT button</span>
+                    </div>
+                </div>
+                <div class="checklist-step critical">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>Download Files</strong>
+                        <span>Decryptor + Key File required</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="btn-row">
         <button onclick="encryptNow()">🔐 ENCRYPT</button>
         <button class="secondary" onclick="openFilePicker()">📂 LOAD FILES</button>
         <button class="danger" onclick="clearAll()">🗑️ CLEAR ALL</button>
     </div>
     <div id="status" class="status"></div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         HEAVY BLOCK 4 — OUTPUT SECTION ALERT
+         ═══════════════════════════════════════════════════════════ -->
     <div class="section">
         <label>🔒 Encrypted Output</label>
+        <div class="heavy-block output-alert" id="outputAlert">
+            <div class="heavy-block-header">
+                <span class="heavy-block-icon">⚠️</span>
+                <span class="heavy-block-title">ENCRYPTED OUTPUT = RAW STRING ONLY</span>
+                <span class="heavy-block-badge red">REQUIRED</span>
+            </div>
+            <div class="heavy-block-body">
+                <p class="heavy-block-lead">
+                    The output below is <strong>encrypted ciphertext</strong>. It <strong>cannot</strong> be decrypted by copy-pasting alone.
+                </p>
+                <div class="output-options">
+                    <div class="output-option correct">
+                        <div class="option-header">
+                            <span class="option-icon">✅</span>
+                            <strong>CORRECT METHOD</strong>
+                        </div>
+                        <ol>
+                            <li>Click <strong>🎁 DOWNLOAD DECRYPTOR + KEY FILE</strong></li>
+                            <li>Two files will be downloaded</li>
+                            <li>Place both in the <strong>SAME FOLDER</strong></li>
+                            <li>Double-click <code>decryptor.html</code></li>
+                            <li>Auto-decryption completes ✅</li>
+                        </ol>
+                    </div>
+                    <div class="output-option incorrect">
+                        <div class="option-header">
+                            <span class="option-icon">❌</span>
+                            <strong>INCORRECT METHOD</strong>
+                        </div>
+                        <p>Copying the encrypted string and pasting it elsewhere will <strong>NOT</strong> decrypt your data. The decryptor file is required.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <textarea id="outputEnc" class="tall" placeholder="Encrypted output will appear here..." readonly></textarea>
     </div>
     <div class="btn-row">
         <button class="green" onclick="copyOutput()">📋 COPY</button>
-        <button class="secondary" onclick="downloadOutput()">⬇️ DOWNLOAD ENCRYPTED</button>
-        <button class="pink" onclick="downloadDecryptor()">🎁 DOWNLOAD DECRYPTOR + KEY FILE</button>
+        <button class="secondary" onclick="downloadOutput()">⬇️ DOWNLOAD ENCRYPTED (Raw String)</button>
+        <button class="pink pulse-glow" onclick="downloadDecryptor()">🎁 DOWNLOAD DECRYPTOR + KEY FILE (REQUIRED)</button>
     </div>
 </div>
 
 <div class="toast-container" id="toastContainer"></div>
+
 
 <script>
 (function() {
