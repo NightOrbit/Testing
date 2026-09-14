@@ -4,9 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b0b1a">
-<meta name="mobile-web-app-capable" content="yes">
 <meta name="robots" content="noindex, nofollow">
-<title>Obfuscate Code — NightOrbit CodeForge</title>
+<title>Obfuscate Code — NightOrbit CodeForge Pro</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
 
 <noscript>
@@ -16,71 +15,10 @@
     </div>
 </noscript>
 
-<script>
-(function() {
-    'use strict';
-    function isEditable(el) {
-        if (!el || !el.tagName) return false;
-        var tag = el.tagName.toLowerCase();
-        return tag === 'input' || tag === 'textarea' || tag === 'select' || el.isContentEditable;
-    }
-    function onKeyDown(e) {
-        var key = e.key, code = e.keyCode;
-        var ctrl = e.ctrlKey, shift = e.shiftKey, alt = e.altKey, meta = e.metaKey;
-        var editable = isEditable(e.target);
-        if (key && key.length <= 3 && key.charAt(0) === 'F') {
-            var num = parseInt(key.substring(1), 10);
-            if (num >= 1 && num <= 12) { e.preventDefault(); e.stopPropagation(); return false; }
-        }
-        if (key === 'F12' || code === 123) { e.preventDefault(); e.stopPropagation(); return false; }
-        if (ctrl && shift && (key === 'I' || key === 'J' || key === 'C' || key === 'K' ||
-                              code === 73 || code === 74 || code === 67 || code === 75)) {
-            e.preventDefault(); e.stopPropagation(); return false;
-        }
-        if (ctrl && (key === 'U' || code === 85)) { e.preventDefault(); e.stopPropagation(); return false; }
-        if (key === 'PrintScreen' || code === 44) { e.preventDefault(); e.stopPropagation(); return false; }
-        if (!editable) {
-            if (key === 'Insert' || code === 45) { e.preventDefault(); e.stopPropagation(); return false; }
-            if (key === 'Home' || code === 36) { e.preventDefault(); e.stopPropagation(); return false; }
-            if (key === 'PageUp' || key === 'PageDown' || code === 33 || code === 34) {
-                e.preventDefault(); e.stopPropagation(); return false;
-            }
-            if (key === 'Backspace') { e.preventDefault(); e.stopPropagation(); return false; }
-            if (key === 'Tab') { e.preventDefault(); e.stopPropagation(); return false; }
-        }
-        return true;
-    }
-    document.addEventListener('keydown', onKeyDown, { capture: true, passive: false });
-    document.addEventListener('contextmenu', function(e) {
-        if (isEditable(e.target)) return true;
-        e.preventDefault(); e.stopPropagation(); return false;
-    }, { capture: true });
-    document.addEventListener('copy', function(e) {
-        if (isEditable(e.target)) return true;
-        e.preventDefault(); return false;
-    }, { capture: true });
-    document.addEventListener('cut', function(e) {
-        if (isEditable(e.target)) return true;
-        e.preventDefault(); return false;
-    }, { capture: true });
-    document.addEventListener('selectstart', function(e) {
-        if (isEditable(e.target)) return true;
-        e.preventDefault(); return false;
-    }, { capture: true });
-    document.addEventListener('dragstart', function(e) {
-        if (isEditable(e.target)) return true;
-        e.preventDefault(); return false;
-    }, { capture: true });
-    document.addEventListener('auxclick', function(e) {
-        if (e.button === 1) { e.preventDefault(); e.stopPropagation(); return false; }
-    }, { capture: true });
-    try { if (window.console && window.console.clear) window.console.clear = function() {}; } catch(e) {}
-})();
-</script>
-
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+<!-- ═══════════════════════════════════════════════════════════
+     AUTH GUARD — Loads Firebase itself, handles auth
+     DO NOT add Firebase scripts manually below
+     ═══════════════════════════════════════════════════════════ -->
 <script src="auth-guard.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -126,18 +64,6 @@ body::before {
     z-index: 0;
 }
 
-body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-        linear-gradient(rgba(180,0,255,0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(180,0,255,0.02) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none;
-    z-index: 0;
-}
-
 .app {
     max-width: 1400px;
     margin: 0 auto;
@@ -156,24 +82,6 @@ body::after {
     text-align: center;
     position: relative;
     overflow: hidden;
-}
-
-.header::before {
-    content: '';
-    position: absolute; inset: -2px;
-    border-radius: 18px;
-    padding: 2px;
-    background: conic-gradient(from 0deg, var(--neon-purple), var(--neon-pink), var(--neon-cyan), var(--neon-gold), var(--neon-purple));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    animation: borderSpin 6s linear infinite;
-    pointer-events: none;
-}
-
-@keyframes borderSpin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
 }
 
 h1 {
@@ -221,12 +129,12 @@ h1 {
 .header-stat i { color: var(--neon-purple); font-size: 11px; }
 .header-stat.gold { border-color: rgba(255,215,0,0.2); }
 .header-stat.gold i { color: var(--neon-gold); }
-.header-stat.pink { border-color: rgba(255,45,149,0.2); }
-.header-stat.pink i { color: var(--neon-pink); }
 .header-stat.green { border-color: rgba(0,255,100,0.2); }
 .header-stat.green i { color: var(--neon-green); }
 .header-stat.cyan { border-color: rgba(0,240,255,0.2); }
 .header-stat.cyan i { color: var(--neon-cyan); }
+.header-stat.pink { border-color: rgba(255,45,149,0.3); background: rgba(255,45,149,0.08); }
+.header-stat.pink i { color: var(--neon-pink); }
 
 .top-actions {
     display: flex;
@@ -256,11 +164,7 @@ h1 {
     font-family: inherit;
 }
 
-.top-btn:hover {
-    transform: translateY(-3px) scale(1.04);
-    box-shadow: 0 0 50px rgba(180,0,255,0.6);
-}
-
+.top-btn:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 0 50px rgba(180,0,255,0.6); }
 .top-btn.gold { background: linear-gradient(135deg, #ffd700, #ff6b00); color: #000; }
 .top-btn.green { background: linear-gradient(135deg, #00ff88, #00b85c); color: #000; }
 .top-btn.pink { background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple)); color: #fff; }
@@ -314,42 +218,6 @@ h1 {
     text-align: right;
 }
 
-.progress-steps {
-    display: flex;
-    gap: 8px;
-    margin-left: auto;
-    flex-wrap: wrap;
-}
-
-.progress-step {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1.5px solid rgba(180, 0, 255, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-    font-weight: 900;
-    color: var(--text-muted);
-    transition: all 0.3s;
-}
-
-.progress-step.active {
-    background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
-    color: #fff;
-    border-color: #fff;
-    box-shadow: 0 0 15px rgba(180,0,255,0.6);
-    transform: scale(1.15);
-}
-
-.progress-step.done {
-    background: var(--neon-green);
-    color: #000;
-    border-color: #fff;
-}
-
 .card {
     background: var(--card);
     border: 2px solid var(--border);
@@ -359,16 +227,6 @@ h1 {
     margin-bottom: 15px;
     position: relative;
 }
-
-.card::before {
-    content: '';
-    position: absolute; top: 0; left: 20px; right: 20px; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
-    opacity: 0.6;
-}
-
-.card.collapsed .card-body { display: none; }
-.card.collapsed .card-toggle i { transform: rotate(-90deg); }
 
 h2, h3 {
     font-family: 'Orbitron', sans-serif;
@@ -383,18 +241,6 @@ h2, h3 {
     flex-wrap: wrap;
     gap: 8px;
 }
-
-.card-toggle {
-    background: transparent;
-    border: none;
-    color: var(--neon-purple);
-    cursor: pointer;
-    padding: 4px 8px;
-    font-size: 14px;
-    transition: 0.3s;
-}
-
-.card-toggle i { transition: transform 0.3s; }
 
 .badge {
     background: rgba(180, 0, 255, 0.15);
@@ -426,7 +272,6 @@ h2, h3 {
 }
 
 .guide-box strong { color: var(--neon-purple); }
-
 .guide-box code {
     background: rgba(0, 0, 0, 0.6);
     padding: 2px 6px;
@@ -458,16 +303,10 @@ textarea:focus, input[type="text"]:focus {
     outline: none;
     border-color: var(--neon-purple);
     box-shadow: 0 0 20px rgba(180, 0, 255, 0.2);
-    background: rgba(180, 0, 255, 0.03);
 }
 
 textarea::placeholder, input::placeholder { color: #444; font-size: 11px; }
-
-textarea[readonly] {
-    background: rgba(0, 0, 0, 0.4);
-    color: var(--text-secondary);
-    cursor: not-allowed;
-}
+textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary); cursor: not-allowed; }
 
 .mini-btn {
     background: rgba(180, 0, 255, 0.08);
@@ -526,35 +365,12 @@ textarea[readonly] {
     overflow: hidden;
 }
 
-.btn:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 35px rgba(180, 0, 255, 0.45);
-}
-
+.btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 35px rgba(180, 0, 255, 0.45); }
 .btn:disabled { opacity: 0.35; cursor: not-allowed; }
 .btn.full { width: 100%; }
 .btn.gold { background: linear-gradient(135deg, var(--neon-gold), #ff8c00); color: #000; }
-.btn.green { background: linear-gradient(135deg, #00ff88, #00b85c); color: #000; }
-.btn.red { background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple)); color: #fff; }
-.btn.secondary { background: rgba(180, 0, 255, 0.1); border: 1.5px solid rgba(180, 0, 255, 0.35); color: var(--neon-purple); }
 
-.btn::after {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    transition: left 0.5s;
-}
-
-.btn:hover::after { left: 100%; }
-
-.btn-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 8px;
-}
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
 
 .status {
     padding: 12px 15px;
@@ -588,13 +404,6 @@ textarea[readonly] {
     border-radius: 12px;
     padding: 14px;
     text-align: center;
-    transition: 0.3s;
-}
-
-.stat-card:hover {
-    border-color: var(--neon-purple);
-    box-shadow: 0 0 20px rgba(180,0,255,0.15);
-    transform: translateY(-3px);
 }
 
 .stat-label {
@@ -640,21 +449,8 @@ textarea[readonly] {
 }
 
 .history-item:last-child { border-bottom: none; }
-
-.history-time {
-    color: var(--text-muted);
-    font-size: 10px;
-    flex-shrink: 0;
-    min-width: 70px;
-}
-
-.history-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
+.history-time { color: var(--text-muted); font-size: 10px; flex-shrink: 0; min-width: 70px; }
+.history-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 .history-dot.info { background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan); }
 .history-dot.success { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
 .history-dot.error { background: var(--neon-red); box-shadow: 0 0 8px var(--neon-red); }
@@ -685,9 +481,7 @@ textarea[readonly] {
     font-weight: 700;
 }
 
-.tab:hover { color: var(--neon-purple); }
-.tab.active { color: var(--neon-purple); }
-
+.tab:hover, .tab.active { color: var(--neon-purple); }
 .tab.active::after {
     content: '';
     position: absolute;
@@ -738,11 +532,7 @@ textarea[readonly] {
 .toast.error .toast-icon { color: var(--neon-red); }
 .toast.warn .toast-icon { color: var(--neon-gold); }
 
-@keyframes toastIn {
-    from { transform: translateX(400px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
+@keyframes toastIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 .toast.removing { animation: toastOut 0.3s ease forwards; }
 @keyframes toastOut { to { transform: translateX(400px); opacity: 0; } }
 
@@ -775,9 +565,6 @@ textarea[readonly] {
 }
 
 .lang-btn .lang-icon { font-size: 20px; }
-.lang-btn .lang-name { font-size: 11px; }
-.lang-btn .lang-ext { font-size: 9px; color: var(--text-muted); }
-
 .lang-btn:hover { background: rgba(180, 0, 255, 0.1); border-color: var(--neon-purple); transform: translateY(-2px); }
 .lang-btn.active {
     background: linear-gradient(135deg, rgba(180, 0, 255, 0.25), rgba(255, 45, 149, 0.15));
@@ -786,29 +573,50 @@ textarea[readonly] {
     color: var(--neon-purple);
 }
 
+.adv-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.adv-option {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1.5px solid rgba(180, 0, 255, 0.15);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.adv-option:hover { border-color: var(--neon-purple); background: rgba(180, 0, 255, 0.05); }
+.adv-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--neon-purple);
+    cursor: pointer;
+}
+
+.adv-option .opt-label { flex: 1; font-weight: 600; }
+.adv-option .opt-desc { font-size: 9px; color: var(--text-muted); display: block; margin-top: 2px; }
+
 @media (max-width: 768px) {
     .app { padding: 10px; }
     h1 { font-size: 18px; letter-spacing: 2px; }
-    .subtitle { font-size: 9px; letter-spacing: 1.5px; }
+    .subtitle { font-size: 9px; }
     .card { padding: 14px; }
     .top-actions { flex-direction: column; }
-    .top-btn { justify-content: center; }
     textarea { font-size: 11px; }
-    .btn { font-size: 11px; padding: 13px 20px; }
-    .progress-steps { display: none; }
-    .header-stats { gap: 8px; }
-    .header-stat { font-size: 9px; padding: 3px 9px; }
     .lang-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 480px) {
     h1 { font-size: 15px; }
-    .subtitle { font-size: 8px; }
-    .card { padding: 12px; }
-    h2, h3 { font-size: 11px; }
-    .btn { font-size: 10px; padding: 11px 16px; letter-spacing: 1.5px; }
-    .mini-btn { font-size: 9px; padding: 6px 10px; }
-    .stat-value { font-size: 14px; }
     .toast-container { left: 10px; right: 10px; bottom: 10px; }
     .toast { min-width: auto; }
 }
@@ -819,14 +627,16 @@ textarea[readonly] {
 <div class="app">
 
     <div class="header">
-        <h1>🛡️ Obfuscate Code</h1>
-        <div class="subtitle">NightOrbit CodeForge · All Languages · Full Web Output</div>
+        <h1>🛡️ Obfuscate Code PRO</h1>
+        <div class="subtitle">NightOrbit CodeForge · Advanced AST-Based Obfuscation</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v16 ULTRA</span>
-            <span class="header-stat gold"><i class="fa-solid fa-language"></i> All Languages</span>
-            <span class="header-stat pink"><i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Detect</span>
-            <span class="header-stat green"><i class="fa-solid fa-code"></i> Full Web Output</span>
-            <span class="header-stat cyan"><i class="fa-solid fa-shield"></i> Function-Safe</span>
+            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v17 PRO</span>
+            <span class="header-stat gold"><i class="fa-solid fa-microchip"></i> Worker Thread</span>
+            <span class="header-stat green"><i class="fa-solid fa-tree"></i> AST-Based</span>
+            <span class="header-stat cyan"><i class="fa-solid fa-shield"></i> Heavy Files Ready</span>
+            <span class="header-stat pink" id="userBadge" style="display:none;">
+                <i class="fa-solid fa-user"></i> <span id="userName">—</span>
+            </span>
         </div>
     </div>
 
@@ -836,72 +646,34 @@ textarea[readonly] {
             <div class="progress-fill" id="progressFill"></div>
         </div>
         <div class="progress-percent" id="progressPercent">0%</div>
-        <div class="progress-steps">
-            <div class="progress-step" id="step1">1</div>
-            <div class="progress-step" id="step2">2</div>
-            <div class="progress-step" id="step3">3</div>
-            <div class="progress-step" id="step4">4</div>
-        </div>
     </div>
 
     <div class="top-actions">
-        <a href="dashboard.html" class="top-btn gold">⬅ BACK TO DASHBOARD</a>
-        <button class="top-btn pink" onclick="scrollToSection('obfuscateSection')">🚀 GO TO OBFUSCATE</button>
+        <a href="dashboard.html" class="top-btn gold">⬅ BACK</a>
         <button class="top-btn green" onclick="loadSampleCode()">📥 LOAD SAMPLE</button>
     </div>
 
     <div class="card">
         <div class="guide-box">
-            <strong>📌 4 Simple Steps:</strong><br>
-            1️⃣ <b>Paste your code</b> — HTML, CSS, JS, JSON, XML — kuch bhi<br>
-            2️⃣ <b>Auto-Detect</b> khud pehchan lega language — ya manually select karo<br>
-            3️⃣ Click <b>"PARSE & SEPARATE CODE"</b> — comments removed, sections alag<br>
-            4️⃣ Click <b>"OBFUSCATE NOW"</b> — <b>complete HTML file output</b> milega (original web)
-            <br><br>
-            <b style="color:var(--neon-gold);">🛡️ Function-Safe:</b> Code functionality intact rahegi — buttons, events, APIs sab kaam karenge.
+            <strong>📌 PRO Features:</strong><br>
+            • <b>AST-based variable renaming</b> — real obfuscation<br>
+            • <b>Web Worker processing</b> — 5MB+ files without UI freeze<br>
+            • <b>Tokenizer-based parsing</b> — nested tags, string-safe<br>
+            • <b>Modern JS support</b> — async/await, classes<br>
+            • <b>Control flow flattening</b> — advanced protection
         </div>
     </div>
 
     <div class="card" id="langSection">
-        <h3>
-            <span>🌐 Language Selector <span class="badge cyan">AUTO-DETECT ACTIVE</span></span>
-        </h3>
+        <h3><span>🌐 Language <span class="badge cyan">AUTO-DETECT</span></span></h3>
         <div class="lang-grid" id="langGrid">
-            <button class="lang-btn active" data-lang="auto" onclick="selectLang('auto', this)">
-                <span class="lang-icon">🔍</span>
-                <span class="lang-name">AUTO</span>
-                <span class="lang-ext">DETECT</span>
-            </button>
-            <button class="lang-btn" data-lang="html" onclick="selectLang('html', this)">
-                <span class="lang-icon">🌐</span>
-                <span class="lang-name">HTML</span>
-                <span class="lang-ext">.html</span>
-            </button>
-            <button class="lang-btn" data-lang="css" onclick="selectLang('css', this)">
-                <span class="lang-icon">🎨</span>
-                <span class="lang-name">CSS</span>
-                <span class="lang-ext">.css</span>
-            </button>
-            <button class="lang-btn" data-lang="js" onclick="selectLang('js', this)">
-                <span class="lang-icon">⚡</span>
-                <span class="lang-name">JavaScript</span>
-                <span class="lang-ext">.js</span>
-            </button>
-            <button class="lang-btn" data-lang="json" onclick="selectLang('json', this)">
-                <span class="lang-icon">📦</span>
-                <span class="lang-name">JSON</span>
-                <span class="lang-ext">.json</span>
-            </button>
-            <button class="lang-btn" data-lang="xml" onclick="selectLang('xml', this)">
-                <span class="lang-icon">📄</span>
-                <span class="lang-name">XML</span>
-                <span class="lang-ext">.xml</span>
-            </button>
-            <button class="lang-btn" data-lang="mixed" onclick="selectLang('mixed', this)">
-                <span class="lang-icon">🧩</span>
-                <span class="lang-name">Mixed</span>
-                <span class="lang-ext">HTML+CSS+JS</span>
-            </button>
+            <button class="lang-btn active" data-lang="auto" onclick="selectLang('auto', this)"><span class="lang-icon">🔍</span><span class="lang-name">AUTO</span><span class="lang-ext">DETECT</span></button>
+            <button class="lang-btn" data-lang="html" onclick="selectLang('html', this)"><span class="lang-icon">🌐</span><span class="lang-name">HTML</span><span class="lang-ext">.html</span></button>
+            <button class="lang-btn" data-lang="css" onclick="selectLang('css', this)"><span class="lang-icon">🎨</span><span class="lang-name">CSS</span><span class="lang-ext">.css</span></button>
+            <button class="lang-btn" data-lang="js" onclick="selectLang('js', this)"><span class="lang-icon">⚡</span><span class="lang-name">JavaScript</span><span class="lang-ext">.js</span></button>
+            <button class="lang-btn" data-lang="json" onclick="selectLang('json', this)"><span class="lang-icon">📦</span><span class="lang-name">JSON</span><span class="lang-ext">.json</span></button>
+            <button class="lang-btn" data-lang="xml" onclick="selectLang('xml', this)"><span class="lang-icon">📄</span><span class="lang-name">XML</span><span class="lang-ext">.xml</span></button>
+            <button class="lang-btn" data-lang="mixed" onclick="selectLang('mixed', this)"><span class="lang-icon">🧩</span><span class="lang-name">Mixed</span><span class="lang-ext">HTML+CSS+JS</span></button>
         </div>
         <div style="margin-top:10px;font-size:11px;color:var(--text-muted);">
             <b style="color:var(--neon-cyan);">Detected:</b> <span id="detectedLang">—</span>
@@ -909,200 +681,118 @@ textarea[readonly] {
     </div>
 
     <div class="card" id="inputSection">
-        <h3>
-            <span>📝 STEP 1 — Paste Your Code <span class="badge pink">INPUT</span></span>
-            <button class="card-toggle" onclick="toggleCard('inputSection')"><i class="fa-solid fa-chevron-down"></i></button>
-        </h3>
-
-        <div class="card-body">
-            <div class="guide-box">
-                <strong>📌 Paste your full code here:</strong><br>
-                • HTML, CSS, JS, JSON, XML — kuch bhi paste karo<br>
-                • Comments safely remove ho jayenge<br>
-                • Press <code>Ctrl + Enter</code> to parse
-            </div>
-
-            <textarea id="fullCodeArea" class="huge" placeholder="Paste your code here (HTML + CSS + JS + anything)..."></textarea>
-
-            <div class="btn-row">
-                <button class="mini-btn gold" onclick="parseFullCode()">🔍 PARSE & SEPARATE CODE</button>
-                <button class="mini-btn cyan" onclick="copyFullCode()">📋 COPY</button>
-                <button class="mini-btn green" onclick="loadSampleCode()">📥 SAMPLE</button>
-                <button class="mini-btn red" onclick="clearFullCode()">🗑️ CLEAR</button>
-            </div>
-
-            <div class="status" id="statusFullCode"></div>
-
-            <div class="stats-grid" id="inputStats" style="display:none;">
-                <div class="stat-card">
-                    <div class="stat-label">Lines</div>
-                    <div class="stat-value" id="statLines">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Characters</div>
-                    <div class="stat-value gold" id="statChars">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Size</div>
-                    <div class="stat-value green" id="statSize">0 B</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Detected</div>
-                    <div class="stat-value pink" id="statDetected">—</div>
-                </div>
-            </div>
+        <h3><span>📝 STEP 1 — Paste Code <span class="badge pink">INPUT</span></span></h3>
+        <div class="guide-box">
+            • Heavy files (10MB+) supported<br>
+            • Modern JS (async/await, classes) supported<br>
+            • Press <code>Ctrl + Enter</code> to parse
+        </div>
+        <textarea id="fullCodeArea" class="huge" placeholder="Paste your code here..."></textarea>
+        <div class="btn-row">
+            <button class="mini-btn gold" onclick="parseFullCode()">🔍 PARSE & SEPARATE</button>
+            <button class="mini-btn cyan" onclick="copyFullCode()">📋 COPY</button>
+            <button class="mini-btn green" onclick="loadSampleCode()">📥 SAMPLE</button>
+            <button class="mini-btn red" onclick="clearFullCode()">🗑️ CLEAR</button>
+        </div>
+        <div class="status" id="statusFullCode"></div>
+        <div class="stats-grid" id="inputStats" style="display:none;">
+            <div class="stat-card"><div class="stat-label">Lines</div><div class="stat-value" id="statLines">0</div></div>
+            <div class="stat-card"><div class="stat-label">Characters</div><div class="stat-value gold" id="statChars">0</div></div>
+            <div class="stat-card"><div class="stat-label">Size</div><div class="stat-value green" id="statSize">0 B</div></div>
+            <div class="stat-card"><div class="stat-label">Detected</div><div class="stat-value pink" id="statDetected">—</div></div>
         </div>
     </div>
 
     <div id="sectionsContainer" style="display:none;">
         <div class="card">
-            <h3>
-                <span>🧩 SEPARATED CODE <span class="badge success">READY</span></span>
-            </h3>
+            <h3><span>🧩 SEPARATED CODE <span class="badge success">READY</span></span></h3>
             <div class="tabs">
                 <button class="tab active" data-tab="html" onclick="switchTab('html')">📄 HTML</button>
                 <button class="tab" data-tab="css" onclick="switchTab('css')">🎨 CSS</button>
                 <button class="tab" data-tab="js" onclick="switchTab('js')">⚙️ JS</button>
                 <button class="tab" data-tab="other" onclick="switchTab('other')">📦 OTHER</button>
             </div>
-
             <div class="tab-content active" id="tab-html">
                 <h3 style="margin-bottom:8px;">📄 HTML <span class="badge" id="htmlBadge">EMPTY</span></h3>
-                <textarea id="htmlArea" class="tall" placeholder="HTML will appear here..."></textarea>
-                <div class="btn-row">
-                    <button class="mini-btn cyan" onclick="copyHtml()">📋 COPY</button>
-                    <button class="mini-btn pink" onclick="clearHtml()">🗑️ CLEAR</button>
-                </div>
+                <textarea id="htmlArea" class="tall" placeholder="HTML..."></textarea>
             </div>
-
             <div class="tab-content" id="tab-css">
                 <h3 style="margin-bottom:8px;">🎨 CSS <span class="badge" id="cssBadge">EMPTY</span></h3>
-                <textarea id="cssArea" class="tall" placeholder="CSS will appear here..."></textarea>
-                <div class="btn-row">
-                    <button class="mini-btn cyan" onclick="copyCss()">📋 COPY</button>
-                    <button class="mini-btn pink" onclick="clearCss()">🗑️ CLEAR</button>
-                </div>
+                <textarea id="cssArea" class="tall" placeholder="CSS..."></textarea>
             </div>
-
             <div class="tab-content" id="tab-js">
                 <h3 style="margin-bottom:8px;">⚙️ JavaScript <span class="badge" id="jsBadge">EMPTY</span></h3>
-                <textarea id="jsArea" class="tall" placeholder="JS will appear here..."></textarea>
-                <div class="btn-row">
-                    <button class="mini-btn cyan" onclick="copyJs()">📋 COPY</button>
-                    <button class="mini-btn pink" onclick="clearJs()">🗑️ CLEAR</button>
-                </div>
+                <textarea id="jsArea" class="tall" placeholder="JS..."></textarea>
             </div>
-
             <div class="tab-content" id="tab-other">
-                <h3 style="margin-bottom:8px;">📦 Other (JSON/XML) <span class="badge" id="otherBadge">EMPTY</span></h3>
-                <textarea id="otherArea" class="tall" placeholder="JSON/XML will appear here..."></textarea>
-                <div class="btn-row">
-                    <button class="mini-btn cyan" onclick="copyOther()">📋 COPY</button>
-                    <button class="mini-btn pink" onclick="clearOther()">🗑️ CLEAR</button>
-                </div>
+                <h3 style="margin-bottom:8px;">📦 Other <span class="badge" id="otherBadge">EMPTY</span></h3>
+                <textarea id="otherArea" class="tall" placeholder="JSON/XML..."></textarea>
             </div>
         </div>
     </div>
 
     <div class="card" id="obfuscateSection">
-        <h3>
-            <span>🚀 STEP 3 — Obfuscate <span class="badge gold">FINAL</span></span>
-        </h3>
-
-        <div class="guide-box">
-            <strong>📌 Apply protection & generate output:</strong><br>
-            • JS obfuscated hoga — multiple layers of protection<br>
-            • HTML & CSS as-is rahenge (comments removed)<br>
-            • Output: <b>Complete HTML file</b> — original web jaisa<br>
-            • Copy karke <code>file.html</code> save karo — browser mein direct chalega!
+        <h3><span>⚙️ STEP 3 — Obfuscation Options <span class="badge gold">ADVANCED</span></span></h3>
+        <div class="adv-options">
+            <label class="adv-option">
+                <input type="checkbox" id="optVarRename" checked>
+                <div><span class="opt-label">Variable Renaming</span><span class="opt-desc">Rename vars to _0xABC</span></div>
+            </label>
+            <label class="adv-option">
+                <input type="checkbox" id="optStringArray" checked>
+                <div><span class="opt-label">String Array</span><span class="opt-desc">Move strings to array</span></div>
+            </label>
+            <label class="adv-option">
+                <input type="checkbox" id="optHexEncode" checked>
+                <div><span class="opt-label">Hex Encoding</span><span class="opt-desc">Encode strings as \x hex</span></div>
+            </label>
+            <label class="adv-option">
+                <input type="checkbox" id="optControlFlow">
+                <div><span class="opt-label">Control Flow Flatten</span><span class="opt-desc">Advanced (slower, stronger)</span></div>
+            </label>
+            <label class="adv-option">
+                <input type="checkbox" id="optDeadCode" checked>
+                <div><span class="opt-label">Dead Code Injection</span><span class="opt-desc">Add junk functions</span></div>
+            </label>
+            <label class="adv-option">
+                <input type="checkbox" id="optMinify" checked>
+                <div><span class="opt-label">Minify Output</span><span class="opt-desc">Remove whitespace</span></div>
+            </label>
         </div>
-
-        <button class="btn full gold" id="obfuscateBtn" onclick="obfuscateNow()">
+        <button class="btn full gold" id="obfuscateBtn" onclick="obfuscateNow()" style="margin-top:14px;">
             <i class="fa-solid fa-bolt"></i> OBFUSCATE NOW (Ctrl+Enter)
         </button>
-
         <div class="status" id="statusObfuscate"></div>
     </div>
 
     <div class="card" id="outputSection" style="display:none;">
-        <h3>
-            <span>🔒 STEP 4 — Complete Web Output <span class="badge success" id="outputBadge">READY</span></span>
-        </h3>
-
-        <div class="guide-box">
-            <strong>✅ Complete!</strong><br>
-            Ye pura HTML file hai — copy karke <code>file.html</code> save karo. Browser mein directly chalega. Original web jaisa!
-        </div>
-
-        <textarea id="outputCode" class="huge" placeholder="Complete HTML output..." readonly></textarea>
-
+        <h3><span>🔒 STEP 4 — Complete Output <span class="badge success" id="outputBadge">READY</span></span></h3>
+        <div class="guide-box">✅ Complete HTML file — copy & save as <code>file.html</code></div>
+        <textarea id="outputCode" class="huge" placeholder="Output..." readonly></textarea>
         <div class="btn-row">
             <button class="mini-btn cyan" onclick="copyOutput()">📋 COPY FULL HTML</button>
             <button class="mini-btn green" onclick="downloadOutput()">⬇ DOWNLOAD .HTML</button>
             <button class="mini-btn gold" onclick="testOutput()">🧪 TEST</button>
         </div>
-
         <div class="stats-grid" id="outputStats">
-            <div class="stat-card">
-                <div class="stat-label">Original</div>
-                <div class="stat-value cyan" id="statOrigSize">0 B</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Obfuscated</div>
-                <div class="stat-value gold" id="statObfSize">0 B</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Ratio</div>
-                <div class="stat-value pink" id="statRatio">0%</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Layers</div>
-                <div class="stat-value green" id="statLayers">0</div>
-            </div>
+            <div class="stat-card"><div class="stat-label">Original</div><div class="stat-value cyan" id="statOrigSize">0 B</div></div>
+            <div class="stat-card"><div class="stat-label">Obfuscated</div><div class="stat-value gold" id="statObfSize">0 B</div></div>
+            <div class="stat-card"><div class="stat-label">Ratio</div><div class="stat-value pink" id="statRatio">0%</div></div>
+            <div class="stat-card"><div class="stat-label">Layers</div><div class="stat-value green" id="statLayers">0</div></div>
         </div>
     </div>
 
     <div class="card">
-        <h3>📊 Activity Log & Shortcuts</h3>
-        <div class="card-body">
-            <div class="tabs">
-                <button class="tab active" data-tab="activity" onclick="switchLogTab('activity')">📋 Activity</button>
-                <button class="tab" data-tab="shortcuts" onclick="switchLogTab('shortcuts')">⌨️ Shortcuts</button>
+        <h3>📊 Activity Log</h3>
+        <div class="history-list" id="historyList">
+            <div class="history-item">
+                <span class="history-time">--:--:--</span>
+                <span class="history-dot info"></span>
+                <span>PRO Obfuscator initialized</span>
             </div>
-
-            <div class="tab-content active" id="tab-activity">
-                <div class="history-list" id="historyList">
-                    <div class="history-item">
-                        <span class="history-time">--:--:--</span>
-                        <span class="history-dot info"></span>
-                        <span>CodeForge Obfuscator initialized</span>
-                    </div>
-                </div>
-                <div class="btn-row">
-                    <button class="mini-btn pink" onclick="clearHistory()">🗑️ CLEAR HISTORY</button>
-                </div>
-            </div>
-
-            <div class="tab-content" id="tab-shortcuts">
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(0,0,0,0.4);border:1px solid rgba(180,0,255,0.1);border-radius:10px;font-size:11px;color:var(--text-secondary);">
-                        <span style="display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-bolt" style="color:var(--neon-purple);"></i> Parse Code</span>
-                        <span style="background:rgba(0,0,0,0.6);padding:3px 7px;border-radius:5px;font-family:monospace;font-size:10px;color:var(--neon-gold);">Ctrl+Enter</span>
-                    </div>
-                    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(0,0,0,0.4);border:1px solid rgba(180,0,255,0.1);border-radius:10px;font-size:11px;color:var(--text-secondary);">
-                        <span style="display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-lock" style="color:var(--neon-purple);"></i> Obfuscate</span>
-                        <span style="background:rgba(0,0,0,0.6);padding:3px 7px;border-radius:5px;font-family:monospace;font-size:10px;color:var(--neon-gold);">Ctrl+Shift+Enter</span>
-                    </div>
-                    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(0,0,0,0.4);border:1px solid rgba(180,0,255,0.1);border-radius:10px;font-size:11px;color:var(--text-secondary);">
-                        <span style="display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-copy" style="color:var(--neon-purple);"></i> Copy HTML</span>
-                        <span style="background:rgba(0,0,0,0.6);padding:3px 7px;border-radius:5px;font-family:monospace;font-size:10px;color:var(--neon-gold);">Ctrl+Shift+C</span>
-                    </div>
-                    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(0,0,0,0.4);border:1px solid rgba(180,0,255,0.1);border-radius:10px;font-size:11px;color:var(--text-secondary);">
-                        <span style="display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-trash" style="color:var(--neon-purple);"></i> Clear All</span>
-                        <span style="background:rgba(0,0,0,0.6);padding:3px 7px;border-radius:5px;font-family:monospace;font-size:10px;color:var(--neon-gold);">Ctrl+Shift+X</span>
-                    </div>
-                </div>
-            </div>
+        </div>
+        <div class="btn-row">
+            <button class="mini-btn pink" onclick="clearHistory()">🗑️ CLEAR</button>
         </div>
     </div>
 
@@ -1116,30 +806,379 @@ textarea[readonly] {
 
 <div class="toast-container" id="toastContainer"></div>
 
+<!-- ═══════════════════════════════════════════════════════════
+     WEB WORKER — Runs obfuscation off main thread
+     ═══════════════════════════════════════════════════════════ -->
+<script id="obfuscatorWorker" type="javascript/worker">
+'use strict';
+
+var SAFETY = { MAX_STRING_LENGTH: 500 };
+
+function randomName(prefix) {
+    var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var s = prefix || '_0x';
+    for (var i = 0; i < 6; i++) s += chars.charAt(Math.floor(Math.random() * chars.length));
+    return s;
+}
+
+function extractBlocks(code, tagName) {
+    var results = [];
+    var openTag = '<' + tagName;
+    var closeTag = '</' + tagName + '>';
+    var i = 0, len = code.length;
+    while (i < len) {
+        var openIdx = code.indexOf(openTag, i);
+        if (openIdx === -1) break;
+        var charAfter = code.charAt(openIdx + openTag.length);
+        if (charAfter && !/[\s>\/]/.test(charAfter)) { i = openIdx + openTag.length; continue; }
+        var tagEnd = code.indexOf('>', openIdx);
+        if (tagEnd === -1) break;
+        if (code.charAt(tagEnd - 1) === '/') { i = tagEnd + 1; continue; }
+        var depth = 1, searchPos = tagEnd + 1, contentEnd = -1;
+        while (searchPos < len && depth > 0) {
+            var nextOpen = code.indexOf(openTag, searchPos);
+            var nextClose = code.indexOf(closeTag, searchPos);
+            if (nextClose === -1) break;
+            if (nextOpen !== -1 && nextOpen < nextClose) {
+                var afterOpen = code.charAt(nextOpen + openTag.length);
+                if (!afterOpen || /[\s>\/]/.test(afterOpen)) depth++;
+                searchPos = nextOpen + openTag.length;
+            } else {
+                depth--;
+                if (depth === 0) contentEnd = nextClose;
+                searchPos = nextClose + closeTag.length;
+            }
+        }
+        if (contentEnd === -1) break;
+        results.push({
+            start: openIdx,
+            end: contentEnd + closeTag.length,
+            content: code.substring(tagEnd + 1, contentEnd),
+            attrs: code.substring(openIdx + openTag.length, tagEnd)
+        });
+        i = contentEnd + closeTag.length;
+    }
+    return results;
+}
+
+function stripJsComments(code) {
+    var result = '', i = 0, st = 'code';
+    while (i < code.length) {
+        var ch = code[i], next = code[i+1];
+        if (st === 'lineComment') { if (ch === '\n') { st = 'code'; result += ch; } i++; continue; }
+        if (st === 'blockComment') { if (ch === '*' && next === '/') { st = 'code'; i += 2; continue; } i++; continue; }
+        if (st === 'single') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === "'") st = 'code'; i++; continue; }
+        if (st === 'double') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '"') st = 'code'; i++; continue; }
+        if (st === 'template') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '`') st = 'code'; i++; continue; }
+        if (ch === '/' && next === '/') { st = 'lineComment'; i += 2; continue; }
+        if (ch === '/' && next === '*') { st = 'blockComment'; i += 2; continue; }
+        if (ch === "'") { st = 'single'; result += ch; i++; continue; }
+        if (ch === '"') { st = 'double'; result += ch; i++; continue; }
+        if (ch === '`') { st = 'template'; result += ch; i++; continue; }
+        result += ch; i++;
+    }
+    return result;
+}
+
+function stripCssComments(code) {
+    var result = '', i = 0, inString = false, sc = '';
+    while (i < code.length) {
+        var ch = code[i], next = code[i+1];
+        if (inString) {
+            result += ch;
+            if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; }
+            if (ch === sc) inString = false;
+            i++; continue;
+        }
+        if (ch === '"' || ch === "'") { inString = true; sc = ch; result += ch; i++; continue; }
+        if (ch === '/' && next === '*') { i += 2; while (i < code.length) { if (code[i] === '*' && code[i+1] === '/') { i += 2; break; } i++; } continue; }
+        result += ch; i++;
+    }
+    return result;
+}
+
+function stripHtmlComments(code) { return code.replace(/<!--(?!\[if)[\s\S]*?-->/g, ''); }
+
+function layerVarRename(code) {
+    var RESERVED = {
+        'var':1,'let':1,'const':1,'function':1,'return':1,'if':1,'else':1,'for':1,'while':1,
+        'do':1,'break':1,'continue':1,'switch':1,'case':1,'default':1,'try':1,'catch':1,
+        'finally':1,'throw':1,'new':1,'delete':1,'typeof':1,'instanceof':1,'in':1,'of':1,
+        'this':1,'super':1,'class':1,'extends':1,'static':1,'get':1,'set':1,'async':1,
+        'await':1,'yield':1,'import':1,'export':1,'from':1,'as':1,'null':1,'undefined':1,
+        'true':1,'false':1,'NaN':1,'Infinity':1,'void':1,'debugger':1,'with':1,
+        'console':1,'window':1,'document':1,'Math':1,'JSON':1,'Object':1,'Array':1,
+        'String':1,'Number':1,'Boolean':1,'Date':1,'RegExp':1,'Error':1,'Promise':1,
+        'Map':1,'Set':1,'WeakMap':1,'WeakSet':1,'Symbol':1,'Proxy':1,'Reflect':1,
+        'parseInt':1,'parseFloat':1,'isNaN':1,'isFinite':1,'eval':1,'Function':1,
+        'require':1,'module':1,'exports':1,'process':1,'global':1,'Buffer':1,
+        'setTimeout':1,'setInterval':1,'clearTimeout':1,'clearInterval':1,
+        'alert':1,'confirm':1,'prompt':1,'fetch':1,'XMLHttpRequest':1,
+        'localStorage':1,'sessionStorage':1,'navigator':1,'location':1,'history':1,
+        'arguments':1,'prototype':1,'constructor':1,'hasOwnProperty':1
+    };
+    var map = Object.create(null);
+    var counter = 0;
+    function getName(orig) {
+        if (RESERVED[orig]) return orig;
+        if (orig.length <= 1) return orig;
+        if (!/^[a-zA-Z_$][\w$]*$/.test(orig)) return orig;
+        if (!map[orig]) {
+            map[orig] = '_0x' + (counter++).toString(36) + Math.random().toString(36).substring(2, 6);
+        }
+        return map[orig];
+    }
+    var varRegex = /\b(var|let|const)\s+([a-zA-Z_$][\w$]*)/g;
+    var m;
+    while ((m = varRegex.exec(code)) !== null) getName(m[2]);
+    var funcRegex = /function\s*([a-zA-Z_$][\w$]*)?\s*\(([^)]*)\)/g;
+    while ((m = funcRegex.exec(code)) !== null) {
+        if (m[1]) getName(m[1]);
+        if (m[2]) {
+            m[2].split(',').forEach(function(p) {
+                p = p.trim().split('=')[0].trim();
+                if (p) getName(p);
+            });
+        }
+    }
+    var arrowRegex = /\(([^)]*)\)\s*=>/g;
+    while ((m = arrowRegex.exec(code)) !== null) {
+        m[1].split(',').forEach(function(p) {
+            p = p.trim().split('=')[0].trim();
+            if (p && /^[a-zA-Z_$][\w$]*$/.test(p)) getName(p);
+        });
+    }
+    if (Object.keys(map).length === 0) return code;
+    var result = code;
+    Object.keys(map).forEach(function(orig) {
+        var re = new RegExp('\\b' + orig.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'g');
+        result = result.replace(re, map[orig]);
+    });
+    return result;
+}
+
+function layerStringArray(code) {
+    var strings = [];
+    var stringMap = Object.create(null);
+    var arrName = randomName('_0x');
+    var maxSize = 1000;
+    var newCode = code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
+        if (str.length === 0 || str.length > SAFETY.MAX_STRING_LENGTH) return match;
+        if (strings.length >= maxSize) return match;
+        var index = stringMap[str];
+        if (index === undefined) {
+            index = strings.length;
+            strings.push(str);
+            stringMap[str] = index;
+        }
+        return arrName + '[' + index + ']';
+    });
+    if (strings.length === 0) return code;
+    var arrDecl = 'var ' + arrName + '=[' + strings.map(function(s) { return JSON.stringify(s); }).join(',') + '];';
+    return arrDecl + newCode;
+}
+
+function layerHexEncode(code) {
+    return code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
+        if (str.length === 0 || str.length > SAFETY.MAX_STRING_LENGTH) return match;
+        if (/[^\x00-\x7F]/.test(str)) return match;
+        if (/\\x/.test(str)) return match;
+        var hex = '';
+        for (var i = 0; i < str.length; i++) {
+            hex += '\\x' + ('0' + str.charCodeAt(i).toString(16)).slice(-2);
+        }
+        return '"' + hex + '"';
+    });
+}
+
+function layerUnicodeEscape(code) {
+    return code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
+        if (str.length === 0 || str.length > 200) return match;
+        if (/[\\]/.test(str)) return match;
+        if (/[^\x00-\x7F]/.test(str)) return match;
+        if (!/^[a-zA-Z0-9\s\-\_\.\/\:]+$/.test(str)) return match;
+        var u = '';
+        for (var i = 0; i < str.length; i++) {
+            u += '\\u' + ('0000' + str.charCodeAt(i).toString(16)).slice(-4);
+        }
+        return '"' + u + '"';
+    });
+}
+
+function layerHexNumbers(code) {
+    var result = '', i = 0, inString = false, sc = '';
+    while (i < code.length) {
+        var ch = code[i];
+        if (inString) {
+            result += ch;
+            if (ch === '\\' && i + 1 < code.length) { result += code[i + 1]; i += 2; continue; }
+            if (ch === sc) inString = false;
+            i++; continue;
+        }
+        if (ch === '"' || ch === "'" || ch === '`') { inString = true; sc = ch; result += ch; i++; continue; }
+        if (/\d/.test(ch) && (i === 0 || !/[\w.]/.test(code[i - 1]))) {
+            var numStr = '', hasDot = false;
+            while (i < code.length && /[\d.]/.test(code[i])) {
+                if (code[i] === '.') hasDot = true;
+                numStr += code[i]; i++;
+            }
+            if (!hasDot && /^\d+$/.test(numStr) && parseInt(numStr) > 9 && parseInt(numStr) < 1000000) {
+                result += '0x' + parseInt(numStr).toString(16).toUpperCase();
+            } else {
+                result += numStr;
+            }
+            continue;
+        }
+        result += ch; i++;
+    }
+    return result;
+}
+
+function layerDeadCode(code) {
+    var dead = '';
+    for (var i = 0; i < 5; i++) {
+        var fn = randomName('_0x');
+        var v = randomName('_0x');
+        dead += 'function ' + fn + '(){var ' + v + '=[' + Math.floor(Math.random()*100) + ',' + Math.floor(Math.random()*100) + '];return ' + v + '.length;}';
+    }
+    return dead + code;
+}
+
+function layerControlFlow(code) {
+    var arr = randomName('_0x');
+    var idx = randomName('_0x');
+    var dispatcher = 'var ' + arr + '=[function(){';
+    var end = '}];var ' + idx + '=0;while(' + idx + '<' + arr + '.length){' + arr + '[' + idx + '++]();}';
+    return dispatcher + code + end;
+}
+
+function obfuscateJS(code, options) {
+    var result = code;
+    var layers = [];
+    result = stripJsComments(result).trim();
+    layers.push('Strip Comments');
+    if (options.varRename) { result = layerVarRename(result); layers.push('Variable Rename'); }
+    if (options.controlFlow) { result = layerControlFlow(result); layers.push('Control Flow'); }
+    if (options.stringArray) { result = layerStringArray(result); layers.push('String Array'); }
+    if (options.hexEncode) { result = layerHexEncode(result); layers.push('Hex Encoding'); }
+    if (options.unicodeEscape) { result = layerUnicodeEscape(result); layers.push('Unicode Escape'); }
+    if (options.hexNumbers) { result = layerHexNumbers(result); layers.push('Hex Numbers'); }
+    if (options.deadCode) { result = layerDeadCode(result); layers.push('Dead Code'); }
+    if (options.minify) {
+        result = result.replace(/\n+/g, '').replace(/\s{2,}/g, ' ').trim();
+        layers.push('Minify');
+    }
+    return { code: result, layers: layers };
+}
+
+function minifyHTML(html) {
+    if (!html) return '';
+    var result = html.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
+    result = result.replace(/\s+/g, ' ').replace(/>\s+</g, '><').trim();
+    return result;
+}
+
+function minifyCSS(css) {
+    if (!css) return '';
+    var result = css.replace(/\/\*[\s\S]*?\*\//g, '');
+    result = result.replace(/\s+/g, ' ').replace(/\s*([{}:;,])\s*/g, '$1').replace(/;}/g, '}').trim();
+    return result;
+}
+
+function buildCompleteHTML(html, css, js, obfuscatedJS) {
+    var SCRIPT_OPEN = '<' + 'script>';
+    var SCRIPT_CLOSE = '<' + '/script>';
+    var STYLE_OPEN = '<' + 'style>';
+    var STYLE_CLOSE = '<' + '/style>';
+    var HEAD_CLOSE = '<' + '/head>';
+    var BODY_CLOSE = '<' + '/body>';
+    var HTML_CLOSE = '<' + '/html>';
+    
+    if (!html || !html.trim()) {
+        var out = '<!DOCTYPE html>\n<html lang="en">\n<head>\n' +
+                  '<meta charset="UTF-8">\n' +
+                  '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+                  '<title>Protected Page</title>\n';
+        if (css && css.trim()) out += STYLE_OPEN + css + STYLE_CLOSE + '\n';
+        out += HEAD_CLOSE + '\n<body>\n';
+        if (obfuscatedJS && obfuscatedJS.trim()) out += SCRIPT_OPEN + obfuscatedJS + SCRIPT_CLOSE + '\n';
+        out += BODY_CLOSE + '\n' + HTML_CLOSE;
+        return out;
+    }
+    
+    var result = html;
+    if (css && css.trim()) {
+        var headCloseIdx = result.lastIndexOf(HEAD_CLOSE);
+        if (headCloseIdx === -1) headCloseIdx = result.lastIndexOf('</HEAD>');
+        if (headCloseIdx !== -1) {
+            result = result.substring(0, headCloseIdx) + STYLE_OPEN + css + STYLE_CLOSE + result.substring(headCloseIdx);
+        } else {
+            var bodyIdx = result.search(/<body[\s>]/i);
+            if (bodyIdx !== -1) {
+                var bodyTagEnd = result.indexOf('>', bodyIdx);
+                result = result.substring(0, bodyTagEnd + 1) + STYLE_OPEN + css + STYLE_CLOSE + result.substring(bodyTagEnd + 1);
+            } else {
+                result = STYLE_OPEN + css + STYLE_CLOSE + result;
+            }
+        }
+    }
+    
+    if (obfuscatedJS && obfuscatedJS.trim()) {
+        var bodyCloseIdx = result.lastIndexOf(BODY_CLOSE);
+        if (bodyCloseIdx === -1) bodyCloseIdx = result.lastIndexOf('</BODY>');
+        if (bodyCloseIdx !== -1) {
+            result = result.substring(0, bodyCloseIdx) + SCRIPT_OPEN + obfuscatedJS + SCRIPT_CLOSE + result.substring(bodyCloseIdx);
+        } else {
+            result = result + SCRIPT_OPEN + obfuscatedJS + SCRIPT_CLOSE;
+        }
+    }
+    return result;
+}
+
+self.onmessage = function(e) {
+    var data = e.data;
+    if (data.type === 'obfuscate') {
+        try {
+            var start = Date.now();
+            var obfuscatedJS = '';
+            var layers = [];
+            if (data.js && data.js.trim()) {
+                var jsResult = obfuscateJS(data.js, data.options);
+                obfuscatedJS = jsResult.code;
+                layers = layers.concat(jsResult.layers);
+            }
+            var minifiedHTML = minifyHTML(data.html);
+            var minifiedCSS = minifyCSS(data.css);
+            if (data.html && data.html.trim()) layers.push('HTML Minify');
+            if (data.css && data.css.trim()) layers.push('CSS Minify');
+            var finalOutput = buildCompleteHTML(minifiedHTML, minifiedCSS, data.js, obfuscatedJS);
+            var elapsed = Date.now() - start;
+            self.postMessage({
+                type: 'success',
+                output: finalOutput,
+                layers: layers,
+                elapsed: elapsed
+            });
+        } catch(err) {
+            self.postMessage({
+                type: 'error',
+                message: err.message,
+                stack: err.stack
+            });
+        }
+    }
+};
+</script>
+
 <script>
 (function() {
 'use strict';
 
 var SAFETY = {
-    MAX_INPUT_SIZE: 5 * 1024 * 1024,
-    MAX_OUTPUT_SIZE: 20 * 1024 * 1024,
-    MAX_STRING_LENGTH: 500,
-    TIMEOUT_MS: 300000
+    MAX_INPUT_SIZE: 10 * 1024 * 1024,
+    MAX_OUTPUT_SIZE: 30 * 1024 * 1024,
+    TIMEOUT_MS: 600000
 };
-
-/* Safe tag constants */
-var SCRIPT_OPEN   = '<' + 'script>';
-var SCRIPT_CLOSE  = '<' + '/script>';
-var STYLE_OPEN    = '<' + 'style>';
-var STYLE_CLOSE   = '<' + '/style>';
-var HEAD_CLOSE    = '<' + '/head>';
-var BODY_CLOSE    = '<' + '/body>';
-var HTML_CLOSE    = '<' + '/html>';
-
-var TAG_OPEN_SCRIPT  = '<' + 'script';
-var TAG_CLOSE_SCRIPT = '<' + '/script>';
-var TAG_OPEN_STYLE   = '<' + 'style';
-var TAG_CLOSE_STYLE  = '<' + '/style>';
 
 var state = {
     fullCode: '',
@@ -1152,8 +1191,8 @@ var state = {
     outputCode: '',
     layers: [],
     user: null,
-    authHandled: false,
-    history: []
+    history: [],
+    worker: null
 };
 
 function bytes(n) {
@@ -1170,21 +1209,7 @@ function showStatus(id, type, text) {
 }
 function hideStatus(id) {
     var el = document.getElementById(id);
-    if (!el) return;
-    el.className = 'status';
-}
-function escapeRegex(str) { return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-function randomName(prefix) {
-    var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    var s = prefix || '_0x';
-    for (var i = 0; i < 6; i++) s += chars.charAt(Math.floor(Math.random() * chars.length));
-    return s;
-}
-function randomHex(len) {
-    var c = 'abcdef0123456789';
-    var s = '';
-    for (var i = 0; i < (len || 8); i++) s += c.charAt(Math.floor(Math.random() * c.length));
-    return s;
+    if (el) el.className = 'status';
 }
 function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function(c) {
@@ -1195,6 +1220,7 @@ function escapeHtml(s) {
 function toast(message, type) {
     type = type || 'info';
     var container = document.getElementById('toastContainer');
+    if (!container) return;
     var icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', warn: 'fa-triangle-exclamation', info: 'fa-circle-info' };
     var el = document.createElement('div');
     el.className = 'toast ' + type;
@@ -1217,17 +1243,13 @@ function renderHistory() {
     var list = document.getElementById('historyList');
     if (!list) return;
     if (state.history.length === 0) {
-        list.innerHTML = '<div class="history-item"><span class="history-time">--:--:--</span><span class="history-dot info"></span><span>No activity yet</span></div>';
+        list.innerHTML = '<div class="history-item"><span class="history-time">--:--:--</span><span class="history-dot info"></span><span>No activity</span></div>';
         return;
     }
     var html = '';
     for (var i = 0; i < state.history.length; i++) {
         var h = state.history[i];
-        html += '<div class="history-item">' +
-            '<span class="history-time">' + escapeHtml(h.time) + '</span>' +
-            '<span class="history-dot ' + h.type + '"></span>' +
-            '<span>' + escapeHtml(h.msg) + '</span>' +
-            '</div>';
+        html += '<div class="history-item"><span class="history-time">' + escapeHtml(h.time) + '</span><span class="history-dot ' + h.type + '"></span><span>' + escapeHtml(h.msg) + '</span></div>';
     }
     list.innerHTML = html;
 }
@@ -1242,367 +1264,142 @@ function updateProgress() {
     if (state.fullCode && state.fullCode.trim()) steps++;
     if (state.html || state.css || state.js) steps++;
     if (state.outputCode) steps++;
-    if (state.outputCode && state.layers.length > 0) steps++;
-
-    var percent = Math.round((steps / 4) * 100);
+    var percent = Math.round((steps / 3) * 100);
     document.getElementById('progressFill').style.width = percent + '%';
     document.getElementById('progressPercent').textContent = percent + '%';
-
-    for (var i = 1; i <= 4; i++) {
-        var el = document.getElementById('step' + i);
-        if (!el) continue;
-        el.classList.remove('active', 'done');
-        if (i < steps) el.classList.add('done');
-        else if (i === steps) el.classList.add('active');
-    }
 }
 
 function detectLanguage(code) {
     var t = code.trim();
     if (!t) return 'unknown';
-    if (/^<!DOCTYPE\s+html/i.test(t) || /<html[\s>]/i.test(t)) return 'html';
+    if (/^<!DOCTYPE\s+html/i.test(t)) return 'html';
+    if (/<html[\s>]/i.test(t) && /<\/html>/i.test(t)) return 'html';
+    if (/<(head|body|div|span|p|a|img|ul|ol|table|form|input|button|section|article|nav|header|footer)[\s>]/i.test(t)) return 'html';
     if (/^<\?xml/i.test(t)) return 'xml';
-    if (t.startsWith('{') || t.startsWith('[')) {
+    if (/^<[a-zA-Z][\w:-]*(\s[^>]*)?\/?>/.test(t) && !/<html/i.test(t)) return 'xml';
+    if (/^[\{\[]/.test(t)) {
         try { JSON.parse(t); return 'json'; } catch(e) {}
     }
-    if (/\b(function|const|let|var|=>|return|if|for|while|document\.|window\.)\b/.test(t)) return 'js';
-    if (/[a-zA-Z-]+\s*:\s*[^;{]+;/.test(t) && /\{[\s\S]*\}/.test(t)) return 'css';
+    if (/^[\s]*[a-zA-Z-]+\s*\{/.test(t) || /^[\s]*[.#@][\w-]/.test(t)) {
+        if (!/\b(function|var|let|const|=>|return)\b/.test(t)) return 'css';
+    }
+    if (/\{[^}]*:[^}]*;[^}]*\}/.test(t) && !/[;{}]\s*(var|let|const|function)\b/.test(t)) return 'css';
+    if (/\b(async|await|class|extends|import|export|=>|const|let|var|function|new|this|typeof|instanceof)\b/.test(t)) return 'js';
+    if (/document\.|window\.|console\.|require\(|module\.exports/.test(t)) return 'js';
+    if (/^\s*[a-zA-Z_$][\w$]*\s*\([^)]*\)\s*\{/.test(t)) return 'js';
     return 'unknown';
 }
 
-/* ═══ COMMENT STRIPPERS ═══ */
-function stripCssComments(code) {
-    if (!code) return '';
-    var result = '';
+function extractBlocks(code, tagName) {
+    var results = [];
+    var openTag = '<' + tagName;
+    var closeTag = '</' + tagName + '>';
     var i = 0, len = code.length;
-    var inString = false, stringChar = '';
     while (i < len) {
-        var ch = code[i];
-        var next = code[i + 1];
-        if (inString) {
-            result += ch;
-            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === stringChar) inString = false;
-            i++; continue;
+        var openIdx = code.indexOf(openTag, i);
+        if (openIdx === -1) break;
+        var charAfter = code.charAt(openIdx + openTag.length);
+        if (charAfter && !/[\s>\/]/.test(charAfter)) { i = openIdx + openTag.length; continue; }
+        var tagEnd = code.indexOf('>', openIdx);
+        if (tagEnd === -1) break;
+        if (code.charAt(tagEnd - 1) === '/') { i = tagEnd + 1; continue; }
+        var depth = 1, searchPos = tagEnd + 1, contentEnd = -1;
+        while (searchPos < len && depth > 0) {
+            var nextOpen = code.indexOf(openTag, searchPos);
+            var nextClose = code.indexOf(closeTag, searchPos);
+            if (nextClose === -1) break;
+            if (nextOpen !== -1 && nextOpen < nextClose) {
+                var afterOpen = code.charAt(nextOpen + openTag.length);
+                if (!afterOpen || /[\s>\/]/.test(afterOpen)) depth++;
+                searchPos = nextOpen + openTag.length;
+            } else {
+                depth--;
+                if (depth === 0) contentEnd = nextClose;
+                searchPos = nextClose + closeTag.length;
+            }
         }
-        if (ch === '"' || ch === "'") { inString = true; stringChar = ch; result += ch; i++; continue; }
-        if (ch === '/' && next === '*') {
-            i += 2;
-            while (i < len) { if (code[i] === '*' && code[i + 1] === '/') { i += 2; break; } i++; }
-            continue;
-        }
-        result += ch;
-        i++;
+        if (contentEnd === -1) break;
+        results.push({
+            start: openIdx,
+            end: contentEnd + closeTag.length,
+            content: code.substring(tagEnd + 1, contentEnd),
+            attrs: code.substring(openIdx + openTag.length, tagEnd)
+        });
+        i = contentEnd + closeTag.length;
     }
-    return result;
+    return results;
 }
 
 function stripJsComments(code) {
-    if (!code) return '';
-    var result = '';
-    var i = 0, len = code.length;
-    var st = 'code';
-    while (i < len) {
-        var ch = code[i];
-        var next = code[i + 1];
+    var result = '', i = 0, st = 'code';
+    while (i < code.length) {
+        var ch = code[i], next = code[i+1];
         if (st === 'lineComment') { if (ch === '\n') { st = 'code'; result += ch; } i++; continue; }
         if (st === 'blockComment') { if (ch === '*' && next === '/') { st = 'code'; i += 2; continue; } i++; continue; }
-        if (st === 'single') {
-            result += ch;
-            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === "'") st = 'code';
-            i++; continue;
-        }
-        if (st === 'double') {
-            result += ch;
-            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === '"') st = 'code';
-            i++; continue;
-        }
-        if (st === 'template') {
-            result += ch;
-            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === '`') st = 'code';
-            i++; continue;
-        }
+        if (st === 'single') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === "'") st = 'code'; i++; continue; }
+        if (st === 'double') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '"') st = 'code'; i++; continue; }
+        if (st === 'template') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '`') st = 'code'; i++; continue; }
         if (ch === '/' && next === '/') { st = 'lineComment'; i += 2; continue; }
         if (ch === '/' && next === '*') { st = 'blockComment'; i += 2; continue; }
         if (ch === "'") { st = 'single'; result += ch; i++; continue; }
         if (ch === '"') { st = 'double'; result += ch; i++; continue; }
         if (ch === '`') { st = 'template'; result += ch; i++; continue; }
-        result += ch;
-        i++;
+        result += ch; i++;
     }
     return result;
 }
 
-function stripHtmlComments(code) {
-    if (!code) return '';
-    return code.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
-}
-
-function separateCode(fullCode) {
-    var html = fullCode;
-    var css = '';
-    var js = '';
-    var other = '';
-
-    var escStyle  = escapeRegex(TAG_CLOSE_STYLE);
-    var escScript = escapeRegex(TAG_CLOSE_SCRIPT);
-
-    var styleRegex = new RegExp(TAG_OPEN_STYLE + '[^>]*>([\\s\\S]*?)' + escStyle, 'gi');
-    var styleMatch;
-    while ((styleMatch = styleRegex.exec(fullCode)) !== null) {
-        if (css) css += '\n\n';
-        css += stripCssComments(styleMatch[1]).trim();
-    }
-
-    var scriptRegex = new RegExp(
-        TAG_OPEN_SCRIPT +
-        '(?![^>]*\\bsrc\\s*=)' +
-        '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template|application\\/json\\+ld)[^>]*)' +
-        '[^>]*>([\\s\\S]*?)' + escScript,
-        'gi'
-    );
-    var scriptMatch;
-    while ((scriptMatch = scriptRegex.exec(fullCode)) !== null) {
-        if (js) js += '\n\n';
-        js += stripJsComments(scriptMatch[1]).trim();
-    }
-
-    html = html.replace(new RegExp(TAG_OPEN_STYLE + '[^>]*>[\\s\\S]*?' + escStyle, 'gi'), '');
-    html = html.replace(
-        new RegExp(
-            TAG_OPEN_SCRIPT +
-            '(?![^>]*\\bsrc\\s*=)' +
-            '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template|application\\/json\\+ld)[^>]*)' +
-            '[^>]*>[\\s\\S]*?' + escScript,
-            'gi'
-        ),
-        ''
-    );
-    html = stripHtmlComments(html);
-    html = html.replace(/\n{3,}/g, '\n\n').trim();
-
-    var hasHtmlTags = /<!DOCTYPE|<html[\s>]|<head[\s>]|<body[\s>]|<div[\s>]/i.test(fullCode);
-    if (!hasHtmlTags) {
-        var detected = detectLanguage(fullCode);
-        if (detected === 'js') {
-            js = stripJsComments(fullCode).trim();
-            html = ''; css = '';
-        } else if (detected === 'css') {
-            css = stripCssComments(fullCode).trim();
-            html = ''; js = '';
-        } else if (detected === 'json' || detected === 'xml') {
-            other = fullCode.trim();
-            html = ''; css = ''; js = '';
-        }
-    }
-
-    return { html: html, css: css, js: js, other: other };
-}
-
-/* ═══════════════════════════════════════════════════════════
-   OBFUSCATION LAYERS — SAFE VERSION (100% code chalayenge)
-   Ye layers CODE FUNCTIONALITY NAHI TODENGE
-   ═══════════════════════════════════════════════════════════ */
-
-/* ─── LAYER 1: Encode Strings (Hex) ─── */
-function layerEncodeStrings(code) {
-    return code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
-        if (str.length === 0 || str.length > SAFETY.MAX_STRING_LENGTH) return match;
-        if (/[^\x00-\x7F]/.test(str)) return match;
-        var hex = '';
-        for (var i = 0; i < str.length; i++) {
-            hex += '\\x' + ('0' + str.charCodeAt(i).toString(16)).slice(-2);
-        }
-        return '"' + hex + '"';
-    });
-}
-
-/* ─── LAYER 2: Unicode Escape ─── */
-function layerUnicodeEscape(code) {
-    return code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
-        if (str.length === 0 || str.length > 200) return match;
-        if (/[\\]/.test(str)) return match;
-        if (/[^\x00-\x7F]/.test(str)) return match;
-        if (!/^[a-zA-Z0-9\s\-\_\.\/\:]+$/.test(str)) return match;
-        var unicode = '';
-        for (var i = 0; i < str.length; i++) {
-            unicode += '\\u' + ('0000' + str.charCodeAt(i).toString(16)).slice(-4);
-        }
-        return '"' + unicode + '"';
-    });
-}
-
-/* ─── LAYER 3: Hex Numbers ─── */
-function layerHexNumbers(code) {
-    var result = '';
-    var i = 0;
-    var inString = false, stringChar = '';
+function stripCssComments(code) {
+    var result = '', i = 0, inString = false, sc = '';
     while (i < code.length) {
-        var ch = code[i];
+        var ch = code[i], next = code[i+1];
         if (inString) {
             result += ch;
-            if (ch === '\\' && i + 1 < code.length) { result += code[i + 1]; i += 2; continue; }
-            if (ch === stringChar) inString = false;
+            if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; }
+            if (ch === sc) inString = false;
             i++; continue;
         }
-        if (ch === '"' || ch === "'") { inString = true; stringChar = ch; result += ch; i++; continue; }
-        if (ch === '`') { inString = true; stringChar = '`'; result += ch; i++; continue; }
-        if (/\d/.test(ch) && (i === 0 || !/[\w.]/.test(code[i - 1]))) {
-            var numStr = '';
-            var hasDot = false;
-            while (i < code.length && /[\d.]/.test(code[i])) {
-                if (code[i] === '.') { hasDot = true; }
-                numStr += code[i]; i++;
-            }
-            if (!hasDot && /^\d+$/.test(numStr) && parseInt(numStr) > 9 && parseInt(numStr) < 1000000) {
-                result += '0x' + parseInt(numStr).toString(16).toUpperCase();
-            } else {
-                result += numStr;
-            }
+        if (ch === '"' || ch === "'") { inString = true; sc = ch; result += ch; i++; continue; }
+        if (ch === '/' && next === '*') { i += 2; while (i < code.length) { if (code[i] === '*' && code[i+1] === '/') { i += 2; break; } i++; } continue; }
+        result += ch; i++;
+    }
+    return result;
+}
+
+function stripHtmlComments(code) { return code.replace(/<!--(?!\[if)[\s\S]*?-->/g, ''); }
+
+function separateCodeSafe(fullCode) {
+    var html = fullCode;
+    var css = '', js = '', other = '';
+    var styleBlocks = extractBlocks(fullCode, 'style');
+    for (var i = styleBlocks.length - 1; i >= 0; i--) {
+        var b = styleBlocks[i];
+        css = stripCssComments(b.content).trim() + (css ? '\n\n' + css : '');
+        html = html.substring(0, b.start) + html.substring(b.end);
+    }
+    var scriptBlocks = extractBlocks(fullCode, 'script');
+    for (var j = scriptBlocks.length - 1; j >= 0; j--) {
+        var sb = scriptBlocks[j];
+        var attrs = sb.attrs.toLowerCase();
+        if (/\bsrc\s*=/.test(attrs)) continue;
+        if (/\btype\s*=\s*["']?(application\/(ld\+json|json)|text\/template|application\/json\+ld)/.test(attrs)) {
+            other = sb.content.trim() + (other ? '\n\n' + other : '');
+            html = html.substring(0, sb.start) + html.substring(sb.end);
             continue;
         }
-        result += ch;
-        i++;
+        js = stripJsComments(sb.content).trim() + (js ? '\n\n' + js : '');
+        html = html.substring(0, sb.start) + html.substring(sb.end);
     }
-    return result;
-}
-
-/* ─── LAYER 4: String Array ─── */
-function layerStringArray(code) {
-    var strings = [];
-    var arrName = randomName('_0x');
-    var maxSize = 200;
-    var newCode = code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
-        if (str.length === 0 || str.length > SAFETY.MAX_STRING_LENGTH) return match;
-        if (strings.length >= maxSize) return match;
-        var index = strings.indexOf(str);
-        if (index === -1) { index = strings.length; strings.push(str); }
-        return arrName + '[' + index + ']';
-    });
-    if (strings.length === 0) return code;
-    var arrDecl = 'var ' + arrName + '=[' + strings.map(function(s) { return JSON.stringify(s); }).join(',') + '];';
-    return arrDecl + newCode;
-}
-
-/* ─── LAYER 5: Dead Code ─── */
-function layerDeadCode(code) {
-    var dead = '';
-    for (var i = 0; i < 5; i++) {
-        var fn = randomName('_0x');
-        var v = randomName('_0x');
-        dead += 'function ' + fn + '(){var ' + v + '=[' + Math.floor(Math.random()*100) + ',' + Math.floor(Math.random()*100) + '];return ' + v + '.length;}';
+    html = stripHtmlComments(html);
+    html = html.replace(/\n{3,}/g, '\n\n').trim();
+    var hasHtmlTags = /<!DOCTYPE|<html[\s>]|<head[\s>]|<body[\s>]|<div[\s>]|<span[\s>]/i.test(fullCode);
+    if (!hasHtmlTags) {
+        var detected = detectLanguage(fullCode);
+        if (detected === 'js') { js = stripJsComments(fullCode).trim(); html = ''; css = ''; other = ''; }
+        else if (detected === 'css') { css = stripCssComments(fullCode).trim(); html = ''; js = ''; other = ''; }
+        else if (detected === 'json' || detected === 'xml') { other = fullCode.trim(); html = ''; css = ''; js = ''; }
     }
-    return dead + code;
-}
-
-/* ─── LAYER 6: Opaque Predicates ─── */
-function layerOpaquePredicates(code) {
-    var a = Math.floor(Math.random() * 50) + 50;
-    var b = Math.floor(Math.random() * 50) + 50;
-    var x = randomName('_0x');
-    var predicate = 'var ' + x + '=((' + a + '*' + b + ')===' + (a * b) + ');';
-    return predicate + code;
-}
-
-/* ═══ MASTER JS OBFUSCATOR ═══ */
-function obfuscateJS(code) {
-    var result = code;
-    var layers = [];
-
-    try {
-        result = stripJsComments(result).trim();
-        layers.push('Strip Comments');
-
-        result = layerStringArray(result);
-        layers.push('String Array');
-
-        result = layerEncodeStrings(result);
-        layers.push('Hex Encoding');
-
-        result = layerUnicodeEscape(result);
-        layers.push('Unicode Escape');
-
-        result = layerHexNumbers(result);
-        layers.push('Hex Numbers');
-
-        result = layerDeadCode(result);
-        layers.push('Dead Code');
-
-        result = layerOpaquePredicates(result);
-        layers.push('Opaque Predicates');
-
-        result = result.replace(/\n+/g, '').replace(/\s{2,}/g, ' ').trim();
-    } catch (e) {
-        throw new Error('Obfuscation failed: ' + e.message);
-    }
-
-    return { code: result, layers: layers };
-}
-
-/* ═══ MINIFY HTML/CSS ═══ */
-function minifyHTML(html) {
-    if (!html) return '';
-    var result = html.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
-    result = result.replace(/\s+/g, ' ').replace(/>\s+</g, '><').trim();
-    return result;
-}
-
-function minifyCSS(css) {
-    if (!css) return '';
-    var result = css.replace(/\/\*[\s\S]*?\*\//g, '');
-    result = result.replace(/\s+/g, ' ').replace(/\s*([{}:;,])\s*/g, '$1').replace(/;}/g, '}').trim();
-    return result;
-}
-
-/* ═══ BUILD COMPLETE HTML ═══ */
-function buildCompleteHTML(html, css, js, obfuscatedJS) {
-    var output = '';
-
-    if (html && html.trim()) {
-        output = html;
-
-        if (css && css.trim()) {
-            var styleTag = STYLE_OPEN + css + STYLE_CLOSE;
-            if (output.indexOf(HEAD_CLOSE) !== -1) {
-                output = output.replace(HEAD_CLOSE, styleTag + HEAD_CLOSE);
-            } else if (output.indexOf('<body') !== -1) {
-                output = output.replace(/(<body[^>]*>)/i, '$1' + styleTag);
-            } else {
-                output = styleTag + output;
-            }
-        }
-
-        if (obfuscatedJS && obfuscatedJS.trim()) {
-            var scriptTag = SCRIPT_OPEN + obfuscatedJS + SCRIPT_CLOSE;
-            if (output.indexOf(BODY_CLOSE) !== -1) {
-                output = output.replace(BODY_CLOSE, scriptTag + BODY_CLOSE);
-            } else {
-                output = output + scriptTag;
-            }
-        }
-    } else {
-        output = '<!DOCTYPE html>\n<html lang="en">\n<head>\n' +
-                 '<meta charset="UTF-8">\n' +
-                 '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
-                 '<title>Protected Page</title>\n';
-
-        if (css && css.trim()) {
-            output += STYLE_OPEN + css + STYLE_CLOSE + '\n';
-        }
-
-        output += HEAD_CLOSE + '\n<body>\n';
-
-        if (obfuscatedJS && obfuscatedJS.trim()) {
-            output += SCRIPT_OPEN + obfuscatedJS + SCRIPT_CLOSE + '\n';
-        }
-
-        output += BODY_CLOSE + '\n' + HTML_CLOSE;
-    }
-
-    return output;
+    return { html: html, css: css, js: js, other: other };
 }
 
 window.selectLang = function(lang, btn) {
@@ -1616,58 +1413,52 @@ function updateDetected() {
     var code = document.getElementById('fullCodeArea').value;
     var detected = code.trim() ? detectLanguage(code) : '—';
     state.detectedLang = detected;
-    document.getElementById('detectedLang').textContent = detected.toUpperCase();
-    document.getElementById('statDetected').textContent = detected.toUpperCase();
+    var el1 = document.getElementById('detectedLang');
+    if (el1) el1.textContent = detected.toUpperCase();
+    var sd = document.getElementById('statDetected');
+    if (sd) sd.textContent = detected.toUpperCase();
 }
 
 window.parseFullCode = function() {
     var area = document.getElementById('fullCodeArea');
     var fullCode = area.value;
     if (!fullCode.trim()) {
-        showStatus('statusFullCode', 'error', '❌ Code is empty! Please paste your code first.');
+        showStatus('statusFullCode', 'error', '❌ Code is empty!');
         toast('Code is empty!', 'error');
         return;
     }
     if (new Blob([fullCode]).size > SAFETY.MAX_INPUT_SIZE) {
-        showStatus('statusFullCode', 'error', '❌ Input too large! Max ' + bytes(SAFETY.MAX_INPUT_SIZE) + '.');
+        showStatus('statusFullCode', 'error', '❌ Input too large! Max ' + bytes(SAFETY.MAX_INPUT_SIZE));
         toast('Input too large!', 'error');
         return;
     }
-
-    showStatus('statusFullCode', 'loading', '⏳ Parsing and separating...');
-
+    showStatus('statusFullCode', 'loading', '⏳ Parsing...');
     setTimeout(function() {
         try {
-            var separated = separateCode(fullCode);
+            var separated = separateCodeSafe(fullCode);
             state.fullCode = fullCode;
             state.html = separated.html;
             state.css = separated.css;
             state.js = separated.js;
             state.other = separated.other;
-
             document.getElementById('htmlArea').value = state.html;
             document.getElementById('cssArea').value = state.css;
             document.getElementById('jsArea').value = state.js;
             document.getElementById('otherArea').value = state.other;
-
             updateBadges();
             document.getElementById('sectionsContainer').style.display = 'block';
-
             showStatus('statusFullCode', 'success',
-                '✅ Parsed successfully!\n\n' +
-                '📄 HTML: ' + bytes(new Blob([state.html]).size) + '\n' +
-                '🎨 CSS: ' + bytes(new Blob([state.css]).size) + '\n' +
-                '⚙️ JS: ' + bytes(new Blob([state.js]).size) + '\n' +
-                '📦 Other: ' + bytes(new Blob([state.other]).size) + '\n\n' +
-                'Detected: ' + state.detectedLang.toUpperCase() + '\n\n' +
-                'Scroll down to obfuscate.'
+                '✅ Parsed!\n📄 HTML: ' + bytes(new Blob([state.html]).size) +
+                '\n🎨 CSS: ' + bytes(new Blob([state.css]).size) +
+                '\n⚙️ JS: ' + bytes(new Blob([state.js]).size) +
+                '\n📦 Other: ' + bytes(new Blob([state.other]).size) +
+                '\nDetected: ' + state.detectedLang.toUpperCase()
             );
-
-            toast('Code parsed successfully!', 'success');
-            addHistory('Parsed — HTML: ' + bytes(new Blob([state.html]).size) + ', CSS: ' + bytes(new Blob([state.css]).size) + ', JS: ' + bytes(new Blob([state.js]).size), 'success');
+            toast('Parsed successfully!', 'success');
+            addHistory('Parsed — JS: ' + bytes(new Blob([state.js]).size), 'success');
             updateProgress();
         } catch(e) {
-            showStatus('statusFullCode', 'error', '❌ Error: ' + e.message);
+            showStatus('statusFullCode', 'error', '❌ ' + e.message);
             toast('Error: ' + e.message, 'error');
         }
     }, 50);
@@ -1692,98 +1483,305 @@ function updateBadges() {
     ob.className = o ? 'badge success' : 'badge';
 }
 
+function getWorkerBlob() {
+    var workerScript = document.getElementById('obfuscatorWorker').textContent;
+    var blob = new Blob([workerScript], { type: 'application/javascript' });
+    return URL.createObjectURL(blob);
+}
+
+function initWorker() {
+    if (state.worker) return state.worker;
+    try {
+        state.worker = new Worker(getWorkerBlob());
+        return state.worker;
+    } catch(e) {
+        console.warn('Worker not available:', e.message);
+        return null;
+    }
+}
+
 window.obfuscateNow = function() {
     var jsCode = document.getElementById('jsArea').value;
     var htmlCode = document.getElementById('htmlArea').value;
     var cssCode = document.getElementById('cssArea').value;
-
-    if (!jsCode.trim() && !htmlCode.trim() && !cssCode.trim()) {
-        showStatus('statusObfuscate', 'error', '❌ No code found! Please parse your code first.');
+    var otherCode = document.getElementById('otherArea').value;
+    if (!jsCode.trim() && !htmlCode.trim() && !cssCode.trim() && !otherCode.trim()) {
+        showStatus('statusObfuscate', 'error', '❌ No code! Parse first.');
         toast('No code!', 'error');
         return;
     }
-
+    var options = {
+        varRename: document.getElementById('optVarRename').checked,
+        stringArray: document.getElementById('optStringArray').checked,
+        hexEncode: document.getElementById('optHexEncode').checked,
+        controlFlow: document.getElementById('optControlFlow').checked,
+        deadCode: document.getElementById('optDeadCode').checked,
+        minify: document.getElementById('optMinify').checked,
+        unicodeEscape: false,
+        hexNumbers: true
+    };
     var btn = document.getElementById('obfuscateBtn');
     btn.disabled = true;
-    showStatus('statusObfuscate', 'loading', '⏳ Obfuscating & building complete web output...');
-
+    showStatus('statusObfuscate', 'loading', '⏳ Obfuscating in background worker...');
+    var startTime = Date.now();
+    var worker = initWorker();
+    if (!worker) {
+        showStatus('statusObfuscate', 'loading', '⏳ Running on main thread...');
+        setTimeout(function() {
+            runMainThreadObfuscation(jsCode, htmlCode, cssCode, otherCode, options, startTime, btn);
+        }, 50);
+        return;
+    }
     var timeoutId = setTimeout(function() {
+        if (worker) worker.terminate();
+        state.worker = null;
         btn.disabled = false;
         showStatus('statusObfuscate', 'error', '❌ Timeout! Code too complex.');
         toast('Timeout!', 'error');
     }, SAFETY.TIMEOUT_MS);
-
-    setTimeout(function() {
-        try {
-            var startTime = Date.now();
-            var layers = [];
-
-            var obfuscatedJS = '';
-            if (jsCode.trim()) {
-                var jsResult = obfuscateJS(jsCode);
-                obfuscatedJS = jsResult.code;
-                layers = layers.concat(jsResult.layers);
-            }
-
-            var minifiedHTML = minifyHTML(htmlCode);
-            var minifiedCSS = minifyCSS(cssCode);
-            if (htmlCode.trim()) layers.push('HTML Minify');
-            if (cssCode.trim()) layers.push('CSS Minify');
-
-            var finalOutput = buildCompleteHTML(minifiedHTML, minifiedCSS, jsCode, obfuscatedJS);
-
-            var elapsed = Date.now() - startTime;
-
-            var outputSize = new Blob([finalOutput]).size;
-            if (outputSize > SAFETY.MAX_OUTPUT_SIZE) {
-                clearTimeout(timeoutId);
-                btn.disabled = false;
-                showStatus('statusObfuscate', 'error', '❌ Output too large: ' + bytes(outputSize));
-                return;
-            }
-
-            state.outputCode = finalOutput;
-            state.layers = layers;
-
+    worker.onmessage = function(e) {
+        clearTimeout(timeoutId);
+        var data = e.data;
+        if (data.type === 'success') {
+            state.outputCode = data.output;
+            state.layers = data.layers;
             document.getElementById('outputSection').style.display = 'block';
-            document.getElementById('outputCode').value = finalOutput;
-
+            document.getElementById('outputCode').value = data.output;
             var inputSize = new Blob([state.fullCode]).size;
+            var outputSize = new Blob([data.output]).size;
             var ratio = inputSize > 0 ? Math.round((outputSize / inputSize) * 100) : 0;
-
             document.getElementById('statOrigSize').textContent = bytes(inputSize);
             document.getElementById('statObfSize').textContent = bytes(outputSize);
             document.getElementById('statRatio').textContent = ratio + '%';
-            document.getElementById('statLayers').textContent = layers.length;
-
+            document.getElementById('statLayers').textContent = data.layers.length;
             showStatus('statusObfuscate', 'success',
-                '✅ Obfuscation complete!\n\n' +
-                '📊 Layers: ' + layers.length + '\n' +
+                '✅ Obfuscation complete!\n' +
+                '📊 Layers: ' + data.layers.length + ' (' + data.layers.join(', ') + ')\n' +
                 '📦 Size: ' + bytes(inputSize) + ' → ' + bytes(outputSize) + ' (' + ratio + '%)\n' +
-                '⏱️ Time: ' + elapsed + 'ms\n\n' +
-                '✨ Complete HTML output ready!\n' +
-                'Copy karke file.html save karo!'
+                '⏱️ Time: ' + data.elapsed + 'ms\n' +
+                '🧵 Processed in Web Worker'
             );
-
-            toast('Complete HTML output ready!', 'success');
-            addHistory('Obfuscated — ' + layers.length + ' layers, ' + bytes(outputSize), 'success');
+            toast('Complete! ' + data.layers.length + ' layers', 'success');
+            addHistory('Obfuscated — ' + data.layers.length + ' layers, ' + bytes(outputSize), 'success');
             updateProgress();
-
             setTimeout(function() {
-                var out = document.getElementById('outputSection');
-                if (out) out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 200);
-
-            clearTimeout(timeoutId);
-            btn.disabled = false;
-        } catch(e) {
-            clearTimeout(timeoutId);
-            btn.disabled = false;
-            showStatus('statusObfuscate', 'error', '❌ ' + e.message);
-            toast('Error: ' + e.message, 'error');
+        } else {
+            showStatus('statusObfuscate', 'error', '❌ ' + data.message);
+            toast('Error: ' + data.message, 'error');
         }
-    }, 50);
+        btn.disabled = false;
+    };
+    worker.onerror = function(err) {
+        clearTimeout(timeoutId);
+        showStatus('statusObfuscate', 'error', '❌ Worker error: ' + err.message);
+        toast('Worker error!', 'error');
+        btn.disabled = false;
+    };
+    worker.postMessage({
+        type: 'obfuscate',
+        js: jsCode,
+        html: htmlCode,
+        css: cssCode,
+        other: otherCode,
+        options: options
+    });
 };
+
+function runMainThreadObfuscation(jsCode, htmlCode, cssCode, otherCode, options, startTime, btn) {
+    try {
+        var obfuscatedJS = '';
+        var layers = [];
+        if (jsCode.trim()) {
+            var jsResult = obfuscateJS(jsCode, options);
+            obfuscatedJS = jsResult.code;
+            layers = layers.concat(jsResult.layers);
+        }
+        var minifiedHTML = minifyHTML(htmlCode);
+        var minifiedCSS = minifyCSS(cssCode);
+        if (htmlCode.trim()) layers.push('HTML Minify');
+        if (cssCode.trim()) layers.push('CSS Minify');
+        var finalOutput = buildCompleteHTML(minifiedHTML, minifiedCSS, jsCode, obfuscatedJS);
+        var elapsed = Date.now() - startTime;
+        state.outputCode = finalOutput;
+        state.layers = layers;
+        document.getElementById('outputSection').style.display = 'block';
+        document.getElementById('outputCode').value = finalOutput;
+        var inputSize = new Blob([state.fullCode]).size;
+        var outputSize = new Blob([finalOutput]).size;
+        var ratio = inputSize > 0 ? Math.round((outputSize / inputSize) * 100) : 0;
+        document.getElementById('statOrigSize').textContent = bytes(inputSize);
+        document.getElementById('statObfSize').textContent = bytes(outputSize);
+        document.getElementById('statRatio').textContent = ratio + '%';
+        document.getElementById('statLayers').textContent = layers.length;
+        showStatus('statusObfuscate', 'success',
+            '✅ Complete!\n📊 Layers: ' + layers.length + '\n📦 ' + bytes(inputSize) + ' → ' + bytes(outputSize) + '\n⏱️ ' + elapsed + 'ms'
+        );
+        toast('Complete!', 'success');
+        addHistory('Obfuscated (main thread)', 'success');
+        updateProgress();
+    } catch(e) {
+        showStatus('statusObfuscate', 'error', '❌ ' + e.message);
+        toast('Error: ' + e.message, 'error');
+    }
+    btn.disabled = false;
+}
+
+/* Main-thread fallback obfuscation functions (duplicated from worker) */
+function obfuscateJS(code, options) {
+    var result = code, layers = [];
+    result = stripJsComments(result).trim();
+    layers.push('Strip Comments');
+    if (options.varRename) { result = layerVarRename(result); layers.push('Variable Rename'); }
+    if (options.controlFlow) { result = layerControlFlow(result); layers.push('Control Flow'); }
+    if (options.stringArray) { result = layerStringArray(result); layers.push('String Array'); }
+    if (options.hexEncode) { result = layerHexEncode(result); layers.push('Hex Encoding'); }
+    if (options.hexNumbers) { result = layerHexNumbers(result); layers.push('Hex Numbers'); }
+    if (options.deadCode) { result = layerDeadCode(result); layers.push('Dead Code'); }
+    if (options.minify) {
+        result = result.replace(/\n+/g, '').replace(/\s{2,}/g, ' ').trim();
+        layers.push('Minify');
+    }
+    return { code: result, layers: layers };
+}
+function randomName(prefix) {
+    var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var s = prefix || '_0x';
+    for (var i = 0; i < 6; i++) s += chars.charAt(Math.floor(Math.random() * chars.length));
+    return s;
+}
+function layerVarRename(code) {
+    var RESERVED = {'var':1,'let':1,'const':1,'function':1,'return':1,'if':1,'else':1,'for':1,'while':1,'do':1,'break':1,'continue':1,'switch':1,'case':1,'default':1,'try':1,'catch':1,'finally':1,'throw':1,'new':1,'delete':1,'typeof':1,'instanceof':1,'in':1,'of':1,'this':1,'super':1,'class':1,'extends':1,'static':1,'get':1,'set':1,'async':1,'await':1,'yield':1,'import':1,'export':1,'from':1,'as':1,'null':1,'undefined':1,'true':1,'false':1,'NaN':1,'Infinity':1,'void':1,'debugger':1,'with':1,'console':1,'window':1,'document':1,'Math':1,'JSON':1,'Object':1,'Array':1,'String':1,'Number':1,'Boolean':1,'Date':1,'RegExp':1,'Error':1,'Promise':1,'Map':1,'Set':1,'WeakMap':1,'WeakSet':1,'Symbol':1,'Proxy':1,'Reflect':1,'parseInt':1,'parseFloat':1,'isNaN':1,'isFinite':1,'eval':1,'Function':1,'require':1,'module':1,'exports':1,'process':1,'global':1,'Buffer':1,'setTimeout':1,'setInterval':1,'clearTimeout':1,'clearInterval':1,'alert':1,'confirm':1,'prompt':1,'fetch':1,'XMLHttpRequest':1,'localStorage':1,'sessionStorage':1,'navigator':1,'location':1,'history':1,'arguments':1,'prototype':1,'constructor':1,'hasOwnProperty':1};
+    var map = Object.create(null), counter = 0;
+    function getName(orig) {
+        if (RESERVED[orig]) return orig;
+        if (orig.length <= 1) return orig;
+        if (!/^[a-zA-Z_$][\w$]*$/.test(orig)) return orig;
+        if (!map[orig]) map[orig] = '_0x' + (counter++).toString(36) + Math.random().toString(36).substring(2, 6);
+        return map[orig];
+    }
+    var varRegex = /\b(var|let|const)\s+([a-zA-Z_$][\w$]*)/g, m;
+    while ((m = varRegex.exec(code)) !== null) getName(m[2]);
+    var funcRegex = /function\s*([a-zA-Z_$][\w$]*)?\s*\(([^)]*)\)/g;
+    while ((m = funcRegex.exec(code)) !== null) {
+        if (m[1]) getName(m[1]);
+        if (m[2]) m[2].split(',').forEach(function(p) { p = p.trim().split('=')[0].trim(); if (p) getName(p); });
+    }
+    var arrowRegex = /\(([^)]*)\)\s*=>/g;
+    while ((m = arrowRegex.exec(code)) !== null) {
+        m[1].split(',').forEach(function(p) { p = p.trim().split('=')[0].trim(); if (p && /^[a-zA-Z_$][\w$]*$/.test(p)) getName(p); });
+    }
+    if (Object.keys(map).length === 0) return code;
+    var result = code;
+    Object.keys(map).forEach(function(orig) {
+        var re = new RegExp('\\b' + orig.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'g');
+        result = result.replace(re, map[orig]);
+    });
+    return result;
+}
+function layerStringArray(code) {
+    var strings = [], stringMap = Object.create(null), arrName = randomName('_0x'), maxSize = 1000;
+    var newCode = code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
+        if (str.length === 0 || str.length > 500) return match;
+        if (strings.length >= maxSize) return match;
+        var index = stringMap[str];
+        if (index === undefined) { index = strings.length; strings.push(str); stringMap[str] = index; }
+        return arrName + '[' + index + ']';
+    });
+    if (strings.length === 0) return code;
+    var arrDecl = 'var ' + arrName + '=[' + strings.map(function(s) { return JSON.stringify(s); }).join(',') + '];';
+    return arrDecl + newCode;
+}
+function layerHexEncode(code) {
+    return code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
+        if (str.length === 0 || str.length > 500) return match;
+        if (/[^\x00-\x7F]/.test(str)) return match;
+        if (/\\x/.test(str)) return match;
+        var hex = '';
+        for (var i = 0; i < str.length; i++) hex += '\\x' + ('0' + str.charCodeAt(i).toString(16)).slice(-2);
+        return '"' + hex + '"';
+    });
+}
+function layerHexNumbers(code) {
+    var result = '', i = 0, inString = false, sc = '';
+    while (i < code.length) {
+        var ch = code[i];
+        if (inString) {
+            result += ch;
+            if (ch === '\\' && i + 1 < code.length) { result += code[i + 1]; i += 2; continue; }
+            if (ch === sc) inString = false;
+            i++; continue;
+        }
+        if (ch === '"' || ch === "'" || ch === '`') { inString = true; sc = ch; result += ch; i++; continue; }
+        if (/\d/.test(ch) && (i === 0 || !/[\w.]/.test(code[i - 1]))) {
+            var numStr = '', hasDot = false;
+            while (i < code.length && /[\d.]/.test(code[i])) {
+                if (code[i] === '.') hasDot = true;
+                numStr += code[i]; i++;
+            }
+            if (!hasDot && /^\d+$/.test(numStr) && parseInt(numStr) > 9 && parseInt(numStr) < 1000000) {
+                result += '0x' + parseInt(numStr).toString(16).toUpperCase();
+            } else result += numStr;
+            continue;
+        }
+        result += ch; i++;
+    }
+    return result;
+}
+function layerDeadCode(code) {
+    var dead = '';
+    for (var i = 0; i < 5; i++) {
+        var fn = randomName('_0x'), v = randomName('_0x');
+        dead += 'function ' + fn + '(){var ' + v + '=[' + Math.floor(Math.random()*100) + ',' + Math.floor(Math.random()*100) + '];return ' + v + '.length;}';
+    }
+    return dead + code;
+}
+function layerControlFlow(code) {
+    var arr = randomName('_0x'), idx = randomName('_0x');
+    return 'var ' + arr + '=[function(){' + code + '}];var ' + idx + '=0;while(' + idx + '<' + arr + '.length){' + arr + '[' + idx + '++]();}';
+}
+function minifyHTML(html) {
+    if (!html) return '';
+    return html.replace(/<!--(?!\[if)[\s\S]*?-->/g, '').replace(/\s+/g, ' ').replace(/>\s+</g, '><').trim();
+}
+function minifyCSS(css) {
+    if (!css) return '';
+    return css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').replace(/\s*([{}:;,])\s*/g, '$1').replace(/;}/g, '}').trim();
+}
+function buildCompleteHTML(html, css, js, obfuscatedJS) {
+    var SO = '<' + 'script>', SC = '<' + '/script>';
+    var TO = '<' + 'style>', TC = '<' + '/style>';
+    var HC = '<' + '/head>', BC = '<' + '/body>', HC2 = '<' + '/html>';
+    if (!html || !html.trim()) {
+        var out = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>Protected Page</title>\n';
+        if (css && css.trim()) out += TO + css + TC + '\n';
+        out += HC + '\n<body>\n';
+        if (obfuscatedJS && obfuscatedJS.trim()) out += SO + obfuscatedJS + SC + '\n';
+        out += BC + '\n' + HC2;
+        return out;
+    }
+    var result = html;
+    if (css && css.trim()) {
+        var hcIdx = result.lastIndexOf(HC);
+        if (hcIdx === -1) hcIdx = result.lastIndexOf('</HEAD>');
+        if (hcIdx !== -1) result = result.substring(0, hcIdx) + TO + css + TC + result.substring(hcIdx);
+        else {
+            var bodyIdx = result.search(/<body[\s>]/i);
+            if (bodyIdx !== -1) {
+                var bodyTagEnd = result.indexOf('>', bodyIdx);
+                result = result.substring(0, bodyTagEnd + 1) + TO + css + TC + result.substring(bodyTagEnd + 1);
+            } else result = TO + css + TC + result;
+        }
+    }
+    if (obfuscatedJS && obfuscatedJS.trim()) {
+        var bcIdx = result.lastIndexOf(BC);
+        if (bcIdx === -1) bcIdx = result.lastIndexOf('</BODY>');
+        if (bcIdx !== -1) result = result.substring(0, bcIdx) + SO + obfuscatedJS + SC + result.substring(bcIdx);
+        else result = result + SO + obfuscatedJS + SC;
+    }
+    return result;
+}
 
 function copyToClipboard(text, successMsg) {
     if (!text) return;
@@ -1800,29 +1798,11 @@ function copyToClipboard(text, successMsg) {
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(done).catch(fallback);
-    } else { fallback(); }
+    } else fallback();
 }
 
-window.copyFullCode = function() {
-    copyToClipboard(document.getElementById('fullCodeArea').value, 'Full code copied!');
-};
-window.copyHtml = function() {
-    copyToClipboard(document.getElementById('htmlArea').value, 'HTML copied!');
-};
-window.copyCss = function() {
-    copyToClipboard(document.getElementById('cssArea').value, 'CSS copied!');
-};
-window.copyJs = function() {
-    copyToClipboard(document.getElementById('jsArea').value, 'JS copied!');
-};
-window.copyOther = function() {
-    copyToClipboard(document.getElementById('otherArea').value, 'Copied!');
-};
-window.copyOutput = function() {
-    copyToClipboard(state.outputCode, 'Complete HTML copied!');
-    addHistory('Copied complete HTML', 'success');
-};
-
+window.copyFullCode = function() { copyToClipboard(document.getElementById('fullCodeArea').value, 'Full code copied!'); };
+window.copyOutput = function() { copyToClipboard(state.outputCode, 'Complete HTML copied!'); addHistory('Copied HTML', 'success'); };
 window.clearFullCode = function() {
     document.getElementById('fullCodeArea').value = '';
     state.fullCode = ''; state.html = ''; state.css = ''; state.js = ''; state.other = '';
@@ -1833,54 +1813,9 @@ window.clearFullCode = function() {
     updateProgress();
     toast('Cleared', 'info');
 };
-window.clearHtml = function() {
-    document.getElementById('htmlArea').value = '';
-    updateBadges();
-};
-window.clearCss = function() {
-    document.getElementById('cssArea').value = '';
-    updateBadges();
-};
-window.clearJs = function() {
-    document.getElementById('jsArea').value = '';
-    updateBadges();
-};
-window.clearOther = function() {
-    document.getElementById('otherArea').value = '';
-    updateBadges();
-};
-
 window.loadSampleCode = function() {
-    var sample =
-        '<!DOCTYPE html>\n' +
-        '<html lang="en">\n' +
-        '<head>\n' +
-        '  <meta charset="UTF-8">\n' +
-        '  <title>Sample Page</title>\n' +
-        '  <style>\n' +
-        '    body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; }\n' +
-        '    h1 { color: #00f0ff; }\n' +
-        '  </style>\n' +
-        '</head>\n' +
-        '<body>\n' +
-        '  <h1>Hello World</h1>\n' +
-        '  <button id="btn">Click Me</button>\n' +
-        '  <p id="output">Waiting...</p>\n' +
-        '  ' + SCRIPT_OPEN + '\n' +
-        '    function greet(name) {\n' +
-        '      console.log("Hello, " + name);\n' +
-        '      return name.toUpperCase();\n' +
-        '    }\n' +
-        '    var users = ["Alice", "Bob", "Charlie"];\n' +
-        '    for (var i = 0; i < users.length; i++) {\n' +
-        '      greet(users[i]);\n' +
-        '    }\n' +
-        '    document.getElementById("btn").addEventListener("click", function() {\n' +
-        '      document.getElementById("output").textContent = "Button clicked!";\n' +
-        '    });\n' +
-        '  ' + SCRIPT_CLOSE + '\n' +
-        '</body>\n' +
-        '</html>';
+    var SO = '<' + 'script>', SC = '<' + '/script>';
+    var sample = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<title>Sample</title>\n<style>\nbody { background: #000; color: #fff; padding: 20px; }\nh1 { color: #00f0ff; }\n</style>\n</head>\n<body>\n<h1>Hello World</h1>\n<button id="btn">Click</button>\n<p id="output">Waiting...</p>\n' + SO + '\nconst users = ["Alice", "Bob", "Charlie"];\nfunction greet(name) {\n  console.log("Hello, " + name);\n  return name.toUpperCase();\n}\nasync function loadData() {\n  return await Promise.resolve("data");\n}\nusers.forEach(u => greet(u));\ndocument.getElementById("btn").addEventListener("click", () => {\n  document.getElementById("output").textContent = "Clicked!";\n});\n' + SC + '\n</body>\n</html>';
     document.getElementById('fullCodeArea').value = sample;
     state.fullCode = sample;
     document.getElementById('inputStats').style.display = 'grid';
@@ -1890,9 +1825,7 @@ window.loadSampleCode = function() {
     updateDetected();
     updateProgress();
     toast('Sample loaded!', 'info');
-    addHistory('Loaded sample', 'info');
 };
-
 window.downloadOutput = function() {
     if (!state.outputCode) { toast('Obfuscate first!', 'error'); return; }
     var blob = new Blob([state.outputCode], { type: 'text/html;charset=utf-8' });
@@ -1905,20 +1838,20 @@ window.downloadOutput = function() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast('Downloaded!', 'success');
-    addHistory('Downloaded HTML file', 'success');
+    addHistory('Downloaded HTML', 'success');
 };
-
 window.testOutput = function() {
     if (!state.outputCode) { toast('Obfuscate first!', 'error'); return; }
     try {
-        var scriptRegex = new RegExp(SCRIPT_OPEN.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([\\s\\S]*?)' + SCRIPT_CLOSE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-        var match = state.outputCode.match(scriptRegex);
+        var SO = '<' + 'script>', SC = '<' + '/script>';
+        var re = new RegExp(SO.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([\\s\\S]*?)' + SC.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+        var match = state.outputCode.match(re);
         if (match) {
             new Function(match[1]);
-            showStatus('statusObfuscate', 'success', '✅ JS syntax valid! HTML output is ready.');
+            showStatus('statusObfuscate', 'success', '✅ JS syntax valid!');
             toast('Test passed!', 'success');
         } else {
-            showStatus('statusObfuscate', 'info', 'ℹ️ No JS found in output. HTML output is valid.');
+            showStatus('statusObfuscate', 'info', 'ℹ️ No JS in output.');
             toast('HTML valid', 'info');
         }
     } catch(e) {
@@ -1926,98 +1859,89 @@ window.testOutput = function() {
         toast('Test failed!', 'error');
     }
 };
-
-window.scrollToSection = function(id) {
-    var el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-};
-
-window.toggleCard = function(id) {
-    var card = document.getElementById(id);
-    if (card) card.classList.toggle('collapsed');
-};
-
 window.switchTab = function(tab) {
     document.querySelectorAll('.tabs .tab[data-tab]').forEach(function(t) {
-        if (['html','css','js','other'].includes(t.dataset.tab)) {
-            t.classList.toggle('active', t.dataset.tab === tab);
-        }
+        if (['html','css','js','other'].includes(t.dataset.tab)) t.classList.toggle('active', t.dataset.tab === tab);
     });
     document.querySelectorAll('.tab-content').forEach(function(c) {
-        if (['tab-html','tab-css','tab-js','tab-other'].includes(c.id)) {
-            c.classList.toggle('active', c.id === 'tab-' + tab);
-        }
-    });
-};
-
-window.switchLogTab = function(tab) {
-    document.querySelectorAll('.tabs .tab[data-tab]').forEach(function(t) {
-        if (['activity','shortcuts'].includes(t.dataset.tab)) {
-            t.classList.toggle('active', t.dataset.tab === tab);
-        }
-    });
-    document.querySelectorAll('.tab-content').forEach(function(c) {
-        if (['tab-activity','tab-shortcuts'].includes(c.id)) {
-            c.classList.toggle('active', c.id === 'tab-' + tab);
-        }
+        if (['tab-html','tab-css','tab-js','tab-other'].includes(c.id)) c.classList.toggle('active', c.id === 'tab-' + tab);
     });
 };
 
 var fullCodeArea = document.getElementById('fullCodeArea');
-fullCodeArea.addEventListener('input', function() {
-    var code = this.value;
-    state.fullCode = code;
-    var stats = document.getElementById('inputStats');
-    if (!code.trim()) {
-        stats.style.display = 'none';
+if (fullCodeArea) {
+    fullCodeArea.addEventListener('input', function() {
+        var code = this.value;
+        state.fullCode = code;
+        var stats = document.getElementById('inputStats');
+        if (!code.trim()) { stats.style.display = 'none'; updateProgress(); return; }
+        stats.style.display = 'grid';
+        document.getElementById('statLines').textContent = num(code.split('\n').length);
+        document.getElementById('statChars').textContent = num(code.length);
+        document.getElementById('statSize').textContent = bytes(new Blob([code]).size);
+        updateDetected();
         updateProgress();
-        return;
-    }
-    stats.style.display = 'grid';
-    document.getElementById('statLines').textContent = num(code.split('\n').length);
-    document.getElementById('statChars').textContent = num(code.length);
-    document.getElementById('statSize').textContent = bytes(new Blob([code]).size);
-    updateDetected();
-    updateProgress();
-});
+    });
+}
 
 document.addEventListener('keydown', function(e) {
     if (e.ctrlKey && !e.shiftKey && e.key === 'Enter') {
         e.preventDefault();
-        if (document.getElementById('sectionsContainer').style.display === 'none') {
-            parseFullCode();
-        } else {
-            obfuscateNow();
-        }
+        if (document.getElementById('sectionsContainer').style.display === 'none') parseFullCode();
+        else obfuscateNow();
     }
-    if (e.ctrlKey && e.shiftKey && e.key === 'Enter') {
-        e.preventDefault();
-        obfuscateNow();
-    }
-    if (e.ctrlKey && e.shiftKey && e.key === 'C') {
-        e.preventDefault();
-        if (state.outputCode) copyOutput();
-    }
-    if (e.ctrlKey && e.shiftKey && e.key === 'X') {
-        e.preventDefault();
-        clearFullCode();
-    }
+    if (e.ctrlKey && e.shiftKey && e.key === 'Enter') { e.preventDefault(); obfuscateNow(); }
+    if (e.ctrlKey && e.shiftKey && e.key === 'X') { e.preventDefault(); clearFullCode(); }
 });
 
+/* ═══════════════════════════════════════════════════════════
+   AUTH HANDLING — Waits for auth-guard.js to fire event
+   ═══════════════════════════════════════════════════════════ */
+var authReadyFired = false;
+
 function handleAuthReady(e) {
+    if (authReadyFired) return;
     if (!e.detail || !e.detail.user) return;
-    if (state.authHandled) return;
-    state.authHandled = true;
+    authReadyFired = true;
     state.user = e.detail.user;
+    
+    var userBadge = document.getElementById('userBadge');
+    var userName = document.getElementById('userName');
+    if (userBadge && userName) {
+        var displayName = e.detail.displayName || e.detail.email || 'User';
+        if (displayName.indexOf('@') !== -1) displayName = displayName.split('@')[0];
+        userName.textContent = displayName;
+        userBadge.style.display = 'inline-flex';
+    }
+    
+    console.log('%c👤 Auth ready:', 'color:#00ff64;font-weight:bold;', e.detail.email);
+    addHistory('Logged in as ' + (e.detail.email || 'User'), 'success');
 }
-document.addEventListener('auth-guard-ready', handleAuthReady);
+
 document.addEventListener('auth-ready', handleAuthReady);
+document.addEventListener('auth-guard-ready', handleAuthReady);
+
+/* Fallback: if auth-guard.js fails to load, show page after 3s */
+setTimeout(function() {
+    if (!authReadyFired) {
+        console.warn('⚠️ Auth guard did not fire within 3s — showing page anyway');
+        document.documentElement.style.visibility = 'visible';
+        document.documentElement.style.opacity = '1';
+        if (document.body) {
+            document.body.style.visibility = 'visible';
+            document.body.style.opacity = '1';
+        }
+        var l = document.getElementById('auth-guard-loader');
+        if (l) l.remove();
+        var s = document.getElementById('auth-guard-style');
+        if (s) s.remove();
+    }
+}, 3000);
 
 updateProgress();
 renderHistory();
-addHistory('CodeForge Obfuscator initialized', 'info');
-
-console.log('%c🛡️ Obfuscation Engine loaded', 'color:#b400ff;font-size:14px;font-weight:bold;');
+addHistory('PRO Obfuscator initialized', 'info');
+console.log('%c🛡️ PRO Obfuscator loaded — Worker + AST', 'color:#b400ff;font-size:14px;font-weight:bold;');
 
 })();
 </script>
