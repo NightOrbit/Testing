@@ -4,1518 +4,468 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b0b1a">
-<meta name="robots" content="noindex, nofollow">
-<title>Obfuscate Code — NightOrbit CodeForge</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+<title>Code Obfuscation — NightOrbit CodeForge</title>
 
-<noscript>
-    <div style="color:#fff;text-align:center;padding:50px;font-family:sans-serif;background:#0b0b1a;min-height:100vh;">
-        <h1 style="color:#00f0ff;">⚠️ JavaScript Required</h1>
-        <p style="color:#b0b0d0;">Please enable JavaScript to use NightOrbit CodeForge.</p>
-    </div>
-</noscript>
-
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 <script src="auth-guard.js"></script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- javascript-obfuscator (CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.1.1/dist/index.browser.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+/* [Same CSS as CodeEncrypt.html — reuse kar lo] */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --cyan:#00f0ff;--pink:#ff2d95;--purple:#b400ff;--gold:#ffd700;
+  --green:#00ff64;--red:#ff0064;--dark:#05050f;
+  --card:rgba(11,11,26,0.94);--border:rgba(0,240,255,0.22);
+  --muted:#6a6a8a;--header-h:62px;
+}
+html,body{width:100%;overflow-x:hidden;}
+body{
+  background:radial-gradient(ellipse at top,#13132a 0%,#000 70%);
+  background-attachment:fixed;color:#fff;font-family:'Inter',sans-serif;
+  min-height:100vh;padding-top:var(--header-h);padding-bottom:20px;
+  font-size:14px;line-height:1.5;
+}
+.topbar{
+  position:fixed;top:0;left:0;right:0;height:var(--header-h);
+  background:rgba(6,6,15,0.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 15px;gap:10px;
+}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Orbitron',sans-serif;
+  font-size:14px;font-weight:900;color:var(--cyan);letter-spacing:1px;flex-shrink:0;}
+.brand .logo{font-size:22px;}
+.brand .title{display:none;}
+@media(min-width:600px){.brand .title{display:inline;font-size:16px;letter-spacing:2px;}}
+.topbar-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.topbar-btn{
+  padding:8px 14px;border-radius:8px;text-decoration:none;
+  font-weight:bold;font-size:11px;letter-spacing:1px;
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'Orbitron',sans-serif;cursor:pointer;
+  border:1px solid #fff;transition:all 0.3s;white-space:nowrap;
+}
+.topbar-btn.dashboard{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;}
+.topbar-btn.logout{background:linear-gradient(135deg,#ff0064,#b400ff);color:#fff;}
+.topbar-btn:hover{transform:translateY(-2px);}
+.topbar-btn .label{display:none;}
+@media(min-width:500px){.topbar-btn .label{display:inline;}}
 
-:root {
-    --neon-cyan: #00f0ff;
-    --neon-pink: #ff2d95;
-    --neon-purple: #b400ff;
-    --neon-gold: #ffd700;
-    --neon-green: #00ff64;
-    --neon-red: #ff0064;
-    --card: rgba(11, 11, 26, 0.94);
-    --border: rgba(180, 0, 255, 0.22);
-    --text-secondary: #b0b0d0;
-    --text-muted: #6a6a8a;
+.container{width:100%;max-width:1400px;margin:0 auto;padding:15px;}
+
+.header-card{
+  background:var(--card);border:2px solid var(--cyan);
+  border-radius:18px;padding:22px 24px;margin-bottom:15px;
+  box-shadow:0 0 50px rgba(0,240,255,0.15);
+  text-align:center;position:relative;overflow:hidden;
+}
+.header-card::before{
+  content:'';position:absolute;inset:-2px;border-radius:18px;padding:2px;
+  background:conic-gradient(from 0deg,var(--cyan),var(--pink),var(--purple),var(--gold),var(--cyan));
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:borderSpin 6s linear infinite;pointer-events:none;
+}
+@keyframes borderSpin{to{transform:rotate(360deg);}}
+h1{font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;
+  background:linear-gradient(135deg,var(--cyan),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;letter-spacing:3px;margin-bottom:6px;text-transform:uppercase;}
+.subtitle{color:var(--muted);font-size:11px;letter-spacing:2px;text-transform:uppercase;}
+.header-stats{display:flex;justify-content:center;gap:14px;margin-top:14px;flex-wrap:wrap;}
+.header-stat{
+  background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);
+  border-radius:40px;padding:4px 12px;font-size:10px;color:#b0b0d0;
+  letter-spacing:1px;text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.header-stat i{color:var(--cyan);font-size:11px;}
+
+.user-welcome{
+  background:rgba(0,240,255,0.05);border:1px solid var(--border);
+  border-radius:12px;padding:10px 16px;margin-bottom:15px;
+  font-size:12px;color:var(--muted);display:flex;align-items:center;
+  gap:10px;flex-wrap:wrap;
+}
+.user-welcome i{color:var(--cyan);font-size:16px;}
+.user-welcome b{color:var(--cyan);}
+.user-welcome .auth-badge{
+  margin-left:auto;font-size:10px;letter-spacing:1px;
+  text-transform:uppercase;color:var(--green);
+  display:inline-flex;align-items:center;gap:5px;
 }
 
-html, body {
-    width: 100%;
-    min-height: 100vh;
-    background: radial-gradient(circle at 50% 20%, #0b0b1a 0%, #000 100%);
-    font-family: 'Inter', sans-serif;
-    color: #fff;
-    overflow-x: hidden;
-    line-height: 1.5;
+.section{
+  background:rgba(0,240,255,0.03);border:1px solid var(--border);
+  border-radius:12px;padding:16px;margin-bottom:12px;
 }
+label{color:var(--cyan);font-size:11px;letter-spacing:2px;
+  text-transform:uppercase;font-weight:bold;display:block;margin-bottom:8px;}
 
-body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background:
-        radial-gradient(circle at 15% 10%, rgba(180,0,255,0.06), transparent 40%),
-        radial-gradient(circle at 85% 90%, rgba(0,240,255,0.06), transparent 40%);
-    pointer-events: none;
-    z-index: 0;
+textarea,input[type="text"]{
+  width:100%;background:#000;color:var(--green);
+  border:1px solid #333;border-radius:8px;padding:12px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  line-height:1.5;resize:vertical;transition:all 0.3s;
 }
-
-.app { max-width: 1400px; margin: 0 auto; padding: 15px; position: relative; z-index: 1; }
-
-.header {
-    background: rgba(11, 11, 26, 0.95);
-    border: 2px solid var(--neon-purple);
-    border-radius: 18px;
-    padding: 22px 24px;
-    margin-bottom: 15px;
-    box-shadow: 0 0 50px rgba(180, 0, 255, 0.15);
-    text-align: center;
+textarea:focus,input:focus{
+  outline:none;border-color:var(--cyan);
+  box-shadow:0 0 15px rgba(0,240,255,0.2);
 }
+textarea{min-height:220px;}
+textarea.tall{min-height:320px;}
 
-h1 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 26px;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 3px;
-    margin-bottom: 6px;
-    text-transform: uppercase;
+button{
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  color:#000;border:none;padding:12px 22px;border-radius:10px;
+  font-weight:bold;font-size:12px;letter-spacing:1.5px;
+  text-transform:uppercase;cursor:pointer;
+  font-family:'Orbitron',sans-serif;transition:all 0.3s;
 }
+button:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,240,255,0.4);}
+button:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+button.secondary{background:linear-gradient(135deg,var(--gold),#ff8c00);}
+button.danger{background:linear-gradient(135deg,var(--red),#ff0000);color:#fff;}
+button.green{background:linear-gradient(135deg,var(--green),#00aa44);}
 
-.subtitle { color: var(--text-muted); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+.btn-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0;}
+.btn-row button{flex:1 1 auto;min-width:120px;}
 
-.header-stats { display: flex; justify-content: center; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
-
-.header-stat {
-    background: rgba(180, 0, 255, 0.05);
-    border: 1px solid rgba(180, 0, 255, 0.15);
-    border-radius: 40px;
-    padding: 4px 12px;
-    font-size: 10px;
-    color: var(--text-secondary);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+/* Preset buttons */
+.preset-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:10px;margin-bottom:12px;
 }
-
-.header-stat i { color: var(--neon-purple); font-size: 11px; }
-.header-stat.gold { border-color: rgba(255,215,0,0.2); }
-.header-stat.gold i { color: var(--neon-gold); }
-.header-stat.green { border-color: rgba(0,255,100,0.2); }
-.header-stat.green i { color: var(--neon-green); }
-.header-stat.cyan { border-color: rgba(0,240,255,0.2); }
-.header-stat.cyan i { color: var(--neon-cyan); }
-.header-stat.pink { border-color: rgba(255,45,149,0.3); background: rgba(255,45,149,0.08); }
-.header-stat.pink i { color: var(--neon-pink); }
-
-.top-actions { display: flex; justify-content: center; gap: 10px; margin: 14px 0; flex-wrap: wrap; }
-
-.top-btn {
-    background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
-    color: #fff;
-    border: 2px solid #fff;
-    padding: 10px 20px;
-    border-radius: 50px;
-    font-weight: 900;
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.4s;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 0 30px rgba(180,0,255,0.3);
-    font-family: inherit;
+.preset-btn{
+  background:rgba(0,0,0,0.5);border:1.5px solid var(--border);
+  color:#fff;padding:14px 12px;border-radius:10px;
+  cursor:pointer;transition:all 0.3s;text-align:center;
+  font-family:'Inter',sans-serif;
 }
-
-.top-btn:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 0 50px rgba(180,0,255,0.6); }
-.top-btn.gold { background: linear-gradient(135deg, #ffd700, #ff6b00); color: #000; }
-.top-btn.green { background: linear-gradient(135deg, #00ff88, #00b85c); color: #000; }
-
-.progress-wrap {
-    background: rgba(0, 0, 0, 0.4);
-    border: 1.5px solid rgba(180, 0, 255, 0.15);
-    border-radius: 12px;
-    padding: 12px 16px;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
+.preset-btn:hover{border-color:var(--cyan);background:rgba(0,240,255,0.06);}
+.preset-btn.active{
+  border-color:var(--gold);background:rgba(255,215,0,0.08);
+  box-shadow:0 0 20px rgba(255,215,0,0.2);
 }
-
-.progress-label {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 10px;
-    color: var(--neon-purple);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    white-space: nowrap;
+.preset-btn .name{
+  font-family:'Orbitron',sans-serif;font-size:12px;
+  font-weight:900;letter-spacing:2px;color:var(--cyan);
+  margin-bottom:4px;
 }
+.preset-btn.active .name{color:var(--gold);}
+.preset-btn .desc{font-size:10px;color:var(--muted);line-height:1.4;}
 
-.progress-track {
-    flex: 1;
-    height: 8px;
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: 20px;
-    overflow: hidden;
-    min-width: 150px;
+/* Options */
+.option-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;padding:10px 12px;background:rgba(0,0,0,0.3);
+  border-radius:8px;margin-bottom:6px;font-size:12px;
 }
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink), var(--neon-cyan));
-    border-radius: 20px;
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 0%;
-    box-shadow: 0 0 15px rgba(180,0,255,0.6);
+.option-row .opt-label{color:#b0b0d0;flex:1;}
+.option-row .opt-label b{color:#fff;display:block;font-size:12px;margin-bottom:2px;}
+.option-row .opt-label small{color:var(--muted);font-size:10px;}
+.switch{
+  position:relative;width:44px;height:24px;flex-shrink:0;
+  background:#222;border-radius:12px;cursor:pointer;
+  transition:0.3s;border:1px solid #333;
 }
-
-.progress-percent {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--neon-gold);
-    font-weight: 700;
-    min-width: 45px;
-    text-align: right;
+.switch::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:18px;height:18px;border-radius:50%;
+  background:#666;transition:0.3s;
 }
+.switch.on{background:rgba(0,240,255,0.2);border-color:var(--cyan);}
+.switch.on::after{left:22px;background:var(--cyan);box-shadow:0 0 10px var(--cyan);}
 
-.card {
-    background: var(--card);
-    border: 2px solid var(--border);
-    border-radius: 18px;
-    padding: 22px;
-    box-shadow: 0 0 40px rgba(180, 0, 255, 0.08);
-    margin-bottom: 15px;
+/* Stats */
+.stats-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:10px;margin-top:12px;
 }
-
-h2, h3 {
-    font-family: 'Orbitron', sans-serif;
-    color: var(--neon-purple);
-    font-size: 13px;
-    margin-bottom: 12px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
+.stat-card{
+  background:rgba(0,0,0,0.4);border:1.5px solid rgba(0,240,255,0.15);
+  border-radius:10px;padding:12px;text-align:center;transition:0.3s;
 }
+.stat-card:hover{border-color:var(--cyan);transform:translateY(-2px);}
+.stat-label{font-size:9px;color:var(--muted);letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:4px;font-family:'Orbitron',sans-serif;}
+.stat-value{font-family:'JetBrains Mono',monospace;font-size:15px;
+  font-weight:900;color:var(--cyan);}
+.stat-value.gold{color:var(--gold);}
+.stat-value.green{color:var(--green);}
+.stat-value.pink{color:var(--pink);}
 
-.badge {
-    background: rgba(180, 0, 255, 0.15);
-    color: var(--neon-purple);
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 9px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    border: 1px solid rgba(180,0,255,0.3);
+/* Progress */
+.progress-wrap{
+  background:rgba(0,0,0,0.4);border:1.5px solid rgba(0,240,255,0.15);
+  border-radius:12px;padding:12px 16px;margin-bottom:15px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
 }
+.progress-label{font-family:'Orbitron',sans-serif;font-size:10px;
+  color:var(--cyan);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;}
+.progress-track{flex:1;height:8px;background:rgba(0,0,0,0.6);
+  border-radius:20px;overflow:hidden;min-width:150px;}
+.progress-fill{height:100%;
+  background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink));
+  border-radius:20px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1);
+  width:0%;box-shadow:0 0 15px rgba(0,240,255,0.6);}
+.progress-percent{font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--gold);font-weight:700;min-width:45px;text-align:right;}
 
-.badge.success { background: rgba(0, 255, 100, 0.15); color: #00ff64; border-color: rgba(0,255,100,0.3); }
-.badge.gold { background: rgba(255, 215, 0, 0.15); color: var(--neon-gold); border-color: rgba(255,215,0,0.3); }
-.badge.pink { background: rgba(255, 45, 149, 0.15); color: var(--neon-pink); border-color: rgba(255,45,149,0.3); }
-.badge.cyan { background: rgba(0, 240, 255, 0.15); color: var(--neon-cyan); border-color: rgba(0,240,255,0.3); }
-
-.guide-box {
-    background: rgba(180, 0, 255, 0.05);
-    border-left: 3px solid var(--neon-purple);
-    border-radius: 8px;
-    padding: 12px 14px;
-    margin-bottom: 12px;
-    font-size: 11px;
-    color: #ccc;
-    line-height: 1.7;
+/* Status */
+.status{
+  text-align:center;padding:12px;border-radius:8px;
+  margin-top:10px;font-size:12px;display:none;
+  font-weight:bold;font-family:'JetBrains Mono',monospace;
 }
+.status.success{background:rgba(0,255,100,0.1);border:1px solid var(--green);
+  color:var(--green);display:block;}
+.status.error{background:rgba(255,0,100,0.1);border:1px solid var(--red);
+  color:var(--red);display:block;}
+.status.info{background:rgba(0,240,255,0.1);border:1px solid var(--cyan);
+  color:var(--cyan);display:block;}
+.status.loading{background:rgba(255,215,0,0.1);border:1px solid var(--gold);
+  color:var(--gold);display:block;}
 
-.guide-box strong { color: var(--neon-purple); }
-.guide-box code {
-    background: rgba(0, 0, 0, 0.6);
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: var(--neon-gold);
-    font-size: 10px;
-    font-family: 'JetBrains Mono', monospace;
+/* Toast */
+.toast-container{
+  position:fixed;bottom:20px;right:20px;z-index:99999;
+  display:flex;flex-direction:column;gap:10px;
+  pointer-events:none;max-width:400px;
 }
-
-textarea {
-    width: 100%;
-    padding: 12px 14px;
-    background: rgba(0, 0, 0, 0.65);
-    border: 1.5px solid rgba(180, 0, 255, 0.15);
-    border-radius: 10px;
-    color: #fff;
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
-    font-size: 12px;
-    resize: vertical;
-    line-height: 1.6;
-    transition: 0.3s;
+.toast{
+  background:rgba(11,11,26,0.98);border:2px solid var(--cyan);
+  border-radius:12px;padding:12px 18px;color:#fff;font-size:12px;
+  font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,0.6),0 0 30px rgba(0,240,255,0.2);
+  display:flex;align-items:center;gap:10px;pointer-events:auto;
+  animation:toastIn 0.4s ease;min-width:250px;
 }
+.toast.success{border-color:var(--green);}
+.toast.error{border-color:var(--red);}
+.toast.warn{border-color:var(--gold);}
+@keyframes toastIn{from{transform:translateX(400px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+.toast.removing{animation:toastOut 0.3s ease forwards;}
+@keyframes toastOut{to{transform:translateX(400px);opacity:0;}}
 
-textarea { min-height: 140px; max-height: 600px; }
-textarea.tall { min-height: 220px; }
-textarea.huge { min-height: 340px; }
-
-textarea:focus {
-    outline: none;
-    border-color: var(--neon-purple);
-    box-shadow: 0 0 20px rgba(180, 0, 255, 0.2);
-}
-
-textarea::placeholder { color: #444; font-size: 11px; }
-textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary); cursor: not-allowed; }
-
-.mini-btn {
-    background: rgba(180, 0, 255, 0.08);
-    border: 1.5px solid rgba(180, 0, 255, 0.25);
-    color: var(--neon-purple);
-    padding: 7px 12px;
-    border-radius: 8px;
-    font-size: 10px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-family: inherit;
-}
-
-.mini-btn:hover { background: rgba(180, 0, 255, 0.18); border-color: var(--neon-purple); transform: translateY(-2px); }
-.mini-btn.gold { color: var(--neon-gold); border-color: rgba(255,215,0,0.25); background: rgba(255,215,0,0.06); }
-.mini-btn.pink { color: var(--neon-pink); border-color: rgba(255,45,149,0.25); background: rgba(255,45,149,0.06); }
-.mini-btn.green { color: #00ff64; border-color: rgba(0,255,100,0.25); background: rgba(0,255,100,0.06); }
-.mini-btn.red { color: var(--neon-red); border-color: rgba(255,0,100,0.25); background: rgba(255,0,100,0.06); }
-.mini-btn.cyan { color: var(--neon-cyan); border-color: rgba(0,240,255,0.25); background: rgba(0,240,255,0.06); }
-
-.btn {
-    background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
-    color: #fff;
-    border: none;
-    padding: 15px 26px;
-    border-radius: 12px;
-    font-weight: 900;
-    font-size: 12px;
-    cursor: pointer;
-    transition: 0.3s;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-family: 'Orbitron', sans-serif;
-}
-
-.btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 35px rgba(180, 0, 255, 0.45); }
-.btn:disabled { opacity: 0.35; cursor: not-allowed; }
-.btn.full { width: 100%; }
-.btn.gold { background: linear-gradient(135deg, var(--neon-gold), #ff8c00); color: #000; }
-
-.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
-
-.status {
-    padding: 12px 15px;
-    border-radius: 10px;
-    margin-top: 12px;
-    font-size: 11px;
-    display: none;
-    font-family: 'JetBrains Mono', monospace;
-    line-height: 1.6;
-    white-space: pre-wrap;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.status.show { display: block; }
-.status.success { background: rgba(0, 255, 100, 0.08); border: 1.5px solid #00ff64; color: #00ff64; }
-.status.error { background: rgba(255, 0, 100, 0.08); border: 1.5px solid #ff0064; color: #ff0064; }
-.status.loading { background: rgba(255, 215, 0, 0.08); border: 1.5px solid var(--neon-gold); color: var(--neon-gold); }
-.status.info { background: rgba(0, 240, 255, 0.08); border: 1.5px solid var(--neon-cyan); color: var(--neon-cyan); }
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
-    margin-top: 12px;
-}
-
-.stat-card {
-    background: rgba(0, 0, 0, 0.4);
-    border: 1.5px solid rgba(180, 0, 255, 0.15);
-    border-radius: 12px;
-    padding: 14px;
-    text-align: center;
-}
-
-.stat-label {
-    font-size: 9px;
-    color: var(--text-muted);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-weight: 600;
-    margin-bottom: 6px;
-    font-family: 'Orbitron', sans-serif;
-}
-
-.stat-value {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 16px;
-    font-weight: 900;
-    color: var(--neon-purple);
-}
-
-.stat-value.gold { color: var(--neon-gold); }
-.stat-value.green { color: var(--neon-green); }
-.stat-value.pink { color: var(--neon-pink); }
-.stat-value.cyan { color: var(--neon-cyan); }
-
-.history-list {
-    max-height: 200px;
-    overflow-y: auto;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(180, 0, 255, 0.1);
-    border-radius: 10px;
-    padding: 10px;
-}
-
-.history-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
-    border-bottom: 1px solid rgba(255,255,255,0.03);
-    font-size: 11px;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--text-secondary);
-}
-
-.history-item:last-child { border-bottom: none; }
-.history-time { color: var(--text-muted); font-size: 10px; flex-shrink: 0; min-width: 70px; }
-.history-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-.history-dot.info { background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan); }
-.history-dot.success { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
-.history-dot.error { background: var(--neon-red); box-shadow: 0 0 8px var(--neon-red); }
-
-.tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 12px;
-    border-bottom: 1px solid rgba(180, 0, 255, 0.15);
-    overflow-x: auto;
-    flex-wrap: nowrap;
-}
-
-.tab {
-    padding: 10px 16px;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    font-family: 'Orbitron', sans-serif;
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    cursor: pointer;
-    position: relative;
-    transition: 0.3s;
-    white-space: nowrap;
-    font-weight: 700;
-}
-
-.tab:hover, .tab.active { color: var(--neon-purple); }
-.tab.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px; left: 0; right: 0;
-    height: 2px;
-    background: var(--neon-purple);
-    box-shadow: 0 0 10px var(--neon-purple);
-}
-
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-
-.toast-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 99999;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    pointer-events: none;
-    max-width: 400px;
-}
-
-.toast {
-    background: rgba(11, 11, 26, 0.98);
-    border: 2px solid var(--neon-purple);
-    border-radius: 12px;
-    padding: 12px 18px;
-    color: #fff;
-    font-size: 12px;
-    font-weight: 600;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    pointer-events: auto;
-    animation: toastIn 0.4s ease;
-    min-width: 250px;
-}
-
-.toast.success { border-color: var(--neon-green); }
-.toast.error { border-color: var(--neon-red); }
-.toast.warn { border-color: var(--neon-gold); }
-
-.toast-icon { font-size: 18px; flex-shrink: 0; }
-.toast.success .toast-icon { color: var(--neon-green); }
-.toast.error .toast-icon { color: var(--neon-red); }
-.toast.warn .toast-icon { color: var(--neon-gold); }
-
-@keyframes toastIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-.toast.removing { animation: toastOut 0.3s ease forwards; }
-@keyframes toastOut { to { transform: translateX(400px); opacity: 0; } }
-
-.lang-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 10px;
-    margin-top: 12px;
-}
-
-.lang-btn {
-    padding: 14px 12px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 2px solid rgba(180, 0, 255, 0.2);
-    border-radius: 10px;
-    color: #fff;
-    cursor: pointer;
-    transition: 0.3s;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    min-height: 70px;
-    justify-content: center;
-}
-
-.lang-btn .lang-icon { font-size: 20px; }
-.lang-btn:hover { background: rgba(180, 0, 255, 0.1); border-color: var(--neon-purple); transform: translateY(-2px); }
-.lang-btn.active {
-    background: linear-gradient(135deg, rgba(180, 0, 255, 0.25), rgba(255, 45, 149, 0.15));
-    border-color: var(--neon-purple);
-    box-shadow: 0 0 25px rgba(180, 0, 255, 0.4);
-    color: var(--neon-purple);
-}
-
-.adv-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 10px;
-    margin-top: 12px;
-}
-
-.adv-option {
-    background: rgba(0, 0, 0, 0.4);
-    border: 1.5px solid rgba(180, 0, 255, 0.15);
-    border-radius: 10px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    transition: 0.3s;
-    font-size: 11px;
-    color: var(--text-secondary);
-}
-
-.adv-option:hover { border-color: var(--neon-purple); background: rgba(180, 0, 255, 0.05); }
-.adv-option input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--neon-purple); cursor: pointer; }
-.adv-option .opt-label { flex: 1; font-weight: 600; }
-.adv-option .opt-desc { font-size: 9px; color: var(--text-muted); display: block; margin-top: 2px; }
-
-@media (max-width: 768px) {
-    .app { padding: 10px; }
-    h1 { font-size: 18px; letter-spacing: 2px; }
-    .subtitle { font-size: 9px; }
-    .card { padding: 14px; }
-    .top-actions { flex-direction: column; }
-    textarea { font-size: 11px; }
-    .lang-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 480px) {
-    h1 { font-size: 15px; }
-    .toast-container { left: 10px; right: 10px; bottom: 10px; }
-    .toast { min-width: auto; }
+@media(max-width:600px){
+  body{font-size:13px;}
+  .container{padding:12px;}
+  .section{padding:14px;}
+  textarea{min-height:180px;font-size:11px;}
+  .btn-row button{flex:1 1 100%;}
+  h1{font-size:20px;letter-spacing:2px;}
+  .preset-grid{grid-template-columns:1fr 1fr;}
 }
 </style>
 </head>
 <body>
 
-<div class="app">
+<div class="topbar">
+    <div class="brand">
+        <span class="logo">🛡️</span>
+        <span class="title">Code Obfuscation</span>
+    </div>
+    <div class="topbar-actions">
+        <a href="Dashboard.html" class="topbar-btn dashboard">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span class="label">Dashboard</span>
+        </a>
+        <button class="topbar-btn logout" onclick="doLogout()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span class="label">Logout</span>
+        </button>
+    </div>
+</div>
 
-    <div class="header">
-        <h1>🛡️ Obfuscate Code</h1>
-        <div class="subtitle">NightOrbit CodeForge · Professional Obfuscation</div>
+<div class="container">
+
+    <div class="user-welcome">
+        <i class="fa-solid fa-circle-user"></i>
+        <span>Welcome, <b id="welcomeName">User</b></span>
+        <span class="auth-badge">
+            <i class="fa-solid fa-shield-halved"></i> Authenticated
+        </span>
+    </div>
+
+    <div class="header-card">
+        <h1>🛡️ Code Obfuscation</h1>
+        <div class="subtitle">NightOrbit CodeForge · Protect Your JavaScript</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v20</span>
-            <span class="header-stat gold"><i class="fa-solid fa-microchip"></i> Worker Thread</span>
-            <span class="header-stat green"><i class="fa-solid fa-lock"></i> 4 Layers</span>
-            <span class="header-stat cyan"><i class="fa-solid fa-shield"></i> Bank-Level</span>
-            <span class="header-stat pink" id="userBadge" style="display:none;">
-                <i class="fa-solid fa-user"></i> <span id="userName">—</span>
-            </span>
+            <span class="header-stat"><i class="fa-solid fa-shield-halved"></i> v4.1 Engine</span>
+            <span class="header-stat"><i class="fa-solid fa-lock"></i> RC4 Strings</span>
+            <span class="header-stat"><i class="fa-solid fa-code-branch"></i> Control Flow</span>
+            <span class="header-stat"><i class="fa-solid fa-bug"></i> Anti-Debug</span>
         </div>
     </div>
 
+    <!-- Presets -->
+    <div class="section">
+        <label>⚡ Obfuscation Preset</label>
+        <div class="preset-grid">
+            <div class="preset-btn" data-preset="low" onclick="setPreset('low', this)">
+                <div class="name">LOW</div>
+                <div class="desc">Fast · Basic protection</div>
+            </div>
+            <div class="preset-btn active" data-preset="medium" onclick="setPreset('medium', this)">
+                <div class="name">MEDIUM</div>
+                <div class="desc">Balanced · Recommended</div>
+            </div>
+            <div class="preset-btn" data-preset="high" onclick="setPreset('high', this)">
+                <div class="name">HIGH</div>
+                <div class="desc">Strong · Slower</div>
+            </div>
+            <div class="preset-btn" data-preset="extreme" onclick="setPreset('extreme', this)">
+                <div class="name">EXTREME</div>
+                <div class="desc">Maximum · Heavy</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Input -->
+    <div class="section">
+        <label>📝 Input JavaScript Code</label>
+        <textarea id="inputCode" class="tall" placeholder="// Paste your JavaScript here..."></textarea>
+        <div class="stats-grid" id="inputStats" style="display:none;">
+            <div class="stat-card">
+                <div class="stat-label">Lines</div>
+                <div class="stat-value" id="statLines">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Characters</div>
+                <div class="stat-value gold" id="statChars">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Size</div>
+                <div class="stat-value green" id="statSize">0 B</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Options -->
+    <div class="section">
+        <label>⚙️ Advanced Options</label>
+        <div class="option-row">
+            <div class="opt-label">
+                <b>Control Flow Flattening</b>
+                <small>Break code structure into state machine</small>
+            </div>
+            <div class="switch on" data-opt="controlFlowFlattening" onclick="toggleOpt(this)"></div>
+        </div>
+        <div class="option-row">
+            <div class="opt-label">
+                <b>Dead Code Injection</b>
+                <small>Add fake unreachable code</small>
+            </div>
+            <div class="switch on" data-opt="deadCodeInjection" onclick="toggleOpt(this)"></div>
+        </div>
+        <div class="option-row">
+            <div class="opt-label">
+                <b>String Array Encryption (RC4)</b>
+                <small>Encrypt all string literals</small>
+            </div>
+            <div class="switch on" data-opt="stringArray" onclick="toggleOpt(this)"></div>
+        </div>
+        <div class="option-row">
+            <div class="opt-label">
+                <b>Debug Protection</b>
+                <small>Block DevTools & debugging</small>
+            </div>
+            <div class="switch on" data-opt="debugProtection" onclick="toggleOpt(this)"></div>
+        </div>
+        <div class="option-row">
+            <div class="opt-label">
+                <b>Self Defending</b>
+                <small>Crash if code is modified</small>
+            </div>
+            <div class="switch on" data-opt="selfDefending" onclick="toggleOpt(this)"></div>
+        </div>
+        <div class="option-row">
+            <div class="opt-label">
+                <b>Disable Console Output</b>
+                <small>Block all console.log calls</small>
+            </div>
+            <div class="switch on" data-opt="disableConsoleOutput" onclick="toggleOpt(this)"></div>
+        </div>
+        <div class="option-row">
+            <div class="opt-label">
+                <b>Identifier Names Generator</b>
+                <small>_0x4a2b1c style names</small>
+            </div>
+            <div class="switch on" data-opt="renameGlobals" onclick="toggleOpt(this)"></div>
+        </div>
+    </div>
+
+    <!-- Progress -->
     <div class="progress-wrap">
         <div class="progress-label">Progress</div>
-        <div class="progress-track">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
         <div class="progress-percent" id="progressPercent">0%</div>
     </div>
 
-    <div class="top-actions">
-        <a href="dashboard.html" class="top-btn gold">⬅ BACK</a>
-        <button class="top-btn green" onclick="loadSampleCode()">📥 LOAD SAMPLE</button>
+    <!-- Actions -->
+    <div class="btn-row">
+        <button onclick="obfuscateNow()">🛡️ OBFUSCATE</button>
+        <button class="secondary" onclick="loadSample()">📥 LOAD SAMPLE</button>
+        <button class="danger" onclick="clearAll()">🗑️ CLEAR</button>
     </div>
 
-    <div class="card">
-        <div class="guide-box">
-            <strong>📌 4 Steps:</strong><br>
-            1️⃣ <b>Paste code</b> — HTML, CSS, JS, JSON, XML<br>
-            2️⃣ Click <b>PARSE</b> — comments alag, code alag<br>
-            3️⃣ Choose <b>layers</b> — default 4 strong layers<br>
-            4️⃣ Click <b>OBFUSCATE</b> — complete HTML output
-        </div>
-    </div>
+    <div id="status" class="status"></div>
 
-    <div class="card" id="langSection">
-        <h3><span>🌐 Language <span class="badge cyan">AUTO-DETECT</span></span></h3>
-        <div class="lang-grid" id="langGrid">
-            <button class="lang-btn active" data-lang="auto" onclick="selectLang('auto', this)"><span class="lang-icon">🔍</span><span class="lang-name">AUTO</span><span class="lang-ext">DETECT</span></button>
-            <button class="lang-btn" data-lang="html" onclick="selectLang('html', this)"><span class="lang-icon">🌐</span><span class="lang-name">HTML</span><span class="lang-ext">.html</span></button>
-            <button class="lang-btn" data-lang="css" onclick="selectLang('css', this)"><span class="lang-icon">🎨</span><span class="lang-name">CSS</span><span class="lang-ext">.css</span></button>
-            <button class="lang-btn" data-lang="js" onclick="selectLang('js', this)"><span class="lang-icon">⚡</span><span class="lang-name">JavaScript</span><span class="lang-ext">.js</span></button>
-            <button class="lang-btn" data-lang="json" onclick="selectLang('json', this)"><span class="lang-icon">📦</span><span class="lang-name">JSON</span><span class="lang-ext">.json</span></button>
-            <button class="lang-btn" data-lang="xml" onclick="selectLang('xml', this)"><span class="lang-icon">📄</span><span class="lang-name">XML</span><span class="lang-ext">.xml</span></button>
-        </div>
-        <div style="margin-top:10px;font-size:11px;color:var(--text-muted);">
-            <b style="color:var(--neon-cyan);">Detected:</b> <span id="detectedLang">—</span>
-        </div>
-    </div>
-
-    <div class="card" id="inputSection">
-        <h3><span>📝 STEP 1 — Paste Code <span class="badge pink">INPUT</span></span></h3>
-        <div class="guide-box">
-            • Heavy files supported<br>
-            • Press <code>Ctrl + Enter</code> to parse
-        </div>
-        <textarea id="fullCodeArea" class="huge" placeholder="Paste your code here..."></textarea>
-        <div class="btn-row">
-            <button class="mini-btn gold" onclick="parseFullCode()">🔍 PARSE & SEPARATE</button>
-            <button class="mini-btn cyan" onclick="copyFullCode()">📋 COPY</button>
-            <button class="mini-btn green" onclick="loadSampleCode()">📥 SAMPLE</button>
-            <button class="mini-btn red" onclick="clearFullCode()">🗑️ CLEAR</button>
-        </div>
-        <div class="status" id="statusFullCode"></div>
-        <div class="stats-grid" id="inputStats" style="display:none;">
-            <div class="stat-card"><div class="stat-label">Lines</div><div class="stat-value" id="statLines">0</div></div>
-            <div class="stat-card"><div class="stat-label">Characters</div><div class="stat-value gold" id="statChars">0</div></div>
-            <div class="stat-card"><div class="stat-label">Size</div><div class="stat-value green" id="statSize">0 B</div></div>
-            <div class="stat-card"><div class="stat-label">Detected</div><div class="stat-value pink" id="statDetected">—</div></div>
-        </div>
-    </div>
-
-    <div id="sectionsContainer" style="display:none;">
-        <div class="card">
-            <h3><span>🧩 SEPARATED CODE <span class="badge success">READY</span></span></h3>
-            <div class="tabs">
-                <button class="tab active" data-tab="html" onclick="switchTab('html')">📄 HTML</button>
-                <button class="tab" data-tab="css" onclick="switchTab('css')">🎨 CSS</button>
-                <button class="tab" data-tab="js" onclick="switchTab('js')">⚙️ JS</button>
-                <button class="tab" data-tab="other" onclick="switchTab('other')">📦 OTHER</button>
-                <button class="tab" data-tab="comments" onclick="switchTab('comments')">💬 COMMENTS</button>
+    <!-- Output -->
+    <div class="section">
+        <label>🔒 Obfuscated Output</label>
+        <textarea id="outputCode" class="tall" readonly placeholder="Obfuscated code will appear here..."></textarea>
+        <div class="stats-grid" id="outputStats" style="display:none;">
+            <div class="stat-card">
+                <div class="stat-label">Original</div>
+                <div class="stat-value" id="statOriginal">0 B</div>
             </div>
-            <div class="tab-content active" id="tab-html">
-                <h3 style="margin-bottom:8px;">📄 HTML <span class="badge" id="htmlBadge">EMPTY</span></h3>
-                <textarea id="htmlArea" class="tall" placeholder="HTML..."></textarea>
+            <div class="stat-card">
+                <div class="stat-label">Obfuscated</div>
+                <div class="stat-value gold" id="statObfuscated">0 B</div>
             </div>
-            <div class="tab-content" id="tab-css">
-                <h3 style="margin-bottom:8px;">🎨 CSS <span class="badge" id="cssBadge">EMPTY</span></h3>
-                <textarea id="cssArea" class="tall" placeholder="CSS..."></textarea>
-            </div>
-            <div class="tab-content" id="tab-js">
-                <h3 style="margin-bottom:8px;">⚙️ JavaScript <span class="badge" id="jsBadge">EMPTY</span></h3>
-                <textarea id="jsArea" class="tall" placeholder="JS..."></textarea>
-            </div>
-            <div class="tab-content" id="tab-other">
-                <h3 style="margin-bottom:8px;">📦 Other <span class="badge" id="otherBadge">EMPTY</span></h3>
-                <textarea id="otherArea" class="tall" placeholder="JSON/XML..."></textarea>
-            </div>
-            <div class="tab-content" id="tab-comments">
-                <h3 style="margin-bottom:8px;">💬 Removed Comments <span class="badge gold" id="commentsBadge">EMPTY</span></h3>
-                <div class="guide-box">Ye comments aapke code se remove kar diye gaye hain. Reference ke liye.</div>
-                <textarea id="commentsArea" class="tall" placeholder="Removed comments..." readonly></textarea>
-                <div class="btn-row">
-                    <button class="mini-btn cyan" onclick="copyComments()">📋 COPY</button>
-                    <button class="mini-btn pink" onclick="clearComments()">🗑️ CLEAR</button>
-                </div>
+            <div class="stat-card">
+                <div class="stat-label">Ratio</div>
+                <div class="stat-value pink" id="statRatio">—</div>
             </div>
         </div>
     </div>
 
-    <div class="card" id="obfuscateSection">
-        <h3><span>⚙️ STEP 3 — Obfuscation Layers <span class="badge gold">OPTIONS</span></span></h3>
-        <div class="adv-options">
-            <label class="adv-option">
-                <input type="checkbox" id="optVarRename" checked>
-                <div><span class="opt-label">Variable Renaming</span><span class="opt-desc">Rename vars to _0xABC</span></div>
-            </label>
-            <label class="adv-option">
-                <input type="checkbox" id="optStringArray" checked>
-                <div><span class="opt-label">Shuffled String Array</span><span class="opt-desc">Strings moved + shuffled</span></div>
-            </label>
-            <label class="adv-option">
-                <input type="checkbox" id="optHexEncode" checked>
-                <div><span class="opt-label">Hex Encode</span><span class="opt-desc">Strings as \x hex</span></div>
-            </label>
-            <label class="adv-option">
-                <input type="checkbox" id="optDeadCode" checked>
-                <div><span class="opt-label">Dead Code</span><span class="opt-desc">Fake functions</span></div>
-            </label>
-            <label class="adv-option">
-                <input type="checkbox" id="optMinify" checked>
-                <div><span class="opt-label">Minify Output</span><span class="opt-desc">Remove whitespace</span></div>
-            </label>
-        </div>
-        <button class="btn full gold" id="obfuscateBtn" onclick="obfuscateNow()" style="margin-top:14px;">
-            <i class="fa-solid fa-bolt"></i> OBFUSCATE NOW (Ctrl+Enter)
-        </button>
-        <div class="status" id="statusObfuscate"></div>
-    </div>
-
-    <div class="card" id="outputSection" style="display:none;">
-        <h3><span>🔒 STEP 4 — Complete Output <span class="badge success" id="outputBadge">READY</span></span></h3>
-        <div class="guide-box">✅ Complete HTML file — copy & save as <code>file.html</code></div>
-        <textarea id="outputCode" class="huge" placeholder="Output..." readonly></textarea>
-        <div class="btn-row">
-            <button class="mini-btn cyan" onclick="copyOutput()">📋 COPY FULL HTML</button>
-            <button class="mini-btn green" onclick="downloadOutput()">⬇ DOWNLOAD .HTML</button>
-        </div>
-        <div class="stats-grid" id="outputStats">
-            <div class="stat-card"><div class="stat-label">Original</div><div class="stat-value cyan" id="statOrigSize">0 B</div></div>
-            <div class="stat-card"><div class="stat-label">Obfuscated</div><div class="stat-value gold" id="statObfSize">0 B</div></div>
-            <div class="stat-card"><div class="stat-label">Ratio</div><div class="stat-value pink" id="statRatio">0%</div></div>
-            <div class="stat-card"><div class="stat-label">Layers</div><div class="stat-value green" id="statLayers">0</div></div>
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>📊 Activity Log</h3>
-        <div class="history-list" id="historyList">
-            <div class="history-item">
-                <span class="history-time">--:--:--</span>
-                <span class="history-dot info"></span>
-                <span>Obfuscator initialized</span>
-            </div>
-        </div>
-        <div class="btn-row">
-            <button class="mini-btn pink" onclick="clearHistory()">🗑️ CLEAR</button>
-        </div>
-    </div>
-
-    <div class="card" style="text-align:center;">
-        <div style="font-size:11px;color:#444;letter-spacing:2px;line-height:1.8;">
-            Powered by <b style="color:var(--neon-purple);">NightOrbit</b> · Owner: <b style="color:var(--neon-purple);">Anas Farooq</b>
-        </div>
+    <div class="btn-row">
+        <button class="green" onclick="copyOutput()">📋 COPY</button>
+        <button class="secondary" onclick="downloadOutput()">⬇️ DOWNLOAD</button>
+        <button class="secondary" onclick="testOutput()">▶️ TEST IN CONSOLE</button>
     </div>
 
 </div>
 
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- ═══════════════════════════════════════════════════════════
-     OBFUSCATION WORKER — Runs in background thread
-     ═══════════════════════════════════════════════════════════ -->
-<script id="obfuscatorWorker" type="javascript/worker">
-'use strict';
-
-/* ═══ HELPERS ═══ */
-function rndHex(len) {
-    var c = 'abcdef0123456789';
-    var s = '';
-    for (var i = 0; i < len; i++) s += c.charAt(Math.floor(Math.random() * c.length));
-    return s;
-}
-function newName() { return '_0x' + rndHex(6); }
-
-/* ═══════════════════════════════════════════════════════════
-   COMMENT EXTRACTORS
-   ═══════════════════════════════════════════════════════════ */
-
-/* Extract JS comments (handles strings, regex, template literals) */
-function extractJsComments(code) {
-    var comments = [];
-    var result = '';
-    var i = 0, len = code.length;
-    var state = 'code';
-    var line = 1;
-    var regexOk = true;
-
-    while (i < len) {
-        var ch = code[i], next = code[i + 1];
-        if (ch === '\n') line++;
-
-        if (state === 'line') {
-            if (ch === '\n') { state = 'code'; result += ch; regexOk = true; }
-            i++; continue;
-        }
-        if (state === 'block') {
-            if (ch === '*' && next === '/') { state = 'code'; i += 2; continue; }
-            i++; continue;
-        }
-        if (state === 'single') {
-            result += ch;
-            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === "'") { state = 'code'; regexOk = false; }
-            i++; continue;
-        }
-        if (state === 'double') {
-            result += ch;
-            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === '"') { state = 'code'; regexOk = false; }
-            i++; continue;
-        }
-        if (state === 'template') {
-            result += ch;
-            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === '`') { state = 'code'; regexOk = false; }
-            i++; continue;
-        }
-        if (state === 'regex') {
-            result += ch;
-            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === '/') {
-                state = 'code'; regexOk = false;
-                while (i + 1 < len && /[gimuy]/.test(code[i + 1])) { i++; result += code[i]; }
-            }
-            if (ch === '\n') state = 'code';
-            i++; continue;
-        }
-
-        /* state === 'code' */
-        if (ch === '/' && next === '/') {
-            var cStart = i, cLine = line;
-            i += 2;
-            while (i < len && code[i] !== '\n') i++;
-            comments.push('[Line ' + cLine + '] ' + code.substring(cStart, i).trim());
-            continue;
-        }
-        if (ch === '/' && next === '*') {
-            var cStart2 = i, cLine2 = line;
-            i += 2;
-            while (i < len) {
-                if (code[i] === '\n') line++;
-                if (code[i] === '*' && code[i + 1] === '/') { i += 2; break; }
-                i++;
-            }
-            comments.push('[Line ' + cLine2 + '] ' + code.substring(cStart2, i).trim());
-            continue;
-        }
-        if (ch === "'") { state = 'single'; result += ch; i++; continue; }
-        if (ch === '"') { state = 'double'; result += ch; i++; continue; }
-        if (ch === '`') { state = 'template'; result += ch; i++; continue; }
-
-        /* Regex detection */
-        if (ch === '/' && regexOk && next !== '/' && next !== '*') {
-            var prev = result.length > 0 ? result[result.length - 1] : '';
-            if (!/[\w\)\]]/.test(prev)) {
-                state = 'regex'; result += ch; i++; continue;
-            }
-        }
-
-        if (/[\w\)\]]/.test(ch)) regexOk = false;
-        else if (/[;,\{\}\[\(\)=<>!&\|\?\+\-\*\/%^~:]/.test(ch)) regexOk = true;
-
-        result += ch;
-        i++;
-    }
-
-    return { code: result, comments: comments.join('\n') };
-}
-
-/* Extract CSS comments */
-function extractCssComments(code) {
-    var comments = [];
-    var result = '';
-    var i = 0, len = code.length;
-    var inStr = false, sc = '';
-    var line = 1;
-
-    while (i < len) {
-        var ch = code[i], next = code[i + 1];
-        if (ch === '\n') line++;
-
-        if (inStr) {
-            result += ch;
-            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === sc) inStr = false;
-            i++; continue;
-        }
-        if (ch === '"' || ch === "'") { inStr = true; sc = ch; result += ch; i++; continue; }
-
-        if (ch === '/' && next === '*') {
-            var cStart = i, cLine = line;
-            i += 2;
-            while (i < len) {
-                if (code[i] === '\n') line++;
-                if (code[i] === '*' && code[i + 1] === '/') { i += 2; break; }
-                i++;
-            }
-            comments.push('[Line ' + cLine + '] ' + code.substring(cStart, i).trim());
-            continue;
-        }
-
-        result += ch;
-        i++;
-    }
-
-    return { code: result, comments: comments.join('\n') };
-}
-
-/* Extract HTML comments (keeps conditional comments) */
-function extractHtmlComments(code) {
-    var comments = [];
-    var result = '';
-    var i = 0, len = code.length;
-    var line = 1;
-
-    while (i < len) {
-        var ch = code[i];
-        if (ch === '\n') line++;
-
-        if (ch === '<' && code[i + 1] === '!' && code[i + 2] === '-' && code[i + 3] === '-') {
-            if (code[i + 4] === '[') { result += ch; i++; continue; }
-            var cStart = i, cLine = line;
-            i += 4;
-            while (i < len) {
-                if (code[i] === '\n') line++;
-                if (code[i] === '-' && code[i + 1] === '-' && code[i + 2] === '>') { i += 3; break; }
-                i++;
-            }
-            comments.push('[Line ' + cLine + '] ' + code.substring(cStart, i).trim());
-            continue;
-        }
-
-        result += ch;
-        i++;
-    }
-
-    return { code: result, comments: comments.join('\n') };
-}
-
-/* Extract <tag>...</tag> blocks (nested-aware) */
-function extractBlocks(code, tagName) {
-    var results = [];
-    var openTag = '<' + tagName;
-    var closeTag = '</' + tagName + '>';
-    var i = 0, len = code.length;
-
-    while (i < len) {
-        var openIdx = code.indexOf(openTag, i);
-        if (openIdx === -1) break;
-
-        var after = code.charAt(openIdx + openTag.length);
-        if (after && !/[\s>\/]/.test(after)) { i = openIdx + openTag.length; continue; }
-
-        var tagEnd = code.indexOf('>', openIdx);
-        if (tagEnd === -1) break;
-        if (code.charAt(tagEnd - 1) === '/') { i = tagEnd + 1; continue; }
-
-        var depth = 1, pos = tagEnd + 1, contentEnd = -1;
-        while (pos < len && depth > 0) {
-            var nOpen = code.indexOf(openTag, pos);
-            var nClose = code.indexOf(closeTag, pos);
-            if (nClose === -1) break;
-            if (nOpen !== -1 && nOpen < nClose) {
-                var a2 = code.charAt(nOpen + openTag.length);
-                if (!a2 || /[\s>\/]/.test(a2)) depth++;
-                pos = nOpen + openTag.length;
-            } else {
-                depth--;
-                if (depth === 0) contentEnd = nClose;
-                pos = nClose + closeTag.length;
-            }
-        }
-        if (contentEnd === -1) break;
-
-        results.push({
-            start: openIdx,
-            end: contentEnd + closeTag.length,
-            content: code.substring(tagEnd + 1, contentEnd),
-            attrs: code.substring(openIdx + openTag.length, tagEnd)
-        });
-
-        i = contentEnd + closeTag.length;
-    }
-
-    return results;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   OBFUSCATION LAYER 1: Variable Renaming
-   Skips strings, comments, regex, property access, object keys
-   ═══════════════════════════════════════════════════════════ */
-function layerVarRename(code) {
-    var RESERVED = {
-        'var':1,'let':1,'const':1,'function':1,'return':1,'if':1,'else':1,'for':1,'while':1,
-        'do':1,'break':1,'continue':1,'switch':1,'case':1,'default':1,'try':1,'catch':1,
-        'finally':1,'throw':1,'new':1,'delete':1,'typeof':1,'instanceof':1,'in':1,'of':1,
-        'this':1,'super':1,'class':1,'extends':1,'static':1,'get':1,'set':1,'async':1,
-        'await':1,'yield':1,'import':1,'export':1,'from':1,'as':1,'null':1,'undefined':1,
-        'true':1,'false':1,'NaN':1,'Infinity':1,'void':1,'debugger':1,'with':1,
-        'console':1,'window':1,'document':1,'Math':1,'JSON':1,'Object':1,'Array':1,
-        'String':1,'Number':1,'Boolean':1,'Date':1,'RegExp':1,'Error':1,'Promise':1,
-        'Map':1,'Set':1,'WeakMap':1,'WeakSet':1,'Symbol':1,'Proxy':1,'Reflect':1,
-        'parseInt':1,'parseFloat':1,'isNaN':1,'isFinite':1,'eval':1,'Function':1,
-        'require':1,'module':1,'exports':1,'process':1,'global':1,'Buffer':1,
-        'setTimeout':1,'setInterval':1,'clearTimeout':1,'clearInterval':1,
-        'alert':1,'confirm':1,'prompt':1,'fetch':1,'XMLHttpRequest':1,
-        'localStorage':1,'sessionStorage':1,'navigator':1,'location':1,'history':1,
-        'arguments':1,'prototype':1,'constructor':1,'hasOwnProperty':1,
-        'atob':1,'btoa':1,'encodeURIComponent':1,'decodeURIComponent':1,
-        'requestAnimationFrame':1,'cancelAnimationFrame':1,
-        'firebase':1,'auth':1,'database':1,'storage':1,
-        'emailjs':1,'fingerprint':1,'UAParser':1,
-        'FormData':1,'Blob':1,'URL':1,'FileReader':1,
-        'addEventListener':1,'removeEventListener':1,'querySelector':1,
-        'querySelectorAll':1,'getElementById':1,'getElementsByClassName':1,
-        'createElement':1,'appendChild':1,'removeChild':1,'innerHTML':1,
-        'textContent':1,'style':1,'classList':1,'dataset':1,'setAttribute':1,
-        'getAttribute':1,'parentNode':1,'childNodes':1,
-        'length':1,'push':1,'pop':1,'shift':1,'unshift':1,'slice':1,'splice':1,
-        'map':1,'filter':1,'reduce':1,'forEach':1,'find':1,'findIndex':1,
-        'indexOf':1,'includes':1,'join':1,'split':1,'trim':1,'replace':1,
-        'toUpperCase':1,'toLowerCase':1,'charAt':1,'charCodeAt':1,
-        'fromCharCode':1,'substring':1,'substr':1,'concat':1,'test':1,'exec':1
-    };
-
-    var map = Object.create(null);
-
-    function getName(orig) {
-        if (RESERVED[orig]) return orig;
-        if (orig.length <= 1) return orig;
-        if (!/^[a-zA-Z_$][\w$]*$/.test(orig)) return orig;
-        if (orig.indexOf('_0x') === 0) return orig;
-        if (!map[orig]) map[orig] = newName();
-        return map[orig];
-    }
-
-    /* Collect declarations */
-    var m;
-    var re1 = /\b(var|let|const)\s+([a-zA-Z_$][\w$]*)/g;
-    while ((m = re1.exec(code)) !== null) getName(m[2]);
-
-    var re2 = /function\s+([a-zA-Z_$][\w$]*)\s*\(([^)]*)\)/g;
-    while ((m = re2.exec(code)) !== null) {
-        getName(m[1]);
-        if (m[2]) m[2].split(',').forEach(function(p) {
-            p = p.trim().split('=')[0].trim().replace(/^\.\.\./, '');
-            if (p && /^[a-zA-Z_$][\w$]*$/.test(p)) getName(p);
-        });
-    }
-
-    var re3 = /function\s*\(([^)]*)\)/g;
-    while ((m = re3.exec(code)) !== null) {
-        if (m[1]) m[1].split(',').forEach(function(p) {
-            p = p.trim().split('=')[0].trim().replace(/^\.\.\./, '');
-            if (p && /^[a-zA-Z_$][\w$]*$/.test(p)) getName(p);
-        });
-    }
-
-    var re4 = /\(([^)]*)\)\s*=>/g;
-    while ((m = re4.exec(code)) !== null) {
-        m[1].split(',').forEach(function(p) {
-            p = p.trim().split('=')[0].trim().replace(/^\.\.\./, '');
-            if (p && /^[a-zA-Z_$][\w$]*$/.test(p)) getName(p);
-        });
-    }
-
-    var re5 = /([a-zA-Z_$][\w$]*)\s*=>/g;
-    while ((m = re5.exec(code)) !== null) getName(m[1]);
-
-    var re6 = /class\s+([a-zA-Z_$][\w$]*)/g;
-    while ((m = re6.exec(code)) !== null) getName(m[1]);
-
-    if (Object.keys(map).length === 0) return code;
-
-    /* Replace — state machine */
-    var result = '';
-    var i = 0, len = code.length;
-    var state = 'code';
-    var regexOk = true;
-
-    while (i < len) {
-        var ch = code[i], next = code[i + 1];
-
-        if (state === 'single') {
-            result += ch;
-            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === "'") { state = 'code'; regexOk = false; }
-            i++; continue;
-        }
-        if (state === 'double') {
-            result += ch;
-            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === '"') { state = 'code'; regexOk = false; }
-            i++; continue;
-        }
-        if (state === 'template') {
-            result += ch;
-            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === '`') { state = 'code'; regexOk = false; }
-            i++; continue;
-        }
-        if (state === 'line') {
-            result += ch;
-            if (ch === '\n') state = 'code';
-            i++; continue;
-        }
-        if (state === 'block') {
-            result += ch;
-            if (ch === '*' && next === '/') { result += next; i += 2; state = 'code'; continue; }
-            i++; continue;
-        }
-        if (state === 'regex') {
-            result += ch;
-            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === '/') {
-                state = 'code'; regexOk = false;
-                while (i + 1 < len && /[gimuy]/.test(code[i + 1])) { i++; result += code[i]; }
-            }
-            i++; continue;
-        }
-
-        /* state === 'code' */
-        if (ch === "'") { state = 'single'; result += ch; i++; continue; }
-        if (ch === '"') { state = 'double'; result += ch; i++; continue; }
-        if (ch === '`') { state = 'template'; result += ch; i++; continue; }
-        if (ch === '/' && next === '/') { state = 'line'; result += ch + next; i += 2; continue; }
-        if (ch === '/' && next === '*') { state = 'block'; result += ch + next; i += 2; continue; }
-
-        if (ch === '/' && regexOk) {
-            var prev = result.length > 0 ? result[result.length - 1] : '';
-            if (!/[\w\)\]]/.test(prev)) {
-                state = 'regex'; result += ch; i++; continue;
-            }
-        }
-
-        if (/[a-zA-Z_$]/.test(ch)) {
-            var start = i;
-            while (i < len && /[a-zA-Z0-9_$]/.test(code[i])) i++;
-            var word = code.substring(start, i);
-
-            /* Check property access or object key */
-            var before = result.replace(/\s+$/, '');
-            var lastCh = before.length > 0 ? before[before.length - 1] : '';
-            var j = i;
-            while (j < len && /\s/.test(code[j])) j++;
-            var nextCh = j < len ? code[j] : '';
-
-            var isProp = (lastCh === '.');
-            var isKey = (nextCh === ':') && (lastCh === '{' || lastCh === ',');
-
-            result += (isProp || isKey) ? word : (map[word] || word);
-            regexOk = false;
-            continue;
-        }
-
-        if (/[\w\)\]]/.test(ch)) regexOk = false;
-        else if (/[;,\{\}\[\(\)=<>!&\|\?\+\-\*\/%^~:]/.test(ch)) regexOk = true;
-
-        result += ch;
-        i++;
-    }
-
-    return result;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   LAYER 2: String Array (Shuffled + Accessor)
-   ═══════════════════════════════════════════════════════════ */
-function layerStringArray(code) {
-    var strings = [];
-    var map = Object.create(null);
-    var arrName = newName();
-    var maxSize = 2000;
-
-    var newCode = '';
-    var i = 0, len = code.length;
-    var state = 'code';
-
-    while (i < len) {
-        var ch = code[i], next = code[i + 1];
-
-        if (state === 'single' || state === 'double') {
-            var q = state === 'single' ? "'" : '"';
-            var strStart = i;
-            i++;
-            while (i < len) {
-                if (code[i] === '\\' && i + 1 < len) { i += 2; continue; }
-                if (code[i] === q) { i++; break; }
-                i++;
-            }
-            var str = code.substring(strStart + 1, i - 1);
-            if (str.length > 0 && str.length <= 500 && strings.length < maxSize) {
-                var idx = map[str];
-                if (idx === undefined) { idx = strings.length; strings.push(str); map[str] = idx; }
-                newCode += arrName + '(' + idx + ')';
-            } else {
-                newCode += code.substring(strStart, i);
-            }
-            state = 'code';
-            continue;
-        }
-
-        if (state === 'template') {
-            var strStart2 = i;
-            i++;
-            while (i < len) {
-                if (code[i] === '\\' && i + 1 < len) { i += 2; continue; }
-                if (code[i] === '`') { i++; break; }
-                i++;
-            }
-            var str2 = code.substring(strStart2 + 1, i - 1);
-            if (str2.length > 0 && str2.length <= 500 && !/\$\{/.test(str2) && strings.length < maxSize) {
-                var idx2 = map[str2];
-                if (idx2 === undefined) { idx2 = strings.length; strings.push(str2); map[str2] = idx2; }
-                newCode += arrName + '(' + idx2 + ')';
-            } else {
-                newCode += code.substring(strStart2, i);
-            }
-            state = 'code';
-            continue;
-        }
-
-        if (state === 'line') {
-            newCode += ch;
-            if (ch === '\n') state = 'code';
-            i++; continue;
-        }
-        if (state === 'block') {
-            newCode += ch;
-            if (ch === '*' && next === '/') { newCode += next; i += 2; state = 'code'; continue; }
-            i++; continue;
-        }
-
-        if (ch === "'") { state = 'single'; newCode += ch; i++; continue; }
-        if (ch === '"') { state = 'double'; newCode += ch; i++; continue; }
-        if (ch === '`') { state = 'template'; newCode += ch; i++; continue; }
-        if (ch === '/' && next === '/') { state = 'line'; newCode += ch + next; i += 2; continue; }
-        if (ch === '/' && next === '*') { state = 'block'; newCode += ch + next; i += 2; continue; }
-
-        newCode += ch;
-        i++;
-    }
-
-    if (strings.length === 0) return code;
-
-    /* Shuffle */
-    var order = [];
-    for (var k = 0; k < strings.length; k++) order.push(k);
-    for (var s = order.length - 1; s > 0; s--) {
-        var r = Math.floor(Math.random() * (s + 1));
-        var tmp = order[s]; order[s] = order[r]; order[r] = tmp;
-    }
-    var shuffled = order.map(function(idx) { return strings[idx]; });
-
-    /* Build: array, order map, accessor function */
-    var decl = 'var ' + arrName + '=["' + shuffled.map(function(s) {
-        return s.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
-    }).join('","') + '"];' +
-    'var ' + arrName + '_o=[' + order.join(',') + '];' +
-    'function ' + arrName + '(i){return ' + arrName + '[' + arrName + '_o[i]];}';
-
-    return decl + newCode;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   LAYER 3: Hex Encode (safe — skips strings with escapes)
-   ═══════════════════════════════════════════════════════════ */
-function layerHexEncode(code) {
-    var result = '';
-    var i = 0, len = code.length;
-    var state = 'code';
-
-    while (i < len) {
-        var ch = code[i], next = code[i + 1];
-
-        if (state === 'single' || state === 'double') {
-            var q = state === 'single' ? "'" : '"';
-            var strStart = i;
-            i++;
-            while (i < len) {
-                if (code[i] === '\\' && i + 1 < len) { i += 2; continue; }
-                if (code[i] === q) { i++; break; }
-                i++;
-            }
-            var str = code.substring(strStart + 1, i - 1);
-
-            if (str.length === 0 || str.length > 500 || /\\/.test(str) || /[^\x20-\x7E]/.test(str)) {
-                result += code.substring(strStart, i);
-            } else {
-                var hex = '';
-                for (var h = 0; h < str.length; h++) {
-                    hex += '\\x' + ('0' + str.charCodeAt(h).toString(16)).slice(-2);
-                }
-                result += '"' + hex + '"';
-            }
-            state = 'code';
-            continue;
-        }
-
-        if (state === 'template') {
-            result += ch;
-            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === '`') state = 'code';
-            i++; continue;
-        }
-        if (state === 'line') {
-            result += ch;
-            if (ch === '\n') state = 'code';
-            i++; continue;
-        }
-        if (state === 'block') {
-            result += ch;
-            if (ch === '*' && next === '/') { result += next; i += 2; state = 'code'; continue; }
-            i++; continue;
-        }
-
-        if (ch === "'") { state = 'single'; result += ch; i++; continue; }
-        if (ch === '"') { state = 'double'; result += ch; i++; continue; }
-        if (ch === '`') { state = 'template'; result += ch; i++; continue; }
-        if (ch === '/' && next === '/') { state = 'line'; result += ch + next; i += 2; continue; }
-        if (ch === '/' && next === '*') { state = 'block'; result += ch + next; i += 2; continue; }
-
-        result += ch;
-        i++;
-    }
-
-    return result;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   LAYER 4: Dead Code Injection
-   ═══════════════════════════════════════════════════════════ */
-function layerDeadCode(code) {
-    var dead = '';
-    var count = 3 + Math.floor(Math.random() * 3);
-    for (var i = 0; i < count; i++) {
-        var fn = newName();
-        var p1 = newName();
-        var p2 = newName();
-        var localVar = newName();
-        var a = Math.floor(Math.random() * 900) + 100;
-        var b = Math.floor(Math.random() * 900) + 100;
-        dead += 'function ' + fn + '(' + p1 + ',' + p2 + '){' +
-                'var ' + localVar + '=(' + p1 + '^' + p2 + ')+' + a + ';' +
-                'return ' + localVar + '>' + b + '?' + p1 + ':' + p2 + ';}' +
-                'if(' + a + '!==' + b + '){' + fn + '(' + a + ',' + b + ');}';
-    }
-    return dead + code;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   MAIN PIPELINE
-   ═══════════════════════════════════════════════════════════ */
-function obfuscateJS(code, opts) {
-    var result = code;
-    var layers = [];
-
-    /* Always strip comments */
-    var cr = extractJsComments(result);
-    result = cr.code.trim();
-    if (cr.comments) layers.push('Strip Comments');
-
-    if (opts.varRename) {
-        result = layerVarRename(result);
-        layers.push('Var Rename');
-    }
-
-    if (opts.deadCode) {
-        result = layerDeadCode(result);
-        layers.push('Dead Code');
-    }
-
-    if (opts.stringArray) {
-        result = layerStringArray(result);
-        layers.push('String Array');
-    }
-
-    if (opts.hexEncode) {
-        result = layerHexEncode(result);
-        layers.push('Hex Encode');
-    }
-
-    if (opts.minify) {
-        result = result
-            .replace(/\/\*[\s\S]*?\*\//g, '')
-            .replace(/\/\/[^\n]*/g, '')
-            .replace(/\n+/g, '')
-            .replace(/[ \t]{2,}/g, ' ')
-            .trim();
-        layers.push('Minify');
-    }
-
-    return { code: result, layers: layers };
-}
-
-/* ═══ MINIFIERS ═══ */
-function minifyHTML(html) {
-    if (!html) return '';
-    return html.replace(/<!--(?!\[if)[\s\S]*?-->/g, '')
-              .replace(/\s+/g, ' ')
-              .replace(/>\s+</g, '><')
-              .trim();
-}
-
-function minifyCSS(css) {
-    if (!css) return '';
-    return css.replace(/\/\*[\s\S]*?\*\//g, '')
-              .replace(/\s+/g, ' ')
-              .replace(/\s*([{}:;,])\s*/g, '$1')
-              .replace(/;}/g, '}')
-              .trim();
-}
-
-/* ═══ BUILD COMPLETE HTML ═══ */
-function buildCompleteHTML(html, css, obfJS) {
-    var SO = '<' + 'script>', SC = '<' + '/script>';
-    var TO = '<' + 'style>', TC = '<' + '/style>';
-    var HC = '<' + '/head>', BC = '<' + '/body>', HE = '<' + '/html>';
-
-    if (!html || !html.trim()) {
-        var out = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>Protected Page</title>\n';
-        if (css && css.trim()) out += TO + css + TC + '\n';
-        out += HC + '\n<body>\n';
-        if (obfJS && obfJS.trim()) out += SO + obfJS + SC + '\n';
-        out += BC + '\n' + HE;
-        return out;
-    }
-
-    var result = html;
-
-    if (css && css.trim()) {
-        var hcIdx = result.lastIndexOf(HC);
-        if (hcIdx === -1) hcIdx = result.lastIndexOf('</HEAD>');
-        if (hcIdx !== -1) {
-            result = result.substring(0, hcIdx) + TO + css + TC + result.substring(hcIdx);
-        } else {
-            var bIdx = result.search(/<body[\s>]/i);
-            if (bIdx !== -1) {
-                var bEnd = result.indexOf('>', bIdx);
-                result = result.substring(0, bEnd + 1) + TO + css + TC + result.substring(bEnd + 1);
-            } else {
-                result = TO + css + TC + result;
-            }
-        }
-    }
-
-    if (obfJS && obfJS.trim()) {
-        var bcIdx = result.lastIndexOf(BC);
-        if (bcIdx === -1) bcIdx = result.lastIndexOf('</BODY>');
-        if (bcIdx !== -1) {
-            result = result.substring(0, bcIdx) + SO + obfJS + SC + result.substring(bcIdx);
-        } else {
-            result = result + SO + obfJS + SC;
-        }
-    }
-
-    return result;
-}
-
-/* ═══ MESSAGE HANDLER ═══ */
-self.onmessage = function(e) {
-    var data = e.data;
-    if (data.type !== 'obfuscate') return;
-
-    try {
-        var start = Date.now();
-        var obfJS = '';
-        var layers = [];
-
-        if (data.js && data.js.trim()) {
-            var r = obfuscateJS(data.js, data.options);
-            obfJS = r.code;
-            layers = layers.concat(r.layers);
-        }
-
-        var mHTML = minifyHTML(data.html);
-        var mCSS = minifyCSS(data.css);
-        if (data.html && data.html.trim()) layers.push('HTML Minify');
-        if (data.css && data.css.trim()) layers.push('CSS Minify');
-
-        var output = buildCompleteHTML(mHTML, mCSS, obfJS);
-        var elapsed = Date.now() - start;
-
-        self.postMessage({
-            type: 'success',
-            output: output,
-            layers: layers,
-            elapsed: elapsed
-        });
-    } catch(err) {
-        self.postMessage({
-            type: 'error',
-            message: err.message,
-            stack: err.stack
-        });
-    }
-};
-</script>
-
 <script>
 (function() {
 'use strict';
 
-var SAFETY = {
-    MAX_INPUT_SIZE: 10 * 1024 * 1024,
-    MAX_OUTPUT_SIZE: 30 * 1024 * 1024,
-    TIMEOUT_MS: 600000
-};
-
 var state = {
-    fullCode: '',
-    html: '',
-    css: '',
-    js: '',
-    other: '',
-    comments: '',
-    detectedLang: 'auto',
-    selectedLang: 'auto',
-    outputCode: '',
-    layers: [],
     user: null,
-    history: [],
-    worker: null
+    preset: 'medium',
+    options: {
+        controlFlowFlattening: true,
+        deadCodeInjection: true,
+        stringArray: true,
+        debugProtection: true,
+        selfDefending: true,
+        disableConsoleOutput: true,
+        renameGlobals: true
+    },
+    authHandled: false
 };
 
 /* ═══ UTILITIES ═══ */
@@ -1525,599 +475,297 @@ function bytes(n) {
     return (n / 1024 / 1024).toFixed(2) + ' MB';
 }
 function num(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
-function escHtml(s) {
-    return String(s).replace(/[&<>"']/g, function(c) {
-        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-    });
+function showStatus(type, msg) {
+    var el = document.getElementById('status');
+    el.className = 'status ' + type;
+    el.textContent = msg;
 }
-function showStatus(id, type, text) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    el.className = 'status show ' + type;
-    el.textContent = text;
-}
-function hideStatus(id) {
-    var el = document.getElementById(id);
-    if (el) el.className = 'status';
-}
-
 function toast(msg, type) {
     type = type || 'info';
     var c = document.getElementById('toastContainer');
-    if (!c) return;
-    var icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', warn: 'fa-triangle-exclamation', info: 'fa-circle-info' };
+    var icons = { success:'fa-circle-check', error:'fa-circle-xmark', warn:'fa-triangle-exclamation', info:'fa-circle-info' };
     var el = document.createElement('div');
     el.className = 'toast ' + type;
-    el.innerHTML = '<i class="fa-solid ' + (icons[type] || icons.info) + ' toast-icon"></i><span>' + escHtml(msg) + '</span>';
+    el.innerHTML = '<i class="fa-solid ' + icons[type] + '"></i><span>' + msg + '</span>';
     c.appendChild(el);
     setTimeout(function() {
         el.classList.add('removing');
         setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
-    }, 3000);
+    }, 3500);
 }
 
-function addHistory(msg, type) {
-    type = type || 'info';
-    var time = new Date().toLocaleTimeString('en-PK', { hour12: false });
-    state.history.unshift({ time: time, msg: msg, type: type });
-    if (state.history.length > 50) state.history.pop();
-    renderHistory();
-}
-function renderHistory() {
-    var list = document.getElementById('historyList');
-    if (!list) return;
-    if (state.history.length === 0) {
-        list.innerHTML = '<div class="history-item"><span class="history-time">--:--:--</span><span class="history-dot info"></span><span>No activity</span></div>';
-        return;
-    }
-    var html = '';
-    for (var i = 0; i < state.history.length; i++) {
-        var h = state.history[i];
-        html += '<div class="history-item"><span class="history-time">' + escHtml(h.time) + '</span><span class="history-dot ' + h.type + '"></span><span>' + escHtml(h.msg) + '</span></div>';
-    }
-    list.innerHTML = html;
-}
-window.clearHistory = function() {
-    state.history = [];
-    renderHistory();
-    toast('History cleared', 'info');
+/* ═══ PRESETS ═══ */
+window.setPreset = function(preset, btn) {
+    state.preset = preset;
+    document.querySelectorAll('.preset-btn').forEach(function(b) {
+        b.classList.remove('active');
+    });
+    if (btn) btn.classList.add('active');
+
+    var opts = document.querySelectorAll('.switch[data-opt]');
+    opts.forEach(function(s) {
+        var key = s.dataset.opt;
+        var on = false;
+        if (preset === 'low') {
+            on = ['stringArray', 'disableConsoleOutput'].includes(key);
+        } else if (preset === 'medium') {
+            on = true;
+        } else if (preset === 'high') {
+            on = true;
+        } else if (preset === 'extreme') {
+            on = true;
+        }
+        s.classList.toggle('on', on);
+        state.options[key] = on;
+    });
+    updateProgress();
+    toast('Preset: ' + preset.toUpperCase(), 'info');
 };
 
+window.toggleOpt = function(el) {
+    el.classList.toggle('on');
+    state.options[el.dataset.opt] = el.classList.contains('on');
+    updateProgress();
+};
+
+/* ═══ PROGRESS ═══ */
 function updateProgress() {
     var steps = 0;
-    if (state.fullCode && state.fullCode.trim()) steps++;
-    if (state.html || state.css || state.js) steps++;
-    if (state.outputCode) steps++;
-    var pct = Math.round((steps / 3) * 100);
-    document.getElementById('progressFill').style.width = pct + '%';
-    document.getElementById('progressPercent').textContent = pct + '%';
+    if (document.getElementById('inputCode').value.trim()) steps++;
+    if (document.getElementById('outputCode').value) steps++;
+    var percent = Math.round((steps / 2) * 100);
+    document.getElementById('progressFill').style.width = percent + '%';
+    document.getElementById('progressPercent').textContent = percent + '%';
 }
 
-/* ═══ LANGUAGE DETECTION ═══ */
-function detectLanguage(code) {
-    var t = code.trim();
-    if (!t) return 'unknown';
-    if (/^<!DOCTYPE\s+html/i.test(t)) return 'html';
-    if (/<html[\s>]/i.test(t) && /<\/html>/i.test(t)) return 'html';
-    if (/<(head|body|div|span|p|a|img|ul|ol|table|form|input|button|section|article|nav|header|footer)[\s>]/i.test(t)) return 'html';
-    if (/^<\?xml/i.test(t)) return 'xml';
-    if (/^<[a-zA-Z][\w:-]*(\s[^>]*)?\/?>/.test(t) && !/<html/i.test(t)) return 'xml';
-    if (/^[\{\[]/.test(t)) {
-        try { JSON.parse(t); return 'json'; } catch(e) {}
+/* ═══ INPUT STATS ═══ */
+var inputCodeEl = document.getElementById('inputCode');
+inputCodeEl.addEventListener('input', function() {
+    var v = this.value;
+    var stats = document.getElementById('inputStats');
+    if (v.trim()) {
+        stats.style.display = 'grid';
+        document.getElementById('statLines').textContent = num(v.split('\n').length);
+        document.getElementById('statChars').textContent = num(v.length);
+        document.getElementById('statSize').textContent = bytes(new Blob([v]).size);
+    } else {
+        stats.style.display = 'none';
     }
-    if (/^[\s]*[a-zA-Z-]+\s*\{/.test(t) || /^[\s]*[.#@][\w-]/.test(t)) {
-        if (!/\b(function|var|let|const|=>|return)\b/.test(t)) return 'css';
-    }
-    if (/\{[^}]*:[^}]*;[^}]*\}/.test(t) && !/[;{}]\s*(var|let|const|function)\b/.test(t)) return 'css';
-    if (/\b(async|await|class|extends|import|export|=>|const|let|var|function|new|this|typeof|instanceof)\b/.test(t)) return 'js';
-    if (/document\.|window\.|console\.|require\(|module\.exports/.test(t)) return 'js';
-    return 'unknown';
+    updateProgress();
+});
+
+/* ═══ BUILD OBFUSCATOR OPTIONS ═══ */
+function buildOptions() {
+    var opts = state.options;
+    var o = {
+        compact: true,
+        controlFlowFlattening: opts.controlFlowFlattening,
+        controlFlowFlatteningThreshold: state.preset === 'extreme' ? 1 : (state.preset === 'high' ? 0.9 : 0.75),
+        deadCodeInjection: opts.deadCodeInjection,
+        deadCodeInjectionThreshold: state.preset === 'extreme' ? 0.6 : 0.4,
+        debugProtection: opts.debugProtection,
+        debugProtectionInterval: opts.debugProtection ? 4000 : 0,
+        disableConsoleOutput: opts.disableConsoleOutput,
+        identifierNamesGenerator: 'hexadecimal',
+        log: false,
+        numbersToExpressions: state.preset === 'extreme',
+        renameGlobals: opts.renameGlobals,
+        selfDefending: opts.selfDefending,
+        simplify: true,
+        splitStrings: opts.stringArray,
+        splitStringsChunkLength: 10,
+        stringArray: opts.stringArray,
+        stringArrayCallsTransform: opts.stringArray,
+        stringArrayCallsTransformThreshold: 0.5,
+        stringArrayEncoding: opts.stringArray ? ['rc4'] : [],
+        stringArrayIndexShift: true,
+        stringArrayRotate: true,
+        stringArrayShuffle: true,
+        stringArrayWrappersCount: 2,
+        stringArrayWrappersChainedCalls: true,
+        stringArrayWrappersParametersMaxCount: 4,
+        stringArrayWrappersType: 'function',
+        stringArrayThreshold: opts.stringArray ? 0.75 : 0,
+        transformObjectKeys: true,
+        unicodeEscapeSequence: false,
+        target: 'browser',
+        sourceMap: false,
+        seed: 0
+    };
+    return o;
 }
 
-/* ═══ DUPLICATE HELPERS (main thread — needed for parse) ═══ */
-function extractJsComments(code) {
-    var comments = [], result = '', i = 0, state = 'code', line = 1, regexOk = true;
-    while (i < code.length) {
-        var ch = code[i], next = code[i + 1];
-        if (ch === '\n') line++;
-        if (state === 'line') { if (ch === '\n') { state = 'code'; result += ch; regexOk = true; } i++; continue; }
-        if (state === 'block') { if (ch === '*' && next === '/') { state = 'code'; i += 2; continue; } i++; continue; }
-        if (state === 'single') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === "'") { state = 'code'; regexOk = false; } i++; continue; }
-        if (state === 'double') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '"') { state = 'code'; regexOk = false; } i++; continue; }
-        if (state === 'template') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '`') { state = 'code'; regexOk = false; } i++; continue; }
-        if (state === 'regex') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '/') { state = 'code'; regexOk = false; while (i+1 < code.length && /[gimuy]/.test(code[i+1])) { i++; result += code[i]; } } i++; continue; }
-        if (ch === '/' && next === '/') { var cs = i, cl = line; i += 2; while (i < code.length && code[i] !== '\n') i++; comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim()); continue; }
-        if (ch === '/' && next === '*') { var cs2 = i, cl2 = line; i += 2; while (i < code.length) { if (code[i] === '\n') line++; if (code[i] === '*' && code[i+1] === '/') { i += 2; break; } i++; } comments.push('[Line ' + cl2 + '] ' + code.substring(cs2, i).trim()); continue; }
-        if (ch === "'") { state = 'single'; result += ch; i++; continue; }
-        if (ch === '"') { state = 'double'; result += ch; i++; continue; }
-        if (ch === '`') { state = 'template'; result += ch; i++; continue; }
-        if (ch === '/' && regexOk) { var prev = result.length > 0 ? result[result.length - 1] : ''; if (!/[\w\)\]]/.test(prev)) { state = 'regex'; result += ch; i++; continue; } }
-        if (/[\w\)\]]/.test(ch)) regexOk = false;
-        else if (/[;,\{\}\[\(\)=<>!&\|\?\+\-\*\/%^~:]/.test(ch)) regexOk = true;
-        result += ch; i++;
-    }
-    return { code: result, comments: comments.join('\n') };
-}
-
-function extractCssComments(code) {
-    var comments = [], result = '', i = 0, inStr = false, sc = '', line = 1;
-    while (i < code.length) {
-        var ch = code[i], next = code[i + 1];
-        if (ch === '\n') line++;
-        if (inStr) { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === sc) inStr = false; i++; continue; }
-        if (ch === '"' || ch === "'") { inStr = true; sc = ch; result += ch; i++; continue; }
-        if (ch === '/' && next === '*') { var cs = i, cl = line; i += 2; while (i < code.length) { if (code[i] === '\n') line++; if (code[i] === '*' && code[i+1] === '/') { i += 2; break; } i++; } comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim()); continue; }
-        result += ch; i++;
-    }
-    return { code: result, comments: comments.join('\n') };
-}
-
-function extractHtmlComments(code) {
-    var comments = [], result = '', i = 0, line = 1;
-    while (i < code.length) {
-        var ch = code[i];
-        if (ch === '\n') line++;
-        if (ch === '<' && code[i+1] === '!' && code[i+2] === '-' && code[i+3] === '-') {
-            if (code[i+4] === '[') { result += ch; i++; continue; }
-            var cs = i, cl = line;
-            i += 4;
-            while (i < code.length) {
-                if (code[i] === '\n') line++;
-                if (code[i] === '-' && code[i+1] === '-' && code[i+2] === '>') { i += 3; break; }
-                i++;
-            }
-            comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim());
-            continue;
-        }
-        result += ch; i++;
-    }
-    return { code: result, comments: comments.join('\n') };
-}
-
-function extractBlocks(code, tagName) {
-    var results = [], openTag = '<' + tagName, closeTag = '</' + tagName + '>';
-    var i = 0, len = code.length;
-    while (i < len) {
-        var openIdx = code.indexOf(openTag, i);
-        if (openIdx === -1) break;
-        var after = code.charAt(openIdx + openTag.length);
-        if (after && !/[\s>\/]/.test(after)) { i = openIdx + openTag.length; continue; }
-        var tagEnd = code.indexOf('>', openIdx);
-        if (tagEnd === -1) break;
-        if (code.charAt(tagEnd - 1) === '/') { i = tagEnd + 1; continue; }
-        var depth = 1, pos = tagEnd + 1, contentEnd = -1;
-        while (pos < len && depth > 0) {
-            var nOpen = code.indexOf(openTag, pos);
-            var nClose = code.indexOf(closeTag, pos);
-            if (nClose === -1) break;
-            if (nOpen !== -1 && nOpen < nClose) {
-                var a2 = code.charAt(nOpen + openTag.length);
-                if (!a2 || /[\s>\/]/.test(a2)) depth++;
-                pos = nOpen + openTag.length;
-            } else {
-                depth--;
-                if (depth === 0) contentEnd = nClose;
-                pos = nClose + closeTag.length;
-            }
-        }
-        if (contentEnd === -1) break;
-        results.push({
-            start: openIdx,
-            end: contentEnd + closeTag.length,
-            content: code.substring(tagEnd + 1, contentEnd),
-            attrs: code.substring(openIdx + openTag.length, tagEnd)
-        });
-        i = contentEnd + closeTag.length;
-    }
-    return results;
-}
-
-/* ═══ SEPARATE CODE ═══ */
-function separateCodeSafe(fullCode) {
-    var html = fullCode;
-    var css = '', js = '', other = '';
-    var allComments = [];
-
-    var styleBlocks = extractBlocks(fullCode, 'style');
-    for (var i = styleBlocks.length - 1; i >= 0; i--) {
-        var b = styleBlocks[i];
-        var r = extractCssComments(b.content);
-        css = r.code.trim() + (css ? '\n\n' + css : '');
-        if (r.comments) allComments.push('═══ CSS ═══\n' + r.comments);
-        html = html.substring(0, b.start) + html.substring(b.end);
-    }
-
-    var scriptBlocks = extractBlocks(fullCode, 'script');
-    for (var j = scriptBlocks.length - 1; j >= 0; j--) {
-        var sb = scriptBlocks[j];
-        var attrs = sb.attrs.toLowerCase();
-        if (/\bsrc\s*=/.test(attrs)) continue;
-        if (/\btype\s*=\s*["']?(application\/(ld\+json|json)|text\/template|application\/json\+ld)/.test(attrs)) {
-            other = sb.content.trim() + (other ? '\n\n' + other : '');
-            html = html.substring(0, sb.start) + html.substring(sb.end);
-            continue;
-        }
-        var r2 = extractJsComments(sb.content);
-        js = r2.code.trim() + (js ? '\n\n' + js : '');
-        if (r2.comments) allComments.push('═══ JavaScript ═══\n' + r2.comments);
-        html = html.substring(0, sb.start) + html.substring(sb.end);
-    }
-
-    var r3 = extractHtmlComments(html);
-    if (r3.comments) allComments.push('═══ HTML ═══\n' + r3.comments);
-    html = r3.code.replace(/\n{3,}/g, '\n\n').trim();
-
-    var hasHtmlTags = /<!DOCTYPE|<html[\s>]|<head[\s>]|<body[\s>]|<div[\s>]|<span[\s>]/i.test(fullCode);
-    if (!hasHtmlTags) {
-        var detected = detectLanguage(fullCode);
-        if (detected === 'js') {
-            var rjs = extractJsComments(fullCode);
-            js = rjs.code.trim();
-            if (rjs.comments) allComments.push('═══ JavaScript ═══\n' + rjs.comments);
-            html = ''; css = ''; other = '';
-        } else if (detected === 'css') {
-            var rcss = extractCssComments(fullCode);
-            css = rcss.code.trim();
-            if (rcss.comments) allComments.push('═══ CSS ═══\n' + rcss.comments);
-            html = ''; js = ''; other = '';
-        } else if (detected === 'json' || detected === 'xml') {
-            other = fullCode.trim();
-            html = ''; css = ''; js = '';
-        }
-    }
-
-    return { html: html, css: css, js: js, other: other, comments: allComments.join('\n\n') };
-}
-
-/* ═══ UI FUNCTIONS ═══ */
-window.selectLang = function(lang, btn) {
-    state.selectedLang = lang;
-    document.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.remove('active'); });
-    if (btn) btn.classList.add('active');
-    updateDetected();
-};
-
-function updateDetected() {
-    var code = document.getElementById('fullCodeArea').value;
-    var d = code.trim() ? detectLanguage(code) : '—';
-    state.detectedLang = d;
-    var e1 = document.getElementById('detectedLang');
-    if (e1) e1.textContent = d.toUpperCase();
-    var e2 = document.getElementById('statDetected');
-    if (e2) e2.textContent = d.toUpperCase();
-}
-
-window.parseFullCode = function() {
-    var area = document.getElementById('fullCodeArea');
-    var fullCode = area.value;
-    if (!fullCode.trim()) {
-        showStatus('statusFullCode', 'error', '❌ Code is empty!');
-        toast('Code is empty!', 'error');
+/* ═══ OBFUSCATE ═══ */
+window.obfuscateNow = function() {
+    var input = inputCodeEl.value.trim();
+    if (!input) {
+        showStatus('error', '❌ Paste JavaScript code first');
+        toast('Input empty!', 'error');
         return;
     }
-    if (new Blob([fullCode]).size > SAFETY.MAX_INPUT_SIZE) {
-        showStatus('statusFullCode', 'error', '❌ Input too large! Max ' + bytes(SAFETY.MAX_INPUT_SIZE));
-        toast('Input too large!', 'error');
+
+    if (typeof JavaScriptObfuscator === 'undefined') {
+        showStatus('error', '❌ Obfuscator library not loaded. Check internet.');
+        toast('Library missing!', 'error');
         return;
     }
-    showStatus('statusFullCode', 'loading', '⏳ Parsing...');
+
+    showStatus('loading', '⏳ Obfuscating... please wait');
+    document.querySelectorAll('button').forEach(function(b) { b.disabled = true; });
+
     setTimeout(function() {
         try {
-            var r = separateCodeSafe(fullCode);
-            state.fullCode = fullCode;
-            state.html = r.html;
-            state.css = r.css;
-            state.js = r.js;
-            state.other = r.other;
-            state.comments = r.comments || '';
-            document.getElementById('htmlArea').value = state.html;
-            document.getElementById('cssArea').value = state.css;
-            document.getElementById('jsArea').value = state.js;
-            document.getElementById('otherArea').value = state.other;
-            var ca = document.getElementById('commentsArea');
-            if (ca) ca.value = state.comments;
-            updateBadges();
-            document.getElementById('sectionsContainer').style.display = 'block';
-            var cInfo = state.comments ? '\n💬 Comments: ' + bytes(new Blob([state.comments]).size) : '\n💬 No comments';
-            showStatus('statusFullCode', 'success',
-                '✅ Parsed!\n📄 HTML: ' + bytes(new Blob([state.html]).size) +
-                '\n🎨 CSS: ' + bytes(new Blob([state.css]).size) +
-                '\n⚙️ JS: ' + bytes(new Blob([state.js]).size) +
-                '\n📦 Other: ' + bytes(new Blob([state.other]).size) +
-                cInfo + '\nDetected: ' + state.detectedLang.toUpperCase()
-            );
-            toast('Parsed successfully!', 'success');
-            addHistory('Parsed — Comments: ' + (state.comments ? 'Yes' : 'None'), 'success');
-            updateProgress();
-        } catch(e) {
-            showStatus('statusFullCode', 'error', '❌ ' + e.message);
-            toast('Error: ' + e.message, 'error');
-        }
-    }, 50);
-};
+            var options = buildOptions();
+            var result = JavaScriptObfuscator.obfuscate(input, options);
+            var obfuscated = result.getObfuscatedCode();
 
-function updateBadges() {
-    var h = document.getElementById('htmlArea').value;
-    var c = document.getElementById('cssArea').value;
-    var j = document.getElementById('jsArea').value;
-    var o = document.getElementById('otherArea').value;
-    var cm = document.getElementById('commentsArea') ? document.getElementById('commentsArea').value : '';
-    var hb = document.getElementById('htmlBadge');
-    var cb = document.getElementById('cssBadge');
-    var jb = document.getElementById('jsBadge');
-    var ob = document.getElementById('otherBadge');
-    var cmb = document.getElementById('commentsBadge');
-    hb.textContent = h ? bytes(new Blob([h]).size) : 'EMPTY';
-    cb.textContent = c ? bytes(new Blob([c]).size) : 'EMPTY';
-    jb.textContent = j ? bytes(new Blob([j]).size) : 'EMPTY';
-    ob.textContent = o ? bytes(new Blob([o]).size) : 'EMPTY';
-    if (cmb) cmb.textContent = cm ? bytes(new Blob([cm]).size) : 'EMPTY';
-    hb.className = h ? 'badge success' : 'badge';
-    cb.className = c ? 'badge success' : 'badge';
-    jb.className = j ? 'badge success' : 'badge';
-    ob.className = o ? 'badge success' : 'badge';
-    if (cmb) cmb.className = cm ? 'badge gold' : 'badge';
-}
+            document.getElementById('outputCode').value = obfuscated;
 
-function getWorkerBlob() {
-    var s = document.getElementById('obfuscatorWorker').textContent;
-    return URL.createObjectURL(new Blob([s], { type: 'application/javascript' }));
-}
+            /* Stats */
+            var origSize = new Blob([input]).size;
+            var obfSize = new Blob([obfuscated]).size;
+            var ratio = ((obfSize / origSize) * 100).toFixed(1);
 
-function initWorker() {
-    if (state.worker) return state.worker;
-    try {
-        state.worker = new Worker(getWorkerBlob());
-        return state.worker;
-    } catch(e) {
-        console.warn('Worker unavailable:', e.message);
-        return null;
-    }
-}
-
-window.obfuscateNow = function() {
-    var jsCode = document.getElementById('jsArea').value;
-    var htmlCode = document.getElementById('htmlArea').value;
-    var cssCode = document.getElementById('cssArea').value;
-    var otherCode = document.getElementById('otherArea').value;
-    if (!jsCode.trim() && !htmlCode.trim() && !cssCode.trim() && !otherCode.trim()) {
-        showStatus('statusObfuscate', 'error', '❌ No code! Parse first.');
-        toast('No code!', 'error');
-        return;
-    }
-
-    var options = {
-        varRename: document.getElementById('optVarRename').checked,
-        stringArray: document.getElementById('optStringArray').checked,
-        hexEncode: document.getElementById('optHexEncode').checked,
-        deadCode: document.getElementById('optDeadCode').checked,
-        minify: document.getElementById('optMinify').checked
-    };
-
-    var btn = document.getElementById('obfuscateBtn');
-    btn.disabled = true;
-    showStatus('statusObfuscate', 'loading', '⏳ Obfuscating in background worker...');
-    var startTime = Date.now();
-    var worker = initWorker();
-
-    if (!worker) {
-        showStatus('statusObfuscate', 'error', '❌ Web Worker not supported.');
-        btn.disabled = false;
-        return;
-    }
-
-    var timeoutId = setTimeout(function() {
-        if (worker) worker.terminate();
-        state.worker = null;
-        btn.disabled = false;
-        showStatus('statusObfuscate', 'error', '❌ Timeout!');
-        toast('Timeout!', 'error');
-    }, SAFETY.TIMEOUT_MS);
-
-    worker.onmessage = function(e) {
-        clearTimeout(timeoutId);
-        var data = e.data;
-        if (data.type === 'success') {
-            state.outputCode = data.output;
-            state.layers = data.layers;
-            document.getElementById('outputSection').style.display = 'block';
-            document.getElementById('outputCode').value = data.output;
-            var inputSize = new Blob([state.fullCode]).size;
-            var outputSize = new Blob([data.output]).size;
-            var ratio = inputSize > 0 ? Math.round((outputSize / inputSize) * 100) : 0;
-            document.getElementById('statOrigSize').textContent = bytes(inputSize);
-            document.getElementById('statObfSize').textContent = bytes(outputSize);
+            document.getElementById('outputStats').style.display = 'grid';
+            document.getElementById('statOriginal').textContent = bytes(origSize);
+            document.getElementById('statObfuscated').textContent = bytes(obfSize);
             document.getElementById('statRatio').textContent = ratio + '%';
-            document.getElementById('statLayers').textContent = data.layers.length;
-            showStatus('statusObfuscate', 'success',
-                '✅ Obfuscation complete!\n' +
-                '📊 Layers: ' + data.layers.length + ' (' + data.layers.join(', ') + ')\n' +
-                '📦 Size: ' + bytes(inputSize) + ' → ' + bytes(outputSize) + ' (' + ratio + '%)\n' +
-                '⏱️ Time: ' + data.elapsed + 'ms'
-            );
-            toast('Complete! ' + data.layers.length + ' layers applied', 'success');
-            addHistory('Obfuscated — ' + data.layers.length + ' layers', 'success');
+
+            showStatus('success', '✅ Obfuscated! ' + bytes(origSize) + ' → ' + bytes(obfSize) + ' (' + ratio + '%)');
+            toast('Obfuscation complete!', 'success');
             updateProgress();
-            setTimeout(function() {
-                document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 200);
-        } else {
-            showStatus('statusObfuscate', 'error', '❌ ' + data.message);
-            toast('Error: ' + data.message, 'error');
+        } catch (e) {
+            console.error('Obfuscation error:', e);
+            showStatus('error', '❌ Error: ' + e.message);
+            toast('Obfuscation failed!', 'error');
+        } finally {
+            document.querySelectorAll('button').forEach(function(b) { b.disabled = false; });
         }
-        btn.disabled = false;
-    };
-
-    worker.onerror = function(err) {
-        clearTimeout(timeoutId);
-        showStatus('statusObfuscate', 'error', '❌ Worker error: ' + err.message);
-        toast('Worker error!', 'error');
-        btn.disabled = false;
-    };
-
-    worker.postMessage({
-        type: 'obfuscate',
-        js: jsCode,
-        html: htmlCode,
-        css: cssCode,
-        other: otherCode,
-        options: options
-    });
+    }, 100);
 };
 
-/* ═══ CLIPBOARD ═══ */
-function copyText(text, msg) {
-    if (!text) return;
-    function done() { toast(msg || 'Copied!', 'success'); }
-    function fallback() {
-        var ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.left = '-9999px';
-        document.body.appendChild(ta);
-        ta.select();
-        try { document.execCommand('copy'); done(); } catch(e) { toast('Copy failed!', 'error'); }
-        document.body.removeChild(ta);
+window.copyOutput = function() {
+    var out = document.getElementById('outputCode').value;
+    if (!out) { toast('Nothing to copy', 'error'); return; }
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(out).then(function() {
+            toast('Copied!', 'success');
+        }).catch(function() {
+            fallbackCopy(out);
+        });
+    } else {
+        fallbackCopy(out);
     }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(done).catch(fallback);
-    } else fallback();
+};
+function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); toast('Copied!', 'success'); } catch(e) { toast('Copy failed', 'error'); }
+    document.body.removeChild(ta);
 }
 
-window.copyFullCode = function() { copyText(document.getElementById('fullCodeArea').value, 'Full code copied!'); };
-window.copyOutput = function() { copyText(state.outputCode, 'Complete HTML copied!'); addHistory('Copied HTML', 'success'); };
-window.copyComments = function() { copyText(document.getElementById('commentsArea').value, 'Comments copied!'); };
-window.clearComments = function() {
-    document.getElementById('commentsArea').value = '';
-    state.comments = '';
-    updateBadges();
-    toast('Comments cleared', 'info');
+window.downloadOutput = function() {
+    var out = document.getElementById('outputCode').value;
+    if (!out) { toast('Nothing to download', 'error'); return; }
+    var blob = new Blob([out], { type: 'text/javascript;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'obfuscated_' + Date.now() + '.js';
+    a.click();
+    toast('Downloaded!', 'success');
 };
 
-window.clearFullCode = function() {
-    document.getElementById('fullCodeArea').value = '';
-    state.fullCode = ''; state.html = ''; state.css = ''; state.js = ''; state.other = ''; state.comments = '';
-    state.outputCode = ''; state.layers = [];
-    document.getElementById('sectionsContainer').style.display = 'none';
-    document.getElementById('outputSection').style.display = 'none';
-    var ca = document.getElementById('commentsArea');
-    if (ca) ca.value = '';
-    hideStatus('statusFullCode'); hideStatus('statusObfuscate');
+window.testOutput = function() {
+    var out = document.getElementById('outputCode').value;
+    if (!out) { toast('Obfuscate first!', 'error'); return; }
+    if (!confirm('⚠️ This will execute obfuscated code in current page. Continue?')) return;
+    try {
+        var script = document.createElement('script');
+        script.textContent = out;
+        document.head.appendChild(script);
+        toast('Executed! Check console.', 'success');
+    } catch(e) {
+        toast('Execution failed: ' + e.message, 'error');
+    }
+};
+
+window.loadSample = function() {
+    var sample = [
+        '// Sample code to obfuscate',
+        'function calculateTotal(items, taxRate) {',
+        '    var subtotal = 0;',
+        '    for (var i = 0; i < items.length; i++) {',
+        '        subtotal += items[i].price * items[i].quantity;',
+        '    }',
+        '    var tax = subtotal * taxRate;',
+        '    var total = subtotal + tax;',
+        '    console.log("Subtotal:", subtotal);',
+        '    console.log("Tax:", tax);',
+        '    console.log("Total:", total);',
+        '    return total;',
+        '}',
+        'var cart = [',
+        '    { name: "Laptop", price: 1200, quantity: 1 },',
+        '    { name: "Mouse", price: 25, quantity: 2 }',
+        '];',
+        'var finalAmount = calculateTotal(cart, 0.17);',
+        'console.log("Final: $" + finalAmount);'
+    ].join('\n');
+    inputCodeEl.value = sample;
+    inputCodeEl.dispatchEvent(new Event('input'));
+    toast('Sample loaded!', 'info');
+};
+
+window.clearAll = function() {
+    if (!confirm('Clear all input and output?')) return;
+    inputCodeEl.value = '';
+    document.getElementById('outputCode').value = '';
+    document.getElementById('inputStats').style.display = 'none';
+    document.getElementById('outputStats').style.display = 'none';
+    document.getElementById('status').className = 'status';
     updateProgress();
     toast('Cleared', 'info');
 };
 
-window.loadSampleCode = function() {
-    var SO = '<' + 'script>', SC = '<' + '/script>';
-    var sample = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<title>Sample</title>\n<style>\n/* Body styles */\nbody { background: #000; color: #fff; padding: 20px; }\nh1 { color: #00f0ff; }\n</style>\n</head>\n<body>\n<!-- Main heading -->\n<h1>Hello World</h1>\n<button id="btn">Click</button>\n<p id="output">Waiting...</p>\n' + SO + '\n// User list\nconst users = ["Alice", "Bob", "Charlie"];\nfunction greet(name) {\n  console.log("Hello, " + name);\n  return name.toUpperCase();\n}\nusers.forEach(function(u) { greet(u); });\ndocument.getElementById("btn").addEventListener("click", function() {\n  document.getElementById("output").textContent = "Clicked!";\n});\n' + SC + '\n</body>\n</html>';
-    document.getElementById('fullCodeArea').value = sample;
-    state.fullCode = sample;
-    document.getElementById('inputStats').style.display = 'grid';
-    document.getElementById('statLines').textContent = num(sample.split('\n').length);
-    document.getElementById('statChars').textContent = num(sample.length);
-    document.getElementById('statSize').textContent = bytes(new Blob([sample]).size);
-    updateDetected();
-    updateProgress();
-    toast('Sample loaded!', 'info');
-};
-
-window.downloadOutput = function() {
-    if (!state.outputCode) { toast('Obfuscate first!', 'error'); return; }
-    var blob = new Blob([state.outputCode], { type: 'text/html;charset=utf-8' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = 'protected_' + Date.now() + '.html';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    toast('Downloaded!', 'success');
-    addHistory('Downloaded HTML', 'success');
-};
-
-window.switchTab = function(tab) {
-    var tabs = ['html', 'css', 'js', 'other', 'comments'];
-    document.querySelectorAll('.tabs .tab[data-tab]').forEach(function(t) {
-        if (tabs.indexOf(t.dataset.tab) !== -1) {
-            t.classList.toggle('active', t.dataset.tab === tab);
-        }
-    });
-    document.querySelectorAll('.tab-content').forEach(function(c) {
-        var id = c.id.replace('tab-', '');
-        if (tabs.indexOf(id) !== -1) {
-            c.classList.toggle('active', id === tab);
-        }
-    });
-};
-
-var fullCodeArea = document.getElementById('fullCodeArea');
-if (fullCodeArea) {
-    fullCodeArea.addEventListener('input', function() {
-        var code = this.value;
-        state.fullCode = code;
-        var stats = document.getElementById('inputStats');
-        if (!code.trim()) { stats.style.display = 'none'; updateProgress(); return; }
-        stats.style.display = 'grid';
-        document.getElementById('statLines').textContent = num(code.split('\n').length);
-        document.getElementById('statChars').textContent = num(code.length);
-        document.getElementById('statSize').textContent = bytes(new Blob([code]).size);
-        updateDetected();
-        updateProgress();
-    });
-}
-
-document.addEventListener('keydown', function(e) {
-    if (e.ctrlKey && !e.shiftKey && e.key === 'Enter') {
-        e.preventDefault();
-        if (document.getElementById('sectionsContainer').style.display === 'none') parseFullCode();
-        else obfuscateNow();
+window.doLogout = function() {
+    if (window.firebase && firebase.auth) {
+        firebase.auth().signOut().then(function() {
+            window.location.href = 'index.html';
+        }).catch(function() {
+            window.location.href = 'index.html';
+        });
+    } else {
+        window.location.href = 'index.html';
     }
-    if (e.ctrlKey && e.shiftKey && e.key === 'X') {
-        e.preventDefault();
-        clearFullCode();
-    }
-});
+};
 
-/* ═══ AUTH HANDLING ═══ */
-var authReadyFired = false;
-function handleAuthReady(e) {
-    if (authReadyFired) return;
+/* ═══ AUTH ═══ */
+function handleAuth(e) {
     if (!e.detail || !e.detail.user) return;
-    authReadyFired = true;
+    if (state.authHandled) return;
+    state.authHandled = true;
     state.user = e.detail.user;
-    var badge = document.getElementById('userBadge');
-    var uname = document.getElementById('userName');
-    if (badge && uname) {
-        var name = e.detail.displayName || e.detail.email || 'User';
-        if (name.indexOf('@') !== -1) name = name.split('@')[0];
-        uname.textContent = name;
-        badge.style.display = 'inline-flex';
-    }
-    addHistory('Logged in as ' + (e.detail.email || 'User'), 'success');
+    var name = e.detail.name || (state.user.email ? state.user.email.split('@')[0] : 'User');
+    document.getElementById('welcomeName').textContent = name;
 }
-document.addEventListener('auth-ready', handleAuthReady);
-document.addEventListener('auth-guard-ready', handleAuthReady);
+
+document.addEventListener('auth-guard-ready', handleAuth);
+document.addEventListener('auth-ready', handleAuth);
 
 setTimeout(function() {
-    if (!authReadyFired) {
-        document.documentElement.style.visibility = 'visible';
-        document.documentElement.style.opacity = '1';
-        if (document.body) {
-            document.body.style.visibility = 'visible';
-            document.body.style.opacity = '1';
-        }
-        var l = document.getElementById('auth-guard-loader');
-        if (l) l.remove();
-        var s = document.getElementById('auth-guard-style');
-        if (s) s.remove();
+    if (!state.user && window.firebase && firebase.auth && firebase.auth().currentUser) {
+        handleAuth({ detail: { user: firebase.auth().currentUser } });
     }
 }, 3000);
 
+/* ═══ INIT ═══ */
+setPreset('medium', document.querySelector('.preset-btn[data-preset="medium"]'));
 updateProgress();
-renderHistory();
-addHistory('Obfuscator initialized', 'info');
-console.log('%c🛡️ Obfuscator loaded — v20', 'color:#b400ff;font-size:14px;font-weight:bold;');
+console.log('🛡️ Code Obfuscation tool loaded');
 
 })();
 </script>
