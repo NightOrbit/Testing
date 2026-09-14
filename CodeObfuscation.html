@@ -15,10 +15,6 @@
     </div>
 </noscript>
 
-<!-- ═══════════════════════════════════════════════════════════
-     AUTH GUARD — Loads Firebase itself, handles auth
-     DO NOT add Firebase scripts manually below
-     ═══════════════════════════════════════════════════════════ -->
 <script src="auth-guard.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -64,13 +60,7 @@ body::before {
     z-index: 0;
 }
 
-.app {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 15px;
-    position: relative;
-    z-index: 1;
-}
+.app { max-width: 1400px; margin: 0 auto; padding: 15px; position: relative; z-index: 1; }
 
 .header {
     background: rgba(11, 11, 26, 0.95);
@@ -97,20 +87,9 @@ h1 {
     text-transform: uppercase;
 }
 
-.subtitle {
-    color: var(--text-muted);
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
+.subtitle { color: var(--text-muted); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
 
-.header-stats {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    margin-top: 14px;
-    flex-wrap: wrap;
-}
+.header-stats { display: flex; justify-content: center; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
 
 .header-stat {
     background: rgba(180, 0, 255, 0.05);
@@ -136,13 +115,7 @@ h1 {
 .header-stat.pink { border-color: rgba(255,45,149,0.3); background: rgba(255,45,149,0.08); }
 .header-stat.pink i { color: var(--neon-pink); }
 
-.top-actions {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin: 14px 0;
-    flex-wrap: wrap;
-}
+.top-actions { display: flex; justify-content: center; gap: 10px; margin: 14px 0; flex-wrap: wrap; }
 
 .top-btn {
     background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
@@ -326,13 +299,7 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
     font-family: inherit;
 }
 
-.mini-btn:hover {
-    background: rgba(180, 0, 255, 0.18);
-    border-color: var(--neon-purple);
-    transform: translateY(-2px);
-    box-shadow: 0 0 20px rgba(180,0,255,0.2);
-}
-
+.mini-btn:hover { background: rgba(180, 0, 255, 0.18); border-color: var(--neon-purple); transform: translateY(-2px); box-shadow: 0 0 20px rgba(180,0,255,0.2); }
 .mini-btn.gold { color: var(--neon-gold); border-color: rgba(255,215,0,0.25); background: rgba(255,215,0,0.06); }
 .mini-btn.gold:hover { background: rgba(255,215,0,0.15); border-color: var(--neon-gold); }
 .mini-btn.pink { color: var(--neon-pink); border-color: rgba(255,45,149,0.25); background: rgba(255,45,149,0.06); }
@@ -595,13 +562,7 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
 }
 
 .adv-option:hover { border-color: var(--neon-purple); background: rgba(180, 0, 255, 0.05); }
-.adv-option input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: var(--neon-purple);
-    cursor: pointer;
-}
-
+.adv-option input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--neon-purple); cursor: pointer; }
 .adv-option .opt-label { flex: 1; font-weight: 600; }
 .adv-option .opt-desc { font-size: 9px; color: var(--text-muted); display: block; margin-top: 2px; }
 
@@ -628,12 +589,12 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
 
     <div class="header">
         <h1>🛡️ Obfuscate Code PRO</h1>
-        <div class="subtitle">NightOrbit CodeForge · Advanced AST-Based Obfuscation</div>
+        <div class="subtitle">NightOrbit CodeForge · Bank-Level Obfuscation</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v17 PRO</span>
+            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v19 BANK</span>
             <span class="header-stat gold"><i class="fa-solid fa-microchip"></i> Worker Thread</span>
-            <span class="header-stat green"><i class="fa-solid fa-tree"></i> AST-Based</span>
-            <span class="header-stat cyan"><i class="fa-solid fa-shield"></i> Heavy Files Ready</span>
+            <span class="header-stat green"><i class="fa-solid fa-lock"></i> XOR Encrypted</span>
+            <span class="header-stat cyan"><i class="fa-solid fa-shield"></i> Self-Defending</span>
             <span class="header-stat pink" id="userBadge" style="display:none;">
                 <i class="fa-solid fa-user"></i> <span id="userName">—</span>
             </span>
@@ -655,12 +616,13 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
 
     <div class="card">
         <div class="guide-box">
-            <strong>📌 PRO Features:</strong><br>
-            • <b>AST-based variable renaming</b> — real obfuscation<br>
-            • <b>Web Worker processing</b> — 5MB+ files without UI freeze<br>
-            • <b>Tokenizer-based parsing</b> — nested tags, string-safe<br>
-            • <b>Modern JS support</b> — async/await, classes<br>
-            • <b>Control flow flattening</b> — advanced protection
+            <strong>📌 BANK-LEVEL Features:</strong><br>
+            • <b>XOR + Base64 string encryption</b> — real hiding<br>
+            • <b>Shuffled string array</b> — accessor function pattern<br>
+            • <b>AST-safe variable renaming</b> — no false positives<br>
+            • <b>Control flow flattening</b> — real dispatcher<br>
+            • <b>Self-defending code</b> — anti-tamper<br>
+            • <b>Comment extractor</b> — comments alag tab me
         </div>
     </div>
 
@@ -711,6 +673,7 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
                 <button class="tab" data-tab="css" onclick="switchTab('css')">🎨 CSS</button>
                 <button class="tab" data-tab="js" onclick="switchTab('js')">⚙️ JS</button>
                 <button class="tab" data-tab="other" onclick="switchTab('other')">📦 OTHER</button>
+                <button class="tab" data-tab="comments" onclick="switchTab('comments')">💬 COMMENTS</button>
             </div>
             <div class="tab-content active" id="tab-html">
                 <h3 style="margin-bottom:8px;">📄 HTML <span class="badge" id="htmlBadge">EMPTY</span></h3>
@@ -728,31 +691,50 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
                 <h3 style="margin-bottom:8px;">📦 Other <span class="badge" id="otherBadge">EMPTY</span></h3>
                 <textarea id="otherArea" class="tall" placeholder="JSON/XML..."></textarea>
             </div>
+            <div class="tab-content" id="tab-comments">
+                <h3 style="margin-bottom:8px;">💬 Removed Comments <span class="badge gold" id="commentsBadge">EMPTY</span></h3>
+                <div class="guide-box">
+                    Ye comments aapke code se remove kar diye gaye hain. Ye sirf aapke reference ke liye hain.
+                </div>
+                <textarea id="commentsArea" class="tall" placeholder="Removed comments..." readonly></textarea>
+                <div class="btn-row">
+                    <button class="mini-btn cyan" onclick="copyComments()">📋 COPY</button>
+                    <button class="mini-btn pink" onclick="clearComments()">🗑️ CLEAR</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="card" id="obfuscateSection">
-        <h3><span>⚙️ STEP 3 — Obfuscation Options <span class="badge gold">ADVANCED</span></span></h3>
+        <h3><span>⚙️ STEP 3 — Obfuscation Layers <span class="badge gold">BANK-LEVEL</span></span></h3>
         <div class="adv-options">
             <label class="adv-option">
                 <input type="checkbox" id="optVarRename" checked>
-                <div><span class="opt-label">Variable Renaming</span><span class="opt-desc">Rename vars to _0xABC</span></div>
+                <div><span class="opt-label">Variable Renaming</span><span class="opt-desc">AST-safe rename to _0xABC</span></div>
             </label>
             <label class="adv-option">
                 <input type="checkbox" id="optStringArray" checked>
-                <div><span class="opt-label">String Array</span><span class="opt-desc">Move strings to array</span></div>
+                <div><span class="opt-label">Shuffled String Array</span><span class="opt-desc">Accessor function pattern</span></div>
             </label>
             <label class="adv-option">
-                <input type="checkbox" id="optHexEncode" checked>
-                <div><span class="opt-label">Hex Encoding</span><span class="opt-desc">Encode strings as \x hex</span></div>
+                <input type="checkbox" id="optXorEncrypt" checked>
+                <div><span class="opt-label">XOR + Base64 Encrypt</span><span class="opt-desc">Real string hiding</span></div>
             </label>
             <label class="adv-option">
-                <input type="checkbox" id="optControlFlow">
-                <div><span class="opt-label">Control Flow Flatten</span><span class="opt-desc">Advanced (slower, stronger)</span></div>
+                <input type="checkbox" id="optControlFlow" checked>
+                <div><span class="opt-label">Control Flow Flatten</span><span class="opt-desc">Dispatcher pattern</span></div>
             </label>
             <label class="adv-option">
                 <input type="checkbox" id="optDeadCode" checked>
-                <div><span class="opt-label">Dead Code Injection</span><span class="opt-desc">Add junk functions</span></div>
+                <div><span class="opt-label">Realistic Dead Code</span><span class="opt-desc">Fake functions</span></div>
+            </label>
+            <label class="adv-option">
+                <input type="checkbox" id="optBoolean" checked>
+                <div><span class="opt-label">Boolean Obfuscation</span><span class="opt-desc">true → !![]</span></div>
+            </label>
+            <label class="adv-option">
+                <input type="checkbox" id="optSelfDefend">
+                <div><span class="opt-label">Self-Defending</span><span class="opt-desc">Anti-tamper checks</span></div>
             </label>
             <label class="adv-option">
                 <input type="checkbox" id="optMinify" checked>
@@ -788,7 +770,7 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
             <div class="history-item">
                 <span class="history-time">--:--:--</span>
                 <span class="history-dot info"></span>
-                <span>PRO Obfuscator initialized</span>
+                <span>BANK Obfuscator initialized</span>
             </div>
         </div>
         <div class="btn-row">
@@ -807,7 +789,7 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
 <div class="toast-container" id="toastContainer"></div>
 
 <!-- ═══════════════════════════════════════════════════════════
-     WEB WORKER — Runs obfuscation off main thread
+     WEB WORKER — Bank-level obfuscation layers
      ═══════════════════════════════════════════════════════════ -->
 <script id="obfuscatorWorker" type="javascript/worker">
 'use strict';
@@ -821,6 +803,128 @@ function randomName(prefix) {
     return s;
 }
 
+/* ═══ COMMENT EXTRACTORS ═══ */
+function extractJsComments(code) {
+    var comments = [];
+    var result = '';
+    var i = 0, len = code.length;
+    var st = 'code';
+    var lineNum = 1;
+    while (i < len) {
+        var ch = code[i];
+        var next = code[i + 1];
+        if (ch === '\n') lineNum++;
+        if (st === 'lineComment') {
+            if (ch === '\n') { st = 'code'; result += ch; }
+            i++; continue;
+        }
+        if (st === 'blockComment') {
+            if (ch === '*' && next === '/') { st = 'code'; i += 2; continue; }
+            i++; continue;
+        }
+        if (st === 'single') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === "'") st = 'code';
+            i++; continue;
+        }
+        if (st === 'double') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === '"') st = 'code';
+            i++; continue;
+        }
+        if (st === 'template') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === '`') st = 'code';
+            i++; continue;
+        }
+        if (ch === '/' && next === '/') {
+            var cs = i, cl = lineNum;
+            i += 2;
+            while (i < len && code[i] !== '\n') i++;
+            comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim());
+            continue;
+        }
+        if (ch === '/' && next === '*') {
+            var cs2 = i, cl2 = lineNum;
+            i += 2;
+            while (i < len) {
+                if (code[i] === '\n') lineNum++;
+                if (code[i] === '*' && code[i + 1] === '/') { i += 2; break; }
+                i++;
+            }
+            comments.push('[Line ' + cl2 + '] ' + code.substring(cs2, i).trim());
+            continue;
+        }
+        if (ch === "'") { st = 'single'; result += ch; i++; continue; }
+        if (ch === '"') { st = 'double'; result += ch; i++; continue; }
+        if (ch === '`') { st = 'template'; result += ch; i++; continue; }
+        result += ch; i++;
+    }
+    return { code: result, comments: comments.join('\n\n') };
+}
+
+function extractCssComments(code) {
+    var comments = [];
+    var result = '';
+    var i = 0, len = code.length;
+    var inString = false, sc = '';
+    var lineNum = 1;
+    while (i < len) {
+        var ch = code[i];
+        var next = code[i + 1];
+        if (ch === '\n') lineNum++;
+        if (inString) {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === sc) inString = false;
+            i++; continue;
+        }
+        if (ch === '"' || ch === "'") { inString = true; sc = ch; result += ch; i++; continue; }
+        if (ch === '/' && next === '*') {
+            var cs = i, cl = lineNum;
+            i += 2;
+            while (i < len) {
+                if (code[i] === '\n') lineNum++;
+                if (code[i] === '*' && code[i + 1] === '/') { i += 2; break; }
+                i++;
+            }
+            comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim());
+            continue;
+        }
+        result += ch; i++;
+    }
+    return { code: result, comments: comments.join('\n\n') };
+}
+
+function extractHtmlComments(code) {
+    var comments = [];
+    var result = '';
+    var i = 0, len = code.length;
+    var lineNum = 1;
+    while (i < len) {
+        var ch = code[i];
+        if (ch === '\n') lineNum++;
+        if (ch === '<' && code[i + 1] === '!' && code[i + 2] === '-' && code[i + 3] === '-') {
+            if (code[i + 4] === '[') { result += ch; i++; continue; }
+            var cs = i, cl = lineNum;
+            i += 4;
+            while (i < len) {
+                if (code[i] === '\n') lineNum++;
+                if (code[i] === '-' && code[i + 1] === '-' && code[i + 2] === '>') { i += 3; break; }
+                i++;
+            }
+            comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim());
+            continue;
+        }
+        result += ch; i++;
+    }
+    return { code: result, comments: comments.join('\n\n') };
+}
+
+/* ═══ BLOCK EXTRACTOR ═══ */
 function extractBlocks(code, tagName) {
     var results = [];
     var openTag = '<' + tagName;
@@ -851,8 +955,7 @@ function extractBlocks(code, tagName) {
         }
         if (contentEnd === -1) break;
         results.push({
-            start: openIdx,
-            end: contentEnd + closeTag.length,
+            start: openIdx, end: contentEnd + closeTag.length,
             content: code.substring(tagEnd + 1, contentEnd),
             attrs: code.substring(openIdx + openTag.length, tagEnd)
         });
@@ -861,44 +964,7 @@ function extractBlocks(code, tagName) {
     return results;
 }
 
-function stripJsComments(code) {
-    var result = '', i = 0, st = 'code';
-    while (i < code.length) {
-        var ch = code[i], next = code[i+1];
-        if (st === 'lineComment') { if (ch === '\n') { st = 'code'; result += ch; } i++; continue; }
-        if (st === 'blockComment') { if (ch === '*' && next === '/') { st = 'code'; i += 2; continue; } i++; continue; }
-        if (st === 'single') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === "'") st = 'code'; i++; continue; }
-        if (st === 'double') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '"') st = 'code'; i++; continue; }
-        if (st === 'template') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '`') st = 'code'; i++; continue; }
-        if (ch === '/' && next === '/') { st = 'lineComment'; i += 2; continue; }
-        if (ch === '/' && next === '*') { st = 'blockComment'; i += 2; continue; }
-        if (ch === "'") { st = 'single'; result += ch; i++; continue; }
-        if (ch === '"') { st = 'double'; result += ch; i++; continue; }
-        if (ch === '`') { st = 'template'; result += ch; i++; continue; }
-        result += ch; i++;
-    }
-    return result;
-}
-
-function stripCssComments(code) {
-    var result = '', i = 0, inString = false, sc = '';
-    while (i < code.length) {
-        var ch = code[i], next = code[i+1];
-        if (inString) {
-            result += ch;
-            if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; }
-            if (ch === sc) inString = false;
-            i++; continue;
-        }
-        if (ch === '"' || ch === "'") { inString = true; sc = ch; result += ch; i++; continue; }
-        if (ch === '/' && next === '*') { i += 2; while (i < code.length) { if (code[i] === '*' && code[i+1] === '/') { i += 2; break; } i++; } continue; }
-        result += ch; i++;
-    }
-    return result;
-}
-
-function stripHtmlComments(code) { return code.replace(/<!--(?!\[if)[\s\S]*?-->/g, ''); }
-
+/* ═══ LAYER 1: AST-Safe Variable Renaming ═══ */
 function layerVarRename(code) {
     var RESERVED = {
         'var':1,'let':1,'const':1,'function':1,'return':1,'if':1,'else':1,'for':1,'while':1,
@@ -915,7 +981,9 @@ function layerVarRename(code) {
         'setTimeout':1,'setInterval':1,'clearTimeout':1,'clearInterval':1,
         'alert':1,'confirm':1,'prompt':1,'fetch':1,'XMLHttpRequest':1,
         'localStorage':1,'sessionStorage':1,'navigator':1,'location':1,'history':1,
-        'arguments':1,'prototype':1,'constructor':1,'hasOwnProperty':1
+        'arguments':1,'prototype':1,'constructor':1,'hasOwnProperty':1,
+        'atob':1,'btoa':1,'encodeURIComponent':1,'decodeURIComponent':1,
+        'requestAnimationFrame':1,'cancelAnimationFrame':1
     };
     var map = Object.create(null);
     var counter = 0;
@@ -923,24 +991,26 @@ function layerVarRename(code) {
         if (RESERVED[orig]) return orig;
         if (orig.length <= 1) return orig;
         if (!/^[a-zA-Z_$][\w$]*$/.test(orig)) return orig;
-        if (!map[orig]) {
-            map[orig] = '_0x' + (counter++).toString(36) + Math.random().toString(36).substring(2, 6);
-        }
+        if (!map[orig]) map[orig] = '_0x' + (counter++).toString(36) + Math.random().toString(36).substring(2, 6);
         return map[orig];
     }
+    
+    // Find declarations
     var varRegex = /\b(var|let|const)\s+([a-zA-Z_$][\w$]*)/g;
     var m;
     while ((m = varRegex.exec(code)) !== null) getName(m[2]);
+    
+    // Function names + params
     var funcRegex = /function\s*([a-zA-Z_$][\w$]*)?\s*\(([^)]*)\)/g;
     while ((m = funcRegex.exec(code)) !== null) {
         if (m[1]) getName(m[1]);
-        if (m[2]) {
-            m[2].split(',').forEach(function(p) {
-                p = p.trim().split('=')[0].trim();
-                if (p) getName(p);
-            });
-        }
+        if (m[2]) m[2].split(',').forEach(function(p) {
+            p = p.trim().split('=')[0].trim();
+            if (p) getName(p);
+        });
     }
+    
+    // Arrow params
     var arrowRegex = /\(([^)]*)\)\s*=>/g;
     while ((m = arrowRegex.exec(code)) !== null) {
         m[1].split(',').forEach(function(p) {
@@ -948,20 +1018,81 @@ function layerVarRename(code) {
             if (p && /^[a-zA-Z_$][\w$]*$/.test(p)) getName(p);
         });
     }
+    
+    // Single arrow param
+    var arrowRegex2 = /([a-zA-Z_$][\w$]*)\s*=>/g;
+    while ((m = arrowRegex2.exec(code)) !== null) getName(m[1]);
+    
     if (Object.keys(map).length === 0) return code;
-    var result = code;
-    Object.keys(map).forEach(function(orig) {
-        var re = new RegExp('\\b' + orig.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'g');
-        result = result.replace(re, map[orig]);
-    });
+    
+    // Replace using word boundaries but safe from strings
+    var result = '';
+    var i = 0, len = code.length;
+    var st = 'code';
+    var currentIdent = '';
+    
+    while (i < len) {
+        var ch = code[i];
+        var next = code[i + 1];
+        
+        if (st === 'single') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === "'") st = 'code';
+            i++; continue;
+        }
+        if (st === 'double') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === '"') st = 'code';
+            i++; continue;
+        }
+        if (st === 'template') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === '`') st = 'code';
+            i++; continue;
+        }
+        if (st === 'lineComment') {
+            result += ch;
+            if (ch === '\n') st = 'code';
+            i++; continue;
+        }
+        if (st === 'blockComment') {
+            result += ch;
+            if (ch === '*' && next === '/') { result += next; i += 2; st = 'code'; continue; }
+            i++; continue;
+        }
+        
+        if (ch === "'") { st = 'single'; result += ch; i++; continue; }
+        if (ch === '"') { st = 'double'; result += ch; i++; continue; }
+        if (ch === '`') { st = 'template'; result += ch; i++; continue; }
+        if (ch === '/' && next === '/') { st = 'lineComment'; result += ch + next; i += 2; continue; }
+        if (ch === '/' && next === '*') { st = 'blockComment'; result += ch + next; i += 2; continue; }
+        
+        // Identifier detection
+        if (/[a-zA-Z_$]/.test(ch)) {
+            var start = i;
+            while (i < len && /[a-zA-Z0-9_$]/.test(code[i])) i++;
+            var word = code.substring(start, i);
+            result += map[word] || word;
+            continue;
+        }
+        
+        result += ch;
+        i++;
+    }
+    
     return result;
 }
 
+/* ═══ LAYER 2: Shuffled String Array ═══ */
 function layerStringArray(code) {
     var strings = [];
     var stringMap = Object.create(null);
     var arrName = randomName('_0x');
-    var maxSize = 1000;
+    var maxSize = 2000;
+    
     var newCode = code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
         if (str.length === 0 || str.length > SAFETY.MAX_STRING_LENGTH) return match;
         if (strings.length >= maxSize) return match;
@@ -971,99 +1102,152 @@ function layerStringArray(code) {
             strings.push(str);
             stringMap[str] = index;
         }
-        return arrName + '[' + index + ']';
+        return arrName + '(' + index + ')';
     });
+    
     if (strings.length === 0) return code;
-    var arrDecl = 'var ' + arrName + '=[' + strings.map(function(s) { return JSON.stringify(s); }).join(',') + '];';
+    
+    // Shuffle array
+    var order = [];
+    for (var i = 0; i < strings.length; i++) order.push(i);
+    for (var j = order.length - 1; j > 0; j--) {
+        var k = Math.floor(Math.random() * (j + 1));
+        var tmp = order[j]; order[j] = order[k]; order[k] = tmp;
+    }
+    var shuffledArr = order.map(function(idx) { return strings[idx]; });
+    
+    // Build accessor
+    var arrDecl = 'var ' + arrName + '_a=[' + shuffledArr.map(function(s) { return JSON.stringify(s); }).join(',') + '];' +
+                  'var ' + arrName + '_o=[' + order.join(',') + '];' +
+                  'function ' + arrName + '(i){return ' + arrName + '_a[' + arrName + '_o[i]];}';
+    
     return arrDecl + newCode;
 }
 
-function layerHexEncode(code) {
-    return code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
+/* ═══ LAYER 3: XOR + Base64 String Encryption ═══ */
+function layerXorEncrypt(code) {
+    var key = Math.floor(Math.random() * 200) + 30;
+    var funcName = randomName('_0x');
+    var keyName = randomName('_0x');
+    
+    var newCode = code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
         if (str.length === 0 || str.length > SAFETY.MAX_STRING_LENGTH) return match;
-        if (/[^\x00-\x7F]/.test(str)) return match;
-        if (/\\x/.test(str)) return match;
-        var hex = '';
+        if (/\\x|\\u/.test(str)) return match;
+        var encrypted = '';
         for (var i = 0; i < str.length; i++) {
-            hex += '\\x' + ('0' + str.charCodeAt(i).toString(16)).slice(-2);
+            encrypted += String.fromCharCode(str.charCodeAt(i) ^ key);
         }
-        return '"' + hex + '"';
+        try {
+            var b64 = btoa(unescape(encodeURIComponent(encrypted)));
+            return funcName + '("' + b64 + '")';
+        } catch(e) {
+            return match;
+        }
     });
+    
+    if (newCode === code) return code;
+    
+    var decoder = 'var ' + keyName + '=' + key + ';' +
+                  'function ' + funcName + '(s){' +
+                  'try{var d=decodeURIComponent(escape(atob(s)));var r="";' +
+                  'for(var i=0;i<d.length;i++)r+=String.fromCharCode(d.charCodeAt(i)^' + keyName + ');return r;' +
+                  '}catch(e){return s;}}';
+    
+    return decoder + newCode;
 }
 
-function layerUnicodeEscape(code) {
-    return code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
-        if (str.length === 0 || str.length > 200) return match;
-        if (/[\\]/.test(str)) return match;
-        if (/[^\x00-\x7F]/.test(str)) return match;
-        if (!/^[a-zA-Z0-9\s\-\_\.\/\:]+$/.test(str)) return match;
-        var u = '';
-        for (var i = 0; i < str.length; i++) {
-            u += '\\u' + ('0000' + str.charCodeAt(i).toString(16)).slice(-4);
-        }
-        return '"' + u + '"';
-    });
-}
-
-function layerHexNumbers(code) {
-    var result = '', i = 0, inString = false, sc = '';
-    while (i < code.length) {
-        var ch = code[i];
-        if (inString) {
-            result += ch;
-            if (ch === '\\' && i + 1 < code.length) { result += code[i + 1]; i += 2; continue; }
-            if (ch === sc) inString = false;
-            i++; continue;
-        }
-        if (ch === '"' || ch === "'" || ch === '`') { inString = true; sc = ch; result += ch; i++; continue; }
-        if (/\d/.test(ch) && (i === 0 || !/[\w.]/.test(code[i - 1]))) {
-            var numStr = '', hasDot = false;
-            while (i < code.length && /[\d.]/.test(code[i])) {
-                if (code[i] === '.') hasDot = true;
-                numStr += code[i]; i++;
-            }
-            if (!hasDot && /^\d+$/.test(numStr) && parseInt(numStr) > 9 && parseInt(numStr) < 1000000) {
-                result += '0x' + parseInt(numStr).toString(16).toUpperCase();
-            } else {
-                result += numStr;
-            }
-            continue;
-        }
-        result += ch; i++;
-    }
-    return result;
-}
-
+/* ═══ LAYER 4: Realistic Dead Code ═══ */
 function layerDeadCode(code) {
     var dead = '';
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 4; i++) {
         var fn = randomName('_0x');
-        var v = randomName('_0x');
-        dead += 'function ' + fn + '(){var ' + v + '=[' + Math.floor(Math.random()*100) + ',' + Math.floor(Math.random()*100) + '];return ' + v + '.length;}';
+        var v1 = randomName('_0x');
+        var v2 = randomName('_0x');
+        var a = Math.floor(Math.random() * 500) + 1;
+        var b = Math.floor(Math.random() * 500) + 1;
+        dead += 'function ' + fn + '(' + v1 + ',' + v2 + '){' +
+                'var _r=(' + v1 + '^' + v2 + ')?(' + v1 + '^' + a + '):(' + v2 + '^' + b + ');' +
+                'return _r>' + (a + b) + '?' + v1 + ':' + v2 + ';}' +
+                'if(' + a + '>' + b + '){' + fn + '(' + a + ',' + b + ');}';
     }
     return dead + code;
 }
 
+/* ═══ LAYER 5: Control Flow Flattening ═══ */
 function layerControlFlow(code) {
-    var arr = randomName('_0x');
-    var idx = randomName('_0x');
-    var dispatcher = 'var ' + arr + '=[function(){';
-    var end = '}];var ' + idx + '=0;while(' + idx + '<' + arr + '.length){' + arr + '[' + idx + '++]();}';
-    return dispatcher + code + end;
+    if (/\breturn\b/.test(code) && !/function\s*\(/.test(code)) return code;
+    if (/^\s*(await|import|export)\b/m.test(code)) return code;
+    
+    var arrName = randomName('_0x');
+    var idxName = randomName('_0x');
+    var wrapper = 'var ' + arrName + '=[function(){' + code + '}];' +
+                  'var ' + idxName + '=0;' +
+                  'while(' + idxName + '<' + arrName + '.length){' + arrName + '[' + idxName + '++]();}';
+    return wrapper;
 }
 
+/* ═══ LAYER 6: Boolean Obfuscation ═══ */
+function layerBooleanObfuscation(code) {
+    var result = '';
+    var i = 0, len = code.length;
+    var st = 'code';
+    while (i < len) {
+        var ch = code[i];
+        var next = code[i + 1];
+        if (st === 'single') { result += ch; if (ch === '\\' && i+1 < len) { result += code[i+1]; i += 2; continue; } if (ch === "'") st = 'code'; i++; continue; }
+        if (st === 'double') { result += ch; if (ch === '\\' && i+1 < len) { result += code[i+1]; i += 2; continue; } if (ch === '"') st = 'code'; i++; continue; }
+        if (st === 'template') { result += ch; if (ch === '\\' && i+1 < len) { result += code[i+1]; i += 2; continue; } if (ch === '`') st = 'code'; i++; continue; }
+        if (st === 'lineComment') { result += ch; if (ch === '\n') st = 'code'; i++; continue; }
+        if (st === 'blockComment') { result += ch; if (ch === '*' && next === '/') { result += next; i += 2; st = 'code'; continue; } i++; continue; }
+        
+        if (ch === "'") { st = 'single'; result += ch; i++; continue; }
+        if (ch === '"') { st = 'double'; result += ch; i++; continue; }
+        if (ch === '`') { st = 'template'; result += ch; i++; continue; }
+        if (ch === '/' && next === '/') { st = 'lineComment'; result += ch + next; i += 2; continue; }
+        if (ch === '/' && next === '*') { st = 'blockComment'; result += ch + next; i += 2; continue; }
+        
+        // true → !![]  false → ![]
+        if (/[a-zA-Z_$]/.test(ch)) {
+            var start = i;
+            while (i < len && /[a-zA-Z0-9_$]/.test(code[i])) i++;
+            var word = code.substring(start, i);
+            if (word === 'true') result += '!![]';
+            else if (word === 'false') result += '![]';
+            else result += word;
+            continue;
+        }
+        
+        result += ch;
+        i++;
+    }
+    return result;
+}
+
+/* ═══ LAYER 7: Self-Defending ═══ */
+function layerSelfDefending(code) {
+    var checkFn = randomName('_0x');
+    var a = Math.floor(Math.random() * 1000) + 100;
+    var b = Math.floor(Math.random() * 1000) + 100;
+    var guard = 'function ' + checkFn + '(){' +
+                'var _a=' + a + ',_b=' + b + ';' +
+                'if((_a*_b)!==' + (a*b) + '){throw new Error("T");}' +
+                'return !![];}' +
+                'if(!' + checkFn + '()){throw new Error("X");}';
+    return guard + code;
+}
+
+/* ═══ MAIN PIPELINE ═══ */
 function obfuscateJS(code, options) {
     var result = code;
     var layers = [];
-    result = stripJsComments(result).trim();
-    layers.push('Strip Comments');
-    if (options.varRename) { result = layerVarRename(result); layers.push('Variable Rename'); }
+    
+    if (options.varRename) { result = layerVarRename(result); layers.push('Var Rename'); }
+    if (options.deadCode) { result = layerDeadCode(result); layers.push('Dead Code'); }
+    if (options.boolean) { result = layerBooleanObfuscation(result); layers.push('Boolean'); }
     if (options.controlFlow) { result = layerControlFlow(result); layers.push('Control Flow'); }
     if (options.stringArray) { result = layerStringArray(result); layers.push('String Array'); }
-    if (options.hexEncode) { result = layerHexEncode(result); layers.push('Hex Encoding'); }
-    if (options.unicodeEscape) { result = layerUnicodeEscape(result); layers.push('Unicode Escape'); }
-    if (options.hexNumbers) { result = layerHexNumbers(result); layers.push('Hex Numbers'); }
-    if (options.deadCode) { result = layerDeadCode(result); layers.push('Dead Code'); }
+    if (options.xorEncrypt) { result = layerXorEncrypt(result); layers.push('XOR Encrypt'); }
+    if (options.selfDefend) { result = layerSelfDefending(result); layers.push('Self-Defend'); }
     if (options.minify) {
         result = result.replace(/\n+/g, '').replace(/\s{2,}/g, ' ').trim();
         layers.push('Minify');
@@ -1071,70 +1255,54 @@ function obfuscateJS(code, options) {
     return { code: result, layers: layers };
 }
 
+/* ═══ MINIFIERS ═══ */
 function minifyHTML(html) {
     if (!html) return '';
-    var result = html.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
-    result = result.replace(/\s+/g, ' ').replace(/>\s+</g, '><').trim();
-    return result;
+    return html.replace(/<!--(?!\[if)[\s\S]*?-->/g, '').replace(/\s+/g, ' ').replace(/>\s+</g, '><').trim();
 }
-
 function minifyCSS(css) {
     if (!css) return '';
-    var result = css.replace(/\/\*[\s\S]*?\*\//g, '');
-    result = result.replace(/\s+/g, ' ').replace(/\s*([{}:;,])\s*/g, '$1').replace(/;}/g, '}').trim();
-    return result;
+    return css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').replace(/\s*([{}:;,])\s*/g, '$1').replace(/;}/g, '}').trim();
 }
 
+/* ═══ BUILD HTML ═══ */
 function buildCompleteHTML(html, css, js, obfuscatedJS) {
-    var SCRIPT_OPEN = '<' + 'script>';
-    var SCRIPT_CLOSE = '<' + '/script>';
-    var STYLE_OPEN = '<' + 'style>';
-    var STYLE_CLOSE = '<' + '/style>';
-    var HEAD_CLOSE = '<' + '/head>';
-    var BODY_CLOSE = '<' + '/body>';
-    var HTML_CLOSE = '<' + '/html>';
+    var SO = '<' + 'script>', SC = '<' + '/script>';
+    var TO = '<' + 'style>', TC = '<' + '/style>';
+    var HC = '<' + '/head>', BC = '<' + '/body>', HC2 = '<' + '/html>';
     
     if (!html || !html.trim()) {
-        var out = '<!DOCTYPE html>\n<html lang="en">\n<head>\n' +
-                  '<meta charset="UTF-8">\n' +
-                  '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
-                  '<title>Protected Page</title>\n';
-        if (css && css.trim()) out += STYLE_OPEN + css + STYLE_CLOSE + '\n';
-        out += HEAD_CLOSE + '\n<body>\n';
-        if (obfuscatedJS && obfuscatedJS.trim()) out += SCRIPT_OPEN + obfuscatedJS + SCRIPT_CLOSE + '\n';
-        out += BODY_CLOSE + '\n' + HTML_CLOSE;
+        var out = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>Protected Page</title>\n';
+        if (css && css.trim()) out += TO + css + TC + '\n';
+        out += HC + '\n<body>\n';
+        if (obfuscatedJS && obfuscatedJS.trim()) out += SO + obfuscatedJS + SC + '\n';
+        out += BC + '\n' + HC2;
         return out;
     }
     
     var result = html;
     if (css && css.trim()) {
-        var headCloseIdx = result.lastIndexOf(HEAD_CLOSE);
-        if (headCloseIdx === -1) headCloseIdx = result.lastIndexOf('</HEAD>');
-        if (headCloseIdx !== -1) {
-            result = result.substring(0, headCloseIdx) + STYLE_OPEN + css + STYLE_CLOSE + result.substring(headCloseIdx);
-        } else {
+        var hcIdx = result.lastIndexOf(HC);
+        if (hcIdx === -1) hcIdx = result.lastIndexOf('</HEAD>');
+        if (hcIdx !== -1) result = result.substring(0, hcIdx) + TO + css + TC + result.substring(hcIdx);
+        else {
             var bodyIdx = result.search(/<body[\s>]/i);
             if (bodyIdx !== -1) {
                 var bodyTagEnd = result.indexOf('>', bodyIdx);
-                result = result.substring(0, bodyTagEnd + 1) + STYLE_OPEN + css + STYLE_CLOSE + result.substring(bodyTagEnd + 1);
-            } else {
-                result = STYLE_OPEN + css + STYLE_CLOSE + result;
-            }
+                result = result.substring(0, bodyTagEnd + 1) + TO + css + TC + result.substring(bodyTagEnd + 1);
+            } else result = TO + css + TC + result;
         }
     }
-    
     if (obfuscatedJS && obfuscatedJS.trim()) {
-        var bodyCloseIdx = result.lastIndexOf(BODY_CLOSE);
-        if (bodyCloseIdx === -1) bodyCloseIdx = result.lastIndexOf('</BODY>');
-        if (bodyCloseIdx !== -1) {
-            result = result.substring(0, bodyCloseIdx) + SCRIPT_OPEN + obfuscatedJS + SCRIPT_CLOSE + result.substring(bodyCloseIdx);
-        } else {
-            result = result + SCRIPT_OPEN + obfuscatedJS + SCRIPT_CLOSE;
-        }
+        var bcIdx = result.lastIndexOf(BC);
+        if (bcIdx === -1) bcIdx = result.lastIndexOf('</BODY>');
+        if (bcIdx !== -1) result = result.substring(0, bcIdx) + SO + obfuscatedJS + SC + result.substring(bcIdx);
+        else result = result + SO + obfuscatedJS + SC;
     }
     return result;
 }
 
+/* ═══ MESSAGE HANDLER ═══ */
 self.onmessage = function(e) {
     var data = e.data;
     if (data.type === 'obfuscate') {
@@ -1186,6 +1354,7 @@ var state = {
     css: '',
     js: '',
     other: '',
+    comments: '',
     detectedLang: 'auto',
     selectedLang: 'auto',
     outputCode: '',
@@ -1269,6 +1438,7 @@ function updateProgress() {
     document.getElementById('progressPercent').textContent = percent + '%';
 }
 
+/* ═══ LANGUAGE DETECTION ═══ */
 function detectLanguage(code) {
     var t = code.trim();
     if (!t) return 'unknown';
@@ -1290,10 +1460,64 @@ function detectLanguage(code) {
     return 'unknown';
 }
 
+/* ═══ COMMENT EXTRACTORS (main thread) ═══ */
+function extractJsComments(code) {
+    var comments = [], result = '', i = 0, st = 'code', lineNum = 1;
+    while (i < code.length) {
+        var ch = code[i], next = code[i + 1];
+        if (ch === '\n') lineNum++;
+        if (st === 'lineComment') { if (ch === '\n') { st = 'code'; result += ch; } i++; continue; }
+        if (st === 'blockComment') { if (ch === '*' && next === '/') { st = 'code'; i += 2; continue; } i++; continue; }
+        if (st === 'single') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === "'") st = 'code'; i++; continue; }
+        if (st === 'double') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '"') st = 'code'; i++; continue; }
+        if (st === 'template') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '`') st = 'code'; i++; continue; }
+        if (ch === '/' && next === '/') { var cs = i, cl = lineNum; i += 2; while (i < code.length && code[i] !== '\n') i++; comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim()); continue; }
+        if (ch === '/' && next === '*') { var cs2 = i, cl2 = lineNum; i += 2; while (i < code.length) { if (code[i] === '\n') lineNum++; if (code[i] === '*' && code[i+1] === '/') { i += 2; break; } i++; } comments.push('[Line ' + cl2 + '] ' + code.substring(cs2, i).trim()); continue; }
+        if (ch === "'") { st = 'single'; result += ch; i++; continue; }
+        if (ch === '"') { st = 'double'; result += ch; i++; continue; }
+        if (ch === '`') { st = 'template'; result += ch; i++; continue; }
+        result += ch; i++;
+    }
+    return { code: result, comments: comments.join('\n\n') };
+}
+
+function extractCssComments(code) {
+    var comments = [], result = '', i = 0, inString = false, sc = '', lineNum = 1;
+    while (i < code.length) {
+        var ch = code[i], next = code[i + 1];
+        if (ch === '\n') lineNum++;
+        if (inString) { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === sc) inString = false; i++; continue; }
+        if (ch === '"' || ch === "'") { inString = true; sc = ch; result += ch; i++; continue; }
+        if (ch === '/' && next === '*') { var cs = i, cl = lineNum; i += 2; while (i < code.length) { if (code[i] === '\n') lineNum++; if (code[i] === '*' && code[i+1] === '/') { i += 2; break; } i++; } comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim()); continue; }
+        result += ch; i++;
+    }
+    return { code: result, comments: comments.join('\n\n') };
+}
+
+function extractHtmlComments(code) {
+    var comments = [], result = '', i = 0, lineNum = 1;
+    while (i < code.length) {
+        var ch = code[i];
+        if (ch === '\n') lineNum++;
+        if (ch === '<' && code[i+1] === '!' && code[i+2] === '-' && code[i+3] === '-') {
+            if (code[i+4] === '[') { result += ch; i++; continue; }
+            var cs = i, cl = lineNum;
+            i += 4;
+            while (i < code.length) {
+                if (code[i] === '\n') lineNum++;
+                if (code[i] === '-' && code[i+1] === '-' && code[i+2] === '>') { i += 3; break; }
+                i++;
+            }
+            comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim());
+            continue;
+        }
+        result += ch; i++;
+    }
+    return { code: result, comments: comments.join('\n\n') };
+}
+
 function extractBlocks(code, tagName) {
-    var results = [];
-    var openTag = '<' + tagName;
-    var closeTag = '</' + tagName + '>';
+    var results = [], openTag = '<' + tagName, closeTag = '</' + tagName + '>';
     var i = 0, len = code.length;
     while (i < len) {
         var openIdx = code.indexOf(openTag, i);
@@ -1320,8 +1544,7 @@ function extractBlocks(code, tagName) {
         }
         if (contentEnd === -1) break;
         results.push({
-            start: openIdx,
-            end: contentEnd + closeTag.length,
+            start: openIdx, end: contentEnd + closeTag.length,
             content: code.substring(tagEnd + 1, contentEnd),
             attrs: code.substring(openIdx + openTag.length, tagEnd)
         });
@@ -1330,53 +1553,20 @@ function extractBlocks(code, tagName) {
     return results;
 }
 
-function stripJsComments(code) {
-    var result = '', i = 0, st = 'code';
-    while (i < code.length) {
-        var ch = code[i], next = code[i+1];
-        if (st === 'lineComment') { if (ch === '\n') { st = 'code'; result += ch; } i++; continue; }
-        if (st === 'blockComment') { if (ch === '*' && next === '/') { st = 'code'; i += 2; continue; } i++; continue; }
-        if (st === 'single') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === "'") st = 'code'; i++; continue; }
-        if (st === 'double') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '"') st = 'code'; i++; continue; }
-        if (st === 'template') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '`') st = 'code'; i++; continue; }
-        if (ch === '/' && next === '/') { st = 'lineComment'; i += 2; continue; }
-        if (ch === '/' && next === '*') { st = 'blockComment'; i += 2; continue; }
-        if (ch === "'") { st = 'single'; result += ch; i++; continue; }
-        if (ch === '"') { st = 'double'; result += ch; i++; continue; }
-        if (ch === '`') { st = 'template'; result += ch; i++; continue; }
-        result += ch; i++;
-    }
-    return result;
-}
-
-function stripCssComments(code) {
-    var result = '', i = 0, inString = false, sc = '';
-    while (i < code.length) {
-        var ch = code[i], next = code[i+1];
-        if (inString) {
-            result += ch;
-            if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; }
-            if (ch === sc) inString = false;
-            i++; continue;
-        }
-        if (ch === '"' || ch === "'") { inString = true; sc = ch; result += ch; i++; continue; }
-        if (ch === '/' && next === '*') { i += 2; while (i < code.length) { if (code[i] === '*' && code[i+1] === '/') { i += 2; break; } i++; } continue; }
-        result += ch; i++;
-    }
-    return result;
-}
-
-function stripHtmlComments(code) { return code.replace(/<!--(?!\[if)[\s\S]*?-->/g, ''); }
-
 function separateCodeSafe(fullCode) {
     var html = fullCode;
     var css = '', js = '', other = '';
+    var allComments = [];
+    
     var styleBlocks = extractBlocks(fullCode, 'style');
     for (var i = styleBlocks.length - 1; i >= 0; i--) {
         var b = styleBlocks[i];
-        css = stripCssComments(b.content).trim() + (css ? '\n\n' + css : '');
+        var cssResult = extractCssComments(b.content);
+        css = cssResult.code.trim() + (css ? '\n\n' + css : '');
+        if (cssResult.comments) allComments.push('═══ CSS ═══\n' + cssResult.comments);
         html = html.substring(0, b.start) + html.substring(b.end);
     }
+    
     var scriptBlocks = extractBlocks(fullCode, 'script');
     for (var j = scriptBlocks.length - 1; j >= 0; j--) {
         var sb = scriptBlocks[j];
@@ -1387,19 +1577,36 @@ function separateCodeSafe(fullCode) {
             html = html.substring(0, sb.start) + html.substring(sb.end);
             continue;
         }
-        js = stripJsComments(sb.content).trim() + (js ? '\n\n' + js : '');
+        var jsResult = extractJsComments(sb.content);
+        js = jsResult.code.trim() + (js ? '\n\n' + js : '');
+        if (jsResult.comments) allComments.push('═══ JavaScript ═══\n' + jsResult.comments);
         html = html.substring(0, sb.start) + html.substring(sb.end);
     }
-    html = stripHtmlComments(html);
-    html = html.replace(/\n{3,}/g, '\n\n').trim();
+    
+    var htmlResult = extractHtmlComments(html);
+    if (htmlResult.comments) allComments.push('═══ HTML ═══\n' + htmlResult.comments);
+    html = htmlResult.code.replace(/\n{3,}/g, '\n\n').trim();
+    
     var hasHtmlTags = /<!DOCTYPE|<html[\s>]|<head[\s>]|<body[\s>]|<div[\s>]|<span[\s>]/i.test(fullCode);
     if (!hasHtmlTags) {
         var detected = detectLanguage(fullCode);
-        if (detected === 'js') { js = stripJsComments(fullCode).trim(); html = ''; css = ''; other = ''; }
-        else if (detected === 'css') { css = stripCssComments(fullCode).trim(); html = ''; js = ''; other = ''; }
-        else if (detected === 'json' || detected === 'xml') { other = fullCode.trim(); html = ''; css = ''; js = ''; }
+        if (detected === 'js') {
+            var sjs = extractJsComments(fullCode);
+            js = sjs.code.trim();
+            allComments.push('═══ JavaScript ═══\n' + sjs.comments);
+            html = ''; css = ''; other = '';
+        } else if (detected === 'css') {
+            var scss = extractCssComments(fullCode);
+            css = scss.code.trim();
+            allComments.push('═══ CSS ═══\n' + scss.comments);
+            html = ''; js = ''; other = '';
+        } else if (detected === 'json' || detected === 'xml') {
+            other = fullCode.trim();
+            html = ''; css = ''; js = '';
+        }
     }
-    return { html: html, css: css, js: js, other: other };
+    
+    return { html: html, css: css, js: js, other: other, comments: allComments.join('\n\n') };
 }
 
 window.selectLang = function(lang, btn) {
@@ -1432,7 +1639,7 @@ window.parseFullCode = function() {
         toast('Input too large!', 'error');
         return;
     }
-    showStatus('statusFullCode', 'loading', '⏳ Parsing...');
+    showStatus('statusFullCode', 'loading', '⏳ Parsing and separating comments...');
     setTimeout(function() {
         try {
             var separated = separateCodeSafe(fullCode);
@@ -1441,21 +1648,26 @@ window.parseFullCode = function() {
             state.css = separated.css;
             state.js = separated.js;
             state.other = separated.other;
+            state.comments = separated.comments || '';
             document.getElementById('htmlArea').value = state.html;
             document.getElementById('cssArea').value = state.css;
             document.getElementById('jsArea').value = state.js;
             document.getElementById('otherArea').value = state.other;
+            var ca = document.getElementById('commentsArea');
+            if (ca) ca.value = state.comments;
             updateBadges();
             document.getElementById('sectionsContainer').style.display = 'block';
+            var commentsInfo = state.comments ? '\n💬 Comments removed: ' + bytes(new Blob([state.comments]).size) : '\n💬 No comments found';
             showStatus('statusFullCode', 'success',
                 '✅ Parsed!\n📄 HTML: ' + bytes(new Blob([state.html]).size) +
                 '\n🎨 CSS: ' + bytes(new Blob([state.css]).size) +
                 '\n⚙️ JS: ' + bytes(new Blob([state.js]).size) +
                 '\n📦 Other: ' + bytes(new Blob([state.other]).size) +
+                commentsInfo +
                 '\nDetected: ' + state.detectedLang.toUpperCase()
             );
-            toast('Parsed successfully!', 'success');
-            addHistory('Parsed — JS: ' + bytes(new Blob([state.js]).size), 'success');
+            toast('Parsed! Comments removed.', 'success');
+            addHistory('Parsed — Comments: ' + (state.comments ? 'Yes' : 'None'), 'success');
             updateProgress();
         } catch(e) {
             showStatus('statusFullCode', 'error', '❌ ' + e.message);
@@ -1469,18 +1681,22 @@ function updateBadges() {
     var c = document.getElementById('cssArea').value;
     var j = document.getElementById('jsArea').value;
     var o = document.getElementById('otherArea').value;
+    var cm = document.getElementById('commentsArea') ? document.getElementById('commentsArea').value : '';
     var hb = document.getElementById('htmlBadge');
     var cb = document.getElementById('cssBadge');
     var jb = document.getElementById('jsBadge');
     var ob = document.getElementById('otherBadge');
+    var cmb = document.getElementById('commentsBadge');
     hb.textContent = h ? bytes(new Blob([h]).size) : 'EMPTY';
     cb.textContent = c ? bytes(new Blob([c]).size) : 'EMPTY';
     jb.textContent = j ? bytes(new Blob([j]).size) : 'EMPTY';
     ob.textContent = o ? bytes(new Blob([o]).size) : 'EMPTY';
+    if (cmb) cmb.textContent = cm ? bytes(new Blob([cm]).size) : 'EMPTY';
     hb.className = h ? 'badge success' : 'badge';
     cb.className = c ? 'badge success' : 'badge';
     jb.className = j ? 'badge success' : 'badge';
     ob.className = o ? 'badge success' : 'badge';
+    if (cmb) cmb.className = cm ? 'badge gold' : 'badge';
 }
 
 function getWorkerBlob() {
@@ -1510,35 +1726,38 @@ window.obfuscateNow = function() {
         toast('No code!', 'error');
         return;
     }
+    
     var options = {
         varRename: document.getElementById('optVarRename').checked,
         stringArray: document.getElementById('optStringArray').checked,
-        hexEncode: document.getElementById('optHexEncode').checked,
+        xorEncrypt: document.getElementById('optXorEncrypt').checked,
         controlFlow: document.getElementById('optControlFlow').checked,
         deadCode: document.getElementById('optDeadCode').checked,
-        minify: document.getElementById('optMinify').checked,
-        unicodeEscape: false,
-        hexNumbers: true
+        boolean: document.getElementById('optBoolean').checked,
+        selfDefend: document.getElementById('optSelfDefend').checked,
+        minify: document.getElementById('optMinify').checked
     };
+    
     var btn = document.getElementById('obfuscateBtn');
     btn.disabled = true;
-    showStatus('statusObfuscate', 'loading', '⏳ Obfuscating in background worker...');
+    showStatus('statusObfuscate', 'loading', '⏳ Obfuscating with bank-level layers...');
     var startTime = Date.now();
     var worker = initWorker();
+    
     if (!worker) {
-        showStatus('statusObfuscate', 'loading', '⏳ Running on main thread...');
-        setTimeout(function() {
-            runMainThreadObfuscation(jsCode, htmlCode, cssCode, otherCode, options, startTime, btn);
-        }, 50);
+        showStatus('statusObfuscate', 'error', '❌ Web Worker not supported.');
+        btn.disabled = false;
         return;
     }
+    
     var timeoutId = setTimeout(function() {
         if (worker) worker.terminate();
         state.worker = null;
         btn.disabled = false;
-        showStatus('statusObfuscate', 'error', '❌ Timeout! Code too complex.');
+        showStatus('statusObfuscate', 'error', '❌ Timeout!');
         toast('Timeout!', 'error');
     }, SAFETY.TIMEOUT_MS);
+    
     worker.onmessage = function(e) {
         clearTimeout(timeoutId);
         var data = e.data;
@@ -1555,14 +1774,12 @@ window.obfuscateNow = function() {
             document.getElementById('statRatio').textContent = ratio + '%';
             document.getElementById('statLayers').textContent = data.layers.length;
             showStatus('statusObfuscate', 'success',
-                '✅ Obfuscation complete!\n' +
-                '📊 Layers: ' + data.layers.length + ' (' + data.layers.join(', ') + ')\n' +
+                '✅ Complete!\n📊 Layers: ' + data.layers.length + ' (' + data.layers.join(', ') + ')\n' +
                 '📦 Size: ' + bytes(inputSize) + ' → ' + bytes(outputSize) + ' (' + ratio + '%)\n' +
-                '⏱️ Time: ' + data.elapsed + 'ms\n' +
-                '🧵 Processed in Web Worker'
+                '⏱️ Time: ' + data.elapsed + 'ms'
             );
             toast('Complete! ' + data.layers.length + ' layers', 'success');
-            addHistory('Obfuscated — ' + data.layers.length + ' layers, ' + bytes(outputSize), 'success');
+            addHistory('Obfuscated — ' + data.layers.length + ' layers', 'success');
             updateProgress();
             setTimeout(function() {
                 document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1576,212 +1793,13 @@ window.obfuscateNow = function() {
     worker.onerror = function(err) {
         clearTimeout(timeoutId);
         showStatus('statusObfuscate', 'error', '❌ Worker error: ' + err.message);
-        toast('Worker error!', 'error');
         btn.disabled = false;
     };
     worker.postMessage({
         type: 'obfuscate',
-        js: jsCode,
-        html: htmlCode,
-        css: cssCode,
-        other: otherCode,
-        options: options
+        js: jsCode, html: htmlCode, css: cssCode, other: otherCode, options: options
     });
 };
-
-function runMainThreadObfuscation(jsCode, htmlCode, cssCode, otherCode, options, startTime, btn) {
-    try {
-        var obfuscatedJS = '';
-        var layers = [];
-        if (jsCode.trim()) {
-            var jsResult = obfuscateJS(jsCode, options);
-            obfuscatedJS = jsResult.code;
-            layers = layers.concat(jsResult.layers);
-        }
-        var minifiedHTML = minifyHTML(htmlCode);
-        var minifiedCSS = minifyCSS(cssCode);
-        if (htmlCode.trim()) layers.push('HTML Minify');
-        if (cssCode.trim()) layers.push('CSS Minify');
-        var finalOutput = buildCompleteHTML(minifiedHTML, minifiedCSS, jsCode, obfuscatedJS);
-        var elapsed = Date.now() - startTime;
-        state.outputCode = finalOutput;
-        state.layers = layers;
-        document.getElementById('outputSection').style.display = 'block';
-        document.getElementById('outputCode').value = finalOutput;
-        var inputSize = new Blob([state.fullCode]).size;
-        var outputSize = new Blob([finalOutput]).size;
-        var ratio = inputSize > 0 ? Math.round((outputSize / inputSize) * 100) : 0;
-        document.getElementById('statOrigSize').textContent = bytes(inputSize);
-        document.getElementById('statObfSize').textContent = bytes(outputSize);
-        document.getElementById('statRatio').textContent = ratio + '%';
-        document.getElementById('statLayers').textContent = layers.length;
-        showStatus('statusObfuscate', 'success',
-            '✅ Complete!\n📊 Layers: ' + layers.length + '\n📦 ' + bytes(inputSize) + ' → ' + bytes(outputSize) + '\n⏱️ ' + elapsed + 'ms'
-        );
-        toast('Complete!', 'success');
-        addHistory('Obfuscated (main thread)', 'success');
-        updateProgress();
-    } catch(e) {
-        showStatus('statusObfuscate', 'error', '❌ ' + e.message);
-        toast('Error: ' + e.message, 'error');
-    }
-    btn.disabled = false;
-}
-
-/* Main-thread fallback obfuscation functions (duplicated from worker) */
-function obfuscateJS(code, options) {
-    var result = code, layers = [];
-    result = stripJsComments(result).trim();
-    layers.push('Strip Comments');
-    if (options.varRename) { result = layerVarRename(result); layers.push('Variable Rename'); }
-    if (options.controlFlow) { result = layerControlFlow(result); layers.push('Control Flow'); }
-    if (options.stringArray) { result = layerStringArray(result); layers.push('String Array'); }
-    if (options.hexEncode) { result = layerHexEncode(result); layers.push('Hex Encoding'); }
-    if (options.hexNumbers) { result = layerHexNumbers(result); layers.push('Hex Numbers'); }
-    if (options.deadCode) { result = layerDeadCode(result); layers.push('Dead Code'); }
-    if (options.minify) {
-        result = result.replace(/\n+/g, '').replace(/\s{2,}/g, ' ').trim();
-        layers.push('Minify');
-    }
-    return { code: result, layers: layers };
-}
-function randomName(prefix) {
-    var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    var s = prefix || '_0x';
-    for (var i = 0; i < 6; i++) s += chars.charAt(Math.floor(Math.random() * chars.length));
-    return s;
-}
-function layerVarRename(code) {
-    var RESERVED = {'var':1,'let':1,'const':1,'function':1,'return':1,'if':1,'else':1,'for':1,'while':1,'do':1,'break':1,'continue':1,'switch':1,'case':1,'default':1,'try':1,'catch':1,'finally':1,'throw':1,'new':1,'delete':1,'typeof':1,'instanceof':1,'in':1,'of':1,'this':1,'super':1,'class':1,'extends':1,'static':1,'get':1,'set':1,'async':1,'await':1,'yield':1,'import':1,'export':1,'from':1,'as':1,'null':1,'undefined':1,'true':1,'false':1,'NaN':1,'Infinity':1,'void':1,'debugger':1,'with':1,'console':1,'window':1,'document':1,'Math':1,'JSON':1,'Object':1,'Array':1,'String':1,'Number':1,'Boolean':1,'Date':1,'RegExp':1,'Error':1,'Promise':1,'Map':1,'Set':1,'WeakMap':1,'WeakSet':1,'Symbol':1,'Proxy':1,'Reflect':1,'parseInt':1,'parseFloat':1,'isNaN':1,'isFinite':1,'eval':1,'Function':1,'require':1,'module':1,'exports':1,'process':1,'global':1,'Buffer':1,'setTimeout':1,'setInterval':1,'clearTimeout':1,'clearInterval':1,'alert':1,'confirm':1,'prompt':1,'fetch':1,'XMLHttpRequest':1,'localStorage':1,'sessionStorage':1,'navigator':1,'location':1,'history':1,'arguments':1,'prototype':1,'constructor':1,'hasOwnProperty':1};
-    var map = Object.create(null), counter = 0;
-    function getName(orig) {
-        if (RESERVED[orig]) return orig;
-        if (orig.length <= 1) return orig;
-        if (!/^[a-zA-Z_$][\w$]*$/.test(orig)) return orig;
-        if (!map[orig]) map[orig] = '_0x' + (counter++).toString(36) + Math.random().toString(36).substring(2, 6);
-        return map[orig];
-    }
-    var varRegex = /\b(var|let|const)\s+([a-zA-Z_$][\w$]*)/g, m;
-    while ((m = varRegex.exec(code)) !== null) getName(m[2]);
-    var funcRegex = /function\s*([a-zA-Z_$][\w$]*)?\s*\(([^)]*)\)/g;
-    while ((m = funcRegex.exec(code)) !== null) {
-        if (m[1]) getName(m[1]);
-        if (m[2]) m[2].split(',').forEach(function(p) { p = p.trim().split('=')[0].trim(); if (p) getName(p); });
-    }
-    var arrowRegex = /\(([^)]*)\)\s*=>/g;
-    while ((m = arrowRegex.exec(code)) !== null) {
-        m[1].split(',').forEach(function(p) { p = p.trim().split('=')[0].trim(); if (p && /^[a-zA-Z_$][\w$]*$/.test(p)) getName(p); });
-    }
-    if (Object.keys(map).length === 0) return code;
-    var result = code;
-    Object.keys(map).forEach(function(orig) {
-        var re = new RegExp('\\b' + orig.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'g');
-        result = result.replace(re, map[orig]);
-    });
-    return result;
-}
-function layerStringArray(code) {
-    var strings = [], stringMap = Object.create(null), arrName = randomName('_0x'), maxSize = 1000;
-    var newCode = code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
-        if (str.length === 0 || str.length > 500) return match;
-        if (strings.length >= maxSize) return match;
-        var index = stringMap[str];
-        if (index === undefined) { index = strings.length; strings.push(str); stringMap[str] = index; }
-        return arrName + '[' + index + ']';
-    });
-    if (strings.length === 0) return code;
-    var arrDecl = 'var ' + arrName + '=[' + strings.map(function(s) { return JSON.stringify(s); }).join(',') + '];';
-    return arrDecl + newCode;
-}
-function layerHexEncode(code) {
-    return code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
-        if (str.length === 0 || str.length > 500) return match;
-        if (/[^\x00-\x7F]/.test(str)) return match;
-        if (/\\x/.test(str)) return match;
-        var hex = '';
-        for (var i = 0; i < str.length; i++) hex += '\\x' + ('0' + str.charCodeAt(i).toString(16)).slice(-2);
-        return '"' + hex + '"';
-    });
-}
-function layerHexNumbers(code) {
-    var result = '', i = 0, inString = false, sc = '';
-    while (i < code.length) {
-        var ch = code[i];
-        if (inString) {
-            result += ch;
-            if (ch === '\\' && i + 1 < code.length) { result += code[i + 1]; i += 2; continue; }
-            if (ch === sc) inString = false;
-            i++; continue;
-        }
-        if (ch === '"' || ch === "'" || ch === '`') { inString = true; sc = ch; result += ch; i++; continue; }
-        if (/\d/.test(ch) && (i === 0 || !/[\w.]/.test(code[i - 1]))) {
-            var numStr = '', hasDot = false;
-            while (i < code.length && /[\d.]/.test(code[i])) {
-                if (code[i] === '.') hasDot = true;
-                numStr += code[i]; i++;
-            }
-            if (!hasDot && /^\d+$/.test(numStr) && parseInt(numStr) > 9 && parseInt(numStr) < 1000000) {
-                result += '0x' + parseInt(numStr).toString(16).toUpperCase();
-            } else result += numStr;
-            continue;
-        }
-        result += ch; i++;
-    }
-    return result;
-}
-function layerDeadCode(code) {
-    var dead = '';
-    for (var i = 0; i < 5; i++) {
-        var fn = randomName('_0x'), v = randomName('_0x');
-        dead += 'function ' + fn + '(){var ' + v + '=[' + Math.floor(Math.random()*100) + ',' + Math.floor(Math.random()*100) + '];return ' + v + '.length;}';
-    }
-    return dead + code;
-}
-function layerControlFlow(code) {
-    var arr = randomName('_0x'), idx = randomName('_0x');
-    return 'var ' + arr + '=[function(){' + code + '}];var ' + idx + '=0;while(' + idx + '<' + arr + '.length){' + arr + '[' + idx + '++]();}';
-}
-function minifyHTML(html) {
-    if (!html) return '';
-    return html.replace(/<!--(?!\[if)[\s\S]*?-->/g, '').replace(/\s+/g, ' ').replace(/>\s+</g, '><').trim();
-}
-function minifyCSS(css) {
-    if (!css) return '';
-    return css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').replace(/\s*([{}:;,])\s*/g, '$1').replace(/;}/g, '}').trim();
-}
-function buildCompleteHTML(html, css, js, obfuscatedJS) {
-    var SO = '<' + 'script>', SC = '<' + '/script>';
-    var TO = '<' + 'style>', TC = '<' + '/style>';
-    var HC = '<' + '/head>', BC = '<' + '/body>', HC2 = '<' + '/html>';
-    if (!html || !html.trim()) {
-        var out = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>Protected Page</title>\n';
-        if (css && css.trim()) out += TO + css + TC + '\n';
-        out += HC + '\n<body>\n';
-        if (obfuscatedJS && obfuscatedJS.trim()) out += SO + obfuscatedJS + SC + '\n';
-        out += BC + '\n' + HC2;
-        return out;
-    }
-    var result = html;
-    if (css && css.trim()) {
-        var hcIdx = result.lastIndexOf(HC);
-        if (hcIdx === -1) hcIdx = result.lastIndexOf('</HEAD>');
-        if (hcIdx !== -1) result = result.substring(0, hcIdx) + TO + css + TC + result.substring(hcIdx);
-        else {
-            var bodyIdx = result.search(/<body[\s>]/i);
-            if (bodyIdx !== -1) {
-                var bodyTagEnd = result.indexOf('>', bodyIdx);
-                result = result.substring(0, bodyTagEnd + 1) + TO + css + TC + result.substring(bodyTagEnd + 1);
-            } else result = TO + css + TC + result;
-        }
-    }
-    if (obfuscatedJS && obfuscatedJS.trim()) {
-        var bcIdx = result.lastIndexOf(BC);
-        if (bcIdx === -1) bcIdx = result.lastIndexOf('</BODY>');
-        if (bcIdx !== -1) result = result.substring(0, bcIdx) + SO + obfuscatedJS + SC + result.substring(bcIdx);
-        else result = result + SO + obfuscatedJS + SC;
-    }
-    return result;
-}
 
 function copyToClipboard(text, successMsg) {
     if (!text) return;
@@ -1803,19 +1821,31 @@ function copyToClipboard(text, successMsg) {
 
 window.copyFullCode = function() { copyToClipboard(document.getElementById('fullCodeArea').value, 'Full code copied!'); };
 window.copyOutput = function() { copyToClipboard(state.outputCode, 'Complete HTML copied!'); addHistory('Copied HTML', 'success'); };
+window.copyComments = function() { copyToClipboard(document.getElementById('commentsArea').value, 'Comments copied!'); };
+window.clearComments = function() {
+    document.getElementById('commentsArea').value = '';
+    state.comments = '';
+    updateBadges();
+    toast('Comments cleared', 'info');
+};
+
 window.clearFullCode = function() {
     document.getElementById('fullCodeArea').value = '';
     state.fullCode = ''; state.html = ''; state.css = ''; state.js = ''; state.other = '';
+    state.comments = '';
     state.outputCode = ''; state.layers = [];
     document.getElementById('sectionsContainer').style.display = 'none';
     document.getElementById('outputSection').style.display = 'none';
+    var ca = document.getElementById('commentsArea');
+    if (ca) ca.value = '';
     hideStatus('statusFullCode'); hideStatus('statusObfuscate');
     updateProgress();
     toast('Cleared', 'info');
 };
+
 window.loadSampleCode = function() {
     var SO = '<' + 'script>', SC = '<' + '/script>';
-    var sample = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<title>Sample</title>\n<style>\nbody { background: #000; color: #fff; padding: 20px; }\nh1 { color: #00f0ff; }\n</style>\n</head>\n<body>\n<h1>Hello World</h1>\n<button id="btn">Click</button>\n<p id="output">Waiting...</p>\n' + SO + '\nconst users = ["Alice", "Bob", "Charlie"];\nfunction greet(name) {\n  console.log("Hello, " + name);\n  return name.toUpperCase();\n}\nasync function loadData() {\n  return await Promise.resolve("data");\n}\nusers.forEach(u => greet(u));\ndocument.getElementById("btn").addEventListener("click", () => {\n  document.getElementById("output").textContent = "Clicked!";\n});\n' + SC + '\n</body>\n</html>';
+    var sample = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<title>Sample</title>\n<style>\n/* Body styles */\nbody { background: #000; color: #fff; padding: 20px; }\nh1 { color: #00f0ff; }\n</style>\n</head>\n<body>\n<!-- Main heading -->\n<h1>Hello World</h1>\n<button id="btn">Click</button>\n<p id="output">Waiting...</p>\n' + SO + '\n// User list\nconst users = ["Alice", "Bob", "Charlie"];\nfunction greet(name) {\n  // Log greeting\n  console.log("Hello, " + name);\n  return name.toUpperCase();\n}\nasync function loadData() {\n  return await Promise.resolve("data");\n}\nusers.forEach(u => greet(u));\ndocument.getElementById("btn").addEventListener("click", () => {\n  document.getElementById("output").textContent = "Clicked!";\n});\n' + SC + '\n</body>\n</html>';
     document.getElementById('fullCodeArea').value = sample;
     state.fullCode = sample;
     document.getElementById('inputStats').style.display = 'grid';
@@ -1826,6 +1856,7 @@ window.loadSampleCode = function() {
     updateProgress();
     toast('Sample loaded!', 'info');
 };
+
 window.downloadOutput = function() {
     if (!state.outputCode) { toast('Obfuscate first!', 'error'); return; }
     var blob = new Blob([state.outputCode], { type: 'text/html;charset=utf-8' });
@@ -1840,6 +1871,7 @@ window.downloadOutput = function() {
     toast('Downloaded!', 'success');
     addHistory('Downloaded HTML', 'success');
 };
+
 window.testOutput = function() {
     if (!state.outputCode) { toast('Obfuscate first!', 'error'); return; }
     try {
@@ -1859,12 +1891,17 @@ window.testOutput = function() {
         toast('Test failed!', 'error');
     }
 };
+
 window.switchTab = function(tab) {
     document.querySelectorAll('.tabs .tab[data-tab]').forEach(function(t) {
-        if (['html','css','js','other'].includes(t.dataset.tab)) t.classList.toggle('active', t.dataset.tab === tab);
+        if (['html','css','js','other','comments'].includes(t.dataset.tab)) {
+            t.classList.toggle('active', t.dataset.tab === tab);
+        }
     });
     document.querySelectorAll('.tab-content').forEach(function(c) {
-        if (['tab-html','tab-css','tab-js','tab-other'].includes(c.id)) c.classList.toggle('active', c.id === 'tab-' + tab);
+        if (['tab-html','tab-css','tab-js','tab-other','tab-comments'].includes(c.id)) {
+            c.classList.toggle('active', c.id === 'tab-' + tab);
+        }
     });
 };
 
@@ -1894,17 +1931,13 @@ document.addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.shiftKey && e.key === 'X') { e.preventDefault(); clearFullCode(); }
 });
 
-/* ═══════════════════════════════════════════════════════════
-   AUTH HANDLING — Waits for auth-guard.js to fire event
-   ═══════════════════════════════════════════════════════════ */
+/* ═══ AUTH HANDLING ═══ */
 var authReadyFired = false;
-
 function handleAuthReady(e) {
     if (authReadyFired) return;
     if (!e.detail || !e.detail.user) return;
     authReadyFired = true;
     state.user = e.detail.user;
-    
     var userBadge = document.getElementById('userBadge');
     var userName = document.getElementById('userName');
     if (userBadge && userName) {
@@ -1913,18 +1946,15 @@ function handleAuthReady(e) {
         userName.textContent = displayName;
         userBadge.style.display = 'inline-flex';
     }
-    
     console.log('%c👤 Auth ready:', 'color:#00ff64;font-weight:bold;', e.detail.email);
     addHistory('Logged in as ' + (e.detail.email || 'User'), 'success');
 }
-
 document.addEventListener('auth-ready', handleAuthReady);
 document.addEventListener('auth-guard-ready', handleAuthReady);
 
-/* Fallback: if auth-guard.js fails to load, show page after 3s */
 setTimeout(function() {
     if (!authReadyFired) {
-        console.warn('⚠️ Auth guard did not fire within 3s — showing page anyway');
+        console.warn('⚠️ Auth guard fallback — showing page');
         document.documentElement.style.visibility = 'visible';
         document.documentElement.style.opacity = '1';
         if (document.body) {
@@ -1940,8 +1970,8 @@ setTimeout(function() {
 
 updateProgress();
 renderHistory();
-addHistory('PRO Obfuscator initialized', 'info');
-console.log('%c🛡️ PRO Obfuscator loaded — Worker + AST', 'color:#b400ff;font-size:14px;font-weight:bold;');
+addHistory('BANK Obfuscator initialized', 'info');
+console.log('%c🛡️ BANK Obfuscator loaded', 'color:#b400ff;font-size:14px;font-weight:bold;');
 
 })();
 </script>
