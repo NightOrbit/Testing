@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b0b1a">
 <meta name="robots" content="noindex, nofollow">
-<title>Obfuscate Code — NightOrbit CodeForge Pro</title>
+<title>Obfuscate Code — NightOrbit CodeForge</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
 
 <noscript>
@@ -32,10 +32,8 @@
     --neon-gold: #ffd700;
     --neon-green: #00ff64;
     --neon-red: #ff0064;
-    --bg: #05050f;
     --card: rgba(11, 11, 26, 0.94);
     --border: rgba(180, 0, 255, 0.22);
-    --text-primary: #ffffff;
     --text-secondary: #b0b0d0;
     --text-muted: #6a6a8a;
 }
@@ -45,7 +43,7 @@ html, body {
     min-height: 100vh;
     background: radial-gradient(circle at 50% 20%, #0b0b1a 0%, #000 100%);
     font-family: 'Inter', sans-serif;
-    color: var(--text-primary);
+    color: #fff;
     overflow-x: hidden;
     line-height: 1.5;
 }
@@ -70,8 +68,6 @@ body::before {
     margin-bottom: 15px;
     box-shadow: 0 0 50px rgba(180, 0, 255, 0.15);
     text-align: center;
-    position: relative;
-    overflow: hidden;
 }
 
 h1 {
@@ -140,7 +136,6 @@ h1 {
 .top-btn:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 0 50px rgba(180,0,255,0.6); }
 .top-btn.gold { background: linear-gradient(135deg, #ffd700, #ff6b00); color: #000; }
 .top-btn.green { background: linear-gradient(135deg, #00ff88, #00b85c); color: #000; }
-.top-btn.pink { background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple)); color: #fff; }
 
 .progress-wrap {
     background: rgba(0, 0, 0, 0.4);
@@ -169,7 +164,6 @@ h1 {
     background: rgba(0, 0, 0, 0.6);
     border-radius: 20px;
     overflow: hidden;
-    position: relative;
     min-width: 150px;
 }
 
@@ -198,7 +192,6 @@ h1 {
     padding: 22px;
     box-shadow: 0 0 40px rgba(180, 0, 255, 0.08);
     margin-bottom: 15px;
-    position: relative;
 }
 
 h2, h3 {
@@ -224,12 +217,10 @@ h2, h3 {
     font-weight: bold;
     letter-spacing: 1px;
     border: 1px solid rgba(180,0,255,0.3);
-    font-family: 'Inter', sans-serif;
 }
 
 .badge.success { background: rgba(0, 255, 100, 0.15); color: #00ff64; border-color: rgba(0,255,100,0.3); }
 .badge.gold { background: rgba(255, 215, 0, 0.15); color: var(--neon-gold); border-color: rgba(255,215,0,0.3); }
-.badge.danger { background: rgba(255, 0, 100, 0.15); color: #ff0064; border-color: rgba(255,0,100,0.3); }
 .badge.pink { background: rgba(255, 45, 149, 0.15); color: var(--neon-pink); border-color: rgba(255,45,149,0.3); }
 .badge.cyan { background: rgba(0, 240, 255, 0.15); color: var(--neon-cyan); border-color: rgba(0,240,255,0.3); }
 
@@ -254,7 +245,7 @@ h2, h3 {
     font-family: 'JetBrains Mono', monospace;
 }
 
-textarea, input[type="text"] {
+textarea {
     width: 100%;
     padding: 12px 14px;
     background: rgba(0, 0, 0, 0.65);
@@ -272,13 +263,13 @@ textarea { min-height: 140px; max-height: 600px; }
 textarea.tall { min-height: 220px; }
 textarea.huge { min-height: 340px; }
 
-textarea:focus, input[type="text"]:focus {
+textarea:focus {
     outline: none;
     border-color: var(--neon-purple);
     box-shadow: 0 0 20px rgba(180, 0, 255, 0.2);
 }
 
-textarea::placeholder, input::placeholder { color: #444; font-size: 11px; }
+textarea::placeholder { color: #444; font-size: 11px; }
 textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary); cursor: not-allowed; }
 
 .mini-btn {
@@ -299,17 +290,12 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
     font-family: inherit;
 }
 
-.mini-btn:hover { background: rgba(180, 0, 255, 0.18); border-color: var(--neon-purple); transform: translateY(-2px); box-shadow: 0 0 20px rgba(180,0,255,0.2); }
+.mini-btn:hover { background: rgba(180, 0, 255, 0.18); border-color: var(--neon-purple); transform: translateY(-2px); }
 .mini-btn.gold { color: var(--neon-gold); border-color: rgba(255,215,0,0.25); background: rgba(255,215,0,0.06); }
-.mini-btn.gold:hover { background: rgba(255,215,0,0.15); border-color: var(--neon-gold); }
 .mini-btn.pink { color: var(--neon-pink); border-color: rgba(255,45,149,0.25); background: rgba(255,45,149,0.06); }
-.mini-btn.pink:hover { background: rgba(255,45,149,0.15); border-color: var(--neon-pink); }
 .mini-btn.green { color: #00ff64; border-color: rgba(0,255,100,0.25); background: rgba(0,255,100,0.06); }
-.mini-btn.green:hover { background: rgba(0,255,100,0.15); border-color: #00ff64; }
 .mini-btn.red { color: var(--neon-red); border-color: rgba(255,0,100,0.25); background: rgba(255,0,100,0.06); }
-.mini-btn.red:hover { background: rgba(255,0,100,0.15); border-color: var(--neon-red); }
 .mini-btn.cyan { color: var(--neon-cyan); border-color: rgba(0,240,255,0.25); background: rgba(0,240,255,0.06); }
-.mini-btn.cyan:hover { background: rgba(0,240,255,0.15); border-color: var(--neon-cyan); }
 
 .btn {
     background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
@@ -328,8 +314,6 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
     justify-content: center;
     gap: 8px;
     font-family: 'Orbitron', sans-serif;
-    position: relative;
-    overflow: hidden;
 }
 
 .btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 35px rgba(180, 0, 255, 0.45); }
@@ -421,7 +405,6 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
 .history-dot.info { background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan); }
 .history-dot.success { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
 .history-dot.error { background: var(--neon-red); box-shadow: 0 0 8px var(--neon-red); }
-.history-dot.warn { background: var(--neon-gold); box-shadow: 0 0 8px var(--neon-gold); }
 
 .tabs {
     display: flex;
@@ -481,7 +464,7 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
     color: #fff;
     font-size: 12px;
     font-weight: 600;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 30px rgba(180,0,255,0.2);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -490,9 +473,9 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
     min-width: 250px;
 }
 
-.toast.success { border-color: var(--neon-green); box-shadow: 0 0 30px rgba(0,255,100,0.3); }
-.toast.error { border-color: var(--neon-red); box-shadow: 0 0 30px rgba(255,0,100,0.3); }
-.toast.warn { border-color: var(--neon-gold); box-shadow: 0 0 30px rgba(255,215,0,0.3); }
+.toast.success { border-color: var(--neon-green); }
+.toast.error { border-color: var(--neon-red); }
+.toast.warn { border-color: var(--neon-gold); }
 
 .toast-icon { font-size: 18px; flex-shrink: 0; }
 .toast.success .toast-icon { color: var(--neon-green); }
@@ -588,13 +571,13 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
 <div class="app">
 
     <div class="header">
-        <h1>🛡️ Obfuscate Code PRO</h1>
-        <div class="subtitle">NightOrbit CodeForge · Bank-Level Obfuscation</div>
+        <h1>🛡️ Obfuscate Code</h1>
+        <div class="subtitle">NightOrbit CodeForge · Professional Obfuscation</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v19 BANK</span>
+            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v20</span>
             <span class="header-stat gold"><i class="fa-solid fa-microchip"></i> Worker Thread</span>
-            <span class="header-stat green"><i class="fa-solid fa-lock"></i> XOR Encrypted</span>
-            <span class="header-stat cyan"><i class="fa-solid fa-shield"></i> Self-Defending</span>
+            <span class="header-stat green"><i class="fa-solid fa-lock"></i> 4 Layers</span>
+            <span class="header-stat cyan"><i class="fa-solid fa-shield"></i> Bank-Level</span>
             <span class="header-stat pink" id="userBadge" style="display:none;">
                 <i class="fa-solid fa-user"></i> <span id="userName">—</span>
             </span>
@@ -616,13 +599,11 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
 
     <div class="card">
         <div class="guide-box">
-            <strong>📌 BANK-LEVEL Features:</strong><br>
-            • <b>XOR + Base64 string encryption</b> — real hiding<br>
-            • <b>Shuffled string array</b> — accessor function pattern<br>
-            • <b>AST-safe variable renaming</b> — no false positives<br>
-            • <b>Control flow flattening</b> — real dispatcher<br>
-            • <b>Self-defending code</b> — anti-tamper<br>
-            • <b>Comment extractor</b> — comments alag tab me
+            <strong>📌 4 Steps:</strong><br>
+            1️⃣ <b>Paste code</b> — HTML, CSS, JS, JSON, XML<br>
+            2️⃣ Click <b>PARSE</b> — comments alag, code alag<br>
+            3️⃣ Choose <b>layers</b> — default 4 strong layers<br>
+            4️⃣ Click <b>OBFUSCATE</b> — complete HTML output
         </div>
     </div>
 
@@ -635,7 +616,6 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
             <button class="lang-btn" data-lang="js" onclick="selectLang('js', this)"><span class="lang-icon">⚡</span><span class="lang-name">JavaScript</span><span class="lang-ext">.js</span></button>
             <button class="lang-btn" data-lang="json" onclick="selectLang('json', this)"><span class="lang-icon">📦</span><span class="lang-name">JSON</span><span class="lang-ext">.json</span></button>
             <button class="lang-btn" data-lang="xml" onclick="selectLang('xml', this)"><span class="lang-icon">📄</span><span class="lang-name">XML</span><span class="lang-ext">.xml</span></button>
-            <button class="lang-btn" data-lang="mixed" onclick="selectLang('mixed', this)"><span class="lang-icon">🧩</span><span class="lang-name">Mixed</span><span class="lang-ext">HTML+CSS+JS</span></button>
         </div>
         <div style="margin-top:10px;font-size:11px;color:var(--text-muted);">
             <b style="color:var(--neon-cyan);">Detected:</b> <span id="detectedLang">—</span>
@@ -645,8 +625,7 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
     <div class="card" id="inputSection">
         <h3><span>📝 STEP 1 — Paste Code <span class="badge pink">INPUT</span></span></h3>
         <div class="guide-box">
-            • Heavy files (10MB+) supported<br>
-            • Modern JS (async/await, classes) supported<br>
+            • Heavy files supported<br>
             • Press <code>Ctrl + Enter</code> to parse
         </div>
         <textarea id="fullCodeArea" class="huge" placeholder="Paste your code here..."></textarea>
@@ -693,9 +672,7 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
             </div>
             <div class="tab-content" id="tab-comments">
                 <h3 style="margin-bottom:8px;">💬 Removed Comments <span class="badge gold" id="commentsBadge">EMPTY</span></h3>
-                <div class="guide-box">
-                    Ye comments aapke code se remove kar diye gaye hain. Ye sirf aapke reference ke liye hain.
-                </div>
+                <div class="guide-box">Ye comments aapke code se remove kar diye gaye hain. Reference ke liye.</div>
                 <textarea id="commentsArea" class="tall" placeholder="Removed comments..." readonly></textarea>
                 <div class="btn-row">
                     <button class="mini-btn cyan" onclick="copyComments()">📋 COPY</button>
@@ -706,35 +683,23 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
     </div>
 
     <div class="card" id="obfuscateSection">
-        <h3><span>⚙️ STEP 3 — Obfuscation Layers <span class="badge gold">BANK-LEVEL</span></span></h3>
+        <h3><span>⚙️ STEP 3 — Obfuscation Layers <span class="badge gold">OPTIONS</span></span></h3>
         <div class="adv-options">
             <label class="adv-option">
                 <input type="checkbox" id="optVarRename" checked>
-                <div><span class="opt-label">Variable Renaming</span><span class="opt-desc">AST-safe rename to _0xABC</span></div>
+                <div><span class="opt-label">Variable Renaming</span><span class="opt-desc">Rename vars to _0xABC</span></div>
             </label>
             <label class="adv-option">
                 <input type="checkbox" id="optStringArray" checked>
-                <div><span class="opt-label">Shuffled String Array</span><span class="opt-desc">Accessor function pattern</span></div>
+                <div><span class="opt-label">Shuffled String Array</span><span class="opt-desc">Strings moved + shuffled</span></div>
             </label>
             <label class="adv-option">
-                <input type="checkbox" id="optXorEncrypt" checked>
-                <div><span class="opt-label">XOR + Base64 Encrypt</span><span class="opt-desc">Real string hiding</span></div>
-            </label>
-            <label class="adv-option">
-                <input type="checkbox" id="optControlFlow" checked>
-                <div><span class="opt-label">Control Flow Flatten</span><span class="opt-desc">Dispatcher pattern</span></div>
+                <input type="checkbox" id="optHexEncode" checked>
+                <div><span class="opt-label">Hex Encode</span><span class="opt-desc">Strings as \x hex</span></div>
             </label>
             <label class="adv-option">
                 <input type="checkbox" id="optDeadCode" checked>
-                <div><span class="opt-label">Realistic Dead Code</span><span class="opt-desc">Fake functions</span></div>
-            </label>
-            <label class="adv-option">
-                <input type="checkbox" id="optBoolean" checked>
-                <div><span class="opt-label">Boolean Obfuscation</span><span class="opt-desc">true → !![]</span></div>
-            </label>
-            <label class="adv-option">
-                <input type="checkbox" id="optSelfDefend">
-                <div><span class="opt-label">Self-Defending</span><span class="opt-desc">Anti-tamper checks</span></div>
+                <div><span class="opt-label">Dead Code</span><span class="opt-desc">Fake functions</span></div>
             </label>
             <label class="adv-option">
                 <input type="checkbox" id="optMinify" checked>
@@ -754,7 +719,6 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
         <div class="btn-row">
             <button class="mini-btn cyan" onclick="copyOutput()">📋 COPY FULL HTML</button>
             <button class="mini-btn green" onclick="downloadOutput()">⬇ DOWNLOAD .HTML</button>
-            <button class="mini-btn gold" onclick="testOutput()">🧪 TEST</button>
         </div>
         <div class="stats-grid" id="outputStats">
             <div class="stat-card"><div class="stat-label">Original</div><div class="stat-value cyan" id="statOrigSize">0 B</div></div>
@@ -770,7 +734,7 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
             <div class="history-item">
                 <span class="history-time">--:--:--</span>
                 <span class="history-dot info"></span>
-                <span>BANK Obfuscator initialized</span>
+                <span>Obfuscator initialized</span>
             </div>
         </div>
         <div class="btn-row">
@@ -789,182 +753,237 @@ textarea[readonly] { background: rgba(0, 0, 0, 0.4); color: var(--text-secondary
 <div class="toast-container" id="toastContainer"></div>
 
 <!-- ═══════════════════════════════════════════════════════════
-     WEB WORKER — Bank-level obfuscation layers
+     OBFUSCATION WORKER — Runs in background thread
      ═══════════════════════════════════════════════════════════ -->
 <script id="obfuscatorWorker" type="javascript/worker">
 'use strict';
 
-var SAFETY = { MAX_STRING_LENGTH: 500 };
-
-function randomName(prefix) {
-    var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    var s = prefix || '_0x';
-    for (var i = 0; i < 6; i++) s += chars.charAt(Math.floor(Math.random() * chars.length));
+/* ═══ HELPERS ═══ */
+function rndHex(len) {
+    var c = 'abcdef0123456789';
+    var s = '';
+    for (var i = 0; i < len; i++) s += c.charAt(Math.floor(Math.random() * c.length));
     return s;
 }
+function newName() { return '_0x' + rndHex(6); }
 
-/* ═══ COMMENT EXTRACTORS ═══ */
+/* ═══════════════════════════════════════════════════════════
+   COMMENT EXTRACTORS
+   ═══════════════════════════════════════════════════════════ */
+
+/* Extract JS comments (handles strings, regex, template literals) */
 function extractJsComments(code) {
     var comments = [];
     var result = '';
     var i = 0, len = code.length;
-    var st = 'code';
-    var lineNum = 1;
+    var state = 'code';
+    var line = 1;
+    var regexOk = true;
+
     while (i < len) {
-        var ch = code[i];
-        var next = code[i + 1];
-        if (ch === '\n') lineNum++;
-        if (st === 'lineComment') {
-            if (ch === '\n') { st = 'code'; result += ch; }
+        var ch = code[i], next = code[i + 1];
+        if (ch === '\n') line++;
+
+        if (state === 'line') {
+            if (ch === '\n') { state = 'code'; result += ch; regexOk = true; }
             i++; continue;
         }
-        if (st === 'blockComment') {
-            if (ch === '*' && next === '/') { st = 'code'; i += 2; continue; }
+        if (state === 'block') {
+            if (ch === '*' && next === '/') { state = 'code'; i += 2; continue; }
             i++; continue;
         }
-        if (st === 'single') {
+        if (state === 'single') {
             result += ch;
             if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === "'") st = 'code';
+            if (ch === "'") { state = 'code'; regexOk = false; }
             i++; continue;
         }
-        if (st === 'double') {
+        if (state === 'double') {
             result += ch;
             if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === '"') st = 'code';
+            if (ch === '"') { state = 'code'; regexOk = false; }
             i++; continue;
         }
-        if (st === 'template') {
+        if (state === 'template') {
             result += ch;
             if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === '`') st = 'code';
+            if (ch === '`') { state = 'code'; regexOk = false; }
             i++; continue;
         }
+        if (state === 'regex') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === '/') {
+                state = 'code'; regexOk = false;
+                while (i + 1 < len && /[gimuy]/.test(code[i + 1])) { i++; result += code[i]; }
+            }
+            if (ch === '\n') state = 'code';
+            i++; continue;
+        }
+
+        /* state === 'code' */
         if (ch === '/' && next === '/') {
-            var cs = i, cl = lineNum;
+            var cStart = i, cLine = line;
             i += 2;
             while (i < len && code[i] !== '\n') i++;
-            comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim());
+            comments.push('[Line ' + cLine + '] ' + code.substring(cStart, i).trim());
             continue;
         }
         if (ch === '/' && next === '*') {
-            var cs2 = i, cl2 = lineNum;
+            var cStart2 = i, cLine2 = line;
             i += 2;
             while (i < len) {
-                if (code[i] === '\n') lineNum++;
+                if (code[i] === '\n') line++;
                 if (code[i] === '*' && code[i + 1] === '/') { i += 2; break; }
                 i++;
             }
-            comments.push('[Line ' + cl2 + '] ' + code.substring(cs2, i).trim());
+            comments.push('[Line ' + cLine2 + '] ' + code.substring(cStart2, i).trim());
             continue;
         }
-        if (ch === "'") { st = 'single'; result += ch; i++; continue; }
-        if (ch === '"') { st = 'double'; result += ch; i++; continue; }
-        if (ch === '`') { st = 'template'; result += ch; i++; continue; }
-        result += ch; i++;
+        if (ch === "'") { state = 'single'; result += ch; i++; continue; }
+        if (ch === '"') { state = 'double'; result += ch; i++; continue; }
+        if (ch === '`') { state = 'template'; result += ch; i++; continue; }
+
+        /* Regex detection */
+        if (ch === '/' && regexOk && next !== '/' && next !== '*') {
+            var prev = result.length > 0 ? result[result.length - 1] : '';
+            if (!/[\w\)\]]/.test(prev)) {
+                state = 'regex'; result += ch; i++; continue;
+            }
+        }
+
+        if (/[\w\)\]]/.test(ch)) regexOk = false;
+        else if (/[;,\{\}\[\(\)=<>!&\|\?\+\-\*\/%^~:]/.test(ch)) regexOk = true;
+
+        result += ch;
+        i++;
     }
-    return { code: result, comments: comments.join('\n\n') };
+
+    return { code: result, comments: comments.join('\n') };
 }
 
+/* Extract CSS comments */
 function extractCssComments(code) {
     var comments = [];
     var result = '';
     var i = 0, len = code.length;
-    var inString = false, sc = '';
-    var lineNum = 1;
+    var inStr = false, sc = '';
+    var line = 1;
+
     while (i < len) {
-        var ch = code[i];
-        var next = code[i + 1];
-        if (ch === '\n') lineNum++;
-        if (inString) {
+        var ch = code[i], next = code[i + 1];
+        if (ch === '\n') line++;
+
+        if (inStr) {
             result += ch;
             if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === sc) inString = false;
+            if (ch === sc) inStr = false;
             i++; continue;
         }
-        if (ch === '"' || ch === "'") { inString = true; sc = ch; result += ch; i++; continue; }
+        if (ch === '"' || ch === "'") { inStr = true; sc = ch; result += ch; i++; continue; }
+
         if (ch === '/' && next === '*') {
-            var cs = i, cl = lineNum;
+            var cStart = i, cLine = line;
             i += 2;
             while (i < len) {
-                if (code[i] === '\n') lineNum++;
+                if (code[i] === '\n') line++;
                 if (code[i] === '*' && code[i + 1] === '/') { i += 2; break; }
                 i++;
             }
-            comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim());
+            comments.push('[Line ' + cLine + '] ' + code.substring(cStart, i).trim());
             continue;
         }
-        result += ch; i++;
+
+        result += ch;
+        i++;
     }
-    return { code: result, comments: comments.join('\n\n') };
+
+    return { code: result, comments: comments.join('\n') };
 }
 
+/* Extract HTML comments (keeps conditional comments) */
 function extractHtmlComments(code) {
     var comments = [];
     var result = '';
     var i = 0, len = code.length;
-    var lineNum = 1;
+    var line = 1;
+
     while (i < len) {
         var ch = code[i];
-        if (ch === '\n') lineNum++;
+        if (ch === '\n') line++;
+
         if (ch === '<' && code[i + 1] === '!' && code[i + 2] === '-' && code[i + 3] === '-') {
             if (code[i + 4] === '[') { result += ch; i++; continue; }
-            var cs = i, cl = lineNum;
+            var cStart = i, cLine = line;
             i += 4;
             while (i < len) {
-                if (code[i] === '\n') lineNum++;
+                if (code[i] === '\n') line++;
                 if (code[i] === '-' && code[i + 1] === '-' && code[i + 2] === '>') { i += 3; break; }
                 i++;
             }
-            comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim());
+            comments.push('[Line ' + cLine + '] ' + code.substring(cStart, i).trim());
             continue;
         }
-        result += ch; i++;
+
+        result += ch;
+        i++;
     }
-    return { code: result, comments: comments.join('\n\n') };
+
+    return { code: result, comments: comments.join('\n') };
 }
 
-/* ═══ BLOCK EXTRACTOR ═══ */
+/* Extract <tag>...</tag> blocks (nested-aware) */
 function extractBlocks(code, tagName) {
     var results = [];
     var openTag = '<' + tagName;
     var closeTag = '</' + tagName + '>';
     var i = 0, len = code.length;
+
     while (i < len) {
         var openIdx = code.indexOf(openTag, i);
         if (openIdx === -1) break;
-        var charAfter = code.charAt(openIdx + openTag.length);
-        if (charAfter && !/[\s>\/]/.test(charAfter)) { i = openIdx + openTag.length; continue; }
+
+        var after = code.charAt(openIdx + openTag.length);
+        if (after && !/[\s>\/]/.test(after)) { i = openIdx + openTag.length; continue; }
+
         var tagEnd = code.indexOf('>', openIdx);
         if (tagEnd === -1) break;
         if (code.charAt(tagEnd - 1) === '/') { i = tagEnd + 1; continue; }
-        var depth = 1, searchPos = tagEnd + 1, contentEnd = -1;
-        while (searchPos < len && depth > 0) {
-            var nextOpen = code.indexOf(openTag, searchPos);
-            var nextClose = code.indexOf(closeTag, searchPos);
-            if (nextClose === -1) break;
-            if (nextOpen !== -1 && nextOpen < nextClose) {
-                var afterOpen = code.charAt(nextOpen + openTag.length);
-                if (!afterOpen || /[\s>\/]/.test(afterOpen)) depth++;
-                searchPos = nextOpen + openTag.length;
+
+        var depth = 1, pos = tagEnd + 1, contentEnd = -1;
+        while (pos < len && depth > 0) {
+            var nOpen = code.indexOf(openTag, pos);
+            var nClose = code.indexOf(closeTag, pos);
+            if (nClose === -1) break;
+            if (nOpen !== -1 && nOpen < nClose) {
+                var a2 = code.charAt(nOpen + openTag.length);
+                if (!a2 || /[\s>\/]/.test(a2)) depth++;
+                pos = nOpen + openTag.length;
             } else {
                 depth--;
-                if (depth === 0) contentEnd = nextClose;
-                searchPos = nextClose + closeTag.length;
+                if (depth === 0) contentEnd = nClose;
+                pos = nClose + closeTag.length;
             }
         }
         if (contentEnd === -1) break;
+
         results.push({
-            start: openIdx, end: contentEnd + closeTag.length,
+            start: openIdx,
+            end: contentEnd + closeTag.length,
             content: code.substring(tagEnd + 1, contentEnd),
             attrs: code.substring(openIdx + openTag.length, tagEnd)
         });
+
         i = contentEnd + closeTag.length;
     }
+
     return results;
 }
 
-/* ═══ LAYER 1: AST-Safe Variable Renaming ═══ */
+/* ═══════════════════════════════════════════════════════════
+   OBFUSCATION LAYER 1: Variable Renaming
+   Skips strings, comments, regex, property access, object keys
+   ═══════════════════════════════════════════════════════════ */
 function layerVarRename(code) {
     var RESERVED = {
         'var':1,'let':1,'const':1,'function':1,'return':1,'if':1,'else':1,'for':1,'while':1,
@@ -983,357 +1002,492 @@ function layerVarRename(code) {
         'localStorage':1,'sessionStorage':1,'navigator':1,'location':1,'history':1,
         'arguments':1,'prototype':1,'constructor':1,'hasOwnProperty':1,
         'atob':1,'btoa':1,'encodeURIComponent':1,'decodeURIComponent':1,
-        'requestAnimationFrame':1,'cancelAnimationFrame':1
+        'requestAnimationFrame':1,'cancelAnimationFrame':1,
+        'firebase':1,'auth':1,'database':1,'storage':1,
+        'emailjs':1,'fingerprint':1,'UAParser':1,
+        'FormData':1,'Blob':1,'URL':1,'FileReader':1,
+        'addEventListener':1,'removeEventListener':1,'querySelector':1,
+        'querySelectorAll':1,'getElementById':1,'getElementsByClassName':1,
+        'createElement':1,'appendChild':1,'removeChild':1,'innerHTML':1,
+        'textContent':1,'style':1,'classList':1,'dataset':1,'setAttribute':1,
+        'getAttribute':1,'parentNode':1,'childNodes':1,
+        'length':1,'push':1,'pop':1,'shift':1,'unshift':1,'slice':1,'splice':1,
+        'map':1,'filter':1,'reduce':1,'forEach':1,'find':1,'findIndex':1,
+        'indexOf':1,'includes':1,'join':1,'split':1,'trim':1,'replace':1,
+        'toUpperCase':1,'toLowerCase':1,'charAt':1,'charCodeAt':1,
+        'fromCharCode':1,'substring':1,'substr':1,'concat':1,'test':1,'exec':1
     };
+
     var map = Object.create(null);
-    var counter = 0;
+
     function getName(orig) {
         if (RESERVED[orig]) return orig;
         if (orig.length <= 1) return orig;
         if (!/^[a-zA-Z_$][\w$]*$/.test(orig)) return orig;
-        if (!map[orig]) map[orig] = '_0x' + (counter++).toString(36) + Math.random().toString(36).substring(2, 6);
+        if (orig.indexOf('_0x') === 0) return orig;
+        if (!map[orig]) map[orig] = newName();
         return map[orig];
     }
-    
-    // Find declarations
-    var varRegex = /\b(var|let|const)\s+([a-zA-Z_$][\w$]*)/g;
+
+    /* Collect declarations */
     var m;
-    while ((m = varRegex.exec(code)) !== null) getName(m[2]);
-    
-    // Function names + params
-    var funcRegex = /function\s*([a-zA-Z_$][\w$]*)?\s*\(([^)]*)\)/g;
-    while ((m = funcRegex.exec(code)) !== null) {
-        if (m[1]) getName(m[1]);
+    var re1 = /\b(var|let|const)\s+([a-zA-Z_$][\w$]*)/g;
+    while ((m = re1.exec(code)) !== null) getName(m[2]);
+
+    var re2 = /function\s+([a-zA-Z_$][\w$]*)\s*\(([^)]*)\)/g;
+    while ((m = re2.exec(code)) !== null) {
+        getName(m[1]);
         if (m[2]) m[2].split(',').forEach(function(p) {
-            p = p.trim().split('=')[0].trim();
-            if (p) getName(p);
-        });
-    }
-    
-    // Arrow params
-    var arrowRegex = /\(([^)]*)\)\s*=>/g;
-    while ((m = arrowRegex.exec(code)) !== null) {
-        m[1].split(',').forEach(function(p) {
-            p = p.trim().split('=')[0].trim();
+            p = p.trim().split('=')[0].trim().replace(/^\.\.\./, '');
             if (p && /^[a-zA-Z_$][\w$]*$/.test(p)) getName(p);
         });
     }
-    
-    // Single arrow param
-    var arrowRegex2 = /([a-zA-Z_$][\w$]*)\s*=>/g;
-    while ((m = arrowRegex2.exec(code)) !== null) getName(m[1]);
-    
+
+    var re3 = /function\s*\(([^)]*)\)/g;
+    while ((m = re3.exec(code)) !== null) {
+        if (m[1]) m[1].split(',').forEach(function(p) {
+            p = p.trim().split('=')[0].trim().replace(/^\.\.\./, '');
+            if (p && /^[a-zA-Z_$][\w$]*$/.test(p)) getName(p);
+        });
+    }
+
+    var re4 = /\(([^)]*)\)\s*=>/g;
+    while ((m = re4.exec(code)) !== null) {
+        m[1].split(',').forEach(function(p) {
+            p = p.trim().split('=')[0].trim().replace(/^\.\.\./, '');
+            if (p && /^[a-zA-Z_$][\w$]*$/.test(p)) getName(p);
+        });
+    }
+
+    var re5 = /([a-zA-Z_$][\w$]*)\s*=>/g;
+    while ((m = re5.exec(code)) !== null) getName(m[1]);
+
+    var re6 = /class\s+([a-zA-Z_$][\w$]*)/g;
+    while ((m = re6.exec(code)) !== null) getName(m[1]);
+
     if (Object.keys(map).length === 0) return code;
-    
-    // Replace using word boundaries but safe from strings
+
+    /* Replace — state machine */
     var result = '';
     var i = 0, len = code.length;
-    var st = 'code';
-    var currentIdent = '';
-    
+    var state = 'code';
+    var regexOk = true;
+
     while (i < len) {
-        var ch = code[i];
-        var next = code[i + 1];
-        
-        if (st === 'single') {
+        var ch = code[i], next = code[i + 1];
+
+        if (state === 'single') {
             result += ch;
             if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === "'") st = 'code';
+            if (ch === "'") { state = 'code'; regexOk = false; }
             i++; continue;
         }
-        if (st === 'double') {
+        if (state === 'double') {
             result += ch;
             if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === '"') st = 'code';
+            if (ch === '"') { state = 'code'; regexOk = false; }
             i++; continue;
         }
-        if (st === 'template') {
+        if (state === 'template') {
             result += ch;
             if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-            if (ch === '`') st = 'code';
+            if (ch === '`') { state = 'code'; regexOk = false; }
             i++; continue;
         }
-        if (st === 'lineComment') {
+        if (state === 'line') {
             result += ch;
-            if (ch === '\n') st = 'code';
+            if (ch === '\n') state = 'code';
             i++; continue;
         }
-        if (st === 'blockComment') {
+        if (state === 'block') {
             result += ch;
-            if (ch === '*' && next === '/') { result += next; i += 2; st = 'code'; continue; }
+            if (ch === '*' && next === '/') { result += next; i += 2; state = 'code'; continue; }
             i++; continue;
         }
-        
-        if (ch === "'") { st = 'single'; result += ch; i++; continue; }
-        if (ch === '"') { st = 'double'; result += ch; i++; continue; }
-        if (ch === '`') { st = 'template'; result += ch; i++; continue; }
-        if (ch === '/' && next === '/') { st = 'lineComment'; result += ch + next; i += 2; continue; }
-        if (ch === '/' && next === '*') { st = 'blockComment'; result += ch + next; i += 2; continue; }
-        
-        // Identifier detection
+        if (state === 'regex') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === '/') {
+                state = 'code'; regexOk = false;
+                while (i + 1 < len && /[gimuy]/.test(code[i + 1])) { i++; result += code[i]; }
+            }
+            i++; continue;
+        }
+
+        /* state === 'code' */
+        if (ch === "'") { state = 'single'; result += ch; i++; continue; }
+        if (ch === '"') { state = 'double'; result += ch; i++; continue; }
+        if (ch === '`') { state = 'template'; result += ch; i++; continue; }
+        if (ch === '/' && next === '/') { state = 'line'; result += ch + next; i += 2; continue; }
+        if (ch === '/' && next === '*') { state = 'block'; result += ch + next; i += 2; continue; }
+
+        if (ch === '/' && regexOk) {
+            var prev = result.length > 0 ? result[result.length - 1] : '';
+            if (!/[\w\)\]]/.test(prev)) {
+                state = 'regex'; result += ch; i++; continue;
+            }
+        }
+
         if (/[a-zA-Z_$]/.test(ch)) {
             var start = i;
             while (i < len && /[a-zA-Z0-9_$]/.test(code[i])) i++;
             var word = code.substring(start, i);
-            result += map[word] || word;
+
+            /* Check property access or object key */
+            var before = result.replace(/\s+$/, '');
+            var lastCh = before.length > 0 ? before[before.length - 1] : '';
+            var j = i;
+            while (j < len && /\s/.test(code[j])) j++;
+            var nextCh = j < len ? code[j] : '';
+
+            var isProp = (lastCh === '.');
+            var isKey = (nextCh === ':') && (lastCh === '{' || lastCh === ',');
+
+            result += (isProp || isKey) ? word : (map[word] || word);
+            regexOk = false;
             continue;
         }
-        
+
+        if (/[\w\)\]]/.test(ch)) regexOk = false;
+        else if (/[;,\{\}\[\(\)=<>!&\|\?\+\-\*\/%^~:]/.test(ch)) regexOk = true;
+
         result += ch;
         i++;
     }
-    
+
     return result;
 }
 
-/* ═══ LAYER 2: Shuffled String Array ═══ */
+/* ═══════════════════════════════════════════════════════════
+   LAYER 2: String Array (Shuffled + Accessor)
+   ═══════════════════════════════════════════════════════════ */
 function layerStringArray(code) {
     var strings = [];
-    var stringMap = Object.create(null);
-    var arrName = randomName('_0x');
+    var map = Object.create(null);
+    var arrName = newName();
     var maxSize = 2000;
-    
-    var newCode = code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
-        if (str.length === 0 || str.length > SAFETY.MAX_STRING_LENGTH) return match;
-        if (strings.length >= maxSize) return match;
-        var index = stringMap[str];
-        if (index === undefined) {
-            index = strings.length;
-            strings.push(str);
-            stringMap[str] = index;
+
+    var newCode = '';
+    var i = 0, len = code.length;
+    var state = 'code';
+
+    while (i < len) {
+        var ch = code[i], next = code[i + 1];
+
+        if (state === 'single' || state === 'double') {
+            var q = state === 'single' ? "'" : '"';
+            var strStart = i;
+            i++;
+            while (i < len) {
+                if (code[i] === '\\' && i + 1 < len) { i += 2; continue; }
+                if (code[i] === q) { i++; break; }
+                i++;
+            }
+            var str = code.substring(strStart + 1, i - 1);
+            if (str.length > 0 && str.length <= 500 && strings.length < maxSize) {
+                var idx = map[str];
+                if (idx === undefined) { idx = strings.length; strings.push(str); map[str] = idx; }
+                newCode += arrName + '(' + idx + ')';
+            } else {
+                newCode += code.substring(strStart, i);
+            }
+            state = 'code';
+            continue;
         }
-        return arrName + '(' + index + ')';
-    });
-    
-    if (strings.length === 0) return code;
-    
-    // Shuffle array
-    var order = [];
-    for (var i = 0; i < strings.length; i++) order.push(i);
-    for (var j = order.length - 1; j > 0; j--) {
-        var k = Math.floor(Math.random() * (j + 1));
-        var tmp = order[j]; order[j] = order[k]; order[k] = tmp;
+
+        if (state === 'template') {
+            var strStart2 = i;
+            i++;
+            while (i < len) {
+                if (code[i] === '\\' && i + 1 < len) { i += 2; continue; }
+                if (code[i] === '`') { i++; break; }
+                i++;
+            }
+            var str2 = code.substring(strStart2 + 1, i - 1);
+            if (str2.length > 0 && str2.length <= 500 && !/\$\{/.test(str2) && strings.length < maxSize) {
+                var idx2 = map[str2];
+                if (idx2 === undefined) { idx2 = strings.length; strings.push(str2); map[str2] = idx2; }
+                newCode += arrName + '(' + idx2 + ')';
+            } else {
+                newCode += code.substring(strStart2, i);
+            }
+            state = 'code';
+            continue;
+        }
+
+        if (state === 'line') {
+            newCode += ch;
+            if (ch === '\n') state = 'code';
+            i++; continue;
+        }
+        if (state === 'block') {
+            newCode += ch;
+            if (ch === '*' && next === '/') { newCode += next; i += 2; state = 'code'; continue; }
+            i++; continue;
+        }
+
+        if (ch === "'") { state = 'single'; newCode += ch; i++; continue; }
+        if (ch === '"') { state = 'double'; newCode += ch; i++; continue; }
+        if (ch === '`') { state = 'template'; newCode += ch; i++; continue; }
+        if (ch === '/' && next === '/') { state = 'line'; newCode += ch + next; i += 2; continue; }
+        if (ch === '/' && next === '*') { state = 'block'; newCode += ch + next; i += 2; continue; }
+
+        newCode += ch;
+        i++;
     }
-    var shuffledArr = order.map(function(idx) { return strings[idx]; });
-    
-    // Build accessor
-    var arrDecl = 'var ' + arrName + '_a=[' + shuffledArr.map(function(s) { return JSON.stringify(s); }).join(',') + '];' +
-                  'var ' + arrName + '_o=[' + order.join(',') + '];' +
-                  'function ' + arrName + '(i){return ' + arrName + '_a[' + arrName + '_o[i]];}';
-    
-    return arrDecl + newCode;
+
+    if (strings.length === 0) return code;
+
+    /* Shuffle */
+    var order = [];
+    for (var k = 0; k < strings.length; k++) order.push(k);
+    for (var s = order.length - 1; s > 0; s--) {
+        var r = Math.floor(Math.random() * (s + 1));
+        var tmp = order[s]; order[s] = order[r]; order[r] = tmp;
+    }
+    var shuffled = order.map(function(idx) { return strings[idx]; });
+
+    /* Build: array, order map, accessor function */
+    var decl = 'var ' + arrName + '=["' + shuffled.map(function(s) {
+        return s.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
+    }).join('","') + '"];' +
+    'var ' + arrName + '_o=[' + order.join(',') + '];' +
+    'function ' + arrName + '(i){return ' + arrName + '[' + arrName + '_o[i]];}';
+
+    return decl + newCode;
 }
 
-/* ═══ LAYER 3: XOR + Base64 String Encryption ═══ */
-function layerXorEncrypt(code) {
-    var key = Math.floor(Math.random() * 200) + 30;
-    var funcName = randomName('_0x');
-    var keyName = randomName('_0x');
-    
-    var newCode = code.replace(/(['"])((?:\\.|(?!\1)[^\\])*?)\1/g, function(match, quote, str) {
-        if (str.length === 0 || str.length > SAFETY.MAX_STRING_LENGTH) return match;
-        if (/\\x|\\u/.test(str)) return match;
-        var encrypted = '';
-        for (var i = 0; i < str.length; i++) {
-            encrypted += String.fromCharCode(str.charCodeAt(i) ^ key);
+/* ═══════════════════════════════════════════════════════════
+   LAYER 3: Hex Encode (safe — skips strings with escapes)
+   ═══════════════════════════════════════════════════════════ */
+function layerHexEncode(code) {
+    var result = '';
+    var i = 0, len = code.length;
+    var state = 'code';
+
+    while (i < len) {
+        var ch = code[i], next = code[i + 1];
+
+        if (state === 'single' || state === 'double') {
+            var q = state === 'single' ? "'" : '"';
+            var strStart = i;
+            i++;
+            while (i < len) {
+                if (code[i] === '\\' && i + 1 < len) { i += 2; continue; }
+                if (code[i] === q) { i++; break; }
+                i++;
+            }
+            var str = code.substring(strStart + 1, i - 1);
+
+            if (str.length === 0 || str.length > 500 || /\\/.test(str) || /[^\x20-\x7E]/.test(str)) {
+                result += code.substring(strStart, i);
+            } else {
+                var hex = '';
+                for (var h = 0; h < str.length; h++) {
+                    hex += '\\x' + ('0' + str.charCodeAt(h).toString(16)).slice(-2);
+                }
+                result += '"' + hex + '"';
+            }
+            state = 'code';
+            continue;
         }
-        try {
-            var b64 = btoa(unescape(encodeURIComponent(encrypted)));
-            return funcName + '("' + b64 + '")';
-        } catch(e) {
-            return match;
+
+        if (state === 'template') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === '`') state = 'code';
+            i++; continue;
         }
-    });
-    
-    if (newCode === code) return code;
-    
-    var decoder = 'var ' + keyName + '=' + key + ';' +
-                  'function ' + funcName + '(s){' +
-                  'try{var d=decodeURIComponent(escape(atob(s)));var r="";' +
-                  'for(var i=0;i<d.length;i++)r+=String.fromCharCode(d.charCodeAt(i)^' + keyName + ');return r;' +
-                  '}catch(e){return s;}}';
-    
-    return decoder + newCode;
+        if (state === 'line') {
+            result += ch;
+            if (ch === '\n') state = 'code';
+            i++; continue;
+        }
+        if (state === 'block') {
+            result += ch;
+            if (ch === '*' && next === '/') { result += next; i += 2; state = 'code'; continue; }
+            i++; continue;
+        }
+
+        if (ch === "'") { state = 'single'; result += ch; i++; continue; }
+        if (ch === '"') { state = 'double'; result += ch; i++; continue; }
+        if (ch === '`') { state = 'template'; result += ch; i++; continue; }
+        if (ch === '/' && next === '/') { state = 'line'; result += ch + next; i += 2; continue; }
+        if (ch === '/' && next === '*') { state = 'block'; result += ch + next; i += 2; continue; }
+
+        result += ch;
+        i++;
+    }
+
+    return result;
 }
 
-/* ═══ LAYER 4: Realistic Dead Code ═══ */
+/* ═══════════════════════════════════════════════════════════
+   LAYER 4: Dead Code Injection
+   ═══════════════════════════════════════════════════════════ */
 function layerDeadCode(code) {
     var dead = '';
-    for (var i = 0; i < 4; i++) {
-        var fn = randomName('_0x');
-        var v1 = randomName('_0x');
-        var v2 = randomName('_0x');
-        var a = Math.floor(Math.random() * 500) + 1;
-        var b = Math.floor(Math.random() * 500) + 1;
-        dead += 'function ' + fn + '(' + v1 + ',' + v2 + '){' +
-                'var _r=(' + v1 + '^' + v2 + ')?(' + v1 + '^' + a + '):(' + v2 + '^' + b + ');' +
-                'return _r>' + (a + b) + '?' + v1 + ':' + v2 + ';}' +
-                'if(' + a + '>' + b + '){' + fn + '(' + a + ',' + b + ');}';
+    var count = 3 + Math.floor(Math.random() * 3);
+    for (var i = 0; i < count; i++) {
+        var fn = newName();
+        var p1 = newName();
+        var p2 = newName();
+        var localVar = newName();
+        var a = Math.floor(Math.random() * 900) + 100;
+        var b = Math.floor(Math.random() * 900) + 100;
+        dead += 'function ' + fn + '(' + p1 + ',' + p2 + '){' +
+                'var ' + localVar + '=(' + p1 + '^' + p2 + ')+' + a + ';' +
+                'return ' + localVar + '>' + b + '?' + p1 + ':' + p2 + ';}' +
+                'if(' + a + '!==' + b + '){' + fn + '(' + a + ',' + b + ');}';
     }
     return dead + code;
 }
 
-/* ═══ LAYER 5: Control Flow Flattening ═══ */
-function layerControlFlow(code) {
-    if (/\breturn\b/.test(code) && !/function\s*\(/.test(code)) return code;
-    if (/^\s*(await|import|export)\b/m.test(code)) return code;
-    
-    var arrName = randomName('_0x');
-    var idxName = randomName('_0x');
-    var wrapper = 'var ' + arrName + '=[function(){' + code + '}];' +
-                  'var ' + idxName + '=0;' +
-                  'while(' + idxName + '<' + arrName + '.length){' + arrName + '[' + idxName + '++]();}';
-    return wrapper;
-}
-
-/* ═══ LAYER 6: Boolean Obfuscation ═══ */
-function layerBooleanObfuscation(code) {
-    var result = '';
-    var i = 0, len = code.length;
-    var st = 'code';
-    while (i < len) {
-        var ch = code[i];
-        var next = code[i + 1];
-        if (st === 'single') { result += ch; if (ch === '\\' && i+1 < len) { result += code[i+1]; i += 2; continue; } if (ch === "'") st = 'code'; i++; continue; }
-        if (st === 'double') { result += ch; if (ch === '\\' && i+1 < len) { result += code[i+1]; i += 2; continue; } if (ch === '"') st = 'code'; i++; continue; }
-        if (st === 'template') { result += ch; if (ch === '\\' && i+1 < len) { result += code[i+1]; i += 2; continue; } if (ch === '`') st = 'code'; i++; continue; }
-        if (st === 'lineComment') { result += ch; if (ch === '\n') st = 'code'; i++; continue; }
-        if (st === 'blockComment') { result += ch; if (ch === '*' && next === '/') { result += next; i += 2; st = 'code'; continue; } i++; continue; }
-        
-        if (ch === "'") { st = 'single'; result += ch; i++; continue; }
-        if (ch === '"') { st = 'double'; result += ch; i++; continue; }
-        if (ch === '`') { st = 'template'; result += ch; i++; continue; }
-        if (ch === '/' && next === '/') { st = 'lineComment'; result += ch + next; i += 2; continue; }
-        if (ch === '/' && next === '*') { st = 'blockComment'; result += ch + next; i += 2; continue; }
-        
-        // true → !![]  false → ![]
-        if (/[a-zA-Z_$]/.test(ch)) {
-            var start = i;
-            while (i < len && /[a-zA-Z0-9_$]/.test(code[i])) i++;
-            var word = code.substring(start, i);
-            if (word === 'true') result += '!![]';
-            else if (word === 'false') result += '![]';
-            else result += word;
-            continue;
-        }
-        
-        result += ch;
-        i++;
-    }
-    return result;
-}
-
-/* ═══ LAYER 7: Self-Defending ═══ */
-function layerSelfDefending(code) {
-    var checkFn = randomName('_0x');
-    var a = Math.floor(Math.random() * 1000) + 100;
-    var b = Math.floor(Math.random() * 1000) + 100;
-    var guard = 'function ' + checkFn + '(){' +
-                'var _a=' + a + ',_b=' + b + ';' +
-                'if((_a*_b)!==' + (a*b) + '){throw new Error("T");}' +
-                'return !![];}' +
-                'if(!' + checkFn + '()){throw new Error("X");}';
-    return guard + code;
-}
-
-/* ═══ MAIN PIPELINE ═══ */
-function obfuscateJS(code, options) {
+/* ═══════════════════════════════════════════════════════════
+   MAIN PIPELINE
+   ═══════════════════════════════════════════════════════════ */
+function obfuscateJS(code, opts) {
     var result = code;
     var layers = [];
-    
-    if (options.varRename) { result = layerVarRename(result); layers.push('Var Rename'); }
-    if (options.deadCode) { result = layerDeadCode(result); layers.push('Dead Code'); }
-    if (options.boolean) { result = layerBooleanObfuscation(result); layers.push('Boolean'); }
-    if (options.controlFlow) { result = layerControlFlow(result); layers.push('Control Flow'); }
-    if (options.stringArray) { result = layerStringArray(result); layers.push('String Array'); }
-    if (options.xorEncrypt) { result = layerXorEncrypt(result); layers.push('XOR Encrypt'); }
-    if (options.selfDefend) { result = layerSelfDefending(result); layers.push('Self-Defend'); }
-    if (options.minify) {
-        result = result.replace(/\n+/g, '').replace(/\s{2,}/g, ' ').trim();
+
+    /* Always strip comments */
+    var cr = extractJsComments(result);
+    result = cr.code.trim();
+    if (cr.comments) layers.push('Strip Comments');
+
+    if (opts.varRename) {
+        result = layerVarRename(result);
+        layers.push('Var Rename');
+    }
+
+    if (opts.deadCode) {
+        result = layerDeadCode(result);
+        layers.push('Dead Code');
+    }
+
+    if (opts.stringArray) {
+        result = layerStringArray(result);
+        layers.push('String Array');
+    }
+
+    if (opts.hexEncode) {
+        result = layerHexEncode(result);
+        layers.push('Hex Encode');
+    }
+
+    if (opts.minify) {
+        result = result
+            .replace(/\/\*[\s\S]*?\*\//g, '')
+            .replace(/\/\/[^\n]*/g, '')
+            .replace(/\n+/g, '')
+            .replace(/[ \t]{2,}/g, ' ')
+            .trim();
         layers.push('Minify');
     }
+
     return { code: result, layers: layers };
 }
 
 /* ═══ MINIFIERS ═══ */
 function minifyHTML(html) {
     if (!html) return '';
-    return html.replace(/<!--(?!\[if)[\s\S]*?-->/g, '').replace(/\s+/g, ' ').replace(/>\s+</g, '><').trim();
-}
-function minifyCSS(css) {
-    if (!css) return '';
-    return css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').replace(/\s*([{}:;,])\s*/g, '$1').replace(/;}/g, '}').trim();
+    return html.replace(/<!--(?!\[if)[\s\S]*?-->/g, '')
+              .replace(/\s+/g, ' ')
+              .replace(/>\s+</g, '><')
+              .trim();
 }
 
-/* ═══ BUILD HTML ═══ */
-function buildCompleteHTML(html, css, js, obfuscatedJS) {
+function minifyCSS(css) {
+    if (!css) return '';
+    return css.replace(/\/\*[\s\S]*?\*\//g, '')
+              .replace(/\s+/g, ' ')
+              .replace(/\s*([{}:;,])\s*/g, '$1')
+              .replace(/;}/g, '}')
+              .trim();
+}
+
+/* ═══ BUILD COMPLETE HTML ═══ */
+function buildCompleteHTML(html, css, obfJS) {
     var SO = '<' + 'script>', SC = '<' + '/script>';
     var TO = '<' + 'style>', TC = '<' + '/style>';
-    var HC = '<' + '/head>', BC = '<' + '/body>', HC2 = '<' + '/html>';
-    
+    var HC = '<' + '/head>', BC = '<' + '/body>', HE = '<' + '/html>';
+
     if (!html || !html.trim()) {
         var out = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>Protected Page</title>\n';
         if (css && css.trim()) out += TO + css + TC + '\n';
         out += HC + '\n<body>\n';
-        if (obfuscatedJS && obfuscatedJS.trim()) out += SO + obfuscatedJS + SC + '\n';
-        out += BC + '\n' + HC2;
+        if (obfJS && obfJS.trim()) out += SO + obfJS + SC + '\n';
+        out += BC + '\n' + HE;
         return out;
     }
-    
+
     var result = html;
+
     if (css && css.trim()) {
         var hcIdx = result.lastIndexOf(HC);
         if (hcIdx === -1) hcIdx = result.lastIndexOf('</HEAD>');
-        if (hcIdx !== -1) result = result.substring(0, hcIdx) + TO + css + TC + result.substring(hcIdx);
-        else {
-            var bodyIdx = result.search(/<body[\s>]/i);
-            if (bodyIdx !== -1) {
-                var bodyTagEnd = result.indexOf('>', bodyIdx);
-                result = result.substring(0, bodyTagEnd + 1) + TO + css + TC + result.substring(bodyTagEnd + 1);
-            } else result = TO + css + TC + result;
+        if (hcIdx !== -1) {
+            result = result.substring(0, hcIdx) + TO + css + TC + result.substring(hcIdx);
+        } else {
+            var bIdx = result.search(/<body[\s>]/i);
+            if (bIdx !== -1) {
+                var bEnd = result.indexOf('>', bIdx);
+                result = result.substring(0, bEnd + 1) + TO + css + TC + result.substring(bEnd + 1);
+            } else {
+                result = TO + css + TC + result;
+            }
         }
     }
-    if (obfuscatedJS && obfuscatedJS.trim()) {
+
+    if (obfJS && obfJS.trim()) {
         var bcIdx = result.lastIndexOf(BC);
         if (bcIdx === -1) bcIdx = result.lastIndexOf('</BODY>');
-        if (bcIdx !== -1) result = result.substring(0, bcIdx) + SO + obfuscatedJS + SC + result.substring(bcIdx);
-        else result = result + SO + obfuscatedJS + SC;
+        if (bcIdx !== -1) {
+            result = result.substring(0, bcIdx) + SO + obfJS + SC + result.substring(bcIdx);
+        } else {
+            result = result + SO + obfJS + SC;
+        }
     }
+
     return result;
 }
 
 /* ═══ MESSAGE HANDLER ═══ */
 self.onmessage = function(e) {
     var data = e.data;
-    if (data.type === 'obfuscate') {
-        try {
-            var start = Date.now();
-            var obfuscatedJS = '';
-            var layers = [];
-            if (data.js && data.js.trim()) {
-                var jsResult = obfuscateJS(data.js, data.options);
-                obfuscatedJS = jsResult.code;
-                layers = layers.concat(jsResult.layers);
-            }
-            var minifiedHTML = minifyHTML(data.html);
-            var minifiedCSS = minifyCSS(data.css);
-            if (data.html && data.html.trim()) layers.push('HTML Minify');
-            if (data.css && data.css.trim()) layers.push('CSS Minify');
-            var finalOutput = buildCompleteHTML(minifiedHTML, minifiedCSS, data.js, obfuscatedJS);
-            var elapsed = Date.now() - start;
-            self.postMessage({
-                type: 'success',
-                output: finalOutput,
-                layers: layers,
-                elapsed: elapsed
-            });
-        } catch(err) {
-            self.postMessage({
-                type: 'error',
-                message: err.message,
-                stack: err.stack
-            });
+    if (data.type !== 'obfuscate') return;
+
+    try {
+        var start = Date.now();
+        var obfJS = '';
+        var layers = [];
+
+        if (data.js && data.js.trim()) {
+            var r = obfuscateJS(data.js, data.options);
+            obfJS = r.code;
+            layers = layers.concat(r.layers);
         }
+
+        var mHTML = minifyHTML(data.html);
+        var mCSS = minifyCSS(data.css);
+        if (data.html && data.html.trim()) layers.push('HTML Minify');
+        if (data.css && data.css.trim()) layers.push('CSS Minify');
+
+        var output = buildCompleteHTML(mHTML, mCSS, obfJS);
+        var elapsed = Date.now() - start;
+
+        self.postMessage({
+            type: 'success',
+            output: output,
+            layers: layers,
+            elapsed: elapsed
+        });
+    } catch(err) {
+        self.postMessage({
+            type: 'error',
+            message: err.message,
+            stack: err.stack
+        });
     }
 };
 </script>
@@ -1364,12 +1518,18 @@ var state = {
     worker: null
 };
 
+/* ═══ UTILITIES ═══ */
 function bytes(n) {
     if (n < 1024) return n + ' B';
     if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
     return (n / 1024 / 1024).toFixed(2) + ' MB';
 }
 function num(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function escHtml(s) {
+    return String(s).replace(/[&<>"']/g, function(c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+}
 function showStatus(id, type, text) {
     var el = document.getElementById(id);
     if (!el) return;
@@ -1380,21 +1540,16 @@ function hideStatus(id) {
     var el = document.getElementById(id);
     if (el) el.className = 'status';
 }
-function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, function(c) {
-        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-    });
-}
 
-function toast(message, type) {
+function toast(msg, type) {
     type = type || 'info';
-    var container = document.getElementById('toastContainer');
-    if (!container) return;
+    var c = document.getElementById('toastContainer');
+    if (!c) return;
     var icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', warn: 'fa-triangle-exclamation', info: 'fa-circle-info' };
     var el = document.createElement('div');
     el.className = 'toast ' + type;
-    el.innerHTML = '<i class="fa-solid ' + (icons[type] || icons.info) + ' toast-icon"></i><span>' + escapeHtml(message) + '</span>';
-    container.appendChild(el);
+    el.innerHTML = '<i class="fa-solid ' + (icons[type] || icons.info) + ' toast-icon"></i><span>' + escHtml(msg) + '</span>';
+    c.appendChild(el);
     setTimeout(function() {
         el.classList.add('removing');
         setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
@@ -1418,7 +1573,7 @@ function renderHistory() {
     var html = '';
     for (var i = 0; i < state.history.length; i++) {
         var h = state.history[i];
-        html += '<div class="history-item"><span class="history-time">' + escapeHtml(h.time) + '</span><span class="history-dot ' + h.type + '"></span><span>' + escapeHtml(h.msg) + '</span></div>';
+        html += '<div class="history-item"><span class="history-time">' + escHtml(h.time) + '</span><span class="history-dot ' + h.type + '"></span><span>' + escHtml(h.msg) + '</span></div>';
     }
     list.innerHTML = html;
 }
@@ -1433,9 +1588,9 @@ function updateProgress() {
     if (state.fullCode && state.fullCode.trim()) steps++;
     if (state.html || state.css || state.js) steps++;
     if (state.outputCode) steps++;
-    var percent = Math.round((steps / 3) * 100);
-    document.getElementById('progressFill').style.width = percent + '%';
-    document.getElementById('progressPercent').textContent = percent + '%';
+    var pct = Math.round((steps / 3) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPercent').textContent = pct + '%';
 }
 
 /* ═══ LANGUAGE DETECTION ═══ */
@@ -1456,55 +1611,58 @@ function detectLanguage(code) {
     if (/\{[^}]*:[^}]*;[^}]*\}/.test(t) && !/[;{}]\s*(var|let|const|function)\b/.test(t)) return 'css';
     if (/\b(async|await|class|extends|import|export|=>|const|let|var|function|new|this|typeof|instanceof)\b/.test(t)) return 'js';
     if (/document\.|window\.|console\.|require\(|module\.exports/.test(t)) return 'js';
-    if (/^\s*[a-zA-Z_$][\w$]*\s*\([^)]*\)\s*\{/.test(t)) return 'js';
     return 'unknown';
 }
 
-/* ═══ COMMENT EXTRACTORS (main thread) ═══ */
+/* ═══ DUPLICATE HELPERS (main thread — needed for parse) ═══ */
 function extractJsComments(code) {
-    var comments = [], result = '', i = 0, st = 'code', lineNum = 1;
+    var comments = [], result = '', i = 0, state = 'code', line = 1, regexOk = true;
     while (i < code.length) {
         var ch = code[i], next = code[i + 1];
-        if (ch === '\n') lineNum++;
-        if (st === 'lineComment') { if (ch === '\n') { st = 'code'; result += ch; } i++; continue; }
-        if (st === 'blockComment') { if (ch === '*' && next === '/') { st = 'code'; i += 2; continue; } i++; continue; }
-        if (st === 'single') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === "'") st = 'code'; i++; continue; }
-        if (st === 'double') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '"') st = 'code'; i++; continue; }
-        if (st === 'template') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '`') st = 'code'; i++; continue; }
-        if (ch === '/' && next === '/') { var cs = i, cl = lineNum; i += 2; while (i < code.length && code[i] !== '\n') i++; comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim()); continue; }
-        if (ch === '/' && next === '*') { var cs2 = i, cl2 = lineNum; i += 2; while (i < code.length) { if (code[i] === '\n') lineNum++; if (code[i] === '*' && code[i+1] === '/') { i += 2; break; } i++; } comments.push('[Line ' + cl2 + '] ' + code.substring(cs2, i).trim()); continue; }
-        if (ch === "'") { st = 'single'; result += ch; i++; continue; }
-        if (ch === '"') { st = 'double'; result += ch; i++; continue; }
-        if (ch === '`') { st = 'template'; result += ch; i++; continue; }
+        if (ch === '\n') line++;
+        if (state === 'line') { if (ch === '\n') { state = 'code'; result += ch; regexOk = true; } i++; continue; }
+        if (state === 'block') { if (ch === '*' && next === '/') { state = 'code'; i += 2; continue; } i++; continue; }
+        if (state === 'single') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === "'") { state = 'code'; regexOk = false; } i++; continue; }
+        if (state === 'double') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '"') { state = 'code'; regexOk = false; } i++; continue; }
+        if (state === 'template') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '`') { state = 'code'; regexOk = false; } i++; continue; }
+        if (state === 'regex') { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === '/') { state = 'code'; regexOk = false; while (i+1 < code.length && /[gimuy]/.test(code[i+1])) { i++; result += code[i]; } } i++; continue; }
+        if (ch === '/' && next === '/') { var cs = i, cl = line; i += 2; while (i < code.length && code[i] !== '\n') i++; comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim()); continue; }
+        if (ch === '/' && next === '*') { var cs2 = i, cl2 = line; i += 2; while (i < code.length) { if (code[i] === '\n') line++; if (code[i] === '*' && code[i+1] === '/') { i += 2; break; } i++; } comments.push('[Line ' + cl2 + '] ' + code.substring(cs2, i).trim()); continue; }
+        if (ch === "'") { state = 'single'; result += ch; i++; continue; }
+        if (ch === '"') { state = 'double'; result += ch; i++; continue; }
+        if (ch === '`') { state = 'template'; result += ch; i++; continue; }
+        if (ch === '/' && regexOk) { var prev = result.length > 0 ? result[result.length - 1] : ''; if (!/[\w\)\]]/.test(prev)) { state = 'regex'; result += ch; i++; continue; } }
+        if (/[\w\)\]]/.test(ch)) regexOk = false;
+        else if (/[;,\{\}\[\(\)=<>!&\|\?\+\-\*\/%^~:]/.test(ch)) regexOk = true;
         result += ch; i++;
     }
-    return { code: result, comments: comments.join('\n\n') };
+    return { code: result, comments: comments.join('\n') };
 }
 
 function extractCssComments(code) {
-    var comments = [], result = '', i = 0, inString = false, sc = '', lineNum = 1;
+    var comments = [], result = '', i = 0, inStr = false, sc = '', line = 1;
     while (i < code.length) {
         var ch = code[i], next = code[i + 1];
-        if (ch === '\n') lineNum++;
-        if (inString) { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === sc) inString = false; i++; continue; }
-        if (ch === '"' || ch === "'") { inString = true; sc = ch; result += ch; i++; continue; }
-        if (ch === '/' && next === '*') { var cs = i, cl = lineNum; i += 2; while (i < code.length) { if (code[i] === '\n') lineNum++; if (code[i] === '*' && code[i+1] === '/') { i += 2; break; } i++; } comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim()); continue; }
+        if (ch === '\n') line++;
+        if (inStr) { result += ch; if (ch === '\\' && i+1 < code.length) { result += code[i+1]; i += 2; continue; } if (ch === sc) inStr = false; i++; continue; }
+        if (ch === '"' || ch === "'") { inStr = true; sc = ch; result += ch; i++; continue; }
+        if (ch === '/' && next === '*') { var cs = i, cl = line; i += 2; while (i < code.length) { if (code[i] === '\n') line++; if (code[i] === '*' && code[i+1] === '/') { i += 2; break; } i++; } comments.push('[Line ' + cl + '] ' + code.substring(cs, i).trim()); continue; }
         result += ch; i++;
     }
-    return { code: result, comments: comments.join('\n\n') };
+    return { code: result, comments: comments.join('\n') };
 }
 
 function extractHtmlComments(code) {
-    var comments = [], result = '', i = 0, lineNum = 1;
+    var comments = [], result = '', i = 0, line = 1;
     while (i < code.length) {
         var ch = code[i];
-        if (ch === '\n') lineNum++;
+        if (ch === '\n') line++;
         if (ch === '<' && code[i+1] === '!' && code[i+2] === '-' && code[i+3] === '-') {
             if (code[i+4] === '[') { result += ch; i++; continue; }
-            var cs = i, cl = lineNum;
+            var cs = i, cl = line;
             i += 4;
             while (i < code.length) {
-                if (code[i] === '\n') lineNum++;
+                if (code[i] === '\n') line++;
                 if (code[i] === '-' && code[i+1] === '-' && code[i+2] === '>') { i += 3; break; }
                 i++;
             }
@@ -1513,7 +1671,7 @@ function extractHtmlComments(code) {
         }
         result += ch; i++;
     }
-    return { code: result, comments: comments.join('\n\n') };
+    return { code: result, comments: comments.join('\n') };
 }
 
 function extractBlocks(code, tagName) {
@@ -1522,29 +1680,30 @@ function extractBlocks(code, tagName) {
     while (i < len) {
         var openIdx = code.indexOf(openTag, i);
         if (openIdx === -1) break;
-        var charAfter = code.charAt(openIdx + openTag.length);
-        if (charAfter && !/[\s>\/]/.test(charAfter)) { i = openIdx + openTag.length; continue; }
+        var after = code.charAt(openIdx + openTag.length);
+        if (after && !/[\s>\/]/.test(after)) { i = openIdx + openTag.length; continue; }
         var tagEnd = code.indexOf('>', openIdx);
         if (tagEnd === -1) break;
         if (code.charAt(tagEnd - 1) === '/') { i = tagEnd + 1; continue; }
-        var depth = 1, searchPos = tagEnd + 1, contentEnd = -1;
-        while (searchPos < len && depth > 0) {
-            var nextOpen = code.indexOf(openTag, searchPos);
-            var nextClose = code.indexOf(closeTag, searchPos);
-            if (nextClose === -1) break;
-            if (nextOpen !== -1 && nextOpen < nextClose) {
-                var afterOpen = code.charAt(nextOpen + openTag.length);
-                if (!afterOpen || /[\s>\/]/.test(afterOpen)) depth++;
-                searchPos = nextOpen + openTag.length;
+        var depth = 1, pos = tagEnd + 1, contentEnd = -1;
+        while (pos < len && depth > 0) {
+            var nOpen = code.indexOf(openTag, pos);
+            var nClose = code.indexOf(closeTag, pos);
+            if (nClose === -1) break;
+            if (nOpen !== -1 && nOpen < nClose) {
+                var a2 = code.charAt(nOpen + openTag.length);
+                if (!a2 || /[\s>\/]/.test(a2)) depth++;
+                pos = nOpen + openTag.length;
             } else {
                 depth--;
-                if (depth === 0) contentEnd = nextClose;
-                searchPos = nextClose + closeTag.length;
+                if (depth === 0) contentEnd = nClose;
+                pos = nClose + closeTag.length;
             }
         }
         if (contentEnd === -1) break;
         results.push({
-            start: openIdx, end: contentEnd + closeTag.length,
+            start: openIdx,
+            end: contentEnd + closeTag.length,
             content: code.substring(tagEnd + 1, contentEnd),
             attrs: code.substring(openIdx + openTag.length, tagEnd)
         });
@@ -1553,20 +1712,21 @@ function extractBlocks(code, tagName) {
     return results;
 }
 
+/* ═══ SEPARATE CODE ═══ */
 function separateCodeSafe(fullCode) {
     var html = fullCode;
     var css = '', js = '', other = '';
     var allComments = [];
-    
+
     var styleBlocks = extractBlocks(fullCode, 'style');
     for (var i = styleBlocks.length - 1; i >= 0; i--) {
         var b = styleBlocks[i];
-        var cssResult = extractCssComments(b.content);
-        css = cssResult.code.trim() + (css ? '\n\n' + css : '');
-        if (cssResult.comments) allComments.push('═══ CSS ═══\n' + cssResult.comments);
+        var r = extractCssComments(b.content);
+        css = r.code.trim() + (css ? '\n\n' + css : '');
+        if (r.comments) allComments.push('═══ CSS ═══\n' + r.comments);
         html = html.substring(0, b.start) + html.substring(b.end);
     }
-    
+
     var scriptBlocks = extractBlocks(fullCode, 'script');
     for (var j = scriptBlocks.length - 1; j >= 0; j--) {
         var sb = scriptBlocks[j];
@@ -1577,38 +1737,39 @@ function separateCodeSafe(fullCode) {
             html = html.substring(0, sb.start) + html.substring(sb.end);
             continue;
         }
-        var jsResult = extractJsComments(sb.content);
-        js = jsResult.code.trim() + (js ? '\n\n' + js : '');
-        if (jsResult.comments) allComments.push('═══ JavaScript ═══\n' + jsResult.comments);
+        var r2 = extractJsComments(sb.content);
+        js = r2.code.trim() + (js ? '\n\n' + js : '');
+        if (r2.comments) allComments.push('═══ JavaScript ═══\n' + r2.comments);
         html = html.substring(0, sb.start) + html.substring(sb.end);
     }
-    
-    var htmlResult = extractHtmlComments(html);
-    if (htmlResult.comments) allComments.push('═══ HTML ═══\n' + htmlResult.comments);
-    html = htmlResult.code.replace(/\n{3,}/g, '\n\n').trim();
-    
+
+    var r3 = extractHtmlComments(html);
+    if (r3.comments) allComments.push('═══ HTML ═══\n' + r3.comments);
+    html = r3.code.replace(/\n{3,}/g, '\n\n').trim();
+
     var hasHtmlTags = /<!DOCTYPE|<html[\s>]|<head[\s>]|<body[\s>]|<div[\s>]|<span[\s>]/i.test(fullCode);
     if (!hasHtmlTags) {
         var detected = detectLanguage(fullCode);
         if (detected === 'js') {
-            var sjs = extractJsComments(fullCode);
-            js = sjs.code.trim();
-            allComments.push('═══ JavaScript ═══\n' + sjs.comments);
+            var rjs = extractJsComments(fullCode);
+            js = rjs.code.trim();
+            if (rjs.comments) allComments.push('═══ JavaScript ═══\n' + rjs.comments);
             html = ''; css = ''; other = '';
         } else if (detected === 'css') {
-            var scss = extractCssComments(fullCode);
-            css = scss.code.trim();
-            allComments.push('═══ CSS ═══\n' + scss.comments);
+            var rcss = extractCssComments(fullCode);
+            css = rcss.code.trim();
+            if (rcss.comments) allComments.push('═══ CSS ═══\n' + rcss.comments);
             html = ''; js = ''; other = '';
         } else if (detected === 'json' || detected === 'xml') {
             other = fullCode.trim();
             html = ''; css = ''; js = '';
         }
     }
-    
+
     return { html: html, css: css, js: js, other: other, comments: allComments.join('\n\n') };
 }
 
+/* ═══ UI FUNCTIONS ═══ */
 window.selectLang = function(lang, btn) {
     state.selectedLang = lang;
     document.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.remove('active'); });
@@ -1618,12 +1779,12 @@ window.selectLang = function(lang, btn) {
 
 function updateDetected() {
     var code = document.getElementById('fullCodeArea').value;
-    var detected = code.trim() ? detectLanguage(code) : '—';
-    state.detectedLang = detected;
-    var el1 = document.getElementById('detectedLang');
-    if (el1) el1.textContent = detected.toUpperCase();
-    var sd = document.getElementById('statDetected');
-    if (sd) sd.textContent = detected.toUpperCase();
+    var d = code.trim() ? detectLanguage(code) : '—';
+    state.detectedLang = d;
+    var e1 = document.getElementById('detectedLang');
+    if (e1) e1.textContent = d.toUpperCase();
+    var e2 = document.getElementById('statDetected');
+    if (e2) e2.textContent = d.toUpperCase();
 }
 
 window.parseFullCode = function() {
@@ -1639,16 +1800,16 @@ window.parseFullCode = function() {
         toast('Input too large!', 'error');
         return;
     }
-    showStatus('statusFullCode', 'loading', '⏳ Parsing and separating comments...');
+    showStatus('statusFullCode', 'loading', '⏳ Parsing...');
     setTimeout(function() {
         try {
-            var separated = separateCodeSafe(fullCode);
+            var r = separateCodeSafe(fullCode);
             state.fullCode = fullCode;
-            state.html = separated.html;
-            state.css = separated.css;
-            state.js = separated.js;
-            state.other = separated.other;
-            state.comments = separated.comments || '';
+            state.html = r.html;
+            state.css = r.css;
+            state.js = r.js;
+            state.other = r.other;
+            state.comments = r.comments || '';
             document.getElementById('htmlArea').value = state.html;
             document.getElementById('cssArea').value = state.css;
             document.getElementById('jsArea').value = state.js;
@@ -1657,16 +1818,15 @@ window.parseFullCode = function() {
             if (ca) ca.value = state.comments;
             updateBadges();
             document.getElementById('sectionsContainer').style.display = 'block';
-            var commentsInfo = state.comments ? '\n💬 Comments removed: ' + bytes(new Blob([state.comments]).size) : '\n💬 No comments found';
+            var cInfo = state.comments ? '\n💬 Comments: ' + bytes(new Blob([state.comments]).size) : '\n💬 No comments';
             showStatus('statusFullCode', 'success',
                 '✅ Parsed!\n📄 HTML: ' + bytes(new Blob([state.html]).size) +
                 '\n🎨 CSS: ' + bytes(new Blob([state.css]).size) +
                 '\n⚙️ JS: ' + bytes(new Blob([state.js]).size) +
                 '\n📦 Other: ' + bytes(new Blob([state.other]).size) +
-                commentsInfo +
-                '\nDetected: ' + state.detectedLang.toUpperCase()
+                cInfo + '\nDetected: ' + state.detectedLang.toUpperCase()
             );
-            toast('Parsed! Comments removed.', 'success');
+            toast('Parsed successfully!', 'success');
             addHistory('Parsed — Comments: ' + (state.comments ? 'Yes' : 'None'), 'success');
             updateProgress();
         } catch(e) {
@@ -1700,9 +1860,8 @@ function updateBadges() {
 }
 
 function getWorkerBlob() {
-    var workerScript = document.getElementById('obfuscatorWorker').textContent;
-    var blob = new Blob([workerScript], { type: 'application/javascript' });
-    return URL.createObjectURL(blob);
+    var s = document.getElementById('obfuscatorWorker').textContent;
+    return URL.createObjectURL(new Blob([s], { type: 'application/javascript' }));
 }
 
 function initWorker() {
@@ -1711,7 +1870,7 @@ function initWorker() {
         state.worker = new Worker(getWorkerBlob());
         return state.worker;
     } catch(e) {
-        console.warn('Worker not available:', e.message);
+        console.warn('Worker unavailable:', e.message);
         return null;
     }
 }
@@ -1726,30 +1885,27 @@ window.obfuscateNow = function() {
         toast('No code!', 'error');
         return;
     }
-    
+
     var options = {
         varRename: document.getElementById('optVarRename').checked,
         stringArray: document.getElementById('optStringArray').checked,
-        xorEncrypt: document.getElementById('optXorEncrypt').checked,
-        controlFlow: document.getElementById('optControlFlow').checked,
+        hexEncode: document.getElementById('optHexEncode').checked,
         deadCode: document.getElementById('optDeadCode').checked,
-        boolean: document.getElementById('optBoolean').checked,
-        selfDefend: document.getElementById('optSelfDefend').checked,
         minify: document.getElementById('optMinify').checked
     };
-    
+
     var btn = document.getElementById('obfuscateBtn');
     btn.disabled = true;
-    showStatus('statusObfuscate', 'loading', '⏳ Obfuscating with bank-level layers...');
+    showStatus('statusObfuscate', 'loading', '⏳ Obfuscating in background worker...');
     var startTime = Date.now();
     var worker = initWorker();
-    
+
     if (!worker) {
         showStatus('statusObfuscate', 'error', '❌ Web Worker not supported.');
         btn.disabled = false;
         return;
     }
-    
+
     var timeoutId = setTimeout(function() {
         if (worker) worker.terminate();
         state.worker = null;
@@ -1757,7 +1913,7 @@ window.obfuscateNow = function() {
         showStatus('statusObfuscate', 'error', '❌ Timeout!');
         toast('Timeout!', 'error');
     }, SAFETY.TIMEOUT_MS);
-    
+
     worker.onmessage = function(e) {
         clearTimeout(timeoutId);
         var data = e.data;
@@ -1774,11 +1930,12 @@ window.obfuscateNow = function() {
             document.getElementById('statRatio').textContent = ratio + '%';
             document.getElementById('statLayers').textContent = data.layers.length;
             showStatus('statusObfuscate', 'success',
-                '✅ Complete!\n📊 Layers: ' + data.layers.length + ' (' + data.layers.join(', ') + ')\n' +
+                '✅ Obfuscation complete!\n' +
+                '📊 Layers: ' + data.layers.length + ' (' + data.layers.join(', ') + ')\n' +
                 '📦 Size: ' + bytes(inputSize) + ' → ' + bytes(outputSize) + ' (' + ratio + '%)\n' +
                 '⏱️ Time: ' + data.elapsed + 'ms'
             );
-            toast('Complete! ' + data.layers.length + ' layers', 'success');
+            toast('Complete! ' + data.layers.length + ' layers applied', 'success');
             addHistory('Obfuscated — ' + data.layers.length + ' layers', 'success');
             updateProgress();
             setTimeout(function() {
@@ -1790,20 +1947,28 @@ window.obfuscateNow = function() {
         }
         btn.disabled = false;
     };
+
     worker.onerror = function(err) {
         clearTimeout(timeoutId);
         showStatus('statusObfuscate', 'error', '❌ Worker error: ' + err.message);
+        toast('Worker error!', 'error');
         btn.disabled = false;
     };
+
     worker.postMessage({
         type: 'obfuscate',
-        js: jsCode, html: htmlCode, css: cssCode, other: otherCode, options: options
+        js: jsCode,
+        html: htmlCode,
+        css: cssCode,
+        other: otherCode,
+        options: options
     });
 };
 
-function copyToClipboard(text, successMsg) {
+/* ═══ CLIPBOARD ═══ */
+function copyText(text, msg) {
     if (!text) return;
-    function done() { toast(successMsg || 'Copied!', 'success'); }
+    function done() { toast(msg || 'Copied!', 'success'); }
     function fallback() {
         var ta = document.createElement('textarea');
         ta.value = text;
@@ -1819,9 +1984,9 @@ function copyToClipboard(text, successMsg) {
     } else fallback();
 }
 
-window.copyFullCode = function() { copyToClipboard(document.getElementById('fullCodeArea').value, 'Full code copied!'); };
-window.copyOutput = function() { copyToClipboard(state.outputCode, 'Complete HTML copied!'); addHistory('Copied HTML', 'success'); };
-window.copyComments = function() { copyToClipboard(document.getElementById('commentsArea').value, 'Comments copied!'); };
+window.copyFullCode = function() { copyText(document.getElementById('fullCodeArea').value, 'Full code copied!'); };
+window.copyOutput = function() { copyText(state.outputCode, 'Complete HTML copied!'); addHistory('Copied HTML', 'success'); };
+window.copyComments = function() { copyText(document.getElementById('commentsArea').value, 'Comments copied!'); };
 window.clearComments = function() {
     document.getElementById('commentsArea').value = '';
     state.comments = '';
@@ -1831,8 +1996,7 @@ window.clearComments = function() {
 
 window.clearFullCode = function() {
     document.getElementById('fullCodeArea').value = '';
-    state.fullCode = ''; state.html = ''; state.css = ''; state.js = ''; state.other = '';
-    state.comments = '';
+    state.fullCode = ''; state.html = ''; state.css = ''; state.js = ''; state.other = ''; state.comments = '';
     state.outputCode = ''; state.layers = [];
     document.getElementById('sectionsContainer').style.display = 'none';
     document.getElementById('outputSection').style.display = 'none';
@@ -1845,7 +2009,7 @@ window.clearFullCode = function() {
 
 window.loadSampleCode = function() {
     var SO = '<' + 'script>', SC = '<' + '/script>';
-    var sample = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<title>Sample</title>\n<style>\n/* Body styles */\nbody { background: #000; color: #fff; padding: 20px; }\nh1 { color: #00f0ff; }\n</style>\n</head>\n<body>\n<!-- Main heading -->\n<h1>Hello World</h1>\n<button id="btn">Click</button>\n<p id="output">Waiting...</p>\n' + SO + '\n// User list\nconst users = ["Alice", "Bob", "Charlie"];\nfunction greet(name) {\n  // Log greeting\n  console.log("Hello, " + name);\n  return name.toUpperCase();\n}\nasync function loadData() {\n  return await Promise.resolve("data");\n}\nusers.forEach(u => greet(u));\ndocument.getElementById("btn").addEventListener("click", () => {\n  document.getElementById("output").textContent = "Clicked!";\n});\n' + SC + '\n</body>\n</html>';
+    var sample = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<title>Sample</title>\n<style>\n/* Body styles */\nbody { background: #000; color: #fff; padding: 20px; }\nh1 { color: #00f0ff; }\n</style>\n</head>\n<body>\n<!-- Main heading -->\n<h1>Hello World</h1>\n<button id="btn">Click</button>\n<p id="output">Waiting...</p>\n' + SO + '\n// User list\nconst users = ["Alice", "Bob", "Charlie"];\nfunction greet(name) {\n  console.log("Hello, " + name);\n  return name.toUpperCase();\n}\nusers.forEach(function(u) { greet(u); });\ndocument.getElementById("btn").addEventListener("click", function() {\n  document.getElementById("output").textContent = "Clicked!";\n});\n' + SC + '\n</body>\n</html>';
     document.getElementById('fullCodeArea').value = sample;
     state.fullCode = sample;
     document.getElementById('inputStats').style.display = 'grid';
@@ -1872,35 +2036,17 @@ window.downloadOutput = function() {
     addHistory('Downloaded HTML', 'success');
 };
 
-window.testOutput = function() {
-    if (!state.outputCode) { toast('Obfuscate first!', 'error'); return; }
-    try {
-        var SO = '<' + 'script>', SC = '<' + '/script>';
-        var re = new RegExp(SO.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([\\s\\S]*?)' + SC.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-        var match = state.outputCode.match(re);
-        if (match) {
-            new Function(match[1]);
-            showStatus('statusObfuscate', 'success', '✅ JS syntax valid!');
-            toast('Test passed!', 'success');
-        } else {
-            showStatus('statusObfuscate', 'info', 'ℹ️ No JS in output.');
-            toast('HTML valid', 'info');
-        }
-    } catch(e) {
-        showStatus('statusObfuscate', 'error', '❌ Syntax error: ' + e.message);
-        toast('Test failed!', 'error');
-    }
-};
-
 window.switchTab = function(tab) {
+    var tabs = ['html', 'css', 'js', 'other', 'comments'];
     document.querySelectorAll('.tabs .tab[data-tab]').forEach(function(t) {
-        if (['html','css','js','other','comments'].includes(t.dataset.tab)) {
+        if (tabs.indexOf(t.dataset.tab) !== -1) {
             t.classList.toggle('active', t.dataset.tab === tab);
         }
     });
     document.querySelectorAll('.tab-content').forEach(function(c) {
-        if (['tab-html','tab-css','tab-js','tab-other','tab-comments'].includes(c.id)) {
-            c.classList.toggle('active', c.id === 'tab-' + tab);
+        var id = c.id.replace('tab-', '');
+        if (tabs.indexOf(id) !== -1) {
+            c.classList.toggle('active', id === tab);
         }
     });
 };
@@ -1927,8 +2073,10 @@ document.addEventListener('keydown', function(e) {
         if (document.getElementById('sectionsContainer').style.display === 'none') parseFullCode();
         else obfuscateNow();
     }
-    if (e.ctrlKey && e.shiftKey && e.key === 'Enter') { e.preventDefault(); obfuscateNow(); }
-    if (e.ctrlKey && e.shiftKey && e.key === 'X') { e.preventDefault(); clearFullCode(); }
+    if (e.ctrlKey && e.shiftKey && e.key === 'X') {
+        e.preventDefault();
+        clearFullCode();
+    }
 });
 
 /* ═══ AUTH HANDLING ═══ */
@@ -1938,15 +2086,14 @@ function handleAuthReady(e) {
     if (!e.detail || !e.detail.user) return;
     authReadyFired = true;
     state.user = e.detail.user;
-    var userBadge = document.getElementById('userBadge');
-    var userName = document.getElementById('userName');
-    if (userBadge && userName) {
-        var displayName = e.detail.displayName || e.detail.email || 'User';
-        if (displayName.indexOf('@') !== -1) displayName = displayName.split('@')[0];
-        userName.textContent = displayName;
-        userBadge.style.display = 'inline-flex';
+    var badge = document.getElementById('userBadge');
+    var uname = document.getElementById('userName');
+    if (badge && uname) {
+        var name = e.detail.displayName || e.detail.email || 'User';
+        if (name.indexOf('@') !== -1) name = name.split('@')[0];
+        uname.textContent = name;
+        badge.style.display = 'inline-flex';
     }
-    console.log('%c👤 Auth ready:', 'color:#00ff64;font-weight:bold;', e.detail.email);
     addHistory('Logged in as ' + (e.detail.email || 'User'), 'success');
 }
 document.addEventListener('auth-ready', handleAuthReady);
@@ -1954,7 +2101,6 @@ document.addEventListener('auth-guard-ready', handleAuthReady);
 
 setTimeout(function() {
     if (!authReadyFired) {
-        console.warn('⚠️ Auth guard fallback — showing page');
         document.documentElement.style.visibility = 'visible';
         document.documentElement.style.opacity = '1';
         if (document.body) {
@@ -1970,8 +2116,8 @@ setTimeout(function() {
 
 updateProgress();
 renderHistory();
-addHistory('BANK Obfuscator initialized', 'info');
-console.log('%c🛡️ BANK Obfuscator loaded', 'color:#b400ff;font-size:14px;font-weight:bold;');
+addHistory('Obfuscator initialized', 'info');
+console.log('%c🛡️ Obfuscator loaded — v20', 'color:#b400ff;font-size:14px;font-weight:bold;');
 
 })();
 </script>
