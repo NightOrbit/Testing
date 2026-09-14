@@ -746,7 +746,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     </div>
     <div class="header-card">
         <h1>⚡ Universal Encrypt Pro</h1>
-        <div class="subtitle">NightOrbit CodeForge · v18 STRONG · Encrypted Key File System</div>
+        <div class="subtitle">NightOrbit CodeForge · v18 STRONG · AES-256 + HMAC</div>
         <div class="header-stats">
             <span class="header-stat"><i class="fa-solid fa-bolt"></i> v18 STRONG</span>
             <span class="header-stat gold"><i class="fa-solid fa-shield-halved"></i> AES-256 + HMAC</span>
@@ -871,10 +871,7 @@ var state = {
     authHandled: false
 };
 
-/* ═══════════════════════════════════════════════════════
-   ✅ CHANGED: 30 sec → 5 min
-   ═══════════════════════════════════════════════════════ */
-var SESSION_TIMEOUT = 5 * 60 * 1000;
+var SESSION_TIMEOUT = 5 * 60 * 1000; /* 5 minutes */
 
 function bytes(n) {
     if (n < 1024) return n + ' B';
@@ -1296,7 +1293,6 @@ window.openFilePicker = function() { closeDrawer(); fileInput.click(); };
 
 function handleFiles(files) {
     Array.prototype.forEach.call(files, function(file) {
-        /* ✅ File size limit check */
         if (file.size > 5 * 1024 * 1024) {
             toast('File too large (max 5MB): ' + file.name, 'error');
             return;
@@ -1360,7 +1356,7 @@ window.encryptNow = function() {
 };
 
 /* ═══════════════════════════════════════════════════════
-   ✅ UPDATED: performEncrypt with stats tracking
+   performEncrypt — AES-256-CBC + HMAC-SHA256
    ═══════════════════════════════════════════════════════ */
 function performEncrypt(secretKey) {
     var pasted = inputCodeEl.value;
@@ -1401,9 +1397,24 @@ function performEncrypt(secretKey) {
         mode = 'Single ' + detectLanguage(pasted).toUpperCase() + ' (' + bytes(totalSize) + ')';
     }
 
-    var encrypted = CryptoJS.AES.encrypt(payload, secretKey).toString();
-    document.getElementById('outputEnc').value = encrypted;
-    showStatus('success', '✅ Encrypted ' + bytes(totalSize) + ' → ' + bytes(new Blob([encrypted]).size));
+    /* ✅ AES-256-CBC with random IV */
+    var iv = CryptoJS.lib.WordArray.random(16);
+    var encrypted = CryptoJS.AES.encrypt(payload, secretKey, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+    });
+
+    /* ✅ HMAC-SHA256 for integrity */
+    var hmac = CryptoJS.HmacSHA256(
+        iv.toString() + ':' + encrypted.toString(),
+        secretKey
+    ).toString();
+
+    /* ✅ Combined format: v2:iv:ciphertext:hmac */
+    var finalOutput = 'v2:' + iv.toString() + ':' + encrypted.toString() + ':' + hmac;
+    document.getElementById('outputEnc').value = finalOutput;
+    showStatus('success', '✅ Encrypted ' + bytes(totalSize) + ' → ' + bytes(new Blob([finalOutput]).size));
     toast('Encrypted successfully!', 'success');
     updateProgress();
 
@@ -1426,6 +1437,17 @@ window.copyOutput = function() {
     universalCopy(out.value, null, null);
     showStatus('success', '✅ Copied!');
     toast('Copied!', 'success');
+};
+
+window.downloadOutput = function() {
+    var out = document.getElementById('outputEnc').value;
+    if (!out) { toast('Nothing to download', 'error'); return; }
+    var blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'encrypted_' + Date.now() + '.txt';
+    a.click();
+    toast('Downloaded!', 'success');
 };
 
 window.downloadDecryptor = function() {
@@ -1794,7 +1816,27 @@ window.downloadDecryptor = function() {
         '      return;',
         '    }',
         '    try{',
-        '      var dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,window._0xSECRET).toString(CryptoJS.enc.Utf8);',
+        '      var dec;',
+        '      var parts=ENCRYPTED_DATA.split(":");',
+        '      if(parts[0]==="v2" && parts.length===4){',
+        '        /* ✅ v2 format with HMAC */',
+        '        var iv=CryptoJS.enc.Hex.parse(parts[1]);',
+        '        var ciphertext=parts[2];',
+        '        var storedHmac=parts[3];',
+        '        /* ✅ Verify HMAC */',
+        '        var computedHmac=CryptoJS.HmacSHA256(parts[1]+":"+ciphertext,window._0xSECRET).toString();',
+        '        if(computedHmac!==storedHmac){',
+        '          throw new Error("Integrity check failed - data tampered!");',
+        '        }',
+        '        dec=CryptoJS.AES.decrypt(ciphertext,window._0xSECRET,{',
+        '          iv:iv,',
+        '          mode:CryptoJS.mode.CBC,',
+        '          padding:CryptoJS.pad.Pkcs7',
+        '        }).toString(CryptoJS.enc.Utf8);',
+        '      } else {',
+        '        /* ✅ v1 legacy format */',
+        '        dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,window._0xSECRET).toString(CryptoJS.enc.Utf8);',
+        '      }',
         '      if(!dec||dec.length===0){throw new Error("Decryption failed - wrong key or corrupted data.");}',
         '',
         '      var isBundle=false,bundle=null;',
