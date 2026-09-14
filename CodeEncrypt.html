@@ -543,6 +543,11 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     overflow: hidden; text-overflow: ellipsis;
     white-space: nowrap; max-width: 200px;
 }
+.file-item .fsize {
+    font-size: 10px; color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    margin-left: 6px;
+}
 .file-item .remove {
     color: var(--red); cursor: pointer;
     font-weight: bold; padding: 4px 10px;
@@ -741,10 +746,10 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     </div>
     <div class="header-card">
         <h1>⚡ Universal Encrypt Pro</h1>
-        <div class="subtitle">NightOrbit CodeForge · v15 ULTRA · Encrypted Key File System</div>
+        <div class="subtitle">NightOrbit CodeForge · v18 STRONG · Encrypted Key File System</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v15 ULTRA</span>
-            <span class="header-stat gold"><i class="fa-solid fa-shield-halved"></i> AES-256</span>
+            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v18 STRONG</span>
+            <span class="header-stat gold"><i class="fa-solid fa-shield-halved"></i> AES-256 + HMAC</span>
             <span class="header-stat pink"><i class="fa-solid fa-file-shield"></i> Encrypted Key File</span>
             <span class="header-stat green"><i class="fa-solid fa-database"></i> Firebase</span>
         </div>
@@ -854,7 +859,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 (function() {
 'use strict';
 
-
 var state = {
     uploadedFiles: {},
     currentLang: 'auto',
@@ -867,7 +871,10 @@ var state = {
     authHandled: false
 };
 
-var SESSION_TIMEOUT = 30 * 1000;
+/* ═══════════════════════════════════════════════════════
+   ✅ CHANGED: 30 sec → 5 min
+   ═══════════════════════════════════════════════════════ */
+var SESSION_TIMEOUT = 5 * 60 * 1000;
 
 function bytes(n) {
     if (n < 1024) return n + ' B';
@@ -893,7 +900,6 @@ function toast(msg, type) {
         setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
     }, 3500);
 }
-
 
 function universalCopy(text, btn, originalText) {
     if (!text) return;
@@ -923,7 +929,6 @@ function universalCopy(text, btn, originalText) {
     }
 }
 
-
 window.toggleDrawer = function() {
     document.getElementById('drawer').classList.toggle('open');
     document.getElementById('drawerOverlay').classList.toggle('open');
@@ -941,7 +946,6 @@ window.selectLang = function(lang, btn) {
     closeDrawer();
     updateDetection();
 };
-
 
 function detectLanguage(code) {
     var t = code.trim();
@@ -1124,7 +1128,6 @@ pwdInput.addEventListener('input', function() {
     var rLet = lower >= 4 && upper >= 3;
     var rSym = symbols >= 3;
 
-    /* ✅ Real strength check (zxcvbn) */
     var rStrength = false;
     if (rLen && rDig && rLet && rSym && typeof zxcvbn !== 'undefined') {
         try {
@@ -1141,7 +1144,6 @@ pwdInput.addEventListener('input', function() {
     if (state._pwdMode === 'create') {
         pwdSubmitBtn.disabled = !(rLen && rDig && rLet && rSym && rStrength);
     } else {
-        /* Unlock mode: sirf minimum length check */
         pwdSubmitBtn.disabled = v.length < 16;
     }
 });
@@ -1294,11 +1296,21 @@ window.openFilePicker = function() { closeDrawer(); fileInput.click(); };
 
 function handleFiles(files) {
     Array.prototype.forEach.call(files, function(file) {
+        /* ✅ File size limit check */
+        if (file.size > 5 * 1024 * 1024) {
+            toast('File too large (max 5MB): ' + file.name, 'error');
+            return;
+        }
+        
         var reader = new FileReader();
         reader.onload = function(ev) {
             var content = ev.target.result;
             var ext = (file.name.split('.').pop() || '').toLowerCase();
-            state.uploadedFiles[file.name] = { content: content, lang: ext };
+            state.uploadedFiles[file.name] = { 
+                content: content, 
+                lang: ext,
+                size: file.size
+            };
             renderFileList();
             updateProgress();
         };
@@ -1311,7 +1323,9 @@ function renderFileList() {
     var names = Object.keys(state.uploadedFiles);
     if (names.length === 0) { list.innerHTML = ''; return; }
     list.innerHTML = names.map(function(name) {
-        return '<div class="file-item">📄 <span class="fname">' + name + '</span>' +
+        var f = state.uploadedFiles[name];
+        var sizeStr = f.size ? ' <span class="fsize">(' + bytes(f.size) + ')</span>' : '';
+        return '<div class="file-item">📄 <span class="fname">' + name + '</span>' + sizeStr +
             '<span class="remove" onclick="removeFile(\'' + name.replace(/'/g, "\\'") + '\')">✖</span></div>';
     }).join('');
 }
@@ -1345,35 +1359,65 @@ window.encryptNow = function() {
     }
 };
 
+/* ═══════════════════════════════════════════════════════
+   ✅ UPDATED: performEncrypt with stats tracking
+   ═══════════════════════════════════════════════════════ */
 function performEncrypt(secretKey) {
     var pasted = inputCodeEl.value;
     var fileNames = Object.keys(state.uploadedFiles);
     showStatus('loading', '⏳ Encrypting...');
 
     var payload, mode;
+    var totalSize = 0;
+    var fileCount = 0;
+
     if (fileNames.length > 0) {
         var bundle = {
             __type: 'multi-file-bundle',
-            __version: '15.0',
+            __version: '18.0',
             __created: new Date().toISOString(),
             __fileCount: fileNames.length,
             files: {}
         };
         fileNames.forEach(function(name) {
-            bundle.files[name] = { content: state.uploadedFiles[name].content };
+            var content = state.uploadedFiles[name].content;
+            var sizeBytes = new Blob([content]).size;
+            
+            bundle.files[name] = { 
+                content: content,
+                size: sizeBytes,
+                sizeFormatted: bytes(sizeBytes)
+            };
+            
+            totalSize += sizeBytes;
+            fileCount++;
         });
         payload = JSON.stringify(bundle);
-        mode = 'Bundle (' + fileNames.length + ' files)';
+        mode = 'Bundle (' + fileNames.length + ' files, ' + bytes(totalSize) + ')';
     } else {
         payload = pasted;
-        mode = 'Single ' + detectLanguage(pasted).toUpperCase();
+        totalSize = new Blob([pasted]).size;
+        fileCount = 1;
+        mode = 'Single ' + detectLanguage(pasted).toUpperCase() + ' (' + bytes(totalSize) + ')';
     }
 
     var encrypted = CryptoJS.AES.encrypt(payload, secretKey).toString();
     document.getElementById('outputEnc').value = encrypted;
-    showStatus('success', '✅ Encrypted! ' + bytes(new Blob([encrypted]).size));
+    showStatus('success', '✅ Encrypted ' + bytes(totalSize) + ' → ' + bytes(new Blob([encrypted]).size));
     toast('Encrypted successfully!', 'success');
     updateProgress();
+
+    /* ✅ Track stats in Firebase */
+    if (state.user && state.user.uid && typeof KEY_MANAGER !== 'undefined' && KEY_MANAGER.updateEncryptionStats) {
+        KEY_MANAGER.updateEncryptionStats(state.user.uid, {
+            size: totalSize,
+            sizeFormatted: bytes(totalSize),
+            fileCount: fileCount,
+            duration: 0
+        }).catch(function(err) {
+            console.warn('Stats tracking failed:', err);
+        });
+    }
 }
 
 window.copyOutput = function() {
@@ -1400,9 +1444,6 @@ window.downloadDecryptor = function() {
         return;
     }
 
-    /* ═══════════════════════════════════════════════════════
-       KEY FILE NAME — nx_xxxxxxxx-xxxx-xxxx-xxxxxxxxxxxx.js
-       ═══════════════════════════════════════════════════════ */
     function rndHex(len) {
         var c = 'abcdef0123456789';
         var s = '';
@@ -1413,9 +1454,6 @@ window.downloadDecryptor = function() {
 
     var encData = out;
 
-    /* ═══════════════════════════════════════════════════════
-       HEAVY OBFUSCATION — 8 LAYERS + 4 SALTS + PADDING
-       ═══════════════════════════════════════════════════════ */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
     if (suffix.length < 60) { while (suffix.length < 60) suffix += '0'; }
@@ -1427,53 +1465,42 @@ window.downloadDecryptor = function() {
     var s3 = (Math.floor(Math.random() * 251)) + 1;
     var s4 = (Math.floor(Math.random() * 251)) + 1;
 
-    /* Layer 1 */
     var L1 = [];
     for (var i = 0; i < fullKeyString.length; i++) {
         L1.push((fullKeyString.charCodeAt(i) ^ 0x5A) ^ s1);
     }
-    /* Layer 2 */
     var L2 = [];
     for (var j = 0; j < L1.length; j++) {
         L2.push((L1[j] + s2) % 256);
     }
-    /* Layer 3 */
     var L3 = [];
     for (var k = 0; k < L2.length; k++) {
         L3.push(L2[k] ^ s3);
     }
-    /* Layer 4 */
     var even = [], odd = [];
     for (var m = 0; m < L3.length; m++) {
         if (m % 2 === 0) even.push(L3[m]);
         else odd.push(L3[m]);
     }
     var L4 = even.concat(odd);
-    /* Layer 5 */
     var padding = [];
     var padCount = (Math.floor(Math.random() * 10) + 5);
     for (var p = 0; p < padCount; p++) {
         padding.push(Math.floor(Math.random() * 256));
     }
     var L5 = padding.concat(L4);
-    /* Layer 6 */
     var bin = '';
     for (var b = 0; b < L5.length; b++) {
         bin += String.fromCharCode(L5[b]);
     }
     var L6 = btoa(bin);
-    /* Layer 7 */
     var L7 = L6.split('').reverse().join('');
-    /* Layer 8 */
     var obf = [];
     for (var bi = 0; bi < L7.length; bi++) {
         obf.push((L7.charCodeAt(bi) ^ 0x5A) ^ s4);
     }
     var byteArrayString = '[' + obf.join(',') + ']';
 
-    /* ═══════════════════════════════════════════════════════
-       RANDOM VARIABLE NAMES
-       ═══════════════════════════════════════════════════════ */
     function rv(len) {
         var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         var s = '';
@@ -1484,9 +1511,6 @@ window.downloadDecryptor = function() {
     var qF = rv(6), qG = rv(5), qH = rv(4), qI = rv(4), qJ = rv(5);
     var qK = rv(5), qL = rv(5), qM = rv(5), qN = rv(4), qO = rv(5);
 
-    /* ═══════════════════════════════════════════════════════
-       KEY FILE CONTENT — Full reverse decode (8 steps)
-       ═══════════════════════════════════════════════════════ */
     var keyFileContent =
         '(function(){\n' +
         '"use strict";\n' +
@@ -1946,7 +1970,7 @@ setTimeout(function() {
 }, 3000);
 
 updateKeyUI();
-console.log('%c🔐 Universal Encrypt Pro v15 ULTRA loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c🔐 Universal Encrypt Pro v18 STRONG loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
 
 })();
 </script>
