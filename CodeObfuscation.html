@@ -1935,65 +1935,34 @@ function detectInputType(code) {
     var trimmed = code.trim();
 
     /* ───────────────────────────────────────────────────────────────
-       HTML DETECTION
+       HTML DETECTION (PRIORITY 1 — check first)
        ─────────────────────────────────────────────────────────────── */
     var hasScriptTag = /<script\b[^>]*>[\s\S]*?<\/script\s*>/i.test(trimmed);
     var hasStyleTag = /<style\b[^>]*>[\s\S]*?<\/style\s*>/i.test(trimmed);
     var hasDoctype = /<!DOCTYPE\s+html/i.test(trimmed);
     var hasHtmlTag = /<html\b[^>]*>/i.test(trimmed);
-    var hasHtmlTags = /<\/?(?:div|span|p|a|button|nav|header|footer|section|article|main|ul|ol|li|h[1-6]|img|input|form|table|tr|td|th|meta|link|title|br|hr|iframe|video|audio|canvas|svg|path|label|textarea|select|option)\b[^>]*>/i.test(trimmed);
+    var hasHeadTag = /<head\b[^>]*>/i.test(trimmed);
+    var hasBodyTag = /<body\b[^>]*>/i.test(trimmed);
+    var hasHtmlTags = /<\/?(?:div|span|p|a|button|nav|header|footer|section|article|main|ul|ol|li|h[1-6]|img|input|form|table|tr|td|th|meta|link|title|br|hr|iframe|video|audio|canvas|svg|path|label|textarea|select|option|link|meta)\b[^>]*>/i.test(trimmed);
+
+    // Count HTML signals
+    var htmlSignals = 0;
+    if (hasDoctype) htmlSignals += 5;
+    if (hasHtmlTag) htmlSignals += 3;
+    if (hasHeadTag) htmlSignals += 2;
+    if (hasBodyTag) htmlSignals += 2;
+    if (hasHtmlTags) htmlSignals += 1;
 
     /* ───────────────────────────────────────────────────────────────
-       JAVASCRIPT DETECTION — strong signals
+       PRIORITY 1: Pure HTML (no script tag, has HTML signals)
        ─────────────────────────────────────────────────────────────── */
-    var jsPatterns = /(?:^|[^\w])(?:function\s+\w+|var\s+\w+|let\s+\w+|const\s+\w+|=>|\breturn\b|console\.|document\.|window\.|class\s+\w+|import\s+|export\s+|async\s+function|await\s+|addEventListener|querySelector|getElementById|setTimeout|setInterval|new\s+\w+|typeof\s+|instanceof\s+|throw\s+|catch\s*\(|try\s*\{|if\s*\(|for\s*\(|while\s*\(|else\s*\{)/;
-    var hasJsCode = jsPatterns.test(trimmed);
-
-    // Additional JS-specific signals
-    var jsArrowFn = /=>/.test(trimmed);
-    var jsTemplateLiteral = /`[^`]*\$\{[^}]+\}[^`]*`/.test(trimmed);
-    var jsStrictMode = /['"]use strict['"]/.test(trimmed);
-    var jsSemicolons = /;\s*$/m.test(trimmed);
-    var jsCurlyWithSemicolons = /\{[^{}]*[a-zA-Z_$][\w$]*\s*:\s*[^;{}]+;/.test(trimmed);
-
-    hasJsCode = hasJsCode || jsArrowFn || jsTemplateLiteral || jsStrictMode || jsCurlyWithSemicolons;
-
-    /* ───────────────────────────────────────────────────────────────
-       CSS DETECTION — VERY STRICT signals only
-       Requires 3+ strong CSS signals to declare as CSS
-       ─────────────────────────────────────────────────────────────── */
-    var cssAtRules = /@(?:media|import|charset|keyframes|font-face|supports|namespace|page)\b/i.test(trimmed);
-    var cssPseudoClass = /:(?:hover|active|focus|visited|before|after|first-child|last-child|nth-child|nth-of-type)\b/i.test(trimmed);
-    var cssIdSelector = /(?:^|\n|\})\s*#[a-zA-Z][\w-]*\s*(?:[,{:\s])/;
-    var cssClassSelector = /(?:^|\n|\})\s*\.[a-zA-Z][\w-]*\s*(?:[,{:\s])/;
-    var cssBlockPattern = /(?:^|\n)\s*(?:[a-zA-Z][\w-]*|[.#][a-zA-Z][\w-]*)\s*(?:,[^{]*)?\s*\{[^{}]*[a-z-]+\s*:\s*[^{}]+;\s*\}/i;
-
-    // Count CSS signals
-    var cssSignalCount = 0;
-    if (cssAtRules) cssSignalCount += 3;
-    if (cssPseudoClass) cssSignalCount += 2;
-    if (cssIdSelector.test(trimmed)) cssSignalCount += 1;
-    if (cssClassSelector.test(trimmed)) cssSignalCount += 1;
-    if (cssBlockPattern.test(trimmed)) cssSignalCount += 2;
-
-    // CSS requires STRONG signals AND no JS markers
-    var hasCssRules = cssSignalCount >= 3 && !hasScriptTag && !hasJsCode;
-
-    /* ───────────────────────────────────────────────────────────────
-       PRIORITY DECISION
-       ─────────────────────────────────────────────────────────────── */
-
-    // PRIORITY 1: JavaScript (if any strong JS signal)
-    if (hasJsCode) {
-        return { type: 'js', reliable: true };
-    }
-
-    // PRIORITY 2: Pure HTML (doctype or <html> tag without <script>)
-    if ((hasDoctype || hasHtmlTag) && !hasScriptTag) {
+    if (!hasScriptTag && htmlSignals >= 2) {
         return { type: 'html', reliable: true };
     }
 
-    // PRIORITY 3: HTML with inline <script> → mixed
+    /* ───────────────────────────────────────────────────────────────
+       PRIORITY 2: HTML with inline script → mixed
+       ─────────────────────────────────────────────────────────────── */
     if (hasScriptTag) {
         var scriptBody = '';
         var scriptRegex = /<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi;
@@ -2004,25 +1973,47 @@ function detectInputType(code) {
         if (scriptBody.trim().length > 10) {
             return { type: 'mixed', reliable: true, hasInlineJs: true };
         }
+        // Script tag exists but no content → HTML
         return { type: 'html', reliable: true };
     }
 
-    // PRIORITY 4: CSS only (with 3+ strong CSS signals)
-    if (hasCssRules) {
+    /* ───────────────────────────────────────────────────────────────
+       PRIORITY 3: CSS detection
+       ─────────────────────────────────────────────────────────────── */
+    var cssAtRules = /@(?:media|import|charset|keyframes|font-face|supports|namespace|page)\b/i.test(trimmed);
+    var cssPseudoClass = /:(?:hover|active|focus|visited|before|after|first-child|last-child|nth-child)\b/i.test(trimmed);
+    var cssIdSelector = /(?:^|\n|\})\s*#[a-zA-Z][\w-]*\s*(?:[,{:\s])/;
+    var cssClassSelector = /(?:^|\n|\})\s*\.[a-zA-Z][\w-]*\s*(?:[,{:\s])/;
+    var cssBlockPattern = /(?:^|\n)\s*(?:[a-zA-Z][\w-]*|[.#][a-zA-Z][\w-]*)\s*(?:,[^{]*)?\s*\{[^{}]*[a-z-]+\s*:\s*[^{}]+;\s*\}/i;
+
+    var cssSignalCount = 0;
+    if (cssAtRules) cssSignalCount += 3;
+    if (cssPseudoClass) cssSignalCount += 2;
+    if (cssIdSelector.test(trimmed)) cssSignalCount += 1;
+    if (cssClassSelector.test(trimmed)) cssSignalCount += 1;
+    if (cssBlockPattern.test(trimmed)) cssSignalCount += 2;
+
+    if (cssSignalCount >= 3 && !hasScriptTag) {
         return { type: 'css', reliable: true };
     }
 
-    // PRIORITY 5: HTML tags without doctype → HTML
-    if (hasHtmlTags) {
-        return { type: 'html', reliable: true };
+    /* ───────────────────────────────────────────────────────────────
+       PRIORITY 4: JavaScript detection (LAST — safe default)
+       ─────────────────────────────────────────────────────────────── */
+    var jsPatterns = /(?:^|[^\w])(?:function\s+\w+|var\s+\w+|let\s+\w+|const\s+\w+|=>|\breturn\b|console\.|document\.|window\.|class\s+\w+|import\s+|export\s+|async\s+function|await\s+|addEventListener|querySelector|getElementById|setTimeout|setInterval|new\s+\w+|typeof\s+|instanceof\s+|throw\s+|catch\s*\(|try\s*\{|if\s*\(|for\s*\(|while\s*\(|else\s*\{)/;
+    var hasJsCode = jsPatterns.test(trimmed);
+
+    var jsArrowFn = /=>/.test(trimmed);
+    var jsTemplateLiteral = /`[^`]*\$\{[^}]+\}[^`]*`/.test(trimmed);
+    var jsStrictMode = /['"]use strict['"]/.test(trimmed);
+
+    hasJsCode = hasJsCode || jsArrowFn || jsTemplateLiteral || jsStrictMode;
+
+    if (hasJsCode) {
+        return { type: 'js', reliable: true };
     }
 
-    // PRIORITY 6: Style tag only → CSS
-    if (hasStyleTag && !hasScriptTag && !hasJsCode) {
-        return { type: 'css', reliable: true };
-    }
-
-    // DEFAULT: Treat as JavaScript (safe fallback — most pasted code is JS)
+    // DEFAULT: Treat as JavaScript (safe fallback)
     return { type: 'js', reliable: false };
 }
    
@@ -2035,13 +2026,13 @@ function protectBase64Strings(code) {
     var map = {};
     var counter = 0;
 
-    var minLen = CONFIG.BASE64_MIN_LENGTH;
-    var base64Regex = new RegExp(
-        '(["\\\'])(data:[a-z+]+\\/[a-z0-9+.\\-]+;base64,[A-Za-z0-9+/=]{' + minLen + ',})\\1',
-        'g'
-    );
+    // Match ANY string containing "data:...;base64," pattern
+    // No length requirement — protection is more important than size
+    var base64Regex = /(["'])([^"']*?data:[a-z+][a-z0-9+.\-]*\/[a-z0-9+.\-]*;base64,[A-Za-z0-9+/=]+[^"']*?)\1/gi;
 
     var result = code.replace(base64Regex, function(match, quote, dataUri) {
+        // Only protect if long enough to be problematic
+        if (dataUri.length < 100) return match;
         var placeholder = '__NO_B64_' + (counter++) + '_' + Date.now().toString(36) + '__';
         map[placeholder] = dataUri;
         return quote + placeholder + quote;
@@ -2049,7 +2040,7 @@ function protectBase64Strings(code) {
 
     return { code: result, map: map };
 }
-
+   
 /* ═══════════════════════════════════════════════════════════════════
    BASE64 STRING RESTORER
    ═══════════════════════════════════════════════════════════════════ */
