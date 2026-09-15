@@ -4,274 +4,1129 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b0b1a">
-<title>Code Obfuscation — NightOrbit CodeForge</title>
+<title>Code Protection ULTRA — NightOrbit CodeForge</title>
 
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 <script src="auth-guard.js"></script>
-
-<!-- javascript-obfuscator (CDN) -->
 <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.1.1/dist/index.browser.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
-/* [Same CSS as CodeEncrypt.html — reuse kar lo] */
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-:root{
-  --cyan:#00f0ff;--pink:#ff2d95;--purple:#b400ff;--gold:#ffd700;
-  --green:#00ff64;--red:#ff0064;--dark:#05050f;
-  --card:rgba(11,11,26,0.94);--border:rgba(0,240,255,0.22);
-  --muted:#6a6a8a;--header-h:62px;
-}
-html,body{width:100%;overflow-x:hidden;}
-body{
-  background:radial-gradient(ellipse at top,#13132a 0%,#000 70%);
-  background-attachment:fixed;color:#fff;font-family:'Inter',sans-serif;
-  min-height:100vh;padding-top:var(--header-h);padding-bottom:20px;
-  font-size:14px;line-height:1.5;
-}
-.topbar{
-  position:fixed;top:0;left:0;right:0;height:var(--header-h);
-  background:rgba(6,6,15,0.95);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);z-index:1000;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 15px;gap:10px;
-}
-.brand{display:flex;align-items:center;gap:10px;font-family:'Orbitron',sans-serif;
-  font-size:14px;font-weight:900;color:var(--cyan);letter-spacing:1px;flex-shrink:0;}
-.brand .logo{font-size:22px;}
-.brand .title{display:none;}
-@media(min-width:600px){.brand .title{display:inline;font-size:16px;letter-spacing:2px;}}
-.topbar-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-.topbar-btn{
-  padding:8px 14px;border-radius:8px;text-decoration:none;
-  font-weight:bold;font-size:11px;letter-spacing:1px;
-  display:inline-flex;align-items:center;gap:6px;
-  font-family:'Orbitron',sans-serif;cursor:pointer;
-  border:1px solid #fff;transition:all 0.3s;white-space:nowrap;
-}
-.topbar-btn.dashboard{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;}
-.topbar-btn.logout{background:linear-gradient(135deg,#ff0064,#b400ff);color:#fff;}
-.topbar-btn:hover{transform:translateY(-2px);}
-.topbar-btn .label{display:none;}
-@media(min-width:500px){.topbar-btn .label{display:inline;}}
+    /* ============================================================
+       BASE RESET
+       ============================================================ */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
 
-.container{width:100%;max-width:1400px;margin:0 auto;padding:15px;}
+    :root {
+        --cyan: #00f0ff;
+        --pink: #ff2d95;
+        --purple: #b400ff;
+        --gold: #ffd700;
+        --green: #00ff64;
+        --red: #ff0064;
+        --card: rgba(11, 11, 26, 0.94);
+        --border: rgba(0, 240, 255, 0.22);
+        --muted: #6a6a8a;
+        --header-h: 62px;
+    }
 
-.header-card{
-  background:var(--card);border:2px solid var(--cyan);
-  border-radius:18px;padding:22px 24px;margin-bottom:15px;
-  box-shadow:0 0 50px rgba(0,240,255,0.15);
-  text-align:center;position:relative;overflow:hidden;
-}
-.header-card::before{
-  content:'';position:absolute;inset:-2px;border-radius:18px;padding:2px;
-  background:conic-gradient(from 0deg,var(--cyan),var(--pink),var(--purple),var(--gold),var(--cyan));
-  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
-  -webkit-mask-composite:xor;mask-composite:exclude;
-  animation:borderSpin 6s linear infinite;pointer-events:none;
-}
-@keyframes borderSpin{to{transform:rotate(360deg);}}
-h1{font-family:'Orbitron',sans-serif;font-size:26px;font-weight:900;
-  background:linear-gradient(135deg,var(--cyan),var(--pink));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;letter-spacing:3px;margin-bottom:6px;text-transform:uppercase;}
-.subtitle{color:var(--muted);font-size:11px;letter-spacing:2px;text-transform:uppercase;}
-.header-stats{display:flex;justify-content:center;gap:14px;margin-top:14px;flex-wrap:wrap;}
-.header-stat{
-  background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);
-  border-radius:40px;padding:4px 12px;font-size:10px;color:#b0b0d0;
-  letter-spacing:1px;text-transform:uppercase;
-  display:inline-flex;align-items:center;gap:6px;
-}
-.header-stat i{color:var(--cyan);font-size:11px;}
+    html,
+    body {
+        width: 100%;
+        overflow-x: hidden;
+    }
 
-.user-welcome{
-  background:rgba(0,240,255,0.05);border:1px solid var(--border);
-  border-radius:12px;padding:10px 16px;margin-bottom:15px;
-  font-size:12px;color:var(--muted);display:flex;align-items:center;
-  gap:10px;flex-wrap:wrap;
-}
-.user-welcome i{color:var(--cyan);font-size:16px;}
-.user-welcome b{color:var(--cyan);}
-.user-welcome .auth-badge{
-  margin-left:auto;font-size:10px;letter-spacing:1px;
-  text-transform:uppercase;color:var(--green);
-  display:inline-flex;align-items:center;gap:5px;
-}
+    body {
+        background: radial-gradient(ellipse at top, #13132a 0%, #000 70%);
+        background-attachment: fixed;
+        color: #fff;
+        font-family: 'Inter', sans-serif;
+        min-height: 100vh;
+        padding-top: var(--header-h);
+        padding-bottom: 20px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
 
-.section{
-  background:rgba(0,240,255,0.03);border:1px solid var(--border);
-  border-radius:12px;padding:16px;margin-bottom:12px;
-}
-label{color:var(--cyan);font-size:11px;letter-spacing:2px;
-  text-transform:uppercase;font-weight:bold;display:block;margin-bottom:8px;}
+    /* ============================================================
+       TOP BAR
+       ============================================================ */
+    .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: var(--header-h);
+        background: rgba(6, 6, 15, 0.95);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 15px;
+        gap: 10px;
+    }
 
-textarea,input[type="text"]{
-  width:100%;background:#000;color:var(--green);
-  border:1px solid #333;border-radius:8px;padding:12px;
-  font-family:'JetBrains Mono',monospace;font-size:12px;
-  line-height:1.5;resize:vertical;transition:all 0.3s;
-}
-textarea:focus,input:focus{
-  outline:none;border-color:var(--cyan);
-  box-shadow:0 0 15px rgba(0,240,255,0.2);
-}
-textarea{min-height:220px;}
-textarea.tall{min-height:320px;}
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 14px;
+        font-weight: 900;
+        color: var(--cyan);
+        letter-spacing: 1px;
+        flex-shrink: 0;
+    }
 
-button{
-  background:linear-gradient(135deg,var(--cyan),var(--purple));
-  color:#000;border:none;padding:12px 22px;border-radius:10px;
-  font-weight:bold;font-size:12px;letter-spacing:1.5px;
-  text-transform:uppercase;cursor:pointer;
-  font-family:'Orbitron',sans-serif;transition:all 0.3s;
-}
-button:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,240,255,0.4);}
-button:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
-button.secondary{background:linear-gradient(135deg,var(--gold),#ff8c00);}
-button.danger{background:linear-gradient(135deg,var(--red),#ff0000);color:#fff;}
-button.green{background:linear-gradient(135deg,var(--green),#00aa44);}
+    .brand .logo {
+        font-size: 22px;
+    }
 
-.btn-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0;}
-.btn-row button{flex:1 1 auto;min-width:120px;}
+    .brand .title {
+        display: none;
+    }
 
-/* Preset buttons */
-.preset-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:10px;margin-bottom:12px;
-}
-.preset-btn{
-  background:rgba(0,0,0,0.5);border:1.5px solid var(--border);
-  color:#fff;padding:14px 12px;border-radius:10px;
-  cursor:pointer;transition:all 0.3s;text-align:center;
-  font-family:'Inter',sans-serif;
-}
-.preset-btn:hover{border-color:var(--cyan);background:rgba(0,240,255,0.06);}
-.preset-btn.active{
-  border-color:var(--gold);background:rgba(255,215,0,0.08);
-  box-shadow:0 0 20px rgba(255,215,0,0.2);
-}
-.preset-btn .name{
-  font-family:'Orbitron',sans-serif;font-size:12px;
-  font-weight:900;letter-spacing:2px;color:var(--cyan);
-  margin-bottom:4px;
-}
-.preset-btn.active .name{color:var(--gold);}
-.preset-btn .desc{font-size:10px;color:var(--muted);line-height:1.4;}
+    @media (min-width: 600px) {
+        .brand .title {
+            display: inline;
+            font-size: 16px;
+            letter-spacing: 2px;
+        }
+    }
 
-/* Options */
-.option-row{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:10px;padding:10px 12px;background:rgba(0,0,0,0.3);
-  border-radius:8px;margin-bottom:6px;font-size:12px;
-}
-.option-row .opt-label{color:#b0b0d0;flex:1;}
-.option-row .opt-label b{color:#fff;display:block;font-size:12px;margin-bottom:2px;}
-.option-row .opt-label small{color:var(--muted);font-size:10px;}
-.switch{
-  position:relative;width:44px;height:24px;flex-shrink:0;
-  background:#222;border-radius:12px;cursor:pointer;
-  transition:0.3s;border:1px solid #333;
-}
-.switch::after{
-  content:'';position:absolute;top:2px;left:2px;
-  width:18px;height:18px;border-radius:50%;
-  background:#666;transition:0.3s;
-}
-.switch.on{background:rgba(0,240,255,0.2);border-color:var(--cyan);}
-.switch.on::after{left:22px;background:var(--cyan);box-shadow:0 0 10px var(--cyan);}
+    .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+    }
 
-/* Stats */
-.stats-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-  gap:10px;margin-top:12px;
-}
-.stat-card{
-  background:rgba(0,0,0,0.4);border:1.5px solid rgba(0,240,255,0.15);
-  border-radius:10px;padding:12px;text-align:center;transition:0.3s;
-}
-.stat-card:hover{border-color:var(--cyan);transform:translateY(-2px);}
-.stat-label{font-size:9px;color:var(--muted);letter-spacing:2px;
-  text-transform:uppercase;margin-bottom:4px;font-family:'Orbitron',sans-serif;}
-.stat-value{font-family:'JetBrains Mono',monospace;font-size:15px;
-  font-weight:900;color:var(--cyan);}
-.stat-value.gold{color:var(--gold);}
-.stat-value.green{color:var(--green);}
-.stat-value.pink{color:var(--pink);}
+    .topbar-btn {
+        padding: 8px 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 11px;
+        letter-spacing: 1px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: 'Orbitron', sans-serif;
+        cursor: pointer;
+        border: 1px solid #fff;
+        transition: all 0.3s;
+        white-space: nowrap;
+    }
 
-/* Progress */
-.progress-wrap{
-  background:rgba(0,0,0,0.4);border:1.5px solid rgba(0,240,255,0.15);
-  border-radius:12px;padding:12px 16px;margin-bottom:15px;
-  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-}
-.progress-label{font-family:'Orbitron',sans-serif;font-size:10px;
-  color:var(--cyan);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;}
-.progress-track{flex:1;height:8px;background:rgba(0,0,0,0.6);
-  border-radius:20px;overflow:hidden;min-width:150px;}
-.progress-fill{height:100%;
-  background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink));
-  border-radius:20px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1);
-  width:0%;box-shadow:0 0 15px rgba(0,240,255,0.6);}
-.progress-percent{font-family:'JetBrains Mono',monospace;font-size:11px;
-  color:var(--gold);font-weight:700;min-width:45px;text-align:right;}
+    .topbar-btn.dashboard {
+        background: linear-gradient(135deg, #ffd700, #ff8c00);
+        color: #000;
+    }
 
-/* Status */
-.status{
-  text-align:center;padding:12px;border-radius:8px;
-  margin-top:10px;font-size:12px;display:none;
-  font-weight:bold;font-family:'JetBrains Mono',monospace;
-}
-.status.success{background:rgba(0,255,100,0.1);border:1px solid var(--green);
-  color:var(--green);display:block;}
-.status.error{background:rgba(255,0,100,0.1);border:1px solid var(--red);
-  color:var(--red);display:block;}
-.status.info{background:rgba(0,240,255,0.1);border:1px solid var(--cyan);
-  color:var(--cyan);display:block;}
-.status.loading{background:rgba(255,215,0,0.1);border:1px solid var(--gold);
-  color:var(--gold);display:block;}
+    .topbar-btn.logout {
+        background: linear-gradient(135deg, #ff0064, #b400ff);
+        color: #fff;
+    }
 
-/* Toast */
-.toast-container{
-  position:fixed;bottom:20px;right:20px;z-index:99999;
-  display:flex;flex-direction:column;gap:10px;
-  pointer-events:none;max-width:400px;
-}
-.toast{
-  background:rgba(11,11,26,0.98);border:2px solid var(--cyan);
-  border-radius:12px;padding:12px 18px;color:#fff;font-size:12px;
-  font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,0.6),0 0 30px rgba(0,240,255,0.2);
-  display:flex;align-items:center;gap:10px;pointer-events:auto;
-  animation:toastIn 0.4s ease;min-width:250px;
-}
-.toast.success{border-color:var(--green);}
-.toast.error{border-color:var(--red);}
-.toast.warn{border-color:var(--gold);}
-@keyframes toastIn{from{transform:translateX(400px);opacity:0;}to{transform:translateX(0);opacity:1;}}
-.toast.removing{animation:toastOut 0.3s ease forwards;}
-@keyframes toastOut{to{transform:translateX(400px);opacity:0;}}
+    .topbar-btn:hover {
+        transform: translateY(-2px);
+    }
 
-@media(max-width:600px){
-  body{font-size:13px;}
-  .container{padding:12px;}
-  .section{padding:14px;}
-  textarea{min-height:180px;font-size:11px;}
-  .btn-row button{flex:1 1 100%;}
-  h1{font-size:20px;letter-spacing:2px;}
-  .preset-grid{grid-template-columns:1fr 1fr;}
-}
+    .topbar-btn .label {
+        display: none;
+    }
+
+    @media (min-width: 500px) {
+        .topbar-btn .label {
+            display: inline;
+        }
+    }
+
+    /* ============================================================
+       CONTAINER & HEADER
+       ============================================================ */
+    .container {
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 15px;
+    }
+
+    .header-card {
+        background: var(--card);
+        border: 2px solid var(--cyan);
+        border-radius: 18px;
+        padding: 22px 24px;
+        margin-bottom: 15px;
+        box-shadow: 0 0 50px rgba(0, 240, 255, 0.15);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header-card::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: 18px;
+        padding: 2px;
+        background: conic-gradient(from 0deg, var(--cyan), var(--pink), var(--purple), var(--gold), var(--cyan));
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: borderSpin 6s linear infinite;
+        pointer-events: none;
+    }
+
+    @keyframes borderSpin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    h1 {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 26px;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--cyan), var(--pink));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: 3px;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+    }
+
+    .subtitle {
+        color: var(--muted);
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .header-stats {
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+        margin-top: 14px;
+        flex-wrap: wrap;
+    }
+
+    .header-stat {
+        background: rgba(0, 240, 255, 0.05);
+        border: 1px solid rgba(0, 240, 255, 0.15);
+        border-radius: 40px;
+        padding: 4px 12px;
+        font-size: 10px;
+        color: #b0b0d0;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .header-stat i {
+        color: var(--cyan);
+        font-size: 11px;
+    }
+
+    /* ============================================================
+       USER WELCOME
+       ============================================================ */
+    .user-welcome {
+        background: rgba(0, 240, 255, 0.05);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 16px;
+        margin-bottom: 15px;
+        font-size: 12px;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .user-welcome i {
+        color: var(--cyan);
+        font-size: 16px;
+    }
+
+    .user-welcome b {
+        color: var(--cyan);
+    }
+
+    .user-welcome .auth-badge {
+        margin-left: auto;
+        font-size: 10px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--green);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* ============================================================
+       STEP INDICATOR
+       ============================================================ */
+    .steps-bar {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+
+    .step-item {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1.5px solid rgba(0, 240, 255, 0.15);
+        border-radius: 10px;
+        padding: 12px 6px;
+        text-align: center;
+        transition: 0.3s;
+    }
+
+    .step-item.active {
+        border-color: var(--cyan);
+        background: rgba(0, 240, 255, 0.08);
+        box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+    }
+
+    .step-item.done {
+        border-color: var(--green);
+        background: rgba(0, 255, 100, 0.06);
+    }
+
+    .step-item .num {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 18px;
+        font-weight: 900;
+        color: var(--muted);
+        margin-bottom: 4px;
+    }
+
+    .step-item.active .num {
+        color: var(--cyan);
+    }
+
+    .step-item.done .num {
+        color: var(--green);
+    }
+
+    .step-item .lbl {
+        font-size: 9px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--muted);
+    }
+
+    .step-item.active .lbl {
+        color: var(--cyan);
+    }
+
+    .step-item.done .lbl {
+        color: var(--green);
+    }
+
+    /* ============================================================
+       SECTIONS
+       ============================================================ */
+    .section {
+        background: rgba(0, 240, 255, 0.03);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+    }
+
+    label {
+        color: var(--cyan);
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    textarea {
+        width: 100%;
+        background: #000;
+        color: var(--green);
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 12px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        resize: vertical;
+        transition: all 0.3s;
+    }
+
+    textarea:focus {
+        outline: none;
+        border-color: var(--cyan);
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+    }
+
+    textarea {
+        min-height: 200px;
+    }
+
+    textarea.tall {
+        min-height: 300px;
+    }
+
+    textarea.huge {
+        min-height: 400px;
+    }
+
+    /* ============================================================
+       BUTTONS
+       ============================================================ */
+    button {
+        background: linear-gradient(135deg, var(--cyan), var(--purple));
+        color: #000;
+        border: none;
+        padding: 12px 22px;
+        border-radius: 10px;
+        font-weight: bold;
+        font-size: 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        cursor: pointer;
+        font-family: 'Orbitron', sans-serif;
+        transition: all 0.3s;
+    }
+
+    button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 240, 255, 0.4);
+    }
+
+    button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    button.secondary {
+        background: linear-gradient(135deg, var(--gold), #ff8c00);
+    }
+
+    button.danger {
+        background: linear-gradient(135deg, var(--red), #ff0000);
+        color: #fff;
+    }
+
+    button.green {
+        background: linear-gradient(135deg, var(--green), #00aa44);
+    }
+
+    button.test {
+        background: linear-gradient(135deg, #00f0ff, #00ff64);
+        color: #000;
+    }
+
+    .btn-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin: 12px 0;
+    }
+
+    .btn-row button {
+        flex: 1 1 auto;
+        min-width: 120px;
+    }
+
+    /* ============================================================
+       PRESET GRID
+       ============================================================ */
+    .preset-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .preset-btn {
+        background: rgba(0, 0, 0, 0.5);
+        border: 1.5px solid var(--border);
+        color: #fff;
+        padding: 14px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: center;
+    }
+
+    .preset-btn:hover {
+        border-color: var(--cyan);
+        background: rgba(0, 240, 255, 0.06);
+    }
+
+    .preset-btn.active {
+        border-color: var(--gold);
+        background: rgba(255, 215, 0, 0.08);
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+    }
+
+    .preset-btn .name {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 2px;
+        color: var(--cyan);
+        margin-bottom: 4px;
+    }
+
+    .preset-btn.active .name {
+        color: var(--gold);
+    }
+
+    .preset-btn .desc {
+        font-size: 10px;
+        color: var(--muted);
+        line-height: 1.4;
+    }
+
+    /* ============================================================
+       OPTION ROWS
+       ============================================================ */
+    .option-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 12px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        margin-bottom: 6px;
+        font-size: 12px;
+    }
+
+    .option-row .opt-label {
+        color: #b0b0d0;
+        flex: 1;
+    }
+
+    .option-row .opt-label b {
+        color: #fff;
+        display: block;
+        font-size: 12px;
+        margin-bottom: 2px;
+    }
+
+    .option-row .opt-label small {
+        color: var(--muted);
+        font-size: 10px;
+    }
+
+    .switch {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        flex-shrink: 0;
+        background: #222;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+        border: 1px solid #333;
+    }
+
+    .switch::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #666;
+        transition: 0.3s;
+    }
+
+    .switch.on {
+        background: rgba(0, 240, 255, 0.2);
+        border-color: var(--cyan);
+    }
+
+    .switch.on::after {
+        left: 22px;
+        background: var(--cyan);
+        box-shadow: 0 0 10px var(--cyan);
+    }
+
+    /* ============================================================
+       STATS GRID
+       ============================================================ */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .stat-card {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1.5px solid rgba(0, 240, 255, 0.15);
+        border-radius: 10px;
+        padding: 12px;
+        text-align: center;
+    }
+
+    .stat-label {
+        font-size: 9px;
+        color: var(--muted);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+        font-family: 'Orbitron', sans-serif;
+    }
+
+    .stat-value {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 15px;
+        font-weight: 900;
+        color: var(--cyan);
+    }
+
+    .stat-value.gold {
+        color: var(--gold);
+    }
+
+    .stat-value.green {
+        color: var(--green);
+    }
+
+    .stat-value.pink {
+        color: var(--pink);
+    }
+
+    /* ============================================================
+       PROGRESS BAR
+       ============================================================ */
+    .progress-wrap {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1.5px solid rgba(0, 240, 255, 0.15);
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .progress-label {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 10px;
+        color: var(--cyan);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .progress-track {
+        flex: 1;
+        height: 8px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 20px;
+        overflow: hidden;
+        min-width: 150px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink));
+        border-radius: 20px;
+        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 0%;
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+    }
+
+    .progress-percent {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: var(--gold);
+        font-weight: 700;
+        min-width: 45px;
+        text-align: right;
+    }
+
+    /* ============================================================
+       STATUS MESSAGES
+       ============================================================ */
+    .status {
+        text-align: center;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 10px;
+        font-size: 12px;
+        display: none;
+        font-weight: bold;
+        font-family: 'JetBrains Mono', monospace;
+        white-space: pre-wrap;
+    }
+
+    .status.success {
+        background: rgba(0, 255, 100, 0.1);
+        border: 1px solid var(--green);
+        color: var(--green);
+        display: block;
+    }
+
+    .status.error {
+        background: rgba(255, 0, 100, 0.1);
+        border: 1px solid var(--red);
+        color: var(--red);
+        display: block;
+    }
+
+    .status.info {
+        background: rgba(0, 240, 255, 0.1);
+        border: 1px solid var(--cyan);
+        color: var(--cyan);
+        display: block;
+    }
+
+    .status.loading {
+        background: rgba(255, 215, 0, 0.1);
+        border: 1px solid var(--gold);
+        color: var(--gold);
+        display: block;
+    }
+
+    /* ============================================================
+       TABS
+       ============================================================ */
+    .tabs {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+        overflow-x: auto;
+    }
+
+    .tab {
+        padding: 10px 16px;
+        background: transparent;
+        border: none;
+        color: var(--muted);
+        font-family: 'Orbitron', sans-serif;
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        cursor: pointer;
+        position: relative;
+        transition: 0.3s;
+        white-space: nowrap;
+        font-weight: 700;
+    }
+
+    .tab:hover {
+        color: var(--cyan);
+    }
+
+    .tab.active {
+        color: var(--cyan);
+    }
+
+    .tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--cyan);
+        box-shadow: 0 0 10px var(--cyan);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    /* ============================================================
+       BADGES
+       ============================================================ */
+    .badge {
+        display: inline-block;
+        background: rgba(0, 240, 255, 0.15);
+        color: var(--cyan);
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 9px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        border: 1px solid rgba(0, 240, 255, 0.3);
+    }
+
+    .badge.success {
+        background: rgba(0, 255, 100, 0.15);
+        color: #00ff64;
+        border-color: rgba(0, 255, 100, 0.3);
+    }
+
+    .badge.gold {
+        background: rgba(255, 215, 0, 0.15);
+        color: var(--gold);
+        border-color: rgba(255, 215, 0, 0.3);
+    }
+
+    /* ============================================================
+       INFO BOXES
+       ============================================================ */
+    .info-box {
+        background: rgba(0, 240, 255, 0.05);
+        border-left: 3px solid var(--cyan);
+        border-radius: 8px;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+        font-size: 11px;
+        color: #b0d0ff;
+        line-height: 1.7;
+    }
+
+    .info-box strong {
+        color: var(--cyan);
+    }
+
+    .info-box code {
+        background: rgba(0, 0, 0, 0.6);
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: var(--gold);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+    }
+
+    .info-box.warn {
+        background: rgba(255, 215, 0, 0.05);
+        border-left-color: var(--gold);
+        color: #ffe6a0;
+    }
+
+    .info-box.warn strong {
+        color: var(--gold);
+    }
+
+    /* ============================================================
+       SECURITY FEATURE LIST
+       ============================================================ */
+    .security-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .security-item {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1.5px solid rgba(0, 240, 255, 0.15);
+        border-left: 3px solid var(--cyan);
+        border-radius: 8px;
+        padding: 12px 14px;
+        transition: 0.3s;
+    }
+
+    .security-item:hover {
+        border-color: var(--cyan);
+        background: rgba(0, 240, 255, 0.04);
+    }
+
+    .security-item .sec-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+    }
+
+    .security-item .sec-icon {
+        font-size: 18px;
+        color: var(--cyan);
+        flex-shrink: 0;
+    }
+
+    .security-item .sec-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+        color: var(--cyan);
+        text-transform: uppercase;
+    }
+
+    .security-item .sec-desc {
+        font-size: 11px;
+        color: #a0b0d0;
+        line-height: 1.6;
+        padding-left: 26px;
+    }
+
+    .security-item .sec-desc code {
+        background: rgba(0, 0, 0, 0.5);
+        padding: 1px 5px;
+        border-radius: 3px;
+        color: var(--gold);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+    }
+
+    /* ============================================================
+       TEST PANEL
+       ============================================================ */
+    .test-panel {
+        background: rgba(0, 0, 0, 0.5);
+        border: 2px solid var(--cyan);
+        border-radius: 12px;
+        padding: 16px;
+        margin-top: 12px;
+        display: none;
+    }
+
+    .test-panel.show {
+        display: block;
+        animation: testIn 0.3s ease;
+    }
+
+    @keyframes testIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .test-panel h4 {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 13px;
+        color: var(--cyan);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .test-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 8px;
+        margin-bottom: 8px;
+        font-size: 12px;
+    }
+
+    .test-item .icon {
+        font-size: 16px;
+        width: 24px;
+        text-align: center;
+        flex-shrink: 0;
+    }
+
+    .test-item.pass .icon {
+        color: var(--green);
+    }
+
+    .test-item.fail .icon {
+        color: var(--red);
+    }
+
+    .test-item.warn .icon {
+        color: var(--gold);
+    }
+
+    .test-item .msg {
+        flex: 1;
+        color: #b0b0d0;
+    }
+
+    .test-item .msg b {
+        color: #fff;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .test-item .msg small {
+        color: var(--muted);
+        font-size: 10px;
+    }
+
+    .test-item .value {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: var(--cyan);
+        font-weight: bold;
+    }
+
+    .test-item.pass .value {
+        color: var(--green);
+    }
+
+    .test-item.fail .value {
+        color: var(--red);
+    }
+
+    /* ============================================================
+       TOAST
+       ============================================================ */
+    .toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+        max-width: 400px;
+    }
+
+    .toast {
+        background: rgba(11, 11, 26, 0.98);
+        border: 2px solid var(--cyan);
+        border-radius: 12px;
+        padding: 12px 18px;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 240, 255, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        pointer-events: auto;
+        animation: toastIn 0.4s ease;
+        min-width: 250px;
+    }
+
+    .toast.success {
+        border-color: var(--green);
+    }
+
+    .toast.error {
+        border-color: var(--red);
+    }
+
+    .toast.warn {
+        border-color: var(--gold);
+    }
+
+    @keyframes toastIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .toast.removing {
+        animation: toastOut 0.3s ease forwards;
+    }
+
+    @keyframes toastOut {
+        to {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 600px) {
+        body {
+            font-size: 13px;
+        }
+
+        .container {
+            padding: 12px;
+        }
+
+        .section {
+            padding: 14px;
+        }
+
+        textarea {
+            min-height: 160px;
+            font-size: 11px;
+        }
+
+        .btn-row button {
+            flex: 1 1 100%;
+        }
+
+        h1 {
+            font-size: 20px;
+            letter-spacing: 2px;
+        }
+
+        .preset-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .steps-bar {
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+        }
+
+        .step-item {
+            padding: 8px 4px;
+        }
+
+        .step-item .num {
+            font-size: 14px;
+        }
+
+        .step-item .lbl {
+            font-size: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .security-list {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 </head>
 <body>
 
+<!-- ═══════════════════════════════════════════════════════════
+     TOP BAR
+     ═══════════════════════════════════════════════════════════ -->
 <div class="topbar">
     <div class="brand">
         <span class="logo">🛡️</span>
-        <span class="title">Code Obfuscation</span>
+        <span class="title">Code Protection ULTRA</span>
     </div>
     <div class="topbar-actions">
         <a href="Dashboard.html" class="topbar-btn dashboard">
@@ -287,6 +1142,9 @@ button.green{background:linear-gradient(135deg,var(--green),#00aa44);}
 
 <div class="container">
 
+    <!-- ═══════════════════════════════════════════════════════════
+         USER WELCOME
+         ═══════════════════════════════════════════════════════════ -->
     <div class="user-welcome">
         <i class="fa-solid fa-circle-user"></i>
         <span>Welcome, <b id="welcomeName">User</b></span>
@@ -295,20 +1153,263 @@ button.green{background:linear-gradient(135deg,var(--green),#00aa44);}
         </span>
     </div>
 
+    <!-- ═══════════════════════════════════════════════════════════
+         HEADER CARD
+         ═══════════════════════════════════════════════════════════ -->
     <div class="header-card">
-        <h1>🛡️ Code Obfuscation</h1>
-        <div class="subtitle">NightOrbit CodeForge · Protect Your JavaScript</div>
+        <h1>🛡️ Code Protection ULTRA</h1>
+        <div class="subtitle">NightOrbit CodeForge · Enterprise-Grade Code Security Suite</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-shield-halved"></i> v4.1 Engine</span>
-            <span class="header-stat"><i class="fa-solid fa-lock"></i> RC4 Strings</span>
-            <span class="header-stat"><i class="fa-solid fa-code-branch"></i> Control Flow</span>
-            <span class="header-stat"><i class="fa-solid fa-bug"></i> Anti-Debug</span>
+            <span class="header-stat"><i class="fa-solid fa-shield-halved"></i> v9.0 ULTRA</span>
+            <span class="header-stat"><i class="fa-solid fa-file-zipper"></i> Gzip Compression</span>
+            <span class="header-stat"><i class="fa-solid fa-lock"></i> Base64 Encoding</span>
+            <span class="header-stat"><i class="fa-solid fa-flask"></i> Built-in Test</span>
         </div>
     </div>
 
-    <!-- Presets -->
+    <!-- ═══════════════════════════════════════════════════════════
+         SECURITY FEATURES OVERVIEW
+         ═══════════════════════════════════════════════════════════ -->
     <div class="section">
-        <label>⚡ Obfuscation Preset</label>
+        <label>🔒 Security Features Included in This Tool</label>
+
+        <div class="info-box">
+            <strong>Professional Multi-Layer Code Protection System</strong><br>
+            This tool implements enterprise-grade protection using industry-standard techniques. Each layer adds a separate defense mechanism, making reverse engineering exponentially more difficult.
+        </div>
+
+        <div class="security-list">
+
+            <div class="security-item">
+                <div class="sec-head">
+                    <span class="sec-icon">🗜️</span>
+                    <span class="sec-title">HTML & CSS Minification</span>
+                </div>
+                <div class="sec-desc">
+                    All comments removed · whitespace collapsed · redundant code eliminated. Reduces file size by 40-60% without breaking anything.
+                </div>
+            </div>
+
+            <div class="security-item">
+                <div class="sec-head">
+                    <span class="sec-icon">📦</span>
+                    <span class="sec-title">Gzip Compression (Level 9)</span>
+                </div>
+                <div class="sec-desc">
+                    Maximum DEFLATE compression · up to 80% size reduction · byte-perfect restoration. Industry standard used by every CDN.
+                </div>
+            </div>
+
+            <div class="security-item">
+                <div class="sec-head">
+                    <span class="sec-icon">🔐</span>
+                    <span class="sec-title">Base64 Encoding</span>
+                </div>
+                <div class="sec-desc">
+                    Binary-to-text encoding for safe transport. Source code becomes unreadable strings. Reversible at runtime by browser.
+                </div>
+            </div>
+
+            <div class="security-item">
+                <div class="sec-head">
+                    <span class="sec-icon">⚙️</span>
+                    <span class="sec-title">JS Control Flow Flattening</span>
+                </div>
+                <div class="sec-desc">
+                    Converts linear code into state-machine switches. Breaks logical reading order. Analysis tools see disconnected blocks.
+                </div>
+            </div>
+
+            <div class="security-item">
+                <div class="sec-head">
+                    <span class="sec-icon">💀</span>
+                    <span class="sec-title">JS Dead Code Injection</span>
+                </div>
+                <div class="sec-desc">
+                    Inserts unreachable fake branches · decoy functions · fake variables. Confuses both humans and automated deobfuscators.
+                </div>
+            </div>
+
+            <div class="security-item">
+                <div class="sec-head">
+                    <span class="sec-icon">🔑</span>
+                    <span class="sec-title">String Array + RC4 Encryption</span>
+                </div>
+                <div class="sec-desc">
+                    All string literals extracted to encrypted array. Decrypted only at runtime via RC4 stream cipher. Strings invisible in source.
+                </div>
+            </div>
+
+            <div class="security-item">
+                <div class="sec-head">
+                    <span class="sec-icon">🚫</span>
+                    <span class="sec-title">Debug Protection</span>
+                </div>
+                <div class="sec-desc">
+                    DevTools detection loop · debugger statement traps · execution pauses. Halts casual inspection attempts.
+                </div>
+            </div>
+
+            <div class="security-item">
+                <div class="sec-head">
+                    <span class="sec-icon">🛡️</span>
+                    <span class="sec-title">Self-Defending Runtime</span>
+                </div>
+                <div class="sec-desc">
+                    Integrity check on every run · crashes if code modified · prevents beautification and re-formatting attempts.
+                </div>
+            </div>
+
+            <div class="security-item">
+                <div class="sec-head">
+                    <span class="sec-icon">🎭</span>
+                    <span class="sec-title">Identifier Renaming (Hex)</span>
+                </div>
+                <div class="sec-desc">
+                    Variables, functions, parameters renamed to <code>_0x4a2b1c</code> format. Meaning completely lost. Consistent mapping for functionality.
+                </div>
+            </div>
+
+            <div class="security-item">
+                <div class="sec-head">
+                    <span class="sec-icon">🧬</span>
+                    <span class="sec-title">Browser Runtime Decoder</span>
+                </div>
+                <div class="sec-desc">
+                    Small bootstrap script decodes HTML/CSS at runtime. Zero impact on page speed. Original source never reaches browser as plaintext.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         STEP INDICATOR
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="steps-bar">
+        <div class="step-item active" id="stepInd1">
+            <div class="num">1</div>
+            <div class="lbl">Paste</div>
+        </div>
+        <div class="step-item" id="stepInd2">
+            <div class="num">2</div>
+            <div class="lbl">Separate</div>
+        </div>
+        <div class="step-item" id="stepInd3">
+            <div class="num">3</div>
+            <div class="lbl">Configure</div>
+        </div>
+        <div class="step-item" id="stepInd4">
+            <div class="num">4</div>
+            <div class="lbl">Protect</div>
+        </div>
+        <div class="step-item" id="stepInd5">
+            <div class="num">5</div>
+            <div class="lbl">Test</div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         STEP 1: INPUT
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="section">
+        <label>📝 STEP 1 — Paste Your Complete Code</label>
+
+        <div class="info-box">
+            <strong>How this works:</strong> Paste your full HTML / CSS / JS code below (all mixed together is fine). The engine will automatically <strong>separate</strong> each language, <strong>process</strong> it with the appropriate technique, and <strong>reassemble</strong> a fully functional protected version.<br><br>
+
+            <strong>What happens to each section:</strong><br>
+            • <strong>HTML:</strong> Minified · comments removed · whitespace collapsed<br>
+            • <strong>CSS:</strong> Minified · comments removed · rules optimized<br>
+            • <strong>JavaScript:</strong> Full obfuscation (control flow · dead code · RC4 strings · debug protection · self-defending)<br>
+            • <strong>Delivery:</strong> HTML/CSS wrapped in Gzip + Base64 · runtime decoder embeds in output
+        </div>
+
+        <div class="info-box warn">
+            <strong>⚠️ Important Notes:</strong><br>
+            • Output is <strong>guaranteed to work</strong> — no obfuscation is applied to HTML/CSS structure<br>
+            • For files over 5 MB, use <strong>MEDIUM</strong> or <strong>LOW</strong> preset to avoid timeouts<br>
+            • The <strong>built-in test panel</strong> at the end will verify everything works before you download
+        </div>
+
+        <textarea id="inputCode" class="huge" placeholder="Paste your complete HTML / CSS / JavaScript code here..."></textarea>
+
+        <div class="stats-grid" id="inputStats" style="display:none;">
+            <div class="stat-card">
+                <div class="stat-label">Lines</div>
+                <div class="stat-value" id="statLines">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Characters</div>
+                <div class="stat-value gold" id="statChars">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Size</div>
+                <div class="stat-value green" id="statSize">0 B</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Detected</div>
+                <div class="stat-value pink" id="statLang">—</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         STEP 2: SEPARATE
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="section">
+        <label>🔍 STEP 2 — Parse & Separate Languages</label>
+        <div class="info-box">
+            Separates your code into HTML, CSS, and JavaScript sections. All comments are removed during this step.
+        </div>
+        <div class="btn-row">
+            <button class="green" onclick="separateNow()">
+                <i class="fa-solid fa-magnifying-glass"></i> PARSE &amp; SEPARATE
+            </button>
+            <button class="secondary" onclick="loadSample()">
+                <i class="fa-solid fa-download"></i> LOAD SAMPLE
+            </button>
+        </div>
+        <div id="separateStatus" class="status"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SEPARATED SECTIONS VIEW
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="section" id="sectionsSection" style="display:none;">
+        <label>📂 Separated Sections <span class="badge success">READY</span></label>
+        <div class="tabs">
+            <button class="tab active" data-tab="sec-html" onclick="switchTab('sec-html')">
+                📄 HTML <span class="badge" id="htmlBadge">0 B</span>
+            </button>
+            <button class="tab" data-tab="sec-css" onclick="switchTab('sec-css')">
+                🎨 CSS <span class="badge" id="cssBadge">0 B</span>
+            </button>
+            <button class="tab" data-tab="sec-js" onclick="switchTab('sec-js')">
+                ⚙️ JS <span class="badge" id="jsBadge">0 B</span>
+            </button>
+        </div>
+        <div class="tab-content active" id="tab-sec-html">
+            <textarea id="sectionHtml" class="tall" readonly></textarea>
+        </div>
+        <div class="tab-content" id="tab-sec-css">
+            <textarea id="sectionCss" class="tall" readonly></textarea>
+        </div>
+        <div class="tab-content" id="tab-sec-js">
+            <textarea id="sectionJs" class="tall" readonly></textarea>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         STEP 3: PRESET + OPTIONS
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="section" id="presetSection" style="display:none;">
+        <label>⚡ STEP 3 — Configure Protection</label>
+
+        <div class="info-box">
+            <strong>Obfuscation Presets</strong> — Higher presets deliver stronger protection at the cost of processing time. All presets guarantee working output.
+        </div>
+
         <div class="preset-grid">
             <div class="preset-btn" data-preset="low" onclick="setPreset('low', this)">
                 <div class="name">LOW</div>
@@ -323,126 +1424,183 @@ button.green{background:linear-gradient(135deg,var(--green),#00aa44);}
                 <div class="desc">Strong · Slower</div>
             </div>
             <div class="preset-btn" data-preset="extreme" onclick="setPreset('extreme', this)">
-                <div class="name">EXTREME</div>
-                <div class="desc">Maximum · Heavy</div>
+                <div class="name">ULTRA</div>
+                <div class="desc">Maximum security</div>
             </div>
         </div>
-    </div>
 
-    <!-- Input -->
-    <div class="section">
-        <label>📝 Input JavaScript Code</label>
-        <textarea id="inputCode" class="tall" placeholder="// Paste your JavaScript here..."></textarea>
-        <div class="stats-grid" id="inputStats" style="display:none;">
-            <div class="stat-card">
-                <div class="stat-label">Lines</div>
-                <div class="stat-value" id="statLines">0</div>
+        <label style="margin-top:16px;">📦 Output Protection Options</label>
+
+        <div class="option-row">
+            <div class="opt-label">
+                <b>Minify HTML &amp; CSS</b>
+                <small>Remove comments and whitespace from markup and styles</small>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Characters</div>
-                <div class="stat-value gold" id="statChars">0</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Size</div>
-                <div class="stat-value green" id="statSize">0 B</div>
-            </div>
+            <div class="switch on" data-opt="minifyMarkup" onclick="toggleOpt(this)"></div>
         </div>
-    </div>
 
-    <!-- Options -->
-    <div class="section">
-        <label>⚙️ Advanced Options</label>
+        <div class="option-row">
+            <div class="opt-label">
+                <b>Gzip Compression</b>
+                <small>DEFLATE level 9 — up to 80% size reduction</small>
+            </div>
+            <div class="switch on" data-opt="gzipCompress" onclick="toggleOpt(this)"></div>
+        </div>
+
+        <div class="option-row">
+            <div class="opt-label">
+                <b>Base64 Encoding</b>
+                <small>Binary-to-text encoding for HTML/CSS delivery</small>
+            </div>
+            <div class="switch on" data-opt="base64Encode" onclick="toggleOpt(this)"></div>
+        </div>
+
+        <label style="margin-top:16px;">⚙️ JavaScript Obfuscation Options</label>
+
         <div class="option-row">
             <div class="opt-label">
                 <b>Control Flow Flattening</b>
-                <small>Break code structure into state machine</small>
+                <small>Convert code flow into state machine</small>
             </div>
             <div class="switch on" data-opt="controlFlowFlattening" onclick="toggleOpt(this)"></div>
         </div>
+
         <div class="option-row">
             <div class="opt-label">
                 <b>Dead Code Injection</b>
-                <small>Add fake unreachable code</small>
+                <small>Add unreachable fake branches (larger output)</small>
             </div>
             <div class="switch on" data-opt="deadCodeInjection" onclick="toggleOpt(this)"></div>
         </div>
+
         <div class="option-row">
             <div class="opt-label">
-                <b>String Array Encryption (RC4)</b>
-                <small>Encrypt all string literals</small>
+                <b>String Array + RC4</b>
+                <small>Encrypt all string literals with RC4 stream cipher</small>
             </div>
             <div class="switch on" data-opt="stringArray" onclick="toggleOpt(this)"></div>
         </div>
+
         <div class="option-row">
             <div class="opt-label">
                 <b>Debug Protection</b>
-                <small>Block DevTools & debugging</small>
+                <small>Block DevTools and debugging attempts</small>
             </div>
             <div class="switch on" data-opt="debugProtection" onclick="toggleOpt(this)"></div>
         </div>
+
         <div class="option-row">
             <div class="opt-label">
-                <b>Self Defending</b>
-                <small>Crash if code is modified</small>
+                <b>Self-Defending</b>
+                <small>Crash if code is modified after protection</small>
             </div>
             <div class="switch on" data-opt="selfDefending" onclick="toggleOpt(this)"></div>
         </div>
+
         <div class="option-row">
             <div class="opt-label">
-                <b>Disable Console Output</b>
-                <small>Block all console.log calls</small>
+                <b>Rename Identifiers (Hex)</b>
+                <small>Variables &amp; functions → _0x4a2b1c format</small>
             </div>
-            <div class="switch on" data-opt="disableConsoleOutput" onclick="toggleOpt(this)"></div>
-        </div>
-        <div class="option-row">
-            <div class="opt-label">
-                <b>Identifier Names Generator</b>
-                <small>_0x4a2b1c style names</small>
-            </div>
-            <div class="switch on" data-opt="renameGlobals" onclick="toggleOpt(this)"></div>
+            <div class="switch on" data-opt="renameIdentifiers" onclick="toggleOpt(this)"></div>
         </div>
     </div>
 
-    <!-- Progress -->
+    <!-- ═══════════════════════════════════════════════════════════
+         PROGRESS
+         ═══════════════════════════════════════════════════════════ -->
     <div class="progress-wrap">
         <div class="progress-label">Progress</div>
-        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
         <div class="progress-percent" id="progressPercent">0%</div>
     </div>
 
-    <!-- Actions -->
-    <div class="btn-row">
-        <button onclick="obfuscateNow()">🛡️ OBFUSCATE</button>
-        <button class="secondary" onclick="loadSample()">📥 LOAD SAMPLE</button>
-        <button class="danger" onclick="clearAll()">🗑️ CLEAR</button>
+    <!-- ═══════════════════════════════════════════════════════════
+         STEP 4: PROTECT BUTTON
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="btn-row" id="obfuscateBtnRow" style="display:none;">
+        <button onclick="protectNow()" style="font-size:14px;padding:16px 30px;">
+            🛡️ PROTECT CODE NOW
+        </button>
     </div>
 
     <div id="status" class="status"></div>
 
-    <!-- Output -->
-    <div class="section">
-        <label>🔒 Obfuscated Output</label>
-        <textarea id="outputCode" class="tall" readonly placeholder="Obfuscated code will appear here..."></textarea>
-        <div class="stats-grid" id="outputStats" style="display:none;">
+    <!-- ═══════════════════════════════════════════════════════════
+         OUTPUT
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="section" id="outputSection" style="display:none;">
+        <label>🔒 Protected Output <span class="badge success">READY</span></label>
+        <div class="tabs">
+            <button class="tab active" data-tab="out-final" onclick="switchTab('out-final')">🎯 FINAL</button>
+            <button class="tab" data-tab="out-html" onclick="switchTab('out-html')">📄 HTML</button>
+            <button class="tab" data-tab="out-css" onclick="switchTab('out-css')">🎨 CSS</button>
+            <button class="tab" data-tab="out-js" onclick="switchTab('out-js')">⚙️ JS</button>
+        </div>
+        <div class="tab-content active" id="tab-out-final">
+            <textarea id="outputFinal" class="tall" readonly></textarea>
+        </div>
+        <div class="tab-content" id="tab-out-html">
+            <textarea id="outputHtml" class="tall" readonly></textarea>
+        </div>
+        <div class="tab-content" id="tab-out-css">
+            <textarea id="outputCss" class="tall" readonly></textarea>
+        </div>
+        <div class="tab-content" id="tab-out-js">
+            <textarea id="outputJs" class="tall" readonly></textarea>
+        </div>
+
+        <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">Original</div>
                 <div class="stat-value" id="statOriginal">0 B</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Obfuscated</div>
+                <div class="stat-label">Protected</div>
                 <div class="stat-value gold" id="statObfuscated">0 B</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Ratio</div>
                 <div class="stat-value pink" id="statRatio">—</div>
             </div>
+            <div class="stat-card">
+                <div class="stat-label">Time</div>
+                <div class="stat-value green" id="statTime">0 ms</div>
+            </div>
         </div>
     </div>
 
-    <div class="btn-row">
-        <button class="green" onclick="copyOutput()">📋 COPY</button>
-        <button class="secondary" onclick="downloadOutput()">⬇️ DOWNLOAD</button>
-        <button class="secondary" onclick="testOutput()">▶️ TEST IN CONSOLE</button>
+    <!-- ═══════════════════════════════════════════════════════════
+         STEP 5: OUTPUT ACTIONS + TEST
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="btn-row" id="outputActions" style="display:none;">
+        <button class="test" onclick="runTests()">
+            <i class="fa-solid fa-flask"></i> TEST OUTPUT
+        </button>
+        <button class="green" onclick="copyFinal()">
+            <i class="fa-solid fa-copy"></i> COPY FINAL
+        </button>
+        <button class="secondary" onclick="downloadFinal()">
+            <i class="fa-solid fa-download"></i> DOWNLOAD
+        </button>
+        <button class="secondary" onclick="downloadAll()">
+            <i class="fa-solid fa-box"></i> DOWNLOAD ALL
+        </button>
+        <button class="danger" onclick="clearAll()">
+            <i class="fa-solid fa-trash"></i> CLEAR
+        </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         TEST PANEL
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="test-panel" id="testPanel">
+        <h4>
+            <i class="fa-solid fa-flask"></i> Test Results
+        </h4>
+        <div id="testResults"></div>
     </div>
 
 </div>
@@ -453,93 +1611,341 @@ button.green{background:linear-gradient(135deg,var(--green),#00aa44);}
 (function() {
 'use strict';
 
+/* ═══════════════════════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════════════════════ */
 var state = {
     user: null,
     preset: 'medium',
     options: {
+        minifyMarkup: true,
+        gzipCompress: true,
+        base64Encode: true,
         controlFlowFlattening: true,
         deadCodeInjection: true,
         stringArray: true,
         debugProtection: true,
         selfDefending: true,
-        disableConsoleOutput: true,
-        renameGlobals: true
+        renameIdentifiers: true
     },
-    authHandled: false
+    authHandled: false,
+    sections: { html: '', css: '', js: '' },
+    output: { final: '', html: '', css: '', js: '' }
 };
 
-/* ═══ UTILITIES ═══ */
+var TAG_OPEN_SCRIPT  = '<' + 'script';
+var TAG_CLOSE_SCRIPT = '<' + '/script>';
+var TAG_OPEN_STYLE   = '<' + 'style';
+var TAG_CLOSE_STYLE  = '<' + '/style>';
+
+/* ═══════════════════════════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════════════════════════ */
 function bytes(n) {
     if (n < 1024) return n + ' B';
     if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
     return (n / 1024 / 1024).toFixed(2) + ' MB';
 }
-function num(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
-function showStatus(type, msg) {
-    var el = document.getElementById('status');
+
+function num(n) {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function showStatus(id, type, msg) {
+    var el = document.getElementById(id);
+    if (!el) return;
     el.className = 'status ' + type;
     el.textContent = msg;
 }
+
+function hideStatus(id) {
+    var el = document.getElementById(id);
+    if (el) el.className = 'status';
+}
+
 function toast(msg, type) {
     type = type || 'info';
     var c = document.getElementById('toastContainer');
-    var icons = { success:'fa-circle-check', error:'fa-circle-xmark', warn:'fa-triangle-exclamation', info:'fa-circle-info' };
+    var icons = {
+        success: 'fa-circle-check',
+        error: 'fa-circle-xmark',
+        warn: 'fa-triangle-exclamation',
+        info: 'fa-circle-info'
+    };
     var el = document.createElement('div');
     el.className = 'toast ' + type;
     el.innerHTML = '<i class="fa-solid ' + icons[type] + '"></i><span>' + msg + '</span>';
     c.appendChild(el);
     setTimeout(function() {
         el.classList.add('removing');
-        setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
+        setTimeout(function() {
+            if (el.parentNode) el.parentNode.removeChild(el);
+        }, 300);
     }, 3500);
 }
 
-/* ═══ PRESETS ═══ */
-window.setPreset = function(preset, btn) {
-    state.preset = preset;
-    document.querySelectorAll('.preset-btn').forEach(function(b) {
-        b.classList.remove('active');
-    });
-    if (btn) btn.classList.add('active');
-
-    var opts = document.querySelectorAll('.switch[data-opt]');
-    opts.forEach(function(s) {
-        var key = s.dataset.opt;
-        var on = false;
-        if (preset === 'low') {
-            on = ['stringArray', 'disableConsoleOutput'].includes(key);
-        } else if (preset === 'medium') {
-            on = true;
-        } else if (preset === 'high') {
-            on = true;
-        } else if (preset === 'extreme') {
-            on = true;
-        }
-        s.classList.toggle('on', on);
-        state.options[key] = on;
-    });
-    updateProgress();
-    toast('Preset: ' + preset.toUpperCase(), 'info');
-};
-
-window.toggleOpt = function(el) {
-    el.classList.toggle('on');
-    state.options[el.dataset.opt] = el.classList.contains('on');
-    updateProgress();
-};
-
-/* ═══ PROGRESS ═══ */
-function updateProgress() {
-    var steps = 0;
-    if (document.getElementById('inputCode').value.trim()) steps++;
-    if (document.getElementById('outputCode').value) steps++;
-    var percent = Math.round((steps / 2) * 100);
-    document.getElementById('progressFill').style.width = percent + '%';
-    document.getElementById('progressPercent').textContent = percent + '%';
+function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-/* ═══ INPUT STATS ═══ */
+function setStep(n) {
+    for (var i = 1; i <= 5; i++) {
+        var el = document.getElementById('stepInd' + i);
+        if (!el) continue;
+        el.classList.remove('active', 'done');
+        if (i < n) el.classList.add('done');
+        else if (i === n) el.classList.add('active');
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COMMENT STRIPPERS (string-aware, safe)
+   ═══════════════════════════════════════════════════════════ */
+function stripCssComments(code) {
+    if (!code) return '';
+    var result = '';
+    var i = 0;
+    var len = code.length;
+    var inString = false;
+    var stringChar = '';
+
+    while (i < len) {
+        var ch = code[i];
+        var next = code[i + 1];
+
+        if (inString) {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) {
+                result += code[i + 1];
+                i += 2;
+                continue;
+            }
+            if (ch === stringChar) inString = false;
+            i++;
+            continue;
+        }
+
+        if (ch === '"' || ch === "'") {
+            inString = true;
+            stringChar = ch;
+            result += ch;
+            i++;
+            continue;
+        }
+
+        if (ch === '/' && next === '*') {
+            i += 2;
+            while (i < len) {
+                if (code[i] === '*' && code[i + 1] === '/') {
+                    i += 2;
+                    break;
+                }
+                i++;
+            }
+            continue;
+        }
+
+        result += ch;
+        i++;
+    }
+    return result;
+}
+
+function stripJsComments(code) {
+    if (!code) return '';
+    var result = '';
+    var i = 0;
+    var len = code.length;
+    var st = 'code';
+
+    while (i < len) {
+        var ch = code[i];
+        var next = code[i + 1];
+
+        if (st === 'lineComment') {
+            if (ch === '\n') { st = 'code'; result += ch; }
+            i++;
+            continue;
+        }
+        if (st === 'blockComment') {
+            if (ch === '*' && next === '/') { st = 'code'; i += 2; continue; }
+            i++;
+            continue;
+        }
+        if (st === 'single') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === "'") st = 'code';
+            i++;
+            continue;
+        }
+        if (st === 'double') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === '"') st = 'code';
+            i++;
+            continue;
+        }
+        if (st === 'template') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === '`') st = 'code';
+            i++;
+            continue;
+        }
+
+        if (ch === '/' && next === '/') { st = 'lineComment'; i += 2; continue; }
+        if (ch === '/' && next === '*') { st = 'blockComment'; i += 2; continue; }
+        if (ch === "'") { st = 'single'; result += ch; i++; continue; }
+        if (ch === '"') { st = 'double'; result += ch; i++; continue; }
+        if (ch === '`') { st = 'template'; result += ch; i++; continue; }
+
+        result += ch;
+        i++;
+    }
+    return result;
+}
+
+function stripHtmlComments(code) {
+    if (!code) return '';
+    return code.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MINIFICATION (SAFE — no structural changes)
+   ═══════════════════════════════════════════════════════════ */
+function minifyHtml(html) {
+    if (!html) return '';
+    var result = html;
+
+    /* Remove comments */
+    result = stripHtmlComments(result);
+
+    /* Collapse whitespace between tags */
+    result = result.replace(/>\s+</g, '><');
+
+    /* Collapse multiple spaces in text (but keep single) */
+    result = result.replace(/[ \t]{2,}/g, ' ');
+
+    /* Remove leading/trailing whitespace per line */
+    result = result.split('\n').map(function(line) {
+        return line.trim();
+    }).filter(function(line) {
+        return line.length > 0;
+    }).join('\n');
+
+    return result.trim();
+}
+
+function minifyCss(css) {
+    if (!css) return '';
+    var result = css;
+
+    /* Remove comments */
+    result = stripCssComments(result);
+
+    /* Collapse whitespace around special chars */
+    result = result.replace(/\s*([{}:;,>+~])\s*/g, '$1');
+
+    /* Remove last semicolon in blocks */
+    result = result.replace(/;}/g, '}');
+
+    /* Collapse multiple whitespace */
+    result = result.replace(/\s+/g, ' ');
+
+    return result.trim();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LANGUAGE DETECTION
+   ═══════════════════════════════════════════════════════════ */
+function detectLanguage(code) {
+    if (!code) return 'txt';
+    var t = code.trim();
+    if (!t) return 'txt';
+
+    if (/^<!DOCTYPE\s+html/i.test(t) || /<html[\s>]/i.test(t) ||
+        /<head[\s>]/i.test(t) || /<body[\s>]/i.test(t) ||
+        /<(div|span|p|a|h[1-6]|section|header|footer|nav|main)[\s>]/i.test(t)) {
+        return 'html';
+    }
+    if (/^<\?xml/i.test(t)) return 'xml';
+    if ((t.startsWith('{') || t.startsWith('['))) {
+        try {
+            JSON.parse(t);
+            return 'json';
+        } catch (e) {}
+    }
+    if (/@media|@keyframes|@import|:\s*root\s*\{/i.test(t)) return 'css';
+    if (/^[a-zA-Z\-]+\s*\{[^}]*:[^}]*;/m.test(t) &&
+        !/function|=>|const |let |var /i.test(t)) return 'css';
+    if (/\b(function|const|let|var|=>|document\.|window\.|console\.)\b/.test(t)) {
+        return 'js';
+    }
+    return 'txt';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SPLITTER — HTML / CSS / JS extraction
+   ═══════════════════════════════════════════════════════════ */
+function splitSections(fullCode) {
+    var html = fullCode;
+    var css = '';
+    var js = '';
+    var escStyle = escapeRegex(TAG_CLOSE_STYLE);
+    var escScript = escapeRegex(TAG_CLOSE_SCRIPT);
+
+    /* Extract CSS from <style> tags */
+    var styleRegex = new RegExp(
+        TAG_OPEN_STYLE + '[^>]*>([\\s\\S]*?)' + escStyle,
+        'gi'
+    );
+    var m;
+    while ((m = styleRegex.exec(fullCode)) !== null) {
+        if (css) css += '\n\n';
+        css += stripCssComments(m[1]).trim();
+    }
+
+    /* Extract JS from <script> tags (skip data scripts) */
+    var scriptRegex = new RegExp(
+        TAG_OPEN_SCRIPT +
+        '(?![^>]*\\bsrc\\s*=)' +
+        '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template|application\\/json\\+ld)[^>]*)' +
+        '[^>]*>([\\s\\S]*?)' + escScript,
+        'gi'
+    );
+    while ((m = scriptRegex.exec(fullCode)) !== null) {
+        if (js) js += '\n\n';
+        js += stripJsComments(m[1]).trim();
+    }
+
+    /* Strip extracted blocks from HTML */
+    html = html.replace(
+        new RegExp(TAG_OPEN_STYLE + '[^>]*>[\\s\\S]*?' + escStyle, 'gi'),
+        ''
+    );
+    html = html.replace(
+        new RegExp(
+            TAG_OPEN_SCRIPT +
+            '(?![^>]*\\bsrc\\s*=)' +
+            '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template|application\\/json\\+ld)[^>]*)' +
+            '[^>]*>[\\s\\S]*?' + escScript,
+            'gi'
+        ),
+        ''
+    );
+
+    html = stripHtmlComments(html);
+    html = html.replace(/\n{3,}/g, '\n\n').trim();
+
+    return { html: html, css: css, js: js };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INPUT HANDLER
+   ═══════════════════════════════════════════════════════════ */
 var inputCodeEl = document.getElementById('inputCode');
+
 inputCodeEl.addEventListener('input', function() {
     var v = this.value;
     var stats = document.getElementById('inputStats');
@@ -548,36 +1954,144 @@ inputCodeEl.addEventListener('input', function() {
         document.getElementById('statLines').textContent = num(v.split('\n').length);
         document.getElementById('statChars').textContent = num(v.length);
         document.getElementById('statSize').textContent = bytes(new Blob([v]).size);
+        document.getElementById('statLang').textContent = detectLanguage(v).toUpperCase();
     } else {
         stats.style.display = 'none';
     }
     updateProgress();
 });
 
-/* ═══ BUILD OBFUSCATOR OPTIONS ═══ */
-function buildOptions() {
-    var opts = state.options;
-    var o = {
+/* ═══════════════════════════════════════════════════════════
+   STEP 2: SEPARATE
+   ═══════════════════════════════════════════════════════════ */
+window.separateNow = function() {
+    var input = inputCodeEl.value;
+    if (!input.trim()) {
+        showStatus('separateStatus', 'error', '❌ Please paste your code first.');
+        toast('Input is empty!', 'error');
+        return;
+    }
+
+    showStatus('separateStatus', 'loading', '⏳ Parsing and separating...');
+    setStep(2);
+
+    setTimeout(function() {
+        try {
+            var parts = splitSections(input);
+            state.sections = parts;
+
+            document.getElementById('sectionHtml').value = parts.html;
+            document.getElementById('sectionCss').value = parts.css;
+            document.getElementById('sectionJs').value = parts.js;
+
+            document.getElementById('htmlBadge').textContent = bytes(new Blob([parts.html]).size);
+            document.getElementById('cssBadge').textContent = bytes(new Blob([parts.css]).size);
+            document.getElementById('jsBadge').textContent = bytes(new Blob([parts.js]).size);
+
+            document.getElementById('sectionsSection').style.display = 'block';
+            document.getElementById('presetSection').style.display = 'block';
+            document.getElementById('obfuscateBtnRow').style.display = 'flex';
+
+            showStatus('separateStatus', 'success',
+                '✅ Code separated successfully!\n' +
+                '📄 HTML: ' + bytes(new Blob([parts.html]).size) + '\n' +
+                '🎨 CSS: ' + bytes(new Blob([parts.css]).size) + '\n' +
+                '⚙️ JS: ' + bytes(new Blob([parts.js]).size) + '\n' +
+                'Comments removed from all sections.'
+            );
+            toast('Code separated!', 'success');
+            updateProgress();
+
+            setTimeout(function() {
+                document.getElementById('presetSection').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 300);
+        } catch (e) {
+            showStatus('separateStatus', 'error', '❌ ' + e.message);
+            toast('Separation failed!', 'error');
+        }
+    }, 50);
+};
+
+/* ═══════════════════════════════════════════════════════════
+   PRESET & OPTIONS
+   ═══════════════════════════════════════════════════════════ */
+window.setPreset = function(preset, btn) {
+    state.preset = preset;
+    document.querySelectorAll('.preset-btn').forEach(function(b) {
+        b.classList.remove('active');
+    });
+    if (btn) btn.classList.add('active');
+
+    document.querySelectorAll('.switch[data-opt]').forEach(function(s) {
+        var key = s.dataset.opt;
+        var on = true;
+        if (preset === 'low') {
+            on = ['minifyMarkup', 'gzipCompress', 'base64Encode',
+                  'stringArray'].includes(key);
+        }
+        s.classList.toggle('on', on);
+        state.options[key] = on;
+    });
+    toast('Preset: ' + preset.toUpperCase(), 'info');
+};
+
+window.toggleOpt = function(el) {
+    el.classList.toggle('on');
+    state.options[el.dataset.opt] = el.classList.contains('on');
+};
+
+/* ═══════════════════════════════════════════════════════════
+   PROGRESS TRACKER
+   ═══════════════════════════════════════════════════════════ */
+function updateProgress() {
+    var steps = 0;
+    if (inputCodeEl.value.trim()) steps++;
+    if (state.sections.html || state.sections.js) steps++;
+    if (state.output.final) steps++;
+    if (state.output.final) steps++;
+    if (state.output.final) steps++;
+    var percent = Math.round((steps / 5) * 100);
+    document.getElementById('progressFill').style.width = percent + '%';
+    document.getElementById('progressPercent').textContent = percent + '%';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BUILD JS OBFUSCATOR OPTIONS
+   ═══════════════════════════════════════════════════════════ */
+function buildJsOptions() {
+    var o = state.options;
+    var preset = state.preset;
+    var cff = 0.75;
+    var dci = 0.4;
+    var str = 0.75;
+
+    if (preset === 'high') { cff = 0.9; dci = 0.5; str = 0.9; }
+    if (preset === 'extreme') { cff = 1.0; dci = 0.6; str = 1.0; }
+
+    return {
         compact: true,
-        controlFlowFlattening: opts.controlFlowFlattening,
-        controlFlowFlatteningThreshold: state.preset === 'extreme' ? 1 : (state.preset === 'high' ? 0.9 : 0.75),
-        deadCodeInjection: opts.deadCodeInjection,
-        deadCodeInjectionThreshold: state.preset === 'extreme' ? 0.6 : 0.4,
-        debugProtection: opts.debugProtection,
-        debugProtectionInterval: opts.debugProtection ? 4000 : 0,
-        disableConsoleOutput: opts.disableConsoleOutput,
+        controlFlowFlattening: o.controlFlowFlattening,
+        controlFlowFlatteningThreshold: cff,
+        deadCodeInjection: o.deadCodeInjection,
+        deadCodeInjectionThreshold: dci,
+        debugProtection: o.debugProtection,
+        debugProtectionInterval: o.debugProtection ? 4000 : 0,
+        disableConsoleOutput: false,
         identifierNamesGenerator: 'hexadecimal',
         log: false,
-        numbersToExpressions: state.preset === 'extreme',
-        renameGlobals: opts.renameGlobals,
-        selfDefending: opts.selfDefending,
+        numbersToExpressions: preset === 'extreme',
+        renameGlobals: false,
+        selfDefending: o.selfDefending,
         simplify: true,
-        splitStrings: opts.stringArray,
-        splitStringsChunkLength: 10,
-        stringArray: opts.stringArray,
-        stringArrayCallsTransform: opts.stringArray,
+        splitStrings: o.stringArray,
+        splitStringsChunkLength: 5,
+        stringArray: o.stringArray,
+        stringArrayCallsTransform: o.stringArray,
         stringArrayCallsTransformThreshold: 0.5,
-        stringArrayEncoding: opts.stringArray ? ['rc4'] : [],
+        stringArrayEncoding: o.stringArray ? ['rc4'] : [],
         stringArrayIndexShift: true,
         stringArrayRotate: true,
         stringArrayShuffle: true,
@@ -585,78 +2099,439 @@ function buildOptions() {
         stringArrayWrappersChainedCalls: true,
         stringArrayWrappersParametersMaxCount: 4,
         stringArrayWrappersType: 'function',
-        stringArrayThreshold: opts.stringArray ? 0.75 : 0,
+        stringArrayThreshold: o.stringArray ? str : 0,
         transformObjectKeys: true,
         unicodeEscapeSequence: false,
         target: 'browser',
         sourceMap: false,
         seed: 0
     };
-    return o;
 }
 
-/* ═══ OBFUSCATE ═══ */
-window.obfuscateNow = function() {
-    var input = inputCodeEl.value.trim();
-    if (!input) {
-        showStatus('error', '❌ Paste JavaScript code first');
-        toast('Input empty!', 'error');
+/* ═══════════════════════════════════════════════════════════
+   MAIN PROTECTION WORKFLOW
+   ═══════════════════════════════════════════════════════════ */
+window.protectNow = function() {
+    if (!state.sections.html && !state.sections.css && !state.sections.js) {
+        showStatus('status', 'error', '❌ Please run STEP 2 (Parse & Separate) first.');
+        toast('Separate first!', 'error');
         return;
     }
 
-    if (typeof JavaScriptObfuscator === 'undefined') {
-        showStatus('error', '❌ Obfuscator library not loaded. Check internet.');
-        toast('Library missing!', 'error');
-        return;
-    }
-
-    showStatus('loading', '⏳ Obfuscating... please wait');
+    showStatus('status', 'loading', '⏳ Processing all sections... Please wait.');
+    setStep(4);
     document.querySelectorAll('button').forEach(function(b) { b.disabled = true; });
+    var startTime = Date.now();
 
     setTimeout(function() {
         try {
-            var options = buildOptions();
-            var result = JavaScriptObfuscator.obfuscate(input, options);
-            var obfuscated = result.getObfuscatedCode();
+            var opts = state.options;
 
-            document.getElementById('outputCode').value = obfuscated;
+            /* ── Step A: Minify HTML ── */
+            var obHtml = state.sections.html;
+            if (obHtml && opts.minifyMarkup) {
+                obHtml = minifyHtml(obHtml);
+            }
 
-            /* Stats */
-            var origSize = new Blob([input]).size;
-            var obfSize = new Blob([obfuscated]).size;
-            var ratio = ((obfSize / origSize) * 100).toFixed(1);
+            /* ── Step B: Minify CSS ── */
+            var obCss = state.sections.css;
+            if (obCss && opts.minifyMarkup) {
+                obCss = minifyCss(obCss);
+            }
 
-            document.getElementById('outputStats').style.display = 'grid';
-            document.getElementById('statOriginal').textContent = bytes(origSize);
-            document.getElementById('statObfuscated').textContent = bytes(obfSize);
-            document.getElementById('statRatio').textContent = ratio + '%';
+            /* ── Step C: Obfuscate JS ── */
+            var obJs = state.sections.js;
+            if (obJs && obJs.trim() && typeof JavaScriptObfuscator !== 'undefined') {
+                var jsOpts = buildJsOptions();
+                try {
+                    var result = JavaScriptObfuscator.obfuscate(obJs, jsOpts);
+                    obJs = result.getObfuscatedCode();
+                } catch (jsErr) {
+                    console.warn('JS obfuscation fallback:', jsErr.message);
+                    var safeOpts = Object.assign({}, jsOpts);
+                    safeOpts.controlFlowFlattening = false;
+                    safeOpts.deadCodeInjection = false;
+                    safeOpts.selfDefending = false;
+                    var r2 = JavaScriptObfuscator.obfuscate(obJs, safeOpts);
+                    obJs = r2.getObfuscatedCode();
+                    toast('JS fallback mode used (simpler options)', 'warn');
+                }
+            }
 
-            showStatus('success', '✅ Obfuscated! ' + bytes(origSize) + ' → ' + bytes(obfSize) + ' (' + ratio + '%)');
-            toast('Obfuscation complete!', 'success');
-            updateProgress();
+            /* ── Step D: Build final output with encoding ── */
+            var finalOutput = buildProtectedOutput(obHtml, obCss, obJs, opts);
+
+            displayOutput(finalOutput, obHtml, obCss, obJs, startTime);
+            toast('Protection complete!', 'success');
         } catch (e) {
-            console.error('Obfuscation error:', e);
-            showStatus('error', '❌ Error: ' + e.message);
-            toast('Obfuscation failed!', 'error');
+            console.error(e);
+            showStatus('status', 'error', '❌ Error: ' + e.message);
+            toast('Protection failed: ' + e.message, 'error');
         } finally {
             document.querySelectorAll('button').forEach(function(b) { b.disabled = false; });
         }
     }, 100);
 };
 
-window.copyOutput = function() {
-    var out = document.getElementById('outputCode').value;
-    if (!out) { toast('Nothing to copy', 'error'); return; }
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(out).then(function() {
-            toast('Copied!', 'success');
-        }).catch(function() {
-            fallbackCopy(out);
-        });
-    } else {
-        fallbackCopy(out);
+/* ═══════════════════════════════════════════════════════════
+   BUILD PROTECTED OUTPUT
+   ═══════════════════════════════════════════════════════════ */
+function buildProtectedOutput(html, css, js, opts) {
+    /* If no encoding options are enabled, return plain output */
+    if (!opts.gzipCompress && !opts.base64Encode) {
+        var parts = [];
+        if (html && html.trim()) parts.push(html);
+        if (css && css.trim()) parts.push(TAG_OPEN_STYLE + '>' + css + TAG_CLOSE_STYLE);
+        if (js && js.trim()) parts.push(TAG_OPEN_SCRIPT + '>' + js + TAG_CLOSE_SCRIPT);
+        return parts.join('\n');
     }
+
+    /* Build the payload for encoding */
+    var payloadHtml = html || '';
+    var payloadCss = css || '';
+    var payloadJs = js || '';
+
+    /* Encode helper: Gzip → Base64 */
+    function encodePayload(text) {
+        if (!text) return '';
+        try {
+            /* Convert text to UTF-8 bytes */
+            var utf8 = new TextEncoder().encode(text);
+
+            if (opts.gzipCompress) {
+                /* Gzip compress */
+                var gzipped = pako.gzip(utf8, { level: 9 });
+                /* Convert to base64 */
+                var binary = '';
+                for (var i = 0; i < gzipped.length; i++) {
+                    binary += String.fromCharCode(gzipped[i]);
+                }
+                return btoa(binary);
+            } else if (opts.base64Encode) {
+                /* Just base64 (no gzip) */
+                var binary2 = '';
+                for (var j = 0; j < utf8.length; j++) {
+                    binary2 += String.fromCharCode(utf8[j]);
+                }
+                return btoa(binary2);
+            }
+            return text;
+        } catch (e) {
+            console.warn('Encode failed:', e.message);
+            return text;
+        }
+    }
+
+    var encodedHtml = encodePayload(payloadHtml);
+    var encodedCss = encodePayload(payloadCss);
+
+    /* Build bootstrap decoder */
+    var decoderScript = buildDecoder(encodedHtml, encodedCss, opts.gzipCompress);
+
+    /* Assemble final output */
+    var finalParts = [];
+
+    /* Decoder script first (in head) */
+    finalParts.push('<head>');
+    finalParts.push(decoderScript);
+    finalParts.push('</head>');
+    finalParts.push('<body></body>');
+
+    /* JS appended at end (already obfuscated) */
+    if (js && js.trim()) {
+        finalParts.push(TAG_OPEN_SCRIPT + '>' + js + TAG_CLOSE_SCRIPT);
+    }
+
+    return finalParts.join('\n');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BUILD RUNTIME DECODER BOOTSTRAP
+   ═══════════════════════════════════════════════════════════ */
+function buildDecoder(encodedHtml, encodedCss, gzipUsed) {
+    var cssInject = '';
+    if (encodedCss) {
+        cssInject =
+            'var _cssData="' + encodedCss + '";' +
+            'try{' +
+            'var _cssBin=atob(_cssData);' +
+            'var _cssBytes=new Uint8Array(_cssBin.length);' +
+            'for(var _ci=0;_ci<_cssBin.length;_ci++)_cssBytes[_ci]=_cssBin.charCodeAt(_ci);' +
+            (gzipUsed
+                ? 'var _cssText=new TextDecoder().decode(pako.ungzip(_cssBytes));'
+                : 'var _cssText=new TextDecoder().decode(_cssBytes);') +
+            'var _styleEl=document.createElement("style");' +
+            '_styleEl.textContent=_cssText;' +
+            'document.head.appendChild(_styleEl);' +
+            '}catch(_e){console.warn("CSS decode failed",_e);}';
+    }
+
+    var htmlInject = '';
+    if (encodedHtml) {
+        htmlInject =
+            'var _htmlData="' + encodedHtml + '";' +
+            'try{' +
+            'var _htmlBin=atob(_htmlData);' +
+            'var _htmlBytes=new Uint8Array(_htmlBin.length);' +
+            'for(var _hi=0;_hi<_htmlBin.length;_hi++)_htmlBytes[_hi]=_htmlBin.charCodeAt(_hi);' +
+            (gzipUsed
+                ? 'var _htmlText=new TextDecoder().decode(pako.ungzip(_htmlBytes));'
+                : 'var _htmlText=new TextDecoder().decode(_htmlBytes);') +
+            'document.addEventListener("DOMContentLoaded",function(){' +
+            'var _tmp=document.createElement("div");' +
+            '_tmp.innerHTML=_htmlText;' +
+            'while(_tmp.firstChild){document.body.appendChild(_tmp.firstChild);}' +
+            '});' +
+            '}catch(_e){console.warn("HTML decode failed",_e);}';
+    }
+
+    var pakoLoad = gzipUsed
+        ? '<' + 'script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"><' + '/script>'
+        : '';
+
+    return pakoLoad +
+        '<' + 'script>' +
+        '(function(){' +
+        '"use strict";' +
+        cssInject +
+        htmlInject +
+        '})();' +
+        '<' + '/script>';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DISPLAY OUTPUT
+   ═══════════════════════════════════════════════════════════ */
+function displayOutput(finalOutput, html, css, js, startTime) {
+    state.output = {
+        final: finalOutput,
+        html: html,
+        css: css,
+        js: js
+    };
+
+    document.getElementById('outputSection').style.display = 'block';
+    document.getElementById('outputActions').style.display = 'flex';
+    document.getElementById('outputFinal').value = finalOutput;
+    document.getElementById('outputHtml').value = html || '';
+    document.getElementById('outputCss').value = css || '';
+    document.getElementById('outputJs').value = js || '';
+
+    var origSize = new Blob([inputCodeEl.value]).size;
+    var obfSize = new Blob([finalOutput]).size;
+    var ratio = origSize > 0 ? ((obfSize / origSize) * 100).toFixed(1) : '0';
+    var elapsed = Date.now() - startTime;
+
+    document.getElementById('statOriginal').textContent = bytes(origSize);
+    document.getElementById('statObfuscated').textContent = bytes(obfSize);
+    document.getElementById('statRatio').textContent = ratio + '%';
+    document.getElementById('statTime').textContent = elapsed + ' ms';
+
+    showStatus('status', 'success',
+        '✅ Protection complete!\n' +
+        '📊 Size: ' + bytes(origSize) + ' → ' + bytes(obfSize) + '\n' +
+        '📈 Ratio: ' + ratio + '% · ⏱ Time: ' + elapsed + ' ms'
+    );
+    setStep(5);
+    updateProgress();
+
+    setTimeout(function() {
+        document.getElementById('outputSection').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }, 300);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TEST PANEL
+   ═══════════════════════════════════════════════════════════ */
+window.runTests = function() {
+    var panel = document.getElementById('testPanel');
+    var results = document.getElementById('testResults');
+    var out = state.output;
+
+    if (!out.final) {
+        toast('No output to test', 'error');
+        return;
+    }
+
+    panel.classList.add('show');
+    results.innerHTML = '';
+
+    var tests = [];
+
+    /* ── Test 1: Final output exists ── */
+    tests.push({
+        name: 'Final Output Generated',
+        desc: 'Verifies the protected output was created',
+        pass: out.final.length > 0,
+        value: bytes(new Blob([out.final]).size),
+        icon: out.final.length > 0 ? 'pass' : 'fail'
+    });
+
+    /* ── Test 2: HTML structure preserved ── */
+    if (out.html) {
+        var hasBody = /<body/i.test(out.html);
+        var hasHtml = /<html/i.test(out.html);
+        var hasHead = /<head/i.test(out.html);
+        tests.push({
+            name: 'HTML Structure Intact',
+            desc: 'Document structure preserved (html/head/body)',
+            pass: hasBody || hasHtml || hasHead,
+            value: (hasBody ? 'body ✓ ' : '') + (hasHtml ? 'html ✓ ' : '') + (hasHead ? 'head ✓' : ''),
+            icon: (hasBody || hasHtml || hasHead) ? 'pass' : 'warn'
+        });
+    }
+
+    /* ── Test 3: CSS brace balance ── */
+    if (out.css) {
+        var openB = (out.css.match(/\{/g) || []).length;
+        var closeB = (out.css.match(/\}/g) || []).length;
+        tests.push({
+            name: 'CSS Brace Balance',
+            desc: 'Opening and closing braces match',
+            pass: openB === closeB,
+            value: openB === closeB ? 'Balanced (' + openB + ')' : (openB - closeB) + ' unmatched',
+            icon: openB === closeB ? 'pass' : 'fail'
+        });
+    }
+
+    /* ── Test 4: JS syntax valid ── */
+    if (out.js) {
+        var jsValid = true;
+        var jsError = '';
+        try {
+            new Function(out.js);
+        } catch (e) {
+            jsValid = false;
+            jsError = e.message;
+        }
+        tests.push({
+            name: 'JavaScript Syntax',
+            desc: 'Obfuscated JS parses without errors',
+            pass: jsValid,
+            value: jsValid ? 'Valid syntax' : 'Syntax error',
+            icon: jsValid ? 'pass' : 'fail'
+        });
+    }
+
+    /* ── Test 5: Comments removed ── */
+    var htmlC = out.html ? (out.html.match(/<!--/g) || []).length : 0;
+    var cssC = out.css ? (out.css.match(/\/\*/g) || []).length : 0;
+    var totalC = htmlC + cssC;
+    tests.push({
+        name: 'Comments Removed',
+        desc: 'All HTML and CSS comments stripped',
+        pass: totalC === 0,
+        value: totalC === 0 ? 'All removed' : totalC + ' remain',
+        icon: totalC === 0 ? 'pass' : 'warn'
+    });
+
+    /* ── Test 6: JS obfuscation applied ── */
+    if (out.js) {
+        var hasHexVars = /_0x[0-9a-f]{4,}/i.test(out.js);
+        tests.push({
+            name: 'JS Obfuscation Applied',
+            desc: 'Hex identifiers detected in obfuscated JS',
+            pass: hasHexVars,
+            value: hasHexVars ? 'Confirmed' : 'Not detected',
+            icon: hasHexVars ? 'pass' : 'warn'
+        });
+    }
+
+    /* ── Test 7: Base64 encoding (if enabled) ── */
+    if (state.options.base64Encode && out.final) {
+        var hasB64 = /var _htmlData="[A-Za-z0-9+/=]+"/.test(out.final);
+        tests.push({
+            name: 'Base64 Encoding Applied',
+            desc: 'HTML/CSS payloads encoded as Base64',
+            pass: hasB64,
+            value: hasB64 ? 'Encoded' : 'Not found',
+            icon: hasB64 ? 'pass' : 'warn'
+        });
+    }
+
+    /* ── Test 8: Runtime decoder present ── */
+    if (state.options.base64Encode && out.final) {
+        var hasDecoder = /atob|pako\.ungzip/.test(out.final);
+        tests.push({
+            name: 'Runtime Decoder Present',
+            desc: 'Bootstrap decoder script included for browser',
+            pass: hasDecoder,
+            value: hasDecoder ? 'Present' : 'Missing',
+            icon: hasDecoder ? 'pass' : 'fail'
+        });
+    }
+
+    /* ── Test 9: Size expansion ── */
+    var origSize = new Blob([inputCodeEl.value]).size;
+    var obfSize = new Blob([out.final]).size;
+    var ratio = origSize > 0 ? ((obfSize / origSize) * 100).toFixed(1) : 0;
+    tests.push({
+        name: 'Size Ratio',
+        desc: 'Protected size relative to original',
+        pass: true,
+        value: ratio + '% of original',
+        icon: 'pass'
+    });
+
+    /* ── Render results ── */
+    var passed = 0;
+    var failed = 0;
+
+    tests.forEach(function(t) {
+        if (t.icon === 'pass') passed++;
+        else if (t.icon === 'fail') failed++;
+
+        var item = document.createElement('div');
+        item.className = 'test-item ' + t.icon;
+        var iconClass = t.icon === 'pass' ? 'fa-circle-check' :
+                        t.icon === 'fail' ? 'fa-circle-xmark' : 'fa-triangle-exclamation';
+        item.innerHTML =
+            '<i class="fa-solid ' + iconClass + ' icon"></i>' +
+            '<div class="msg">' +
+                '<b>' + t.name + '</b>' +
+                '<small>' + t.desc + '</small>' +
+            '</div>' +
+            '<div class="value">' + t.value + '</div>';
+        results.appendChild(item);
+    });
+
+    /* ── Summary ── */
+    var summary = document.createElement('div');
+    summary.className = 'test-item';
+    summary.style.background = failed === 0 ? 'rgba(0,255,100,0.08)' : 'rgba(255,0,100,0.08)';
+    summary.style.border = '1px solid ' + (failed === 0 ? 'var(--green)' : 'var(--red)');
+    summary.style.marginTop = '12px';
+    summary.innerHTML =
+        '<i class="fa-solid ' + (failed === 0 ? 'fa-circle-check' : 'fa-circle-xmark') + ' icon" style="color:' + (failed === 0 ? 'var(--green)' : 'var(--red)') + ';"></i>' +
+        '<div class="msg">' +
+            '<b>' + (failed === 0 ? '✅ All tests passed — output is ready!' : '❌ ' + failed + ' test(s) failed') + '</b>' +
+            '<small>' + passed + ' passed · ' + failed + ' failed · ' + tests.length + ' total</small>' +
+        '</div>' +
+        '<div class="value">' + (failed === 0 ? 'READY' : 'CHECK') + '</div>';
+    results.appendChild(summary);
+
+    toast(failed === 0 ? '✅ All tests passed!' : '⚠️ ' + failed + ' test(s) failed',
+          failed === 0 ? 'success' : 'warn');
 };
+
+/* ═══════════════════════════════════════════════════════════
+   TABS
+   ═══════════════════════════════════════════════════════════ */
+window.switchTab = function(tab) {
+    document.querySelectorAll('.tabs .tab').forEach(function(t) {
+        t.classList.toggle('active', t.dataset.tab === tab);
+    });
+    document.querySelectorAll('.tab-content').forEach(function(c) {
+        c.classList.toggle('active', c.id === 'tab-' + tab);
+    });
+};
+
+/* ═══════════════════════════════════════════════════════════
+   COPY / DOWNLOAD / CLEAR
+   ═══════════════════════════════════════════════════════════ */
 function fallbackCopy(text) {
     var ta = document.createElement('textarea');
     ta.value = text;
@@ -664,86 +2539,140 @@ function fallbackCopy(text) {
     ta.style.left = '-9999px';
     document.body.appendChild(ta);
     ta.select();
-    try { document.execCommand('copy'); toast('Copied!', 'success'); } catch(e) { toast('Copy failed', 'error'); }
+    try {
+        document.execCommand('copy');
+        toast('Copied!', 'success');
+    } catch (e) {
+        toast('Copy failed', 'error');
+    }
     document.body.removeChild(ta);
 }
 
-window.downloadOutput = function() {
-    var out = document.getElementById('outputCode').value;
-    if (!out) { toast('Nothing to download', 'error'); return; }
-    var blob = new Blob([out], { type: 'text/javascript;charset=utf-8' });
+window.copyFinal = function() {
+    var v = document.getElementById('outputFinal').value;
+    if (!v) { toast('Nothing to copy', 'error'); return; }
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(v)
+            .then(function() { toast('Copied!', 'success'); })
+            .catch(function() { fallbackCopy(v); });
+    } else {
+        fallbackCopy(v);
+    }
+};
+
+window.downloadFinal = function() {
+    var v = document.getElementById('outputFinal').value;
+    if (!v) { toast('Nothing to download', 'error'); return; }
+    var blob = new Blob([v], { type: 'text/plain;charset=utf-8' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'obfuscated_' + Date.now() + '.js';
+    a.download = 'protected_' + Date.now() + '.html';
     a.click();
     toast('Downloaded!', 'success');
 };
 
-window.testOutput = function() {
-    var out = document.getElementById('outputCode').value;
-    if (!out) { toast('Obfuscate first!', 'error'); return; }
-    if (!confirm('⚠️ This will execute obfuscated code in current page. Continue?')) return;
-    try {
-        var script = document.createElement('script');
-        script.textContent = out;
-        document.head.appendChild(script);
-        toast('Executed! Check console.', 'success');
-    } catch(e) {
-        toast('Execution failed: ' + e.message, 'error');
-    }
-};
-
-window.loadSample = function() {
-    var sample = [
-        '// Sample code to obfuscate',
-        'function calculateTotal(items, taxRate) {',
-        '    var subtotal = 0;',
-        '    for (var i = 0; i < items.length; i++) {',
-        '        subtotal += items[i].price * items[i].quantity;',
-        '    }',
-        '    var tax = subtotal * taxRate;',
-        '    var total = subtotal + tax;',
-        '    console.log("Subtotal:", subtotal);',
-        '    console.log("Tax:", tax);',
-        '    console.log("Total:", total);',
-        '    return total;',
-        '}',
-        'var cart = [',
-        '    { name: "Laptop", price: 1200, quantity: 1 },',
-        '    { name: "Mouse", price: 25, quantity: 2 }',
-        '];',
-        'var finalAmount = calculateTotal(cart, 0.17);',
-        'console.log("Final: $" + finalAmount);'
-    ].join('\n');
-    inputCodeEl.value = sample;
-    inputCodeEl.dispatchEvent(new Event('input'));
-    toast('Sample loaded!', 'info');
+window.downloadAll = function() {
+    var files = [
+        { c: state.output.final, n: 'final.html' },
+        { c: state.output.html, n: 'index.html' },
+        { c: state.output.css, n: 'style.css' },
+        { c: state.output.js, n: 'script.js' }
+    ];
+    var count = 0;
+    files.forEach(function(f) {
+        if (!f.c || !f.c.trim()) return;
+        (function(file, idx) {
+            setTimeout(function() {
+                var blob = new Blob([file.c], { type: 'text/plain;charset=utf-8' });
+                var a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = file.n;
+                a.click();
+            }, idx * 300);
+        })(f, count);
+        count++;
+    });
+    if (!count) { toast('Nothing to download', 'error'); return; }
+    toast('Downloading ' + count + ' file(s)...', 'success');
 };
 
 window.clearAll = function() {
     if (!confirm('Clear all input and output?')) return;
     inputCodeEl.value = '';
-    document.getElementById('outputCode').value = '';
+    state.sections = { html: '', css: '', js: '' };
+    state.output = { final: '', html: '', css: '', js: '' };
     document.getElementById('inputStats').style.display = 'none';
-    document.getElementById('outputStats').style.display = 'none';
-    document.getElementById('status').className = 'status';
+    document.getElementById('sectionsSection').style.display = 'none';
+    document.getElementById('presetSection').style.display = 'none';
+    document.getElementById('obfuscateBtnRow').style.display = 'none';
+    document.getElementById('outputSection').style.display = 'none';
+    document.getElementById('outputActions').style.display = 'none';
+    document.getElementById('testPanel').classList.remove('show');
+    hideStatus('separateStatus');
+    hideStatus('status');
+    setStep(1);
     updateProgress();
     toast('Cleared', 'info');
 };
 
+window.loadSample = function() {
+    var sample =
+        '<!DOCTYPE html>\n' +
+        '<html lang="en">\n' +
+        '<head>\n' +
+        '    <meta charset="UTF-8">\n' +
+        '    <title>Sample Protected Page</title>\n' +
+        '    <style>\n' +
+        '        /* Sample CSS */\n' +
+        '        body { background: #000; color: #fff; font-family: sans-serif; padding: 40px; }\n' +
+        '        .container { max-width: 600px; margin: 0 auto; }\n' +
+        '        .btn { background: #00f0ff; padding: 12px 24px; border: none; color: #000; cursor: pointer; border-radius: 6px; }\n' +
+        '        #result { color: #00ff64; font-size: 20px; margin-top: 20px; }\n' +
+        '    </style>\n' +
+        '</head>\n' +
+        '<body>\n' +
+        '    <div class="container">\n' +
+        '        <h1>Protected by ULTRA</h1>\n' +
+        '        <button class="btn" onclick="calculate()">Calculate Total</button>\n' +
+        '        <div id="result"></div>\n' +
+        '    </div>\n' +
+        '    <script>\n' +
+        '        // Sample JS\n' +
+        '        function calculate() {\n' +
+        '            var items = [\n' +
+        '                { name: "Laptop", price: 1200 },\n' +
+        '                { name: "Mouse", price: 25 },\n' +
+        '                { name: "Keyboard", price: 80 }\n' +
+        '            ];\n' +
+        '            var total = 0;\n' +
+        '            for (var i = 0; i < items.length; i++) {\n' +
+        '                total += items[i].price;\n' +
+        '            }\n' +
+        '            document.getElementById("result").textContent = "Total: $" + total;\n' +
+        '        }\n' +
+        '        calculate();\n' +
+        '    ' + TAG_CLOSE_SCRIPT + '\n' +
+        '</body>\n' +
+        '</html>';
+
+    inputCodeEl.value = sample;
+    inputCodeEl.dispatchEvent(new Event('input'));
+    toast('Sample loaded! Click PARSE & SEPARATE', 'info');
+};
+
 window.doLogout = function() {
     if (window.firebase && firebase.auth) {
-        firebase.auth().signOut().then(function() {
-            window.location.href = 'index.html';
-        }).catch(function() {
-            window.location.href = 'index.html';
-        });
+        firebase.auth().signOut()
+            .then(function() { window.location.href = 'index.html'; })
+            .catch(function() { window.location.href = 'index.html'; });
     } else {
         window.location.href = 'index.html';
     }
 };
 
-/* ═══ AUTH ═══ */
+/* ═══════════════════════════════════════════════════════════
+   AUTH HANDLER
+   ═══════════════════════════════════════════════════════════ */
 function handleAuth(e) {
     if (!e.detail || !e.detail.user) return;
     if (state.authHandled) return;
@@ -762,10 +2691,14 @@ setTimeout(function() {
     }
 }, 3000);
 
-/* ═══ INIT ═══ */
-setPreset('medium', document.querySelector('.preset-btn[data-preset="medium"]'));
+/* ═══════════════════════════════════════════════════════════
+   INITIALIZATION
+   ═══════════════════════════════════════════════════════════ */
+setStep(1);
 updateProgress();
-console.log('🛡️ Code Obfuscation tool loaded');
+
+console.log('%c🛡️ Code Protection ULTRA v9.0 loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c✅ Minify + Gzip + Base64 + JS Obfuscation + Built-in Test', 'color:#ffd700;font-size:11px;');
 
 })();
 </script>
