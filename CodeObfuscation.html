@@ -1175,10 +1175,30 @@ button.green {
     background: rgba(0, 255, 100, 0.05);
 }
 
+.detect-panel.warn {
+    border-color: var(--gold);
+    background: rgba(255, 215, 0, 0.05);
+}
+
+.detect-panel.error {
+    border-color: var(--red);
+    background: rgba(255, 0, 100, 0.05);
+}
+
 .detect-icon {
     font-size: 20px;
     color: var(--cyan);
     animation: pulse 2s ease-in-out infinite;
+}
+
+.detect-panel.error .detect-icon {
+    color: var(--red);
+    animation: none;
+}
+
+.detect-panel.warn .detect-icon {
+    color: var(--gold);
+    animation: none;
 }
 
 .detect-info {
@@ -1205,6 +1225,30 @@ button.green {
     letter-spacing: 1.5px;
     margin-left: 6px;
     border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+.detect-info .detected-lang.js {
+    background: rgba(0, 240, 255, 0.15);
+    color: var(--cyan);
+    border-color: rgba(0, 240, 255, 0.3);
+}
+
+.detect-info .detected-lang.html {
+    background: rgba(255, 140, 0, 0.15);
+    color: var(--orange);
+    border-color: rgba(255, 140, 0, 0.3);
+}
+
+.detect-info .detected-lang.css {
+    background: rgba(180, 0, 255, 0.15);
+    color: var(--purple);
+    border-color: rgba(180, 0, 255, 0.3);
+}
+
+.detect-info .detected-lang.mixed {
+    background: rgba(255, 215, 0, 0.15);
+    color: var(--gold);
+    border-color: rgba(255, 215, 0, 0.3);
 }
 
 .detect-progress {
@@ -1384,7 +1428,7 @@ button.green {
     <div class="brand">
         <span class="logo">🌌</span>
         <span class="title">NightOrbit</span>
-        <span class="title-ver">v12.0</span>
+        <span class="title-ver">v12.1</span>
         <span class="title-sub">· JS Shield ULTRA Heavy</span>
     </div>
     <div class="topbar-actions">
@@ -1432,9 +1476,9 @@ button.green {
         <h1>🌌 JavaScript Obfuscation ULTRA</h1>
         <div class="subtitle">NightOrbit CodeForge · Full ULTRA Heavy 24-Layer JavaScript Protection</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-shield-halved"></i> v12.0</span>
+            <span class="header-stat"><i class="fa-solid fa-shield-halved"></i> v12.1</span>
             <span class="header-stat gold"><i class="fa-solid fa-layer-group"></i> Up to 24 Layers</span>
-            <span class="header-stat pink"><i class="fa-solid fa-bolt"></i> Chunked Mode</span>
+            <span class="header-stat pink"><i class="fa-solid fa-bolt"></i> Smart Detect</span>
             <span class="header-stat green"><i class="fa-solid fa-lock"></i> JS Only</span>
         </div>
     </div>
@@ -1535,10 +1579,12 @@ button.green {
         <label>📝 STEP 2 — Paste Your JavaScript Code</label>
 
         <div class="info-box">
-            <strong>JavaScript Only:</strong> Paste your JavaScript code — the engine will apply the selected protection layers. No configuration needed.
+            <strong>JavaScript Only:</strong> Paste your <strong>JavaScript code</strong> below.
+            The engine will auto-detect and warn if HTML or CSS is detected.
+            If you paste full HTML, only the <code>&lt;script&gt;</code> contents will be extracted automatically.
         </div>
 
-        <textarea id="inputCode" class="huge" placeholder="// Paste your JavaScript code here...&#10;//&#10;// Protection layers will be applied automatically based on selected level:&#10;//   1. Control Flow Flattening&#10;//   2. Dead Code Injection&#10;//   3. RC4 + Base64 String Encryption&#10;//   4. String Wrappers (5x chained)&#10;//   5. Split Strings&#10;//   6. Debug Protection&#10;//   7. Self Defending&#10;//   8. Hexadecimal Identifier Renaming&#10;//   9. Numbers to Expressions&#10;//  10. Transform Object Keys"></textarea>
+        <textarea id="inputCode" class="huge" placeholder="// Paste your JavaScript code here...&#10;//&#10;// The engine supports:&#10;//   • Pure JavaScript          → protected directly&#10;//   • HTML with <script> tags  → JavaScript auto-extracted&#10;//   • HTML/CSS only            → rejected with clear message&#10;//&#10;// Protection layers:&#10;//   1. Control Flow Flattening&#10;//   2. Dead Code Injection&#10;//   3. RC4 + Base64 String Encryption&#10;//   4. String Wrappers (5x chained)&#10;//   5. Split Strings&#10;//   6. Debug Protection&#10;//   7. Self Defending&#10;//   8. Hexadecimal Identifier Renaming&#10;//   9. Numbers to Expressions&#10;//  10. Transform Object Keys"></textarea>
 
         <div class="detect-panel" id="detectPanel">
             <span class="detect-icon"><i class="fa-solid fa-radar"></i></span>
@@ -1695,8 +1741,8 @@ button.green {
 'use strict';
 
 /* ═══════════════════════════════════════════════════════════════════
-   NIGHTORBIT — JAVASCRIPT ULTRA HEAVY PROTECTION ENGINE v12.0
-   Real 24-Layer · Chunked · Memory-Safe · Auto-Fallback · Timeout
+   NIGHTORBIT — JAVASCRIPT ULTRA HEAVY PROTECTION ENGINE v12.1
+   JavaScript Only · Smart HTML/CSS Detection · Auto Script Extraction
    ═══════════════════════════════════════════════════════════════════ */
 
 var CONFIG = {
@@ -1710,28 +1756,24 @@ var CONFIG = {
 
 /* ═══ RESERVED NAMES — only globals + DOM, NOT user variables ═══ */
 var RESERVED_NAMES = [
-    // App functions
     'showPage','calculate','doLogout','loadSample','clearAll','copyOutput',
     'downloadOutput','downloadAll','switchTab','obfuscateNow','setPreset',
     'setLang','toggleOpt','handleAuth','fallbackCopy','init','analyzeInput',
     'stripJsComments','buildOptions','getUniqueReservedNames','processChunk',
-    // Global objects
+    'detectInputType','cleanInput','stripHtmlTags',
     'window','document','console','localStorage','sessionStorage',
     'navigator','location','history','screen','performance','globalThis',
     'Blob','URL','FileReader','Promise','JSON','Math','Date',
     'Array','Object','String','Number','Boolean','RegExp','Symbol','BigInt',
     'Function','Error','TypeError','RangeError','SyntaxError','EvalError',
     'Map','Set','WeakMap','WeakSet','Proxy','Reflect','Intl',
-    // Global functions
     'setTimeout','setInterval','clearTimeout','clearInterval','setImmediate',
     'requestAnimationFrame','cancelAnimationFrame','queueMicrotask',
     'fetch','XMLHttpRequest','WebSocket','Worker','EventSource',
     'AbortController','TextEncoder','TextDecoder','atob','btoa',
     'encodeURIComponent','decodeURIComponent','parseInt','parseFloat',
     'isNaN','isFinite','alert','confirm','prompt',
-    // Libraries
     'firebase','JavaScriptObfuscator','pako',
-    // DOM properties
     'dataset','classList','textContent','innerHTML','outerHTML','innerText',
     'value','style','className','tagName','nodeName','nodeType','id','name',
     'children','parentNode','parentElement','firstChild','lastChild',
@@ -1744,13 +1786,11 @@ var RESERVED_NAMES = [
     'replaceChild','createElement','createTextNode','createDocumentFragment',
     'scrollIntoView','scrollTo','focus','blur','closest','matches','contains',
     'cloneNode','isEqualNode','normalize','hasChildNodes',
-    // Events
     'click','input','change','submit','reset','keydown','keyup','keypress',
     'mouseover','mouseout','mousedown','mouseup','mousemove','dblclick',
     'touchstart','touchend','touchmove','touchcancel','pointerdown','pointerup',
     'load','error','resize','scroll','DOMContentLoaded',
     'readystatechange','hashchange','popstate',
-    // Array/String methods
     'length','push','pop','shift','unshift','slice','splice','concat','join',
     'split','replace','replaceAll','match','matchAll','test','exec','trim',
     'trimStart','trimEnd','charAt','charCodeAt','codePointAt','startsWith',
@@ -1763,7 +1803,6 @@ var RESERVED_NAMES = [
     'seal','create','defineProperty','defineProperties','getPrototypeOf',
     'setPrototypeOf','getOwnPropertyNames','getOwnPropertyDescriptor',
     'then','catch','finally','resolve','reject','all','allSettled','race','any',
-    // Language keywords (safe to keep)
     'undefined','null','NaN','Infinity','this',
     'exports','module','require','process','__dirname','__filename',
     'import','default','await','async','yield'
@@ -1837,30 +1876,130 @@ var Utils = {
                 setTimeout(resolve, CONFIG.UI_YIELD_MS);
             }
         });
-    },
-    withTimeout: function(promise, ms, label) {
-        return new Promise(function(resolve, reject) {
-            var done = false;
-            var timer = setTimeout(function() {
-                if (done) return;
-                done = true;
-                reject(new Error('Timeout after ' + ms + 'ms' +
-                    (label ? ' (' + label + ')' : '')));
-            }, ms);
-            promise.then(function(v) {
-                if (done) return;
-                done = true;
-                clearTimeout(timer);
-                resolve(v);
-            }, function(e) {
-                if (done) return;
-                done = true;
-                clearTimeout(timer);
-                reject(e);
-            });
-        });
     }
 };
+
+/* ═══════════════════════════════════════════════════════════════════
+   HTML TAG STRIPPER — removes <script>, <style>, comments
+   ═══════════════════════════════════════════════════════════════════ */
+function stripHtmlTags(code) {
+    if (!code) return '';
+    var result = code;
+
+    // Remove <script> tags (keep inner content)
+    result = result.replace(/<script\b[^>]*>/gi, '');
+    result = result.replace(/<\/script\s*>/gi, '');
+
+    // Remove <style>...</style> blocks (drop entire content)
+    result = result.replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi, '');
+
+    // Remove HTML comments
+    result = result.replace(/<!--[\s\S]*?-->/g, '');
+
+    // Remove common HTML tags on their own lines
+    result = result.replace(
+        /^\s*<\/?(?:html|head|body|div|span|p|a|button|section|nav|header|footer|main|article|aside|ul|ol|li|h[1-6]|meta|link|title|form|input|label|table|tr|td|th|tbody|thead|img|br|hr|iframe|video|audio|canvas|svg|path)\b[^>]*>\s*$/gim,
+        ''
+    );
+
+    return result;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SMART INPUT CLEANER — extracts JavaScript from HTML if needed
+   ═══════════════════════════════════════════════════════════════════ */
+function cleanInput(code) {
+    if (!code) return '';
+
+    // Detect HTML presence
+    var looksLikeHtml = /<script\b|<style\b|<!DOCTYPE|<html\b|<head\b|<body\b|<div\b/i.test(code);
+
+    if (looksLikeHtml) {
+        // Extract only inline <script> tag contents (skip external src)
+        var scripts = [];
+        var scriptRegex = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
+        var match;
+        while ((match = scriptRegex.exec(code)) !== null) {
+            var attrs = match[1] || '';
+            var body = match[2] || '';
+            if (/\bsrc\s*=/i.test(attrs)) continue;
+            if (body.trim()) scripts.push(body);
+        }
+
+        if (scripts.length > 0) {
+            return scripts.join('\n\n');
+        }
+
+        // No inline <script> — strip all HTML tags
+        return stripHtmlTags(code);
+    }
+
+    return code;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SMART INPUT DETECTOR — JavaScript / HTML / CSS / Mixed
+   ═══════════════════════════════════════════════════════════════════ */
+function detectInputType(code) {
+    if (!code || !code.trim()) return { type: 'empty' };
+
+    var trimmed = code.trim();
+
+    var hasScriptTag = /<script\b[^>]*>[\s\S]*?<\/script\s*>/i.test(trimmed);
+    var hasStyleTag = /<style\b[^>]*>[\s\S]*?<\/style\s*>/i.test(trimmed);
+    var hasDoctype = /<!DOCTYPE\s+html/i.test(trimmed);
+    var hasHtmlTag = /<html\b[^>]*>/i.test(trimmed);
+    var hasHtmlTags = /<\/?(?:div|span|p|a|button|nav|header|footer|section|article|main|ul|ol|li|h[1-6]|img|input|form|table|tr|td|th)\b[^>]*>/i.test(trimmed);
+
+    var cssPatterns = /(?:^|\s)(?:[.#][\w-]+\s*\{|\w+\s*:\s*[^;{}]+\s*;)/;
+    var hasCssRules = cssPatterns.test(trimmed) && !hasScriptTag;
+
+    var jsPatterns = /(?:^|[^\w])(?:function\s+\w+|var\s+\w+|let\s+\w+|const\s+\w+|=>|\breturn\b|console\.|document\.|window\.|class\s+\w+|import\s+|export\s+|async\s+function|await\s+)/;
+    var hasJsCode = jsPatterns.test(trimmed);
+
+    // Pure JavaScript
+    if (!hasScriptTag && !hasStyleTag && !hasDoctype && !hasHtmlTag && !hasHtmlTags && !hasCssRules) {
+        if (hasJsCode || trimmed.length > 0) {
+            return { type: 'js', reliable: true };
+        }
+    }
+
+    // HTML only (doctype or <html> without inline <script>)
+    if ((hasDoctype || hasHtmlTag) && !hasScriptTag) {
+        return { type: 'html', reliable: true };
+    }
+
+    // CSS only
+    if (hasCssRules && !hasScriptTag && !hasHtmlTag && !hasDoctype) {
+        return { type: 'css', reliable: true };
+    }
+
+    // HTML with inline <script> — mixed
+    if (hasScriptTag) {
+        var scriptBody = '';
+        var scriptRegex = /<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi;
+        var m;
+        while ((m = scriptRegex.exec(trimmed)) !== null) {
+            scriptBody += m[1] + '\n';
+        }
+        if (scriptBody.trim().length > 10) {
+            return { type: 'mixed', reliable: true, hasInlineJs: true };
+        }
+        return { type: 'html', reliable: true };
+    }
+
+    // HTML tags without doctype
+    if (hasHtmlTags) {
+        return { type: 'html', reliable: true };
+    }
+
+    // CSS + JS mix
+    if (hasCssRules && hasJsCode) {
+        return { type: 'mixed', reliable: true };
+    }
+
+    return { type: 'js', reliable: false };
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    SAFE COMMENT STRIPPER — string/template/regex-aware, O(n)
@@ -1917,14 +2056,12 @@ function stripJsComments(code) {
             i++; continue;
         }
 
-        // code state
         if (ch === '/' && next === '/') { state = 'line'; i += 2; continue; }
         if (ch === '/' && next === '*') { state = 'block'; i += 2; continue; }
         if (ch === "'") { state = 'single'; result.push(ch); i++; lastNonWs = ch; continue; }
         if (ch === '"') { state = 'double'; result.push(ch); i++; lastNonWs = ch; continue; }
         if (ch === '`') { state = 'template'; result.push(ch); i++; lastNonWs = ch; continue; }
 
-        // Regex detection — O(1) using tailBuffer
         if (ch === '/') {
             var prev = lastNonWs;
             if (prev === '' || /[=(:,;!&|?{}\[\]<>+\-*%^~]/.test(prev) ||
@@ -2222,8 +2359,9 @@ function analyzeInput() {
 
     if (!code.trim()) {
         if (stats) stats.style.display = 'none';
-        if (detectPanel) detectPanel.classList.remove('active');
+        if (detectPanel) detectPanel.classList.remove('active', 'warn', 'error');
         if (detectMsg) detectMsg.textContent = 'Awaiting input — paste your JavaScript code';
+        if (STATE.dom.statLang) STATE.dom.statLang.textContent = '—';
         UI.detectProgress(0);
         return;
     }
@@ -2235,17 +2373,62 @@ function analyzeInput() {
     if (STATE.dom.statLines) STATE.dom.statLines.textContent = lines.toLocaleString();
     if (STATE.dom.statChars) STATE.dom.statChars.textContent = chars.toLocaleString();
     if (STATE.dom.statSize) STATE.dom.statSize.textContent = Utils.bytes(size);
-    if (STATE.dom.statLang) STATE.dom.statLang.textContent = 'JS';
     if (stats) stats.style.display = 'grid';
 
-    var looksLikeJs = /function|var |let |const |=>|\breturn\b|console\.|document\.|window\.|class |import |export /.test(code);
-    if (detectPanel) detectPanel.classList.toggle('active', looksLikeJs);
-    if (detectMsg) {
-        detectMsg.innerHTML = looksLikeJs
-            ? 'Detected: <strong>JavaScript</strong> <span class="detected-lang">JS</span> · ' +
-              (size > CONFIG.CHUNK_THRESHOLD ? '<strong style="color:var(--gold)">CHUNKED MODE</strong>' : 'Standard mode')
-            : 'No JavaScript patterns detected — proceed with caution';
+    var detection = detectInputType(code);
+    var type = detection.type;
+
+    if (detectPanel) detectPanel.classList.remove('active', 'warn', 'error');
+
+    if (type === 'js') {
+        if (STATE.dom.statLang) STATE.dom.statLang.textContent = 'JS';
+        if (detectPanel) detectPanel.classList.add('active');
+        if (detectMsg) {
+            detectMsg.innerHTML =
+                'Detected: <strong>JavaScript</strong> ' +
+                '<span class="detected-lang js">JS</span> · ' +
+                (size > CONFIG.CHUNK_THRESHOLD
+                    ? '<strong style="color:var(--gold)">CHUNKED MODE</strong>'
+                    : 'Standard mode') +
+                ' · <span style="color:var(--green)">Ready to protect</span>';
+        }
+    } else if (type === 'html') {
+        if (STATE.dom.statLang) STATE.dom.statLang.textContent = 'HTML';
+        if (detectPanel) detectPanel.classList.add('error');
+        if (detectMsg) {
+            detectMsg.innerHTML =
+                '<strong style="color:var(--red)">HTML detected</strong> ' +
+                '<span class="detected-lang html">HTML</span> · ' +
+                'This tool protects <strong>JavaScript only</strong>. ' +
+                'For HTML/CSS protection, please use <strong>Codecompressor</strong>. ' +
+                'Alternatively, paste only the JavaScript code from inside the ' +
+                '<code>&lt;script&gt;</code> tags.';
+        }
+    } else if (type === 'css') {
+        if (STATE.dom.statLang) STATE.dom.statLang.textContent = 'CSS';
+        if (detectPanel) detectPanel.classList.add('error');
+        if (detectMsg) {
+            detectMsg.innerHTML =
+                '<strong style="color:var(--red)">CSS detected</strong> ' +
+                '<span class="detected-lang css">CSS</span> · ' +
+                'This tool protects <strong>JavaScript only</strong>. ' +
+                'For CSS protection, please use <strong>Codecompressor</strong>.';
+        }
+    } else if (type === 'mixed') {
+        if (STATE.dom.statLang) STATE.dom.statLang.textContent = 'MIXED';
+        if (detectPanel) detectPanel.classList.add('warn');
+        if (detectMsg) {
+            detectMsg.innerHTML =
+                '<strong style="color:var(--gold)">Mixed content detected</strong> ' +
+                '<span class="detected-lang mixed">HTML + JS</span> · ' +
+                'JavaScript will be <strong>auto-extracted</strong> from ' +
+                '<code>&lt;script&gt;</code> tags before protection. ' +
+                'HTML/CSS parts will be ignored.';
+        }
+    } else {
+        if (STATE.dom.statLang) STATE.dom.statLang.textContent = '—';
     }
+
     UI.detectProgress(Math.min(100, size / 1024));
 }
 
@@ -2290,7 +2473,29 @@ window.obfuscateNow = function() {
         return;
     }
     if (typeof JavaScriptObfuscator === 'undefined') {
-        UI.toast('Obfuscator library not loaded — check internet', 'error');
+        UI.toast('Obfuscator library not loaded — check internet connection', 'error');
+        return;
+    }
+
+    // Smart detection — block pure HTML/CSS
+    var detection = detectInputType(rawCode);
+    if (detection.type === 'html') {
+        UI.toast('HTML detected — this tool is only for JavaScript', 'error', 6000);
+        UI.status('error',
+            'HTML content detected.\n\n' +
+            'This tool protects JavaScript only.\n' +
+            'For HTML/CSS protection, please use Codecompressor.\n\n' +
+            'Alternatively, paste only the JavaScript code from inside ' +
+            '<script> tags, or paste the full HTML — the engine will ' +
+            'auto-extract inline JavaScript.');
+        return;
+    }
+    if (detection.type === 'css') {
+        UI.toast('CSS detected — this tool is only for JavaScript', 'error', 6000);
+        UI.status('error',
+            'CSS content detected.\n\n' +
+            'This tool protects JavaScript only.\n' +
+            'For CSS protection, please use Codecompressor.');
         return;
     }
 
@@ -2306,7 +2511,21 @@ window.obfuscateNow = function() {
         if (runId !== STATE.currentRunId) return;
 
         var t0 = Utils.now();
-        var clean = stripJsComments(rawCode);
+
+        // Auto-extract JavaScript from HTML if needed
+        var extracted = cleanInput(rawCode);
+        var clean = stripJsComments(extracted);
+
+        if (!clean.trim()) {
+            UI.status('error',
+                'No JavaScript code found in the input.\n\n' +
+                'Please paste JavaScript code or HTML containing ' +
+                '<script> tags with inline JavaScript.');
+            UI.toast('No JavaScript found in input', 'error', 6000);
+            UI.hideProcessing();
+            return;
+        }
+
         UI.progress(8);
 
         var useChunks = clean.length > CONFIG.CHUNK_THRESHOLD;
@@ -2331,7 +2550,8 @@ window.obfuscateNow = function() {
             var pct = 10 + ((idx / chunks.length) * 70);
             UI.progress(pct);
             UI.updateProcessing('PROTECTING',
-                'Processing chunk ' + (idx+1) + '/' + chunks.length + ' — ' + STATE.preset.toUpperCase());
+                'Processing chunk ' + (idx+1) + '/' + chunks.length +
+                ' — ' + STATE.preset.toUpperCase());
 
             Utils.yield().then(function() {
                 if (runId !== STATE.currentRunId) return;
@@ -2389,7 +2609,7 @@ window.obfuscateNow = function() {
 
                 UI.progress(100);
 
-                var msg = '✅ JavaScript protected successfully!\n';
+                var msg = 'JavaScript protected successfully!\n';
                 msg += 'Requested: ' + STATE.preset.toUpperCase() + '\n';
                 msg += 'Used: ' + usedPreset.toUpperCase();
                 if (fellBack) msg += ' (auto-fallback)';
@@ -2401,7 +2621,9 @@ window.obfuscateNow = function() {
                 msg += 'Time: ' + elapsed + ' ms';
                 UI.status('success', msg);
 
-                UI.toast('Protection complete! ' + (fellBack ? '(fell back to ' + usedPreset + ')' : ''), 'success', 5000);
+                UI.toast('Protection complete! ' +
+                    (fellBack ? '(fell back to ' + usedPreset + ')' : ''),
+                    'success', 5000);
             } catch (err) {
                 handleError(err);
             } finally {
@@ -2412,11 +2634,32 @@ window.obfuscateNow = function() {
         function handleError(err) {
             if (runId !== STATE.currentRunId) return;
             console.error(err);
+
+            var errMsg = (err && err.message) ? err.message : String(err);
+            var hint = '';
+
+            if (/Unexpected token.*<|<.*Unexpected/i.test(errMsg) ||
+                /Unexpected token \(1:0\)/i.test(errMsg)) {
+                hint = '\n\nHint: The input appears to be HTML, not JavaScript.\n' +
+                    'Please paste only the JavaScript code, or paste full HTML ' +
+                    'and the engine will auto-extract the <script> contents.';
+            } else if (/Unexpected end of input|Unterminated/i.test(errMsg)) {
+                hint = '\n\nHint: The code may have a missing bracket, ' +
+                    'quote, or curly brace. Please verify the syntax.';
+            } else if (/Maximum call stack|out of memory/i.test(errMsg)) {
+                hint = '\n\nHint: The file is too large. Please try a ' +
+                    'lower preset (LIGHT or MEDIUM) or reduce the input size.';
+            } else if (/timeout/i.test(errMsg)) {
+                hint = '\n\nHint: Processing took too long. ' +
+                    'Please try the LIGHT preset.';
+            } else {
+                hint = '\n\nHint: Try a lower preset or smaller input.';
+            }
+
             UI.status('error',
-                '❌ Obfuscation failed:\n' +
-                (err && err.message ? err.message : String(err)) +
-                '\n\nTry a lower preset or smaller input.');
-            UI.toast('Obfuscation failed: ' + (err.message || 'unknown'), 'error', 6000);
+                'Obfuscation failed:\n' + errMsg + hint);
+            UI.toast('Obfuscation failed: ' + errMsg.substring(0, 80),
+                'error', 6000);
             UI.hideProcessing();
         }
 
@@ -2615,7 +2858,7 @@ function init() {
         }
     } catch (e) {}
 
-    UI.toast('NightOrbit ULTRA Heavy v12.0 ready', 'success', 3000);
+    UI.toast('NightOrbit ULTRA Heavy v12.1 ready', 'success', 3000);
 }
 
 if (document.readyState === 'loading') {
