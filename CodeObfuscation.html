@@ -458,7 +458,7 @@ button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
 
         <div class="info-box">
             <strong>Complete Enterprise-Grade Protection Engine</strong><br>
-            NightOrbit applies <strong>12 total protection layers</strong> — 6 on JavaScript, 3 on CSS, and 3 on HTML.
+            NightOrbit applies <strong>12 total protection layers</strong> — 6 on JavaScript, 3 on CSS, and 3 on HTML. Each layer adds a separate defense mechanism.
         </div>
 
         <div class="security-list">
@@ -749,26 +749,26 @@ button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
 
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     MAIN SCRIPT — All closing tags safely escaped
-     ═══════════════════════════════════════════════════════════════ -->
 <script>
+/* ═══════════════════════════════════════════════════════════════════
+   🌌 NIGHTORBIT 12-LAYER SHIELD ENGINE v7.0
+   Enterprise Multi-Language Protection Matrix
+   Brand: NightOrbit CodeForge
+   ═══════════════════════════════════════════════════════════════════ */
 (function() {
 'use strict';
 
-/* ═══════════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────────────────
    SAFE TAG CONSTANTS
-   Note: NEVER write literal closing script tag in JS strings.
-   Always use concatenation or escaped form.
-   ═══════════════════════════════════════════════════════════════ */
+   ───────────────────────────────────────────────────────────────── */
 var TAG_OPEN_SCRIPT  = '<' + 'script>';
 var TAG_CLOSE_SCRIPT = '<' + '/script>';
 var TAG_OPEN_STYLE   = '<' + 'style>';
 var TAG_CLOSE_STYLE  = '<' + '/style>';
 
-/* ═══════════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────────────────
    STATE
-   ═══════════════════════════════════════════════════════════════ */
+   ───────────────────────────────────────────────────────────────── */
 var state = {
     user: null,
     lang: 'auto',
@@ -790,9 +790,9 @@ var state = {
     detectedLang: null
 };
 
-/* ═══════════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────────────────
    UTILITIES
-   ═══════════════════════════════════════════════════════════════ */
+   ───────────────────────────────────────────────────────────────── */
 function bytes(n) {
     if (n < 1024) return n + ' B';
     if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
@@ -827,12 +827,11 @@ function escapeRegex(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   SAFE ESCAPE — For script/style tags inside JS code
-   ═══════════════════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────────────────────────
+   SAFE ESCAPE FUNCTIONS
+   ───────────────────────────────────────────────────────────────── */
 function escapeScriptTags(code) {
     if (!code) return '';
-    /* Replace </script> with <\/script> (backslash) — browser safe */
     return code.replace(/<\/(script)/gi, '<\\/$1');
 }
 function escapeStyleTags(code) {
@@ -840,9 +839,9 @@ function escapeStyleTags(code) {
     return code.replace(/<\/(style)/gi, '<\\/$1');
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   COMMENT STRIPPERS
-   ═══════════════════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────────────────────────
+   COMMENT STRIPPERS — String aware
+   ───────────────────────────────────────────────────────────────── */
 function stripCssComments(code) {
     if (!code) return '';
     var result = '';
@@ -920,9 +919,9 @@ function stripHtmlComments(code) {
     return code.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   SAFE CSS MINIFIER
-   ═══════════════════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────────────────────────
+   SAFE CSS MINIFIER — Preserves calc/url/var/@media/!important
+   ───────────────────────────────────────────────────────────────── */
 function safeCssMinify(css) {
     if (!css) return '';
     var result = css;
@@ -961,13 +960,12 @@ function safeCssMinify(css) {
     return result.trim();
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   SAFE HTML MINIFIER — Regex uses escaped closing tags
-   ═══════════════════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────────────────────────
+   SAFE HTML MINIFIER — Preserves pre/textarea/code/onclick/data-*
+   ───────────────────────────────────────────────────────────────── */
 function safeHtmlMinify(html) {
     if (!html) return '';
     var result = html;
-
     var placeholders = [];
     var phIndex = 0;
 
@@ -976,7 +974,6 @@ function safeHtmlMinify(html) {
         return '__NO_HTML_PH_' + (phIndex++) + '__';
     }
 
-    /* Build regex patterns safely — closing tags built via concat */
     var preOpen = '<' + 'pre';
     var preClose = '<' + '\\/' + 'pre>';
     var textareaOpen = '<' + 'textarea';
@@ -1010,9 +1007,9 @@ function safeHtmlMinify(html) {
     return result.trim();
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────────────────
    LANGUAGE DETECTION
-   ═══════════════════════════════════════════════════════════════ */
+   ───────────────────────────────────────────────────────────────── */
 function detectLanguage(code) {
     if (!code) return 'txt';
     var t = code.trim();
@@ -1044,9 +1041,9 @@ function detectLanguage(code) {
     return 'txt';
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   EXTRACT SECTIONS — All closing tags escaped via concat
-   ═══════════════════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────────────────────────
+   EXTRACT SECTIONS
+   ───────────────────────────────────────────────────────────────── */
 function extractSections(fullCode, mode) {
     var result = { html: fullCode, css: '', js: '' };
 
@@ -1058,13 +1055,11 @@ function extractSections(fullCode, mode) {
     var css = '';
     var js = '';
 
-    /* Safe regex patterns */
     var scriptOpen = '<' + 'script';
     var scriptClose = '<' + '\\/' + 'script>';
     var styleOpen = '<' + 'style';
     var styleClose = '<' + '\\/' + 'style>';
 
-    /* Extract CSS */
     var styleRegex = new RegExp(styleOpen + '[^>]*>([\\s\\S]*?)' + styleClose, 'gi');
     var styleMatch;
     while ((styleMatch = styleRegex.exec(fullCode)) !== null) {
@@ -1072,7 +1067,6 @@ function extractSections(fullCode, mode) {
         css += stripCssComments(styleMatch[1]).trim();
     }
 
-    /* Extract JS (skip src scripts and data scripts) */
     var scriptRegex = new RegExp(
         scriptOpen +
         '(?![^>]*\\bsrc\\s*=)' +
@@ -1086,7 +1080,6 @@ function extractSections(fullCode, mode) {
         js += stripJsComments(scriptMatch[1]).trim();
     }
 
-    /* Strip from HTML */
     html = html.replace(
         new RegExp(styleOpen + '[^>]*>[\\s\\S]*?' + styleClose, 'gi'),
         ''
@@ -1113,9 +1106,9 @@ function extractSections(fullCode, mode) {
     return result;
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────────────────
    PRESETS / OPTIONS
-   ═══════════════════════════════════════════════════════════════ */
+   ───────────────────────────────────────────────────────────────── */
 window.setPreset = function(preset, btn) {
     state.preset = preset;
     document.querySelectorAll('.preset-btn').forEach(function(b) { b.classList.remove('active'); });
@@ -1151,9 +1144,9 @@ window.setLang = function(lang, btn) {
     toast('Language mode: ' + lang.toUpperCase(), 'info');
 };
 
-/* ═══════════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────────────────
    INPUT & DETECTION
-   ═══════════════════════════════════════════════════════════════ */
+   ───────────────────────────────────────────────────────────────── */
 var inputCodeEl = document.getElementById('inputCode');
 
 function updateDetection() {
@@ -1188,9 +1181,9 @@ function updateDetection() {
 
 inputCodeEl.addEventListener('input', updateDetection);
 
-/* ═══════════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────────────────
    PROGRESS
-   ═══════════════════════════════════════════════════════════════ */
+   ───────────────────────────────────────────────────────────────── */
 function updateProgress() {
     var steps = 0;
     if (inputCodeEl.value.trim()) steps++;
@@ -1202,9 +1195,9 @@ function updateProgress() {
     document.getElementById('progressPercent').textContent = percent + '%';
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────────────────
    BUILD OBFUSCATOR OPTIONS
-   ═══════════════════════════════════════════════════════════════ */
+   ───────────────────────────────────────────────────────────────── */
 function buildOptions() {
     var o = state.options;
     var preset = state.preset;
@@ -1253,9 +1246,9 @@ function buildOptions() {
     };
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   PROTECT NOW — Main
-   ═══════════════════════════════════════════════════════════════ */
+/* ─────────────────────────────────────────────────────────────────
+   PROTECT NOW — Main Function
+   ───────────────────────────────────────────────────────────────── */
 window.obfuscateNow = function() {
     var input = inputCodeEl.value.trim();
     if (!input) {
@@ -1293,7 +1286,7 @@ window.obfuscateNow = function() {
             var obfuscatedHtml = sections.html;
             var jsLayers = 0;
 
-            /* JavaScript: 6-Layer */
+            /* JavaScript: 6-Layer Protection */
             if (sections.js && sections.js.trim()) {
                 showStatus('loading', '⏳ Step 2/6 — Applying 6-layer JavaScript protection...');
                 try {
@@ -1325,7 +1318,7 @@ window.obfuscateNow = function() {
                 }
             }
 
-            /* CSS: 3-Layer */
+            /* CSS: 3-Layer Protection */
             var cssLayers = 0;
             if (obfuscatedCss && obfuscatedCss.trim()) {
                 showStatus('loading', '⏳ Step 3/6 — Applying CSS protection...');
@@ -1374,7 +1367,7 @@ window.obfuscateNow = function() {
                 }
             }
 
-            /* HTML: 3-Layer */
+            /* HTML: 3-Layer Protection */
             var htmlLayers = 0;
             if (obfuscatedHtml && obfuscatedHtml.trim()) {
                 showStatus('loading', '⏳ Step 4/6 — Applying HTML protection...');
@@ -1401,7 +1394,7 @@ window.obfuscateNow = function() {
                 }
             }
 
-            /* Assemble */
+            /* Assemble Final Output */
             showStatus('loading', '⏳ Step 5/6 — Assembling final output...');
             var finalOutput = '';
 
@@ -1416,14 +1409,13 @@ window.obfuscateNow = function() {
                     parts.push(TAG_OPEN_STYLE + obfuscatedCss + TAG_CLOSE_STYLE);
                 }
                 if (obfuscatedJs && obfuscatedJs.trim()) {
-                    /* CRITICAL: Escape closing script tags */
                     var safeJs = escapeScriptTags(obfuscatedJs);
                     parts.push(TAG_OPEN_SCRIPT + safeJs + TAG_CLOSE_SCRIPT);
                 }
                 finalOutput = parts.join('\n');
             }
 
-            /* Display */
+            /* Display Output */
             showStatus('loading', '⏳ Step 6/6 — Finalizing...');
             document.getElementById('outputSection').style.display = 'block';
             document.getElementById('outputActions').style.display = 'flex';
@@ -1496,9 +1488,9 @@ window.obfuscateNow = function() {
     }, 100);
 };
 
-/* ═══════════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────────────────
    TABS
-   ═══════════════════════════════════════════════════════════════ */
+   ───────────────────────────────────────────────────────────────── */
 window.switchTab = function(tab) {
     document.querySelectorAll('.tabs .tab').forEach(function(t) {
         t.classList.toggle('active', t.dataset.tab === tab);
@@ -1508,9 +1500,9 @@ window.switchTab = function(tab) {
     });
 };
 
-/* ═══════════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────────────────
    COPY / DOWNLOAD / CLEAR
-   ═══════════════════════════════════════════════════════════════ */
+   ───────────────────────────────────────────────────────────────── */
 window.copyOutput = function() {
     var out = document.getElementById('outputFinal').value;
     if (!out) { toast('Nothing to copy', 'error'); return; }
@@ -1575,8 +1567,7 @@ window.downloadAll = function() {
 };
 
 window.loadSample = function() {
-    /* Build sample using array — no literal closing script in source */
-    var lines = [
+    var sampleHtml = [
         '<!DOCTYPE html>',
         '<html lang="en">',
         '<head>',
@@ -1615,7 +1606,7 @@ window.loadSample = function() {
         '</body>',
         '</html>'
     ];
-    inputCodeEl.value = lines.join('\n');
+    inputCodeEl.value = sampleHtml.join('\n');
     inputCodeEl.dispatchEvent(new Event('input'));
     toast('Sample loaded!', 'info');
 };
@@ -1648,9 +1639,9 @@ window.doLogout = function() {
     }
 };
 
-/* ═══════════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────────────────
    AUTH
-   ═══════════════════════════════════════════════════════════════ */
+   ───────────────────────────────────────────────────────────────── */
 function handleAuth(e) {
     if (!e.detail || !e.detail.user) return;
     if (state.authHandled) return;
@@ -1669,9 +1660,9 @@ setTimeout(function() {
     }
 }, 3000);
 
-/* ═══════════════════════════════════════════════════════════════
+/* ─────────────────────────────────────────────────────────────────
    INIT
-   ═══════════════════════════════════════════════════════════════ */
+   ───────────────────────────────────────────────────────────────── */
 setPreset('medium', document.querySelector('.preset-btn[data-preset="medium"]'));
 updateProgress();
 console.log('%c🌌 NightOrbit 12-Layer Shield v7.0 loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
