@@ -1384,7 +1384,7 @@ button.green {
     <div class="brand">
         <span class="logo">🌌</span>
         <span class="title">NightOrbit</span>
-        <span class="title-ver">v11.0</span>
+        <span class="title-ver">v12.0</span>
         <span class="title-sub">· JS Shield ULTRA Heavy</span>
     </div>
     <div class="topbar-actions">
@@ -1432,7 +1432,7 @@ button.green {
         <h1>🌌 JavaScript Obfuscation ULTRA</h1>
         <div class="subtitle">NightOrbit CodeForge · Full ULTRA Heavy 24-Layer JavaScript Protection</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-shield-halved"></i> v11.0</span>
+            <span class="header-stat"><i class="fa-solid fa-shield-halved"></i> v12.0</span>
             <span class="header-stat gold"><i class="fa-solid fa-layer-group"></i> Up to 24 Layers</span>
             <span class="header-stat pink"><i class="fa-solid fa-bolt"></i> Chunked Mode</span>
             <span class="header-stat green"><i class="fa-solid fa-lock"></i> JS Only</span>
@@ -1695,15 +1695,17 @@ button.green {
 'use strict';
 
 /* ═══════════════════════════════════════════════════════════════════
-   NIGHTORBIT — JAVASCRIPT ULTRA HEAVY PROTECTION ENGINE v11.0
-   Real 24-Layer · Chunked · Memory-Safe · Auto-Fallback
+   NIGHTORBIT — JAVASCRIPT ULTRA HEAVY PROTECTION ENGINE v12.0
+   Real 24-Layer · Chunked · Memory-Safe · Auto-Fallback · Timeout
    ═══════════════════════════════════════════════════════════════════ */
 
 var CONFIG = {
     MAX_INPUT_SIZE: 50 * 1024 * 1024,
     CHUNK_THRESHOLD: 2 * 1024 * 1024,
     CHUNK_SIZE: 512 * 1024,
-    HEAVY_THRESHOLD: 512 * 1024
+    HEAVY_THRESHOLD: 512 * 1024,
+    CHUNK_TIMEOUT_MS: 120000,
+    UI_YIELD_MS: 16
 };
 
 /* ═══ RESERVED NAMES — only globals + DOM, NOT user variables ═══ */
@@ -1788,7 +1790,8 @@ var STATE = {
         js13:false,js14:false,js15:false,js16:false,js17:false,js18:false,
         js19:false,js20:false,js21:false,js22:false,js23:false,js24:false
     },
-    dom: {}
+    dom: {},
+    currentRunId: 0
 };
 
 /* ═══ UTILS ═══ */
@@ -1831,8 +1834,30 @@ var Utils = {
             if (typeof requestAnimationFrame === 'function') {
                 requestAnimationFrame(function(){ resolve(); });
             } else {
-                setTimeout(resolve, 0);
+                setTimeout(resolve, CONFIG.UI_YIELD_MS);
             }
+        });
+    },
+    withTimeout: function(promise, ms, label) {
+        return new Promise(function(resolve, reject) {
+            var done = false;
+            var timer = setTimeout(function() {
+                if (done) return;
+                done = true;
+                reject(new Error('Timeout after ' + ms + 'ms' +
+                    (label ? ' (' + label + ')' : '')));
+            }, ms);
+            promise.then(function(v) {
+                if (done) return;
+                done = true;
+                clearTimeout(timer);
+                resolve(v);
+            }, function(e) {
+                if (done) return;
+                done = true;
+                clearTimeout(timer);
+                reject(e);
+            });
         });
     }
 };
@@ -2269,12 +2294,17 @@ window.obfuscateNow = function() {
         return;
     }
 
+    STATE.currentRunId++;
+    var runId = STATE.currentRunId;
+
     UI.showProcessing('PROTECTING', 'Preparing...');
     UI.resetLayers();
     UI.hideStatus();
     UI.progress(2);
 
     setTimeout(function() {
+        if (runId !== STATE.currentRunId) return;
+
         var t0 = Utils.now();
         var clean = stripJsComments(rawCode);
         UI.progress(8);
@@ -2292,6 +2322,7 @@ window.obfuscateNow = function() {
         var idx = 0;
 
         function processNextChunk() {
+            if (runId !== STATE.currentRunId) return;
             if (idx >= chunks.length) {
                 finish();
                 return;
@@ -2303,6 +2334,7 @@ window.obfuscateNow = function() {
                 'Processing chunk ' + (idx+1) + '/' + chunks.length + ' — ' + STATE.preset.toUpperCase());
 
             Utils.yield().then(function() {
+                if (runId !== STATE.currentRunId) return;
                 try {
                     var res = obfuscateWithFallback(chunks[idx], STATE.preset);
                     obfuscatedChunks.push(res.code);
@@ -2319,6 +2351,7 @@ window.obfuscateNow = function() {
         }
 
         function finish() {
+            if (runId !== STATE.currentRunId) return;
             try {
                 UI.progress(85);
                 UI.updateProcessing('PROTECTING', 'Assembling output...');
@@ -2377,6 +2410,7 @@ window.obfuscateNow = function() {
         }
 
         function handleError(err) {
+            if (runId !== STATE.currentRunId) return;
             console.error(err);
             UI.status('error',
                 '❌ Obfuscation failed:\n' +
@@ -2581,7 +2615,7 @@ function init() {
         }
     } catch (e) {}
 
-    UI.toast('NightOrbit ULTRA Heavy v11.0 ready', 'success', 3000);
+    UI.toast('NightOrbit ULTRA Heavy v12.0 ready', 'success', 3000);
 }
 
 if (document.readyState === 'loading') {
