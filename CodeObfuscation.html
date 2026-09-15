@@ -2233,64 +2233,66 @@ var JsEngine = {
 
     /* Build obfuscator options based on size */
     buildOptions: function(jsSize) {
-        var sizeKB = jsSize / 1024;
-        var sizeMB = sizeKB / 1024;
+    var sizeKB = jsSize / 1024;
+    var sizeMB = sizeKB / 1024;
 
-        var preset = 'medium';
-        if (sizeMB > 3) preset = 'low';
-        else if (sizeMB > 0.5) preset = 'medium';
-        else preset = 'high';
+    /* ═══ SPEED-OPTIMIZED AUTO PRESET ═══ */
+    /* Chhota → Medium speed, Bara → Fast speed */
+    var preset;
+    if (sizeKB < 20) preset = 'high';        /* < 20 KB → full */
+    else if (sizeKB < 100) preset = 'medium'; /* 20-100 KB → balanced */
+    else preset = 'low';                      /* 100 KB+ → fast */
 
-        var cffThreshold = 0.75;
-        var dciThreshold = 0.4;
-        var strThreshold = 0.75;
+    var cffThreshold = 0.5;   /* reduced from 0.75 */
+    var dciThreshold = 0.3;   /* reduced from 0.4 */
+    var strThreshold = 0.6;   /* reduced from 0.75 */
 
-        if (preset === 'high') {
-            cffThreshold = 0.9;
-            dciThreshold = 0.5;
-            strThreshold = 0.9;
-        } else if (preset === 'low') {
-            cffThreshold = 0.4;
-            dciThreshold = 0.25;
-            strThreshold = 0.4;
-        }
+    if (preset === 'high') {
+        cffThreshold = 0.75;
+        dciThreshold = 0.4;
+        strThreshold = 0.8;
+    } else if (preset === 'low') {
+        cffThreshold = 0;
+        dciThreshold = 0;
+        strThreshold = 0.5;
+    }
 
-        return {
-            compact: true,
-            controlFlowFlattening: preset !== 'low',
-            controlFlowFlatteningThreshold: cffThreshold,
-            deadCodeInjection: preset !== 'low',
-            deadCodeInjectionThreshold: dciThreshold,
-            debugProtection: true,
-            debugProtectionInterval: 4000,
-            disableConsoleOutput: false,
-            identifierNamesGenerator: 'hexadecimal',
-            log: false,
-            numbersToExpressions: false,
-            renameGlobals: false,
-            selfDefending: true,
-            simplify: true,
-            splitStrings: true,
-            splitStringsChunkLength: 5,
-            stringArray: true,
-            stringArrayCallsTransform: true,
-            stringArrayCallsTransformThreshold: 0.5,
-            stringArrayEncoding: ['rc4'],
-            stringArrayIndexShift: true,
-            stringArrayRotate: true,
-            stringArrayShuffle: true,
-            stringArrayWrappersCount: 2,
-            stringArrayWrappersChainedCalls: true,
-            stringArrayWrappersParametersMaxCount: 4,
-            stringArrayWrappersType: 'function',
-            stringArrayThreshold: strThreshold,
-            transformObjectKeys: true,
-            unicodeEscapeSequence: false,
-            target: 'browser',
-            sourceMap: false,
-            seed: 0
-        };
-    },
+    return {
+        compact: true,
+        controlFlowFlattening: preset === 'high',      /* ✅ Off in low/medium */
+        controlFlowFlatteningThreshold: cffThreshold,
+        deadCodeInjection: preset === 'high',           /* ✅ Off in low/medium */
+        deadCodeInjectionThreshold: dciThreshold,
+        debugProtection: preset !== 'low',              /* ✅ On in high/medium */
+        debugProtectionInterval: preset !== 'low' ? 4000 : 0,
+        disableConsoleOutput: false,
+        identifierNamesGenerator: 'hexadecimal',
+        log: false,
+        numbersToExpressions: false,
+        renameGlobals: false,
+        selfDefending: preset !== 'low',                /* ✅ Off in low */
+        simplify: true,
+        splitStrings: preset !== 'low',                 /* ✅ Off in low */
+        splitStringsChunkLength: 10,                    /* increased from 5 */
+        stringArray: true,
+        stringArrayCallsTransform: preset === 'high',   /* ✅ Only high */
+        stringArrayCallsTransformThreshold: 0.5,
+        stringArrayEncoding: preset === 'low' ? [] : ['rc4'],
+        stringArrayIndexShift: preset !== 'low',
+        stringArrayRotate: preset !== 'low',
+        stringArrayShuffle: preset !== 'low',
+        stringArrayWrappersCount: 1,                    /* reduced from 2 */
+        stringArrayWrappersChainedCalls: false,         /* ✅ OFF — was big slowdown */
+        stringArrayWrappersParametersMaxCount: 2,
+        stringArrayWrappersType: 'variable',
+        stringArrayThreshold: strThreshold,
+        transformObjectKeys: preset === 'high',         /* ✅ Only high */
+        unicodeEscapeSequence: false,
+        target: 'browser',
+        sourceMap: false,
+        seed: 0
+    };
+},
 
     /* Full 6-layer protection with 5-level progressive fallback */
     protect: function(rawJs) {
