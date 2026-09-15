@@ -10,8 +10,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 <script src="auth-guard.js"></script>
-
-<!-- javascript-obfuscator — Full Protection Engine -->
 <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.1.1/dist/index.browser.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -22,7 +20,7 @@
 :root {
     --cyan: #00f0ff; --pink: #ff2d95; --purple: #b400ff;
     --gold: #ffd700; --green: #00ff64; --red: #ff0064;
-    --dark: #05050f; --card: rgba(11,11,26,0.94);
+    --card: rgba(11,11,26,0.94);
     --border: rgba(0,240,255,0.22);
     --muted: #6a6a8a; --header-h: 62px;
 }
@@ -337,11 +335,9 @@ button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
     padding: 3px 10px; border-radius: 20px;
     font-size: 9px; font-weight: bold; letter-spacing: 1px;
     border: 1px solid rgba(0,240,255,0.3);
-    font-family: 'Inter', sans-serif;
 }
 .badge.success { background: rgba(0,255,100,0.15); color: #00ff64; border-color: rgba(0,255,100,0.3); }
 .badge.gold { background: rgba(255,215,0,0.15); color: var(--gold); border-color: rgba(255,215,0,0.3); }
-.badge.danger { background: rgba(255,0,100,0.15); color: #ff0064; border-color: rgba(255,0,100,0.3); }
 
 .security-list {
     display: grid;
@@ -434,9 +430,6 @@ button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════
-     TOPBAR
-     ═══════════════════════════════════════════════════════════ -->
 <div class="topbar">
     <div class="brand">
         <span class="logo">🌌</span>
@@ -456,7 +449,6 @@ button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
 
 <div class="container">
 
-    <!-- USER WELCOME -->
     <div class="user-welcome">
         <i class="fa-solid fa-circle-user"></i>
         <span>Welcome, <b id="welcomeName">User</b></span>
@@ -465,7 +457,6 @@ button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
         </span>
     </div>
 
-    <!-- HEADER -->
     <div class="header-card">
         <h1>🌌 NightOrbit 12-Layer Shield</h1>
         <div class="subtitle">NightOrbit CodeForge · Enterprise Multi-Language Protection Matrix</div>
@@ -477,158 +468,119 @@ button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
         </div>
     </div>
 
-    <!-- SECURITY FEATURES -->
     <div class="section">
         <label>🔒 NightOrbit 12-Layer Protection Matrix</label>
 
         <div class="info-box">
             <strong>Complete Enterprise-Grade Protection Engine</strong><br>
-            NightOrbit applies <strong>12 total protection layers</strong> — 6 on JavaScript, 3 on CSS, and 3 on HTML. Each layer adds a separate defense mechanism. Reverse engineering becomes exponentially harder.
+            NightOrbit applies <strong>12 total protection layers</strong> — 6 on JavaScript, 3 on CSS, and 3 on HTML. Each layer adds a separate defense mechanism.
         </div>
 
         <div class="security-list">
-
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">⚙️</span>
                     <span class="sec-title">JS Layer 1 — Control Flow</span>
                     <span class="layer-badge js">JS</span>
                 </div>
-                <div class="sec-desc">
-                    Converts linear code into state-machine switches. Breaks logical reading order completely.
-                </div>
+                <div class="sec-desc">Converts linear code into state-machine switches. Breaks logical reading order.</div>
             </div>
-
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">💀</span>
                     <span class="sec-title">JS Layer 2 — Dead Code</span>
                     <span class="layer-badge js">JS</span>
                 </div>
-                <div class="sec-desc">
-                    Inserts unreachable fake branches and decoy functions. Confuses automated tools.
-                </div>
+                <div class="sec-desc">Inserts unreachable fake branches and decoy functions.</div>
             </div>
-
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">🔑</span>
                     <span class="sec-title">JS Layer 3 — RC4 Encryption</span>
                     <span class="layer-badge js">JS</span>
                 </div>
-                <div class="sec-desc">
-                    All string literals extracted to encrypted array. Decrypted only at runtime.
-                </div>
+                <div class="sec-desc">All string literals extracted to encrypted array. Runtime decryption.</div>
             </div>
-
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">🚫</span>
                     <span class="sec-title">JS Layer 4 — Debug Protection</span>
                     <span class="layer-badge js">JS</span>
                 </div>
-                <div class="sec-desc">
-                    DevTools detection loop and debugger traps. Halts inspection attempts.
-                </div>
+                <div class="sec-desc">DevTools detection loop and debugger traps.</div>
             </div>
-
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">🛡️</span>
                     <span class="sec-title">JS Layer 5 — Self Defending</span>
                     <span class="layer-badge js">JS</span>
                 </div>
-                <div class="sec-desc">
-                    Integrity check on every run. Crashes if code is modified.
-                </div>
+                <div class="sec-desc">Integrity check on every run. Crashes if modified.</div>
             </div>
-
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">🎭</span>
                     <span class="sec-title">JS Layer 6 — Hex Renaming</span>
                     <span class="layer-badge js">JS</span>
                 </div>
-                <div class="sec-desc">
-                    Variables and functions renamed to <code>_0x4a2b1c</code> format. Meaning lost.
-                </div>
+                <div class="sec-desc">Variables renamed to <code>_0x4a2b1c</code> format.</div>
             </div>
-
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">🎨</span>
                     <span class="sec-title">CSS Layer 1 — Comments</span>
                     <span class="layer-badge css">CSS</span>
                 </div>
-                <div class="sec-desc">
-                    All <code>/* ... */</code> comments removed. String-aware parsing.
-                </div>
+                <div class="sec-desc">All <code>/* ... */</code> comments removed.</div>
             </div>
-
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">📐</span>
                     <span class="sec-title">CSS Layer 2 — Safe Minify</span>
                     <span class="layer-badge css">CSS</span>
                 </div>
-                <div class="sec-desc">
-                    Whitespace compressed. <code>calc()</code>, <code>url()</code>, <code>var()</code> preserved.
-                </div>
+                <div class="sec-desc">Whitespace compressed. <code>calc()</code>, <code>url()</code> preserved.</div>
             </div>
-
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">🏷️</span>
                     <span class="sec-title">CSS Layer 3 — Class Rename</span>
                     <span class="layer-badge css">CSS</span>
                 </div>
-                <div class="sec-desc">
-                    Class names renamed to <code>._nc0</code>, <code>._nc1</code>... Optional.
-                </div>
+                <div class="sec-desc">Class names renamed to <code>._nc0</code>... (optional)</div>
             </div>
-
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">📄</span>
                     <span class="sec-title">HTML Layer 1 — Comments</span>
                     <span class="layer-badge html">HTML</span>
                 </div>
-                <div class="sec-desc">
-                    All <code>&lt;!-- --&gt;</code> comments removed. Conditional comments preserved.
-                </div>
+                <div class="sec-desc">All <code>&lt;!-- --&gt;</code> comments removed.</div>
             </div>
-
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">🧹</span>
                     <span class="sec-title">HTML Layer 2 — Safe Minify</span>
                     <span class="layer-badge html">HTML</span>
                 </div>
-                <div class="sec-desc">
-                    Whitespace compressed. <code>&lt;pre&gt;</code>, <code>&lt;textarea&gt;</code>, <code>onclick</code> preserved.
-                </div>
+                <div class="sec-desc"><code>&lt;pre&gt;</code>, <code>&lt;textarea&gt;</code>, <code>onclick</code> preserved.</div>
             </div>
-
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">🔖</span>
                     <span class="sec-title">HTML Layer 3 — Attr Obfuscation</span>
                     <span class="layer-badge html">HTML</span>
                 </div>
-                <div class="sec-desc">
-                    <code>data-*</code> attributes obfuscated. Optional.
-                </div>
+                <div class="sec-desc"><code>data-*</code> attributes obfuscated (optional)</div>
             </div>
-
         </div>
 
         <div class="info-box warn">
             <strong>⚠️ CSS & HTML Safety Guarantee:</strong><br>
-            CSS and HTML are <strong>never structurally altered</strong>. Only comments are removed and whitespace is safely compressed. Your <code>calc()</code>, <code>url()</code>, <code>var()</code>, <code>@media</code>, <code>@keyframes</code>, <code>&lt;pre&gt;</code>, <code>&lt;textarea&gt;</code>, <code>onclick</code> — all preserved perfectly.
+            CSS and HTML are <strong>never structurally altered</strong>. <code>calc()</code>, <code>url()</code>, <code>var()</code>, <code>@media</code>, <code>&lt;pre&gt;</code>, <code>&lt;textarea&gt;</code>, <code>onclick</code> — all preserved perfectly.
         </div>
     </div>
 
-    <!-- STEP 1: LANGUAGE -->
     <div class="section">
         <label>🎯 STEP 1 — Select Language Mode</label>
         <div class="lang-grid">
@@ -658,7 +610,6 @@ button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
         </div>
     </div>
 
-    <!-- STEP 2: PRESET -->
     <div class="section">
         <label>⚡ STEP 2 — Protection Preset</label>
         <div class="preset-grid">
@@ -681,7 +632,6 @@ button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
         </div>
     </div>
 
-    <!-- STEP 3: INPUT -->
     <div class="section">
         <label>📝 STEP 3 — Paste Your Code (HTML / CSS / JS / Mixed)</label>
         <textarea id="inputCode" class="huge" placeholder="// Paste HTML, CSS, JS or mixed code here..."></textarea>
@@ -705,7 +655,6 @@ button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
         </div>
     </div>
 
-    <!-- STEP 4: OPTIONS -->
     <div class="section">
         <label>⚙️ STEP 4 — Advanced Protection Options</label>
 
@@ -797,14 +746,12 @@ button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
         </div>
     </div>
 
-    <!-- PROGRESS -->
     <div class="progress-wrap">
         <div class="progress-label">Progress</div>
         <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
         <div class="progress-percent" id="progressPercent">0%</div>
     </div>
 
-    <!-- ACTIONS -->
     <div class="btn-row">
         <button onclick="obfuscateNow()">🌌 PROTECT CODE NOW</button>
         <button class="secondary" onclick="loadSample()">📥 LOAD SAMPLE</button>
@@ -813,7 +760,6 @@ button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
 
     <div id="status" class="status"></div>
 
-    <!-- OUTPUT -->
     <div class="section" id="outputSection" style="display:none;">
         <label>🔒 Protected Output <span class="badge success">READY</span></label>
         <div class="tabs">
@@ -866,465 +812,24 @@ button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
 
 <div class="toast-container" id="toastContainer"></div>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     MAIN SCRIPT — All </script> strings safely escaped
+     ═══════════════════════════════════════════════════════════════ -->
 <script>
-/* =====================================================================
-   🌌 NIGHTORBIT 12-LAYER SHIELD ENGINE v2.0
-   12-LAYER HYBRID PRODUCTION MATRIX
-   Architecture: Client-Side Full Protection Suite
-   Brand: NightOrbit CodeForge
-   ===================================================================== */
-
-var NightOrbitShield = (function() {
-    'use strict';
-
-    /* ═══════════════════════════════════════════════════════════════
-       SECTION 1: HTML — 3-LAYER PROCESSING
-       ═══════════════════════════════════════════════════════════════ */
-
-    function processHTML(rawHTML, options) {
-        if (!rawHTML) return { output: '', layers: 0 };
-        options = options || {};
-
-        var result = rawHTML;
-        var layers = 0;
-
-        /* ─────────────────────────────────────────────
-           LAYER 1: Comment Removal
-           ───────────────────────────────────────────── */
-        if (options.removeComments !== false) {
-            result = result.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
-            layers++;
-        }
-
-        /* ─────────────────────────────────────────────
-           LAYER 2: Safe Whitespace Compression
-           ───────────────────────────────────────────── */
-        if (options.minify !== false) {
-            var placeholders = [];
-            var phIndex = 0;
-
-            function ph(m) {
-                placeholders.push(m);
-                return '__NO_PH_' + (phIndex++) + '__';
-            }
-
-            result = result.replace(/<pre[\s\S]*?<\/pre>/gi, ph);
-            result = result.replace(/<textarea[\s\S]*?<\/textarea>/gi, ph);
-            result = result.replace(/<code[\s\S]*?<\/code>/gi, ph);
-            result = result.replace(/<script[\s\S]*?<\/script>/gi, ph);
-            result = result.replace(/<style[\s\S]*?<\/style>/gi, ph);
-            result = result.replace(/\son[a-z]+\s*=\s*"[^"]*"/gi, ph);
-            result = result.replace(/\son[a-z]+\s*=\s*'[^']*'/gi, ph);
-            result = result.replace(/\sdata-[a-z-]+\s*=\s*"[^"]*"/gi, ph);
-            result = result.replace(/\sdata-[a-z-]+\s*=\s*'[^']*'/gi, ph);
-
-            result = result.replace(/>\s+</g, '><');
-            result = result.replace(/[ \t]{2,}/g, ' ');
-            result = result.replace(/\n{2,}/g, '\n');
-
-            result = result.replace(/__NO_PH_(\d+)__/g, function(m, i) {
-                return placeholders[parseInt(i, 10)] || m;
-            });
-
-            layers++;
-        }
-
-        /* ─────────────────────────────────────────────
-           LAYER 3: Attribute Obfuscation (Optional)
-           ───────────────────────────────────────────── */
-        if (options.obfuscateAttributes) {
-            var attrMap = {};
-            var attrCounter = 0;
-
-            result = result.replace(/\s(data-[a-z-]+)\s*=\s*"([^"]*)"/gi, function(m, attr, val) {
-                if (!attrMap[attr]) {
-                    attrMap[attr] = '_nx' + (attrCounter++).toString(36);
-                }
-                return ' ' + attrMap[attr] + '="' + val + '"';
-            });
-
-            result = result.replace(/\s(data-[a-z-]+)\s*=\s*'([^']*)'/gi, function(m, attr, val) {
-                if (!attrMap[attr]) {
-                    attrMap[attr] = '_nx' + (attrCounter++).toString(36);
-                }
-                return ' ' + attrMap[attr] + '="' + val + '"';
-            });
-
-            layers++;
-        }
-
-        return { output: result.trim(), layers: layers };
-    }
-
-    /* ═══════════════════════════════════════════════════════════════
-       SECTION 2: CSS — 3-LAYER PROCESSING
-       ═══════════════════════════════════════════════════════════════ */
-
-    function processCSS(rawCSS, options) {
-        if (!rawCSS) return { output: '', layers: 0, classMap: null };
-        options = options || {};
-
-        var result = rawCSS;
-        var layers = 0;
-
-        /* ─────────────────────────────────────────────
-           LAYER 1: Comment Removal (string-aware)
-           ───────────────────────────────────────────── */
-        if (options.removeComments !== false) {
-            result = stripCssComments(result);
-            layers++;
-        }
-
-        /* ─────────────────────────────────────────────
-           LAYER 2: Safe Whitespace Compression
-           ───────────────────────────────────────────── */
-        if (options.minify !== false) {
-            var placeholders = [];
-            var phIndex = 0;
-
-            function ph(m) {
-                placeholders.push(m);
-                return '__NO_CSS_PH_' + (phIndex++) + '__';
-            }
-
-            result = result.replace(/[\r\n\t]+/g, ' ');
-            result = result.replace(/ {2,}/g, ' ');
-
-            result = result.replace(/calc\([^)]*\)/gi, ph);
-            result = result.replace(/url\([^)]*\)/gi, ph);
-            result = result.replace(/var\([^)]*\)/gi, ph);
-            result = result.replace(/content\s*:\s*("[^"]*"|'[^']*')/gi, ph);
-            result = result.replace(/data:[^;)]+;base64,[A-Za-z0-9+/=]+/gi, ph);
-            result = result.replace(/@media[^{]*/gi, ph);
-            result = result.replace(/@keyframes\s+[a-zA-Z_][a-zA-Z0-9_-]*/gi, ph);
-            result = result.replace(/@import[^;]+/gi, ph);
-            result = result.replace(/@font-face[^{]*/gi, ph);
-            result = result.replace(/@supports[^{]*/gi, ph);
-
-            result = result.replace(/\s*([{}:;,>+~])\s*/g, '$1');
-            result = result.replace(/;\}/g, '}');
-            result = result.replace(/\s*!\s*important/gi, '!important');
-
-            result = result.replace(/__NO_CSS_PH_(\d+)__/g, function(m, i) {
-                return placeholders[parseInt(i, 10)] || m;
-            });
-
-            layers++;
-        }
-
-        /* ─────────────────────────────────────────────
-           LAYER 3: Class Name Obfuscation (Optional)
-           ───────────────────────────────────────────── */
-        var classMap = null;
-        if (options.obfuscateClasses) {
-            var classRegex = /\.([a-zA-Z_][a-zA-Z0-9_-]*)/g;
-            var classes = {};
-            var m;
-            while ((m = classRegex.exec(result)) !== null) {
-                if (/^(active|hidden|show|hide|open|close|disabled|selected)$/.test(m[1])) continue;
-                classes[m[1]] = true;
-            }
-
-            classMap = {};
-            var counter = 0;
-            Object.keys(classes).forEach(function(cls) {
-                classMap[cls] = '_nc' + (counter++).toString(36);
-            });
-
-            Object.keys(classMap).forEach(function(oldCls) {
-                var re = new RegExp('\\.' + escapeRegex(oldCls) + '(?![a-zA-Z0-9_-])', 'g');
-                result = result.replace(re, '.' + classMap[oldCls]);
-            });
-
-            layers++;
-        }
-
-        return { output: result.trim(), layers: layers, classMap: classMap };
-    }
-
-    /* ═══════════════════════════════════════════════════════════════
-       SECTION 3: JAVASCRIPT — 6-LAYER PROTECTION
-       ═══════════════════════════════════════════════════════════════ */
-
-    function protectJS(rawJS, options) {
-        if (!rawJS) return { output: '', layers: 0 };
-        options = options || {};
-
-        if (typeof JavaScriptObfuscator === 'undefined') {
-            return { output: rawJS, layers: 0, error: 'JavaScriptObfuscator library not loaded' };
-        }
-
-        var obfuscatorOptions = {
-            compact: true,
-            controlFlowFlattening: options.controlFlowFlattening !== false,
-            controlFlowFlatteningThreshold: options.cffThreshold || 0.75,
-            deadCodeInjection: options.deadCodeInjection !== false,
-            deadCodeInjectionThreshold: options.dciThreshold || 0.4,
-            debugProtection: options.debugProtection !== false,
-            debugProtectionInterval: options.debugProtection !== false ? 4000 : 0,
-            disableConsoleOutput: options.disableConsoleOutput !== false,
-            identifierNamesGenerator: 'hexadecimal',
-            log: false,
-            numbersToExpressions: options.numbersToExpressions || false,
-            renameGlobals: options.renameGlobals !== false,
-            selfDefending: options.selfDefending !== false,
-            simplify: true,
-            splitStrings: options.stringArray !== false,
-            splitStringsChunkLength: 5,
-            stringArray: options.stringArray !== false,
-            stringArrayCallsTransform: options.stringArray !== false,
-            stringArrayCallsTransformThreshold: 0.5,
-            stringArrayEncoding: options.stringArray !== false ? ['rc4'] : [],
-            stringArrayIndexShift: true,
-            stringArrayRotate: true,
-            stringArrayShuffle: true,
-            stringArrayWrappersCount: 2,
-            stringArrayWrappersChainedCalls: true,
-            stringArrayWrappersParametersMaxCount: 4,
-            stringArrayWrappersType: 'function',
-            stringArrayThreshold: options.stringArray !== false ? (options.strThreshold || 0.75) : 0,
-            transformObjectKeys: true,
-            unicodeEscapeSequence: false,
-            target: 'browser',
-            sourceMap: false,
-            seed: 0
-        };
-
-        try {
-            var result = JavaScriptObfuscator.obfuscate(rawJS, obfuscatorOptions);
-            return { output: result.getObfuscatedCode(), layers: 6 };
-        } catch (e) {
-            try {
-                var safeOpts = {};
-                for (var k in obfuscatorOptions) {
-                    if (obfuscatorOptions.hasOwnProperty(k)) safeOpts[k] = obfuscatorOptions[k];
-                }
-                safeOpts.controlFlowFlattening = false;
-                safeOpts.deadCodeInjection = false;
-                safeOpts.selfDefending = false;
-                safeOpts.debugProtection = false;
-                safeOpts.debugProtectionInterval = 0;
-                safeOpts.stringArrayEncoding = [];
-                safeOpts.renameGlobals = false;
-
-                var retry = JavaScriptObfuscator.obfuscate(rawJS, safeOpts);
-                return { output: retry.getObfuscatedCode(), layers: 3, fallback: true };
-            } catch (e2) {
-                return { output: rawJS, layers: 0, error: e2.message };
-            }
-        }
-    }
-
-    /* ═══════════════════════════════════════════════════════════════
-       HELPERS
-       ═══════════════════════════════════════════════════════════════ */
-
-    function stripCssComments(code) {
-        if (!code) return '';
-        var result = '';
-        var i = 0, len = code.length;
-        var inString = false, stringChar = '';
-
-        while (i < len) {
-            var ch = code[i], next = code[i + 1];
-
-            if (inString) {
-                result += ch;
-                if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-                if (ch === stringChar) inString = false;
-                i++; continue;
-            }
-
-            if (ch === '"' || ch === "'") {
-                inString = true; stringChar = ch;
-                result += ch; i++; continue;
-            }
-
-            if (ch === '/' && next === '*') {
-                i += 2;
-                while (i < len) {
-                    if (code[i] === '*' && code[i + 1] === '/') { i += 2; break; }
-                    i++;
-                }
-                continue;
-            }
-
-            result += ch;
-            i++;
-        }
-        return result;
-    }
-
-    function stripJsComments(code) {
-        if (!code) return '';
-        var result = '';
-        var i = 0, len = code.length;
-        var st = 'code';
-        while (i < len) {
-            var ch = code[i], next = code[i + 1];
-            if (st === 'lineComment') {
-                if (ch === '\n') { st = 'code'; result += ch; }
-                i++; continue;
-            }
-            if (st === 'blockComment') {
-                if (ch === '*' && next === '/') { st = 'code'; i += 2; continue; }
-                i++; continue;
-            }
-            if (st === 'single') {
-                result += ch;
-                if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-                if (ch === "'") st = 'code';
-                i++; continue;
-            }
-            if (st === 'double') {
-                result += ch;
-                if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-                if (ch === '"') st = 'code';
-                i++; continue;
-            }
-            if (st === 'template') {
-                result += ch;
-                if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-                if (ch === '`') st = 'code';
-                i++; continue;
-            }
-            if (ch === '/' && next === '/') { st = 'lineComment'; i += 2; continue; }
-            if (ch === '/' && next === '*') { st = 'blockComment'; i += 2; continue; }
-            if (ch === "'") { st = 'single'; result += ch; i++; continue; }
-            if (ch === '"') { st = 'double'; result += ch; i++; continue; }
-            if (ch === '`') { st = 'template'; result += ch; i++; continue; }
-            result += ch;
-            i++;
-        }
-        return result;
-    }
-
-    function escapeRegex(str) {
-        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-
-    /* ═══════════════════════════════════════════════════════════════
-       PUBLIC API
-       ═══════════════════════════════════════════════════════════════ */
-
-    return {
-        processHTML: processHTML,
-        processCSS: processCSS,
-        protectJS: protectJS,
-        stripCssComments: stripCssComments,
-        stripJsComments: stripJsComments,
-
-        fullProtect: function(rawCode, options) {
-            options = options || {};
-            var startTime = Date.now();
-            var report = {
-                htmlLayers: 0, cssLayers: 0, jsLayers: 0,
-                classMap: null, errors: []
-            };
-
-            var sections = this.extractSections(rawCode);
-
-            if (sections.html) {
-                var htmlResult = processHTML(sections.html, options);
-                report.htmlLayers = htmlResult.layers;
-                sections.html = htmlResult.output;
-            }
-
-            if (sections.css) {
-                var cssResult = processCSS(sections.css, options);
-                report.cssLayers = cssResult.layers;
-                report.classMap = cssResult.classMap;
-                sections.css = cssResult.output;
-            }
-
-            if (sections.js) {
-                var jsResult = protectJS(sections.js, options);
-                report.jsLayers = jsResult.layers;
-                if (jsResult.error) report.errors.push('JS: ' + jsResult.error);
-                sections.js = jsResult.output;
-            }
-
-            /* Update HTML classes if CSS obfuscated them */
-            if (report.classMap && sections.html) {
-                sections.html = sections.html.replace(
-                    /class\s*=\s*"([^"]*)"/gi,
-                    function(m, classList) {
-                        var newList = classList.split(/\s+/).map(function(c) {
-                            return report.classMap[c] || c;
-                        }).join(' ');
-                        return 'class="' + newList + '"';
-                    }
-                );
-            }
-
-            var finalOutput = '';
-            var parts = [];
-            if (sections.html) parts.push(sections.html);
-            if (sections.css) parts.push('<style>' + sections.css + '</style>');
-            if (sections.js) parts.push('<script>' + sections.js + '</script>');
-            finalOutput = parts.join('\n');
-
-            report.totalLayers = report.htmlLayers + report.cssLayers + report.jsLayers;
-            report.timeMs = Date.now() - startTime;
-            report.output = finalOutput;
-            report.sections = sections;
-
-            return report;
-        },
-
-        extractSections: function(fullCode) {
-            var result = { html: fullCode, css: '', js: '' };
-            var TAG_OPEN_SCRIPT = '<' + 'script';
-            var TAG_CLOSE_SCRIPT = '<' + '/script>';
-            var TAG_OPEN_STYLE = '<' + 'style';
-            var TAG_CLOSE_STYLE = '<' + '/style>';
-            var escStyle = escapeRegex(TAG_CLOSE_STYLE);
-            var escScript = escapeRegex(TAG_CLOSE_SCRIPT);
-
-            var styleRegex = new RegExp(TAG_OPEN_STYLE + '[^>]*>([\\s\\S]*?)' + escStyle, 'gi');
-            var m;
-            while ((m = styleRegex.exec(fullCode)) !== null) {
-                if (result.css) result.css += '\n\n';
-                result.css += stripCssComments(m[1]).trim();
-            }
-
-            var scriptRegex = new RegExp(
-                TAG_OPEN_SCRIPT +
-                '(?![^>]*\\bsrc\\s*=)' +
-                '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template)[^>]*)' +
-                '[^>]*>([\\s\\S]*?)' + escScript,
-                'gi'
-            );
-            while ((m = scriptRegex.exec(fullCode)) !== null) {
-                if (result.js) result.js += '\n\n';
-                result.js += stripJsComments(m[1]).trim();
-            }
-
-            result.html = result.html.replace(
-                new RegExp(TAG_OPEN_STYLE + '[^>]*>[\\s\\S]*?' + escStyle, 'gi'), ''
-            );
-            result.html = result.html.replace(
-                new RegExp(
-                    TAG_OPEN_SCRIPT +
-                    '(?![^>]*\\bsrc\\s*=)' +
-                    '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template)[^>]*)' +
-                    '[^>]*>[\\s\\S]*?' + escScript,
-                    'gi'
-                ), ''
-            );
-
-            result.html = result.html.replace(/\n{3,}/g, '\n\n').trim();
-            return result;
-        }
-    };
-})();
-
-/* =====================================================================
-   UI CONTROLLER — NightOrbit CodeForge
-   ===================================================================== */
 (function() {
 'use strict';
 
+/* ═══════════════════════════════════════════════════════════════
+   SAFE TAG CONSTANTS — Critical for preventing parse breakage
+   ═══════════════════════════════════════════════════════════════ */
+var TAG_OPEN_SCRIPT  = '<' + 'script>';
+var TAG_CLOSE_SCRIPT = '<' + '/script>';
+var TAG_OPEN_STYLE   = '<' + 'style>';
+var TAG_CLOSE_STYLE  = '<' + '/style>';
+
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════════════════════════ */
 var state = {
     user: null,
     lang: 'auto',
@@ -1346,7 +851,9 @@ var state = {
     detectedLang: null
 };
 
-/* ─── UTILITIES ─── */
+/* ═══════════════════════════════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
 function bytes(n) {
     if (n < 1024) return n + ' B';
     if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
@@ -1372,13 +879,178 @@ function toast(msg, type) {
     el.innerHTML = '<i class="fa-solid ' + icons[type] + '"></i><span>' + msg + '</span>';
     c.appendChild(el);
     setTimeout(function() {
-        el.classList.remove('removing');
         el.classList.add('removing');
         setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
     }, 3500);
 }
 
-/* ─── LANGUAGE DETECTION ─── */
+function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMMENT STRIPPERS — String-aware, safe
+   ═══════════════════════════════════════════════════════════════ */
+function stripCssComments(code) {
+    if (!code) return '';
+    var result = '';
+    var i = 0, len = code.length;
+    var inString = false, stringChar = '';
+    while (i < len) {
+        var ch = code[i], next = code[i + 1];
+        if (inString) {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === stringChar) inString = false;
+            i++; continue;
+        }
+        if (ch === '"' || ch === "'") { inString = true; stringChar = ch; result += ch; i++; continue; }
+        if (ch === '/' && next === '*') {
+            i += 2;
+            while (i < len) {
+                if (code[i] === '*' && code[i + 1] === '/') { i += 2; break; }
+                i++;
+            }
+            continue;
+        }
+        result += ch;
+        i++;
+    }
+    return result;
+}
+
+function stripJsComments(code) {
+    if (!code) return '';
+    var result = '';
+    var i = 0, len = code.length;
+    var st = 'code';
+    while (i < len) {
+        var ch = code[i], next = code[i + 1];
+        if (st === 'lineComment') {
+            if (ch === '\n') { st = 'code'; result += ch; }
+            i++; continue;
+        }
+        if (st === 'blockComment') {
+            if (ch === '*' && next === '/') { st = 'code'; i += 2; continue; }
+            i++; continue;
+        }
+        if (st === 'single') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === "'") st = 'code';
+            i++; continue;
+        }
+        if (st === 'double') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === '"') st = 'code';
+            i++; continue;
+        }
+        if (st === 'template') {
+            result += ch;
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
+            if (ch === '`') st = 'code';
+            i++; continue;
+        }
+        if (ch === '/' && next === '/') { st = 'lineComment'; i += 2; continue; }
+        if (ch === '/' && next === '*') { st = 'blockComment'; i += 2; continue; }
+        if (ch === "'") { st = 'single'; result += ch; i++; continue; }
+        if (ch === '"') { st = 'double'; result += ch; i++; continue; }
+        if (ch === '`') { st = 'template'; result += ch; i++; continue; }
+        result += ch;
+        i++;
+    }
+    return result;
+}
+
+function stripHtmlComments(code) {
+    if (!code) return '';
+    return code.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SAFE CSS MINIFIER — Preserves calc/url/var/@media/!important
+   ═══════════════════════════════════════════════════════════════ */
+function safeCssMinify(css) {
+    if (!css) return '';
+    var result = css;
+
+    result = result.replace(/[\r\n\t]+/g, ' ');
+    result = result.replace(/ {2,}/g, ' ');
+
+    var placeholders = [];
+    var phIndex = 0;
+
+    function ph(m) {
+        placeholders.push(m);
+        return '__NO_CSS_PH_' + (phIndex++) + '__';
+    }
+
+    result = result.replace(/calc\([^)]*\)/gi, ph);
+    result = result.replace(/url\([^)]*\)/gi, ph);
+    result = result.replace(/var\([^)]*\)/gi, ph);
+    result = result.replace(/content\s*:\s*("[^"]*"|'[^']*')/gi, ph);
+    result = result.replace(/data:[^;)]+;base64,[A-Za-z0-9+/=]+/gi, ph);
+    result = result.replace(/@media[^{]*/gi, ph);
+    result = result.replace(/@keyframes\s+[a-zA-Z_][a-zA-Z0-9_-]*/gi, ph);
+    result = result.replace(/@import[^;]+/gi, ph);
+    result = result.replace(/@font-face[^{]*/gi, ph);
+    result = result.replace(/@supports[^{]*/gi, ph);
+    result = result.replace(/@charset[^;]+/gi, ph);
+
+    result = result.replace(/\s*([{}:;,>+~])\s*/g, '$1');
+    result = result.replace(/;\}/g, '}');
+    result = result.replace(/\s*!\s*important/gi, '!important');
+
+    result = result.replace(/__NO_CSS_PH_(\d+)__/g, function(m, i) {
+        return placeholders[parseInt(i, 10)] || m;
+    });
+
+    return result.trim();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SAFE HTML MINIFIER — Preserves pre/textarea/code/onclick/data-*
+   ═══════════════════════════════════════════════════════════════ */
+function safeHtmlMinify(html) {
+    if (!html) return '';
+    var result = html;
+
+    var placeholders = [];
+    var phIndex = 0;
+
+    function ph(m) {
+        placeholders.push(m);
+        return '__NO_HTML_PH_' + (phIndex++) + '__';
+    }
+
+    /* Protect sensitive blocks */
+    result = result.replace(/<pre[\s\S]*?<\/pre>/gi, ph);
+    result = result.replace(/<textarea[\s\S]*?<\/textarea>/gi, ph);
+    result = result.replace(/<code[\s\S]*?<\/code>/gi, ph);
+    result = result.replace(/<script[\s\S]*?<\/script>/gi, ph);
+    result = result.replace(/<style[\s\S]*?<\/style>/gi, ph);
+    result = result.replace(/\son[a-z]+\s*=\s*"[^"]*"/gi, ph);
+    result = result.replace(/\son[a-z]+\s*=\s*'[^']*'/gi, ph);
+    result = result.replace(/\sdata-[a-z-]+\s*=\s*'[^']*'/gi, ph);
+    result = result.replace(/\sdata-[a-z-]+\s*=\s*"[^"]*"/gi, ph);
+
+    /* Safe compression */
+    result = result.replace(/>\s+</g, '><');
+    result = result.replace(/[ \t]{2,}/g, ' ');
+    result = result.replace(/\n{2,}/g, '\n');
+
+    /* Restore */
+    result = result.replace(/__NO_HTML_PH_(\d+)__/g, function(m, i) {
+        return placeholders[parseInt(i, 10)] || m;
+    });
+
+    return result.trim();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LANGUAGE DETECTION
+   ═══════════════════════════════════════════════════════════════ */
 function detectLanguage(code) {
     if (!code) return 'txt';
     var t = code.trim();
@@ -1410,7 +1082,75 @@ function detectLanguage(code) {
     return 'txt';
 }
 
-/* ─── PRESETS ─── */
+/* ═══════════════════════════════════════════════════════════════
+   EXTRACT SECTIONS
+   ═══════════════════════════════════════════════════════════════ */
+function extractSections(fullCode, mode) {
+    var result = { html: fullCode, css: '', js: '' };
+
+    if (mode === 'js') return { html: '', css: '', js: fullCode };
+    if (mode === 'css') return { html: '', css: fullCode, js: '' };
+    if (mode === 'html') return { html: fullCode, css: '', js: '' };
+
+    var html = fullCode;
+    var css = '';
+    var js = '';
+
+    var escStyle = escapeRegex(TAG_CLOSE_STYLE);
+    var escScript = escapeRegex(TAG_CLOSE_SCRIPT);
+
+    /* Extract CSS */
+    var styleRegex = new RegExp(TAG_OPEN_STYLE + '[^>]*>([\\s\\S]*?)' + escStyle, 'gi');
+    var styleMatch;
+    while ((styleMatch = styleRegex.exec(fullCode)) !== null) {
+        if (css) css += '\n\n';
+        css += stripCssComments(styleMatch[1]).trim();
+    }
+
+    /* Extract JS (skip data scripts and src scripts) */
+    var scriptRegex = new RegExp(
+        TAG_OPEN_SCRIPT +
+        '(?![^>]*\\bsrc\\s*=)' +
+        '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template)[^>]*)' +
+        '[^>]*>([\\s\\S]*?)' + escScript,
+        'gi'
+    );
+    var scriptMatch;
+    while ((scriptMatch = scriptRegex.exec(fullCode)) !== null) {
+        if (js) js += '\n\n';
+        js += stripJsComments(scriptMatch[1]).trim();
+    }
+
+    /* Strip from HTML */
+    html = html.replace(
+        new RegExp(TAG_OPEN_STYLE + '[^>]*>[\\s\\S]*?' + escStyle, 'gi'),
+        ''
+    );
+    html = html.replace(
+        new RegExp(
+            TAG_OPEN_SCRIPT +
+            '(?![^>]*\\bsrc\\s*=)' +
+            '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template)[^>]*)' +
+            '[^>]*>[\\s\\S]*?' + escScript,
+            'gi'
+        ),
+        ''
+    );
+
+    if (state.options.removeComments) {
+        html = stripHtmlComments(html);
+    }
+    html = html.replace(/\n{3,}/g, '\n\n').trim();
+
+    result.html = html;
+    result.css = css;
+    result.js = js;
+    return result;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PRESETS
+   ═══════════════════════════════════════════════════════════════ */
 window.setPreset = function(preset, btn) {
     state.preset = preset;
     document.querySelectorAll('.preset-btn').forEach(function(b) { b.classList.remove('active'); });
@@ -1438,7 +1178,6 @@ window.toggleOpt = function(el) {
     updateProgress();
 };
 
-/* ─── LANGUAGE SELECTOR ─── */
 window.setLang = function(lang, btn) {
     state.lang = lang;
     document.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.remove('active'); });
@@ -1447,7 +1186,9 @@ window.setLang = function(lang, btn) {
     toast('Language mode: ' + lang.toUpperCase(), 'info');
 };
 
-/* ─── INPUT & DETECTION ─── */
+/* ═══════════════════════════════════════════════════════════════
+   INPUT & DETECTION
+   ═══════════════════════════════════════════════════════════════ */
 var inputCodeEl = document.getElementById('inputCode');
 
 function updateDetection() {
@@ -1482,7 +1223,9 @@ function updateDetection() {
 
 inputCodeEl.addEventListener('input', updateDetection);
 
-/* ─── PROGRESS ─── */
+/* ═══════════════════════════════════════════════════════════════
+   PROGRESS
+   ═══════════════════════════════════════════════════════════════ */
 function updateProgress() {
     var steps = 0;
     if (inputCodeEl.value.trim()) steps++;
@@ -1494,9 +1237,69 @@ function updateProgress() {
     document.getElementById('progressPercent').textContent = percent + '%';
 }
 
-/* ═══════════════════════════════════════════════════
-   PROTECT NOW — NightOrbit 12-Layer Pipeline
-   ═══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   BUILD OBFUSCATOR OPTIONS
+   ═══════════════════════════════════════════════════════════════ */
+function buildOptions() {
+    var o = state.options;
+    var preset = state.preset;
+
+    var cffThreshold = 0.75;
+    var dciThreshold = 0.4;
+    var strThreshold = 0.75;
+
+    if (preset === 'high') { cffThreshold = 0.9; dciThreshold = 0.5; strThreshold = 0.9; }
+    if (preset === 'extreme') { cffThreshold = 1.0; dciThreshold = 0.6; strThreshold = 1.0; }
+
+    return {
+        compact: o.compactSingleLine,
+        controlFlowFlattening: o.controlFlowFlattening,
+        controlFlowFlatteningThreshold: cffThreshold,
+        deadCodeInjection: o.deadCodeInjection,
+        deadCodeInjectionThreshold: dciThreshold,
+        debugProtection: o.debugProtection,
+        debugProtectionInterval: o.debugProtection ? 4000 : 0,
+        disableConsoleOutput: o.disableConsoleOutput,
+        identifierNamesGenerator: 'hexadecimal',
+        log: false,
+        numbersToExpressions: preset === 'extreme',
+        renameGlobals: o.renameGlobals,
+        selfDefending: o.selfDefending,
+        simplify: true,
+        splitStrings: o.stringArray,
+        splitStringsChunkLength: 5,
+        stringArray: o.stringArray,
+        stringArrayCallsTransform: o.stringArray,
+        stringArrayCallsTransformThreshold: 0.5,
+        stringArrayEncoding: o.stringArray ? ['rc4'] : [],
+        stringArrayIndexShift: true,
+        stringArrayRotate: true,
+        stringArrayShuffle: true,
+        stringArrayWrappersCount: 2,
+        stringArrayWrappersChainedCalls: true,
+        stringArrayWrappersParametersMaxCount: 4,
+        stringArrayWrappersType: 'function',
+        stringArrayThreshold: o.stringArray ? strThreshold : 0,
+        transformObjectKeys: true,
+        unicodeEscapeSequence: false,
+        target: 'browser',
+        sourceMap: false,
+        seed: 0
+    };
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ESCAPE SCRIPT TAGS — Critical to prevent parse breakage
+   ═══════════════════════════════════════════════════════════════ */
+function escapeScriptTags(code) {
+    if (!code) return '';
+    /* Replace any literal </script> with safe version */
+    return code.replace(/<\/script>/gi, '<\\/script>');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PROTECT NOW — Main Function
+   ═══════════════════════════════════════════════════════════════ */
 window.obfuscateNow = function() {
     var input = inputCodeEl.value.trim();
     if (!input) {
@@ -1526,86 +1329,156 @@ window.obfuscateNow = function() {
             }
 
             showStatus('loading', '⏳ Step 1/6 — Extracting HTML / CSS / JavaScript...');
-            var sections = NightOrbitShield.extractSections(input);
+            var sections = extractSections(input, finalLang === 'mixed' ? 'mixed' : finalLang);
 
-            /* Build options */
-            var opts = {
-                removeComments: state.options.removeComments,
-                minify: state.options.compactSingleLine,
-                obfuscateClasses: state.options.obfuscateClassNames,
-                obfuscateAttributes: state.options.obfuscateAttributes,
-                controlFlowFlattening: state.options.controlFlowFlattening,
-                deadCodeInjection: state.options.deadCodeInjection,
-                stringArray: state.options.stringArray,
-                debugProtection: state.options.debugProtection,
-                selfDefending: state.options.selfDefending,
-                disableConsoleOutput: state.options.disableConsoleOutput,
-                renameGlobals: state.options.renameGlobals,
-                cffThreshold: state.preset === 'extreme' ? 1.0 : (state.preset === 'high' ? 0.9 : 0.75),
-                dciThreshold: state.preset === 'extreme' ? 0.6 : (state.preset === 'high' ? 0.5 : 0.4),
-                strThreshold: state.preset === 'extreme' ? 1.0 : (state.preset === 'high' ? 0.9 : 0.75)
-            };
+            var options = buildOptions();
+            var obfuscatedJs = '';
+            var obfuscatedCss = sections.css;
+            var obfuscatedHtml = sections.html;
+            var jsLayers = 0;
 
-            /* Process HTML */
-            var htmlResult = { output: '', layers: 0 };
-            if (sections.html && sections.html.trim()) {
-                showStatus('loading', '⏳ Step 2/6 — Processing HTML (3 layers)...');
-                htmlResult = NightOrbitShield.processHTML(sections.html, opts);
-            }
-
-            /* Process CSS */
-            var cssResult = { output: '', layers: 0, classMap: null };
-            if (sections.css && sections.css.trim()) {
-                showStatus('loading', '⏳ Step 3/6 — Processing CSS (3 layers)...');
-                cssResult = NightOrbitShield.processCSS(sections.css, opts);
-            }
-
-            /* Update HTML classes if CSS obfuscated */
-            var finalHtml = htmlResult.output;
-            if (cssResult.classMap && finalHtml) {
-                finalHtml = finalHtml.replace(
-                    /class\s*=\s*"([^"]*)"/gi,
-                    function(m, classList) {
-                        var newList = classList.split(/\s+/).map(function(c) {
-                            return cssResult.classMap[c] || c;
-                        }).join(' ');
-                        return 'class="' + newList + '"';
-                    }
-                );
-            }
-
-            /* Process JS */
-            var jsResult = { output: '', layers: 0 };
+            /* ─── JavaScript: 6-Layer Protection ─── */
             if (sections.js && sections.js.trim()) {
-                showStatus('loading', '⏳ Step 4/6 — Applying 6-layer JavaScript protection...');
-                jsResult = NightOrbitShield.protectJS(sections.js, opts);
+                showStatus('loading', '⏳ Step 2/6 — Applying 6-layer JavaScript protection...');
+                try {
+                    var jsResult = JavaScriptObfuscator.obfuscate(sections.js, options);
+                    obfuscatedJs = jsResult.getObfuscatedCode();
+                    jsLayers = 6;
+                } catch (jsErr) {
+                    console.warn('Full JS obfuscation failed, fallback:', jsErr.message);
+                    showStatus('loading', '⏳ Step 2/6 — Fallback JS protection (3 layers)...');
+                    var safeOpts = {};
+                    for (var k in options) {
+                        if (options.hasOwnProperty(k)) safeOpts[k] = options[k];
+                    }
+                    safeOpts.controlFlowFlattening = false;
+                    safeOpts.deadCodeInjection = false;
+                    safeOpts.selfDefending = false;
+                    safeOpts.debugProtection = false;
+                    safeOpts.debugProtectionInterval = 0;
+                    safeOpts.stringArrayEncoding = [];
+                    safeOpts.renameGlobals = false;
+                    safeOpts.compact = false;
+                    try {
+                        var retry = JavaScriptObfuscator.obfuscate(sections.js, safeOpts);
+                        obfuscatedJs = retry.getObfuscatedCode();
+                        jsLayers = 3;
+                        toast('JS fallback mode (3 layers)', 'warn');
+                    } catch (e2) {
+                        /* Last resort: return original */
+                        obfuscatedJs = sections.js;
+                        jsLayers = 0;
+                        toast('JS obfuscation failed — using original', 'error');
+                    }
+                }
             }
 
-            /* Assemble */
+            /* ─── CSS: 3-Layer Protection ─── */
+            var cssLayers = 0;
+            if (obfuscatedCss && obfuscatedCss.trim()) {
+                showStatus('loading', '⏳ Step 3/6 — Applying CSS protection...');
+
+                if (state.options.removeComments) {
+                    obfuscatedCss = stripCssComments(obfuscatedCss);
+                    cssLayers = 1;
+                }
+
+                if (state.options.compactSingleLine) {
+                    obfuscatedCss = safeCssMinify(obfuscatedCss);
+                    cssLayers = 2;
+                }
+
+                if (state.options.obfuscateClassNames && obfuscatedHtml) {
+                    try {
+                        var classRegex = /\.([a-zA-Z_][a-zA-Z0-9_-]*)/g;
+                        var classes = {};
+                        var m;
+                        while ((m = classRegex.exec(obfuscatedCss)) !== null) {
+                            if (/^(active|hidden|show|hide|open|close|disabled|selected)$/.test(m[1])) continue;
+                            classes[m[1]] = true;
+                        }
+                        var classMap = {};
+                        var counter = 0;
+                        Object.keys(classes).forEach(function(cls) {
+                            classMap[cls] = '_nc' + (counter++).toString(36);
+                        });
+                        Object.keys(classMap).forEach(function(oldCls) {
+                            var re = new RegExp('\\.' + escapeRegex(oldCls) + '(?![a-zA-Z0-9_-])', 'g');
+                            obfuscatedCss = obfuscatedCss.replace(re, '.' + classMap[oldCls]);
+                        });
+                        obfuscatedHtml = obfuscatedHtml.replace(
+                            /class\s*=\s*"([^"]*)"/gi,
+                            function(m, classList) {
+                                var newList = classList.split(/\s+/).map(function(c) {
+                                    return classMap[c] || c;
+                                }).join(' ');
+                                return 'class="' + newList + '"';
+                            }
+                        );
+                        cssLayers = 3;
+                    } catch (ce) {
+                        console.warn('Class obfuscation skipped:', ce.message);
+                    }
+                }
+            }
+
+            /* ─── HTML: 3-Layer Protection ─── */
+            var htmlLayers = 0;
+            if (obfuscatedHtml && obfuscatedHtml.trim()) {
+                showStatus('loading', '⏳ Step 4/6 — Applying HTML protection...');
+
+                if (state.options.removeComments) {
+                    obfuscatedHtml = stripHtmlComments(obfuscatedHtml);
+                    htmlLayers = 1;
+                }
+
+                if (state.options.compactSingleLine) {
+                    obfuscatedHtml = safeHtmlMinify(obfuscatedHtml);
+                    htmlLayers = 2;
+                }
+
+                if (state.options.obfuscateAttributes) {
+                    obfuscatedHtml = obfuscatedHtml.replace(
+                        /\s(data-[a-z-]+)\s*=\s*"([^"]*)"/gi,
+                        function(m, attr, val) {
+                            return ' _nx' + attr.length + '="' + val + '"';
+                        }
+                    );
+                    htmlLayers = 3;
+                }
+            }
+
+            /* ─── Assemble Final Output ─── */
             showStatus('loading', '⏳ Step 5/6 — Assembling final output...');
             var finalOutput = '';
-            if (finalLang === 'js') {
-                finalOutput = jsResult.output || input;
+
+            if (finalLang === 'js' || finalLang === 'json') {
+                finalOutput = obfuscatedJs || input;
             } else if (finalLang === 'css') {
-                finalOutput = cssResult.output || input;
+                finalOutput = obfuscatedCss || input;
             } else {
                 var parts = [];
-                if (finalHtml) parts.push(finalHtml);
-                if (cssResult.output) parts.push('<style>' + cssResult.output + '</style>');
-                if (jsResult.output) parts.push('<script>' + jsResult.output + '</script>');
+                if (obfuscatedHtml) parts.push(obfuscatedHtml);
+                if (obfuscatedCss && obfuscatedCss.trim()) {
+                    parts.push(TAG_OPEN_STYLE + obfuscatedCss + TAG_CLOSE_STYLE);
+                }
+                if (obfuscatedJs && obfuscatedJs.trim()) {
+                    /* CRITICAL: Escape </script> in JS to prevent parse breakage */
+                    var safeJs = escapeScriptTags(obfuscatedJs);
+                    parts.push(TAG_OPEN_SCRIPT + safeJs + TAG_CLOSE_SCRIPT);
+                }
                 finalOutput = parts.join('\n');
             }
 
-            /* Display */
+            /* ─── Display Output ─── */
             showStatus('loading', '⏳ Step 6/6 — Finalizing...');
             document.getElementById('outputSection').style.display = 'block';
             document.getElementById('outputActions').style.display = 'flex';
             document.getElementById('outputFinal').value = finalOutput;
-            document.getElementById('outputHtml').value = finalHtml || '';
-            document.getElementById('outputCss').value = cssResult.output || '';
-            document.getElementById('outputJs').value = jsResult.output || '';
+            document.getElementById('outputHtml').value = obfuscatedHtml || '';
+            document.getElementById('outputCss').value = obfuscatedCss || '';
+            document.getElementById('outputJs').value = obfuscatedJs || '';
 
-            /* Stats */
             var origSize = new Blob([input]).size;
             var obfSize = new Blob([finalOutput]).size;
             var ratio = ((obfSize / origSize) * 100).toFixed(1);
@@ -1616,16 +1489,16 @@ window.obfuscateNow = function() {
             document.getElementById('statRatio').textContent = ratio + '%';
             document.getElementById('statTime').textContent = elapsed + ' ms';
 
-            /* Professional Success Message */
-            var totalLayers = htmlResult.layers + cssResult.layers + jsResult.layers;
-            var jsStatus = jsResult.layers === 6 ? '✅ 6/6 Layers (Full)' :
-                          (jsResult.layers === 3 ? '⚠️ 3/6 Layers (Fallback)' : '⛔ 0/6 Layers');
-            var cssStatus = cssResult.layers >= 3 ? '✅ 3/3 Layers (Full)' :
-                           (cssResult.layers === 2 ? '✅ 2/3 Layers (Safe)' :
-                           (cssResult.layers === 1 ? '✅ 1/3 Layers' : '⛔ 0/3 Layers'));
-            var htmlStatus = htmlResult.layers >= 3 ? '✅ 3/3 Layers (Full)' :
-                            (htmlResult.layers === 2 ? '✅ 2/3 Layers (Safe)' :
-                            (htmlResult.layers === 1 ? '✅ 1/3 Layers' : '⛔ 0/3 Layers'));
+            var jsStatus = jsLayers === 6 ? '✅ 6/6 Layers (Full)' :
+                          (jsLayers === 3 ? '⚠️ 3/6 Layers (Fallback)' : '⛔ 0/6');
+            var cssStatus = cssLayers >= 3 ? '✅ 3/3 Layers (Full)' :
+                           (cssLayers === 2 ? '✅ 2/3 Layers (Safe)' :
+                           (cssLayers === 1 ? '✅ 1/3 Layers' : '⛔ 0/3'));
+            var htmlStatus = htmlLayers >= 3 ? '✅ 3/3 Layers (Full)' :
+                            (htmlLayers === 2 ? '✅ 2/3 Layers (Safe)' :
+                            (htmlLayers === 1 ? '✅ 1/3 Layers' : '⛔ 0/3'));
+
+            var totalLayers = jsLayers + cssLayers + htmlLayers;
 
             showStatus('success',
                 '🌌 NIGHTORBIT 12-LAYER SHIELD APPLIED\n' +
@@ -1635,35 +1508,23 @@ window.obfuscateNow = function() {
                 '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
                 '⚙️ JavaScript Protection:\n' +
                 '   ' + jsStatus + '\n' +
-                '   • Control Flow Flattening\n' +
-                '   • Dead Code Injection\n' +
-                '   • String Array + RC4 Encryption\n' +
-                '   • Debug Protection\n' +
-                '   • Self Defending Runtime\n' +
-                '   • Hex Identifier Renaming\n' +
                 '\n' +
                 '🎨 CSS Protection:\n' +
                 '   ' + cssStatus + '\n' +
-                '   • Comments Removed\n' +
-                '   • Safe Whitespace Compression\n' +
-                (cssResult.layers >= 3 ? '   • Class Name Obfuscation\n' : '') +
                 '\n' +
                 '📄 HTML Protection:\n' +
                 '   ' + htmlStatus + '\n' +
-                '   • Comments Removed\n' +
-                '   • Safe Whitespace Compression\n' +
-                (htmlResult.layers >= 3 ? '   • Attribute Obfuscation\n' : '') +
                 '\n' +
                 '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
                 '📊 Statistics:\n' +
-                '   Original Size:  ' + bytes(origSize) + '\n' +
-                '   Protected Size: ' + bytes(obfSize) + '\n' +
-                '   Size Ratio:     ' + ratio + '%\n' +
+                '   Original Size:   ' + bytes(origSize) + '\n' +
+                '   Protected Size:  ' + bytes(obfSize) + '\n' +
+                '   Size Ratio:      ' + ratio + '%\n' +
                 '   Processing Time: ' + elapsed + ' ms\n' +
                 '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
                 '🔒 Your code is now protected by NightOrbit.\n' +
                 '✨ CSS & HTML: Structurally safe — no breakage.\n' +
-                '🌌 Brand: NightOrbit CodeForge'
+                '🛡️ Script tags escaped — no parse errors.'
             );
             toast('🌌 NightOrbit 12-Layer Shield applied!', 'success');
 
@@ -1692,7 +1553,9 @@ window.obfuscateNow = function() {
     }, 100);
 };
 
-/* ─── TABS ─── */
+/* ═══════════════════════════════════════════════════════════════
+   TABS
+   ═══════════════════════════════════════════════════════════════ */
 window.switchTab = function(tab) {
     document.querySelectorAll('.tabs .tab').forEach(function(t) {
         t.classList.toggle('active', t.dataset.tab === tab);
@@ -1702,7 +1565,9 @@ window.switchTab = function(tab) {
     });
 };
 
-/* ─── COPY / DOWNLOAD / CLEAR ─── */
+/* ═══════════════════════════════════════════════════════════════
+   COPY / DOWNLOAD / CLEAR
+   ═══════════════════════════════════════════════════════════════ */
 window.copyOutput = function() {
     var out = document.getElementById('outputFinal').value;
     if (!out) { toast('Nothing to copy', 'error'); return; }
@@ -1767,46 +1632,47 @@ window.downloadAll = function() {
 };
 
 window.loadSample = function() {
-    var TAG_CLOSE_SCRIPT = '<' + '/script>';
-    var sample =
-        '<!DOCTYPE html>\n' +
-        '<html lang="en">\n' +
-        '<head>\n' +
-        '    <meta charset="UTF-8">\n' +
-        '    <title>NightOrbit Sample</title>\n' +
-        '    <style>\n' +
-        '        /* NightOrbit Sample CSS */\n' +
-        '        body { background: #000; color: #fff; font-family: sans-serif; padding: 40px; }\n' +
-        '        .container { max-width: 600px; margin: 0 auto; }\n' +
-        '        .btn { background: #00f0ff; padding: 12px 24px; border: none; color: #000; cursor: pointer; border-radius: 6px; }\n' +
-        '        #result { color: #00ff64; font-size: 20px; margin-top: 20px; }\n' +
-        '    </style>\n' +
-        '</head>\n' +
-        '<body>\n' +
-        '    <div class="container">\n' +
-        '        <h1>Protected by NightOrbit</h1>\n' +
-        '        <button class="btn" onclick="calculate()">Calculate Total</button>\n' +
-        '        <div id="result"></div>\n' +
-        '    </div>\n' +
-        '    <script>\n' +
-        '        // NightOrbit Sample JS\n' +
-        '        function calculate() {\n' +
-        '            var items = [\n' +
-        '                { name: "Laptop", price: 1200 },\n' +
-        '                { name: "Mouse", price: 25 },\n' +
-        '                { name: "Keyboard", price: 80 }\n' +
-        '            ];\n' +
-        '            var total = 0;\n' +
-        '            for (var i = 0; i < items.length; i++) {\n' +
-        '                total += items[i].price;\n' +
-        '            }\n' +
-        '            document.getElementById("result").textContent = "Total: $" + total;\n' +
-        '        }\n' +
-        '        calculate();\n' +
-        '    ' + TAG_CLOSE_SCRIPT + '\n' +
-        '</body>\n' +
-        '</html>';
-    inputCodeEl.value = sample;
+    /* Build sample safely — no literal </script> in source */
+    var sampleLines = [
+        '<!DOCTYPE html>',
+        '<html lang="en">',
+        '<head>',
+        '    <meta charset="UTF-8">',
+        '    <title>NightOrbit Sample</title>',
+        '    <style>',
+        '        /* NightOrbit Sample CSS */',
+        '        body { background: #000; color: #fff; font-family: sans-serif; padding: 40px; }',
+        '        .container { max-width: 600px; margin: 0 auto; }',
+        '        .btn { background: #00f0ff; padding: 12px 24px; border: none; color: #000; cursor: pointer; border-radius: 6px; }',
+        '        #result { color: #00ff64; font-size: 20px; margin-top: 20px; }',
+        '    </style>',
+        '</head>',
+        '<body>',
+        '    <div class="container">',
+        '        <h1>Protected by NightOrbit</h1>',
+        '        <button class="btn" onclick="calculate()">Calculate Total</button>',
+        '        <div id="result"></div>',
+        '    </div>',
+        '    ' + TAG_OPEN_SCRIPT,
+        '        // NightOrbit Sample JS',
+        '        function calculate() {',
+        '            var items = [',
+        '                { name: "Laptop", price: 1200 },',
+        '                { name: "Mouse", price: 25 },',
+        '                { name: "Keyboard", price: 80 }',
+        '            ];',
+        '            var total = 0;',
+        '            for (var i = 0; i < items.length; i++) {',
+        '                total += items[i].price;',
+        '            }',
+        '            document.getElementById("result").textContent = "Total: $" + total;',
+        '        }',
+        '        calculate();',
+        '    ' + TAG_CLOSE_SCRIPT,
+        '</body>',
+        '</html>'
+    ];
+    inputCodeEl.value = sampleLines.join('\n');
     inputCodeEl.dispatchEvent(new Event('input'));
     toast('Sample loaded!', 'info');
 };
@@ -1839,7 +1705,9 @@ window.doLogout = function() {
     }
 };
 
-/* ─── AUTH ─── */
+/* ═══════════════════════════════════════════════════════════════
+   AUTH
+   ═══════════════════════════════════════════════════════════════ */
 function handleAuth(e) {
     if (!e.detail || !e.detail.user) return;
     if (state.authHandled) return;
@@ -1858,11 +1726,13 @@ setTimeout(function() {
     }
 }, 3000);
 
-/* ─── INIT ─── */
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════════ */
 setPreset('medium', document.querySelector('.preset-btn[data-preset="medium"]'));
 updateProgress();
-console.log('%c🌌 NightOrbit 12-Layer Shield Engine v2.0 loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
-console.log('%c✨ 6 JS Layers + 3 CSS Layers + 3 HTML Layers · Full Protection Matrix', 'color:#ffd700;font-size:11px;');
+console.log('%c🌌 NightOrbit 12-Layer Shield v7.0 loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c✨ 6 JS + 3 CSS + 3 HTML · Script tags escaped · CSS/HTML safe', 'color:#ffd700;font-size:11px;');
 console.log('%c🛡️ Brand: NightOrbit CodeForge', 'color:#ff2d95;font-size:11px;');
 
 })();
