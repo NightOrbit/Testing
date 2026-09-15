@@ -2018,27 +2018,80 @@ function detectInputType(code) {
 }
    
 /* ═══════════════════════════════════════════════════════════════════
-   BASE64 STRING PROTECTOR
+   DATA URI PROTECTOR — handles base64 AND URL-encoded data URIs
+   Protects any long data URI from obfuscation
    ═══════════════════════════════════════════════════════════════════ */
 function protectBase64Strings(code) {
     if (!code) return { code: code, map: {} };
 
     var map = {};
     var counter = 0;
+    var output = [];
+    var i = 0;
+    var len = code.length;
 
-    // Match ANY string containing "data:...;base64," pattern
-    // No length requirement — protection is more important than size
-    var base64Regex = /(["'])([^"']*?data:[a-z+][a-z0-9+.\-]*\/[a-z0-9+.\-]*;base64,[A-Za-z0-9+/=]+[^"']*?)\1/gi;
+    while (i < len) {
+        var ch = code[i];
 
-    var result = code.replace(base64Regex, function(match, quote, dataUri) {
-        // Only protect if long enough to be problematic
-        if (dataUri.length < 100) return match;
-        var placeholder = '__NO_B64_' + (counter++) + '_' + Date.now().toString(36) + '__';
-        map[placeholder] = dataUri;
-        return quote + placeholder + quote;
-    });
+        // Detect string start
+        if (ch === '"' || ch === "'") {
+            var quote = ch;
+            var start = i;
+            var j = i + 1;
+            var content = '';
 
-    return { code: result, map: map };
+            // Scan until matching quote (respecting escapes)
+            while (j < len) {
+                var c = code[j];
+                if (c === '\\' && j + 1 < len) {
+                    content += c + code[j + 1];
+                    j += 2;
+                    continue;
+                }
+                if (c === quote) {
+                    break;
+                }
+                if (c === '\n') {
+                    // Newline inside string — string is broken
+                    break;
+                }
+                content += c;
+                j++;
+            }
+
+            if (j < len && code[j] === quote) {
+                var fullContent = content;
+
+                // ✅ Match ANY data URI (base64 OR url-encoded)
+                // Examples:
+                //   data:image/svg+xml;base64,PHN2Zy...
+                //   data:image/svg+xml,%3Csvg...
+                //   data:image/png;base64,iVBOR...
+                //   data:application/font-woff;base64,...
+                var isDataUri = /^data:[a-z+][a-z0-9+.\-]*\/[a-z0-9+.\-]*(;base64)?,/i.test(fullContent);
+
+                if (isDataUri && fullContent.length >= 100) {
+                    var placeholder = '__NO_B64_' + (counter++) + '_' + Date.now().toString(36) + '__';
+                    map[placeholder] = fullContent;
+
+                    output.push(quote + placeholder + quote);
+                    i = j + 1;
+                    continue;
+                }
+            }
+
+            // Not a data URI — copy as-is
+            output.push(code.slice(start, j + 1));
+            i = j + 1;
+            continue;
+        }
+
+        // Not a string — copy char
+        output.push(ch);
+        i++;
+    }
+
+    return { code: output.join(''), map: map };
 }
    
 /* ═══════════════════════════════════════════════════════════════════
