@@ -1734,7 +1734,7 @@ var UI = {
 
 var Comments = {
 
-    /* Strip CSS comments — preserves /* inside strings */
+    /* Strip CSS comments — preserves asterisk-slash pairs inside strings */
     stripCss: function(code) {
         if (!code) return '';
         var result = '';
