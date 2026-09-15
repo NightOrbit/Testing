@@ -1686,7 +1686,7 @@ var UI = {
 
     /* Reset all layers */
     resetLayers: function() {
-        Object.keys(SHIEL.layers).forEach(function(k) {
+        Object.keys(SHIELD.layers).forEach(function(k) {
             SHIELD.layers[k] = false;
             var el = document.querySelector('[data-layer="' + k + '"]');
             if (el) el.classList.remove('active');
