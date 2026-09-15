@@ -1428,7 +1428,7 @@ button.green {
     <div class="brand">
         <span class="logo">🌌</span>
         <span class="title">NightOrbit</span>
-        <span class="title-ver">v12.1</span>
+        <span class="title-ver">v13.0</span>
         <span class="title-sub">· JS Shield ULTRA Heavy</span>
     </div>
     <div class="topbar-actions">
@@ -1476,7 +1476,7 @@ button.green {
         <h1>🌌 JavaScript Obfuscation ULTRA</h1>
         <div class="subtitle">NightOrbit CodeForge · Full ULTRA Heavy 24-Layer JavaScript Protection</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-shield-halved"></i> v12.1</span>
+            <span class="header-stat"><i class="fa-solid fa-shield-halved"></i> v13.0</span>
             <span class="header-stat gold"><i class="fa-solid fa-layer-group"></i> Up to 24 Layers</span>
             <span class="header-stat pink"><i class="fa-solid fa-bolt"></i> Smart Detect</span>
             <span class="header-stat green"><i class="fa-solid fa-lock"></i> JS Only</span>
@@ -1741,26 +1741,28 @@ button.green {
 'use strict';
 
 /* ═══════════════════════════════════════════════════════════════════
-   NIGHTORBIT — JAVASCRIPT ULTRA HEAVY PROTECTION ENGINE v12.1
+   NIGHTORBIT — JAVASCRIPT ULTRA HEAVY PROTECTION ENGINE v13.0
    JavaScript Only · Smart HTML/CSS Detection · Auto Script Extraction
+   Base64-Safe · Chunked · Memory-Safe · Auto-Fallback · Full Advance
    ═══════════════════════════════════════════════════════════════════ */
 
 var CONFIG = {
     MAX_INPUT_SIZE: 50 * 1024 * 1024,
     CHUNK_THRESHOLD: 2 * 1024 * 1024,
     CHUNK_SIZE: 512 * 1024,
-    HEAVY_THRESHOLD: 512 * 1024,
-    CHUNK_TIMEOUT_MS: 120000,
-    UI_YIELD_MS: 16
+    UI_YIELD_MS: 16,
+    BASE64_MIN_LENGTH: 500,
+    VERSION: 'v13.0'
 };
 
 /* ═══ RESERVED NAMES — only globals + DOM, NOT user variables ═══ */
 var RESERVED_NAMES = [
-    'showPage','calculate','doLogout','loadSample','clearAll','copyOutput',
+    'calculate','doLogout','loadSample','clearAll','copyOutput',
     'downloadOutput','downloadAll','switchTab','obfuscateNow','setPreset',
     'setLang','toggleOpt','handleAuth','fallbackCopy','init','analyzeInput',
     'stripJsComments','buildOptions','getUniqueReservedNames','processChunk',
     'detectInputType','cleanInput','stripHtmlTags',
+    'protectBase64Strings','restoreBase64Strings',
     'window','document','console','localStorage','sessionStorage',
     'navigator','location','history','screen','performance','globalThis',
     'Blob','URL','FileReader','Promise','JSON','Math','Date',
@@ -1886,21 +1888,10 @@ function stripHtmlTags(code) {
     if (!code) return '';
     var result = code;
 
-    // Remove <script> tags (keep inner content)
     result = result.replace(/<script\b[^>]*>/gi, '');
     result = result.replace(/<\/script\s*>/gi, '');
-
-    // Remove <style>...</style> blocks (drop entire content)
     result = result.replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi, '');
-
-    // Remove HTML comments
     result = result.replace(/<!--[\s\S]*?-->/g, '');
-
-    // Remove common HTML tags on their own lines
-    result = result.replace(
-        /^\s*<\/?(?:html|head|body|div|span|p|a|button|section|nav|header|footer|main|article|aside|ul|ol|li|h[1-6]|meta|link|title|form|input|label|table|tr|td|th|tbody|thead|img|br|hr|iframe|video|audio|canvas|svg|path)\b[^>]*>\s*$/gim,
-        ''
-    );
 
     return result;
 }
@@ -1911,11 +1902,9 @@ function stripHtmlTags(code) {
 function cleanInput(code) {
     if (!code) return '';
 
-    // Detect HTML presence
-    var looksLikeHtml = /<script\b|<style\b|<!DOCTYPE|<html\b|<head\b|<body\b|<div\b/i.test(code);
+    var looksLikeHtml = /<script\b|<\/script\s*>|<style\b|<\/style\s*>|<!DOCTYPE|<html\b|<\/html\s*>|<head\b|<\/head\s*>|<body\b|<\/body\s*>|<div\b|<\/div\s*>/i.test(code);
 
     if (looksLikeHtml) {
-        // Extract only inline <script> tag contents (skip external src)
         var scripts = [];
         var scriptRegex = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
         var match;
@@ -1930,7 +1919,6 @@ function cleanInput(code) {
             return scripts.join('\n\n');
         }
 
-        // No inline <script> — strip all HTML tags
         return stripHtmlTags(code);
     }
 
@@ -1949,7 +1937,7 @@ function detectInputType(code) {
     var hasStyleTag = /<style\b[^>]*>[\s\S]*?<\/style\s*>/i.test(trimmed);
     var hasDoctype = /<!DOCTYPE\s+html/i.test(trimmed);
     var hasHtmlTag = /<html\b[^>]*>/i.test(trimmed);
-    var hasHtmlTags = /<\/?(?:div|span|p|a|button|nav|header|footer|section|article|main|ul|ol|li|h[1-6]|img|input|form|table|tr|td|th)\b[^>]*>/i.test(trimmed);
+    var hasHtmlTags = /<\/?(?:div|span|p|a|button|nav|header|footer|section|article|main|ul|ol|li|h[1-6]|img|input|form|table|tr|td|th|meta|link|title|br|hr|iframe|video|audio|canvas|svg|path|label|textarea|select|option)\b[^>]*>/i.test(trimmed);
 
     var cssPatterns = /(?:^|\s)(?:[.#][\w-]+\s*\{|\w+\s*:\s*[^;{}]+\s*;)/;
     var hasCssRules = cssPatterns.test(trimmed) && !hasScriptTag;
@@ -1957,24 +1945,20 @@ function detectInputType(code) {
     var jsPatterns = /(?:^|[^\w])(?:function\s+\w+|var\s+\w+|let\s+\w+|const\s+\w+|=>|\breturn\b|console\.|document\.|window\.|class\s+\w+|import\s+|export\s+|async\s+function|await\s+)/;
     var hasJsCode = jsPatterns.test(trimmed);
 
-    // Pure JavaScript
     if (!hasScriptTag && !hasStyleTag && !hasDoctype && !hasHtmlTag && !hasHtmlTags && !hasCssRules) {
         if (hasJsCode || trimmed.length > 0) {
             return { type: 'js', reliable: true };
         }
     }
 
-    // HTML only (doctype or <html> without inline <script>)
     if ((hasDoctype || hasHtmlTag) && !hasScriptTag) {
         return { type: 'html', reliable: true };
     }
 
-    // CSS only
     if (hasCssRules && !hasScriptTag && !hasHtmlTag && !hasDoctype) {
         return { type: 'css', reliable: true };
     }
 
-    // HTML with inline <script> — mixed
     if (hasScriptTag) {
         var scriptBody = '';
         var scriptRegex = /<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi;
@@ -1988,17 +1972,58 @@ function detectInputType(code) {
         return { type: 'html', reliable: true };
     }
 
-    // HTML tags without doctype
     if (hasHtmlTags) {
         return { type: 'html', reliable: true };
     }
 
-    // CSS + JS mix
     if (hasCssRules && hasJsCode) {
         return { type: 'mixed', reliable: true };
     }
 
     return { type: 'js', reliable: false };
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BASE64 STRING PROTECTOR
+   ═══════════════════════════════════════════════════════════════════ */
+function protectBase64Strings(code) {
+    if (!code) return { code: code, map: {} };
+
+    var map = {};
+    var counter = 0;
+
+    var minLen = CONFIG.BASE64_MIN_LENGTH;
+    var base64Regex = new RegExp(
+        '(["\\\'])(data:[a-z+]+\\/[a-z0-9+.\\-]+;base64,[A-Za-z0-9+/=]{' + minLen + ',})\\1',
+        'g'
+    );
+
+    var result = code.replace(base64Regex, function(match, quote, dataUri) {
+        var placeholder = '__NO_B64_' + (counter++) + '_' + Date.now().toString(36) + '__';
+        map[placeholder] = dataUri;
+        return quote + placeholder + quote;
+    });
+
+    return { code: result, map: map };
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BASE64 STRING RESTORER
+   ═══════════════════════════════════════════════════════════════════ */
+function restoreBase64Strings(obfuscatedCode, map) {
+    if (!obfuscatedCode || !map) return obfuscatedCode;
+
+    var result = obfuscatedCode;
+    for (var placeholder in map) {
+        if (map.hasOwnProperty(placeholder)) {
+            var globalRegex = new RegExp(
+                placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+                'g'
+            );
+            result = result.replace(globalRegex, map[placeholder]);
+        }
+    }
+    return result;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -2209,7 +2234,24 @@ function buildOptions(preset) {
         comments: false,
         preserveComments: false,
         reservedNames: getUniqueReservedNames(),
-        reservedStrings: [],
+        reservedStrings: [
+            'data:image/',
+            'data:image/svg',
+            'data:image/png',
+            'data:image/jpeg',
+            'data:image/jpg',
+            'data:image/gif',
+            'data:image/webp',
+            'data:image/avif',
+            'data:image/bmp',
+            'data:image/x-icon',
+            'data:application/',
+            'data:font/',
+            'base64,',
+            'data:text/',
+            'data:audio/',
+            'data:video/'
+        ],
         seed: 0,
         stringArrayWrappersType: 'variable'
     };
@@ -2477,7 +2519,6 @@ window.obfuscateNow = function() {
         return;
     }
 
-    // Smart detection — block pure HTML/CSS
     var detection = detectInputType(rawCode);
     if (detection.type === 'html') {
         UI.toast('HTML detected — this tool is only for JavaScript', 'error', 6000);
@@ -2512,7 +2553,6 @@ window.obfuscateNow = function() {
 
         var t0 = Utils.now();
 
-        // Auto-extract JavaScript from HTML if needed
         var extracted = cleanInput(rawCode);
         var clean = stripJsComments(extracted);
 
@@ -2526,10 +2566,18 @@ window.obfuscateNow = function() {
             return;
         }
 
+        var b64Result = protectBase64Strings(clean);
+        var cleanProtected = b64Result.code;
+        var b64Map = b64Result.map;
+        var b64Count = Object.keys(b64Map).length;
+        if (b64Count > 0) {
+            console.log('[NightOrbit] Protected ' + b64Count + ' base64 data URI(s) from obfuscation');
+        }
+
         UI.progress(8);
 
-        var useChunks = clean.length > CONFIG.CHUNK_THRESHOLD;
-        var chunks = useChunks ? splitIntoChunks(clean, CONFIG.CHUNK_SIZE) : [clean];
+        var useChunks = cleanProtected.length > CONFIG.CHUNK_THRESHOLD;
+        var chunks = useChunks ? splitIntoChunks(cleanProtected, CONFIG.CHUNK_SIZE) : [cleanProtected];
         STATE.stats.chunks = chunks.length;
 
         UI.updateProcessing('PROTECTING',
@@ -2577,6 +2625,11 @@ window.obfuscateNow = function() {
                 UI.updateProcessing('PROTECTING', 'Assembling output...');
 
                 var finalCode = obfuscatedChunks.join('\n');
+
+                if (b64Count > 0) {
+                    finalCode = restoreBase64Strings(finalCode, b64Map);
+                }
+
                 var layerKeys = Object.keys(STATE.layers);
                 for (var li = 0; li < layerKeys.length; li++) {
                     UI.setLayer(layerKeys[li]);
@@ -2615,6 +2668,7 @@ window.obfuscateNow = function() {
                 if (fellBack) msg += ' (auto-fallback)';
                 msg += '\n';
                 msg += 'Chunks: ' + STATE.stats.chunks + '\n';
+                if (b64Count > 0) msg += 'Base64 data URIs preserved: ' + b64Count + '\n';
                 msg += 'Original: ' + Utils.bytes(origSize) + '\n';
                 msg += 'Protected: ' + Utils.bytes(obfSize) + '\n';
                 msg += 'Ratio: ' + ratio + '\n';
@@ -2643,7 +2697,11 @@ window.obfuscateNow = function() {
                 hint = '\n\nHint: The input appears to be HTML, not JavaScript.\n' +
                     'Please paste only the JavaScript code, or paste full HTML ' +
                     'and the engine will auto-extract the <script> contents.';
-            } else if (/Unexpected end of input|Unterminated/i.test(errMsg)) {
+            } else if (/Unterminated string|Unterminated/i.test(errMsg)) {
+                hint = '\n\nHint: A string constant is not properly closed.\n' +
+                    'Please check the code around the reported line for\n' +
+                    'missing quotes, escaped characters, or line breaks inside strings.';
+            } else if (/Unexpected end of input/i.test(errMsg)) {
                 hint = '\n\nHint: The code may have a missing bracket, ' +
                     'quote, or curly brace. Please verify the syntax.';
             } else if (/Maximum call stack|out of memory/i.test(errMsg)) {
@@ -2858,7 +2916,7 @@ function init() {
         }
     } catch (e) {}
 
-    UI.toast('NightOrbit ULTRA Heavy v12.1 ready', 'success', 3000);
+    UI.toast('NightOrbit ULTRA Heavy ' + CONFIG.VERSION + ' ready', 'success', 3000);
 }
 
 if (document.readyState === 'loading') {
