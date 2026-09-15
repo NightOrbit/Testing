@@ -4,1129 +4,440 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b0b1a">
-<title>Code Protection ULTRA — NightOrbit CodeForge</title>
+<title>Code Obfuscation ULTRA — NightOrbit CodeForge</title>
 
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 <script src="auth-guard.js"></script>
+
+<!-- javascript-obfuscator — Full Protection Engine -->
 <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.1.1/dist/index.browser.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
-    /* ============================================================
-       BASE RESET
-       ============================================================ */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    :root {
-        --cyan: #00f0ff;
-        --pink: #ff2d95;
-        --purple: #b400ff;
-        --gold: #ffd700;
-        --green: #00ff64;
-        --red: #ff0064;
-        --card: rgba(11, 11, 26, 0.94);
-        --border: rgba(0, 240, 255, 0.22);
-        --muted: #6a6a8a;
-        --header-h: 62px;
-    }
-
-    html,
-    body {
-        width: 100%;
-        overflow-x: hidden;
-    }
-
-    body {
-        background: radial-gradient(ellipse at top, #13132a 0%, #000 70%);
-        background-attachment: fixed;
-        color: #fff;
-        font-family: 'Inter', sans-serif;
-        min-height: 100vh;
-        padding-top: var(--header-h);
-        padding-bottom: 20px;
-        font-size: 14px;
-        line-height: 1.5;
-    }
-
-    /* ============================================================
-       TOP BAR
-       ============================================================ */
-    .topbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: var(--header-h);
-        background: rgba(6, 6, 15, 0.95);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-bottom: 1px solid var(--border);
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 15px;
-        gap: 10px;
-    }
-
-    .brand {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-family: 'Orbitron', sans-serif;
-        font-size: 14px;
-        font-weight: 900;
-        color: var(--cyan);
-        letter-spacing: 1px;
-        flex-shrink: 0;
-    }
-
-    .brand .logo {
-        font-size: 22px;
-    }
-
-    .brand .title {
-        display: none;
-    }
-
-    @media (min-width: 600px) {
-        .brand .title {
-            display: inline;
-            font-size: 16px;
-            letter-spacing: 2px;
-        }
-    }
-
-    .topbar-actions {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-shrink: 0;
-    }
-
-    .topbar-btn {
-        padding: 8px 14px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: bold;
-        font-size: 11px;
-        letter-spacing: 1px;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-family: 'Orbitron', sans-serif;
-        cursor: pointer;
-        border: 1px solid #fff;
-        transition: all 0.3s;
-        white-space: nowrap;
-    }
-
-    .topbar-btn.dashboard {
-        background: linear-gradient(135deg, #ffd700, #ff8c00);
-        color: #000;
-    }
-
-    .topbar-btn.logout {
-        background: linear-gradient(135deg, #ff0064, #b400ff);
-        color: #fff;
-    }
-
-    .topbar-btn:hover {
-        transform: translateY(-2px);
-    }
-
-    .topbar-btn .label {
-        display: none;
-    }
-
-    @media (min-width: 500px) {
-        .topbar-btn .label {
-            display: inline;
-        }
-    }
-
-    /* ============================================================
-       CONTAINER & HEADER
-       ============================================================ */
-    .container {
-        width: 100%;
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 15px;
-    }
-
-    .header-card {
-        background: var(--card);
-        border: 2px solid var(--cyan);
-        border-radius: 18px;
-        padding: 22px 24px;
-        margin-bottom: 15px;
-        box-shadow: 0 0 50px rgba(0, 240, 255, 0.15);
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .header-card::before {
-        content: '';
-        position: absolute;
-        inset: -2px;
-        border-radius: 18px;
-        padding: 2px;
-        background: conic-gradient(from 0deg, var(--cyan), var(--pink), var(--purple), var(--gold), var(--cyan));
-        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-        animation: borderSpin 6s linear infinite;
-        pointer-events: none;
-    }
-
-    @keyframes borderSpin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    h1 {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 26px;
-        font-weight: 900;
-        background: linear-gradient(135deg, var(--cyan), var(--pink));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        letter-spacing: 3px;
-        margin-bottom: 6px;
-        text-transform: uppercase;
-    }
-
-    .subtitle {
-        color: var(--muted);
-        font-size: 11px;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-    }
-
-    .header-stats {
-        display: flex;
-        justify-content: center;
-        gap: 14px;
-        margin-top: 14px;
-        flex-wrap: wrap;
-    }
-
-    .header-stat {
-        background: rgba(0, 240, 255, 0.05);
-        border: 1px solid rgba(0, 240, 255, 0.15);
-        border-radius: 40px;
-        padding: 4px 12px;
-        font-size: 10px;
-        color: #b0b0d0;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .header-stat i {
-        color: var(--cyan);
-        font-size: 11px;
-    }
-
-    /* ============================================================
-       USER WELCOME
-       ============================================================ */
-    .user-welcome {
-        background: rgba(0, 240, 255, 0.05);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 10px 16px;
-        margin-bottom: 15px;
-        font-size: 12px;
-        color: var(--muted);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-
-    .user-welcome i {
-        color: var(--cyan);
-        font-size: 16px;
-    }
-
-    .user-welcome b {
-        color: var(--cyan);
-    }
-
-    .user-welcome .auth-badge {
-        margin-left: auto;
-        font-size: 10px;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        color: var(--green);
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    /* ============================================================
-       STEP INDICATOR
-       ============================================================ */
-    .steps-bar {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 8px;
-        margin-bottom: 15px;
-    }
-
-    .step-item {
-        background: rgba(0, 0, 0, 0.4);
-        border: 1.5px solid rgba(0, 240, 255, 0.15);
-        border-radius: 10px;
-        padding: 12px 6px;
-        text-align: center;
-        transition: 0.3s;
-    }
-
-    .step-item.active {
-        border-color: var(--cyan);
-        background: rgba(0, 240, 255, 0.08);
-        box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
-    }
-
-    .step-item.done {
-        border-color: var(--green);
-        background: rgba(0, 255, 100, 0.06);
-    }
-
-    .step-item .num {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 18px;
-        font-weight: 900;
-        color: var(--muted);
-        margin-bottom: 4px;
-    }
-
-    .step-item.active .num {
-        color: var(--cyan);
-    }
-
-    .step-item.done .num {
-        color: var(--green);
-    }
-
-    .step-item .lbl {
-        font-size: 9px;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        color: var(--muted);
-    }
-
-    .step-item.active .lbl {
-        color: var(--cyan);
-    }
-
-    .step-item.done .lbl {
-        color: var(--green);
-    }
-
-    /* ============================================================
-       SECTIONS
-       ============================================================ */
-    .section {
-        background: rgba(0, 240, 255, 0.03);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 16px;
-        margin-bottom: 12px;
-    }
-
-    label {
-        color: var(--cyan);
-        font-size: 11px;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        font-weight: bold;
-        display: block;
-        margin-bottom: 8px;
-    }
-
-    textarea {
-        width: 100%;
-        background: #000;
-        color: var(--green);
-        border: 1px solid #333;
-        border-radius: 8px;
-        padding: 12px;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 12px;
-        line-height: 1.5;
-        resize: vertical;
-        transition: all 0.3s;
-    }
-
-    textarea:focus {
-        outline: none;
-        border-color: var(--cyan);
-        box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
-    }
-
-    textarea {
-        min-height: 200px;
-    }
-
-    textarea.tall {
-        min-height: 300px;
-    }
-
-    textarea.huge {
-        min-height: 400px;
-    }
-
-    /* ============================================================
-       BUTTONS
-       ============================================================ */
-    button {
-        background: linear-gradient(135deg, var(--cyan), var(--purple));
-        color: #000;
-        border: none;
-        padding: 12px 22px;
-        border-radius: 10px;
-        font-weight: bold;
-        font-size: 12px;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        cursor: pointer;
-        font-family: 'Orbitron', sans-serif;
-        transition: all 0.3s;
-    }
-
-    button:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 30px rgba(0, 240, 255, 0.4);
-    }
-
-    button:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-        transform: none;
-    }
-
-    button.secondary {
-        background: linear-gradient(135deg, var(--gold), #ff8c00);
-    }
-
-    button.danger {
-        background: linear-gradient(135deg, var(--red), #ff0000);
-        color: #fff;
-    }
-
-    button.green {
-        background: linear-gradient(135deg, var(--green), #00aa44);
-    }
-
-    button.test {
-        background: linear-gradient(135deg, #00f0ff, #00ff64);
-        color: #000;
-    }
-
-    .btn-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: center;
-        margin: 12px 0;
-    }
-
-    .btn-row button {
-        flex: 1 1 auto;
-        min-width: 120px;
-    }
-
-    /* ============================================================
-       PRESET GRID
-       ============================================================ */
-    .preset-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 10px;
-        margin-bottom: 12px;
-    }
-
-    .preset-btn {
-        background: rgba(0, 0, 0, 0.5);
-        border: 1.5px solid var(--border);
-        color: #fff;
-        padding: 14px 12px;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.3s;
-        text-align: center;
-    }
-
-    .preset-btn:hover {
-        border-color: var(--cyan);
-        background: rgba(0, 240, 255, 0.06);
-    }
-
-    .preset-btn.active {
-        border-color: var(--gold);
-        background: rgba(255, 215, 0, 0.08);
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
-    }
-
-    .preset-btn .name {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 12px;
-        font-weight: 900;
-        letter-spacing: 2px;
-        color: var(--cyan);
-        margin-bottom: 4px;
-    }
-
-    .preset-btn.active .name {
-        color: var(--gold);
-    }
-
-    .preset-btn .desc {
-        font-size: 10px;
-        color: var(--muted);
-        line-height: 1.4;
-    }
-
-    /* ============================================================
-       OPTION ROWS
-       ============================================================ */
-    .option-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        padding: 10px 12px;
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 8px;
-        margin-bottom: 6px;
-        font-size: 12px;
-    }
-
-    .option-row .opt-label {
-        color: #b0b0d0;
-        flex: 1;
-    }
-
-    .option-row .opt-label b {
-        color: #fff;
-        display: block;
-        font-size: 12px;
-        margin-bottom: 2px;
-    }
-
-    .option-row .opt-label small {
-        color: var(--muted);
-        font-size: 10px;
-    }
-
-    .switch {
-        position: relative;
-        width: 44px;
-        height: 24px;
-        flex-shrink: 0;
-        background: #222;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: 0.3s;
-        border: 1px solid #333;
-    }
-
-    .switch::after {
-        content: '';
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        background: #666;
-        transition: 0.3s;
-    }
-
-    .switch.on {
-        background: rgba(0, 240, 255, 0.2);
-        border-color: var(--cyan);
-    }
-
-    .switch.on::after {
-        left: 22px;
-        background: var(--cyan);
-        box-shadow: 0 0 10px var(--cyan);
-    }
-
-    /* ============================================================
-       STATS GRID
-       ============================================================ */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 10px;
-        margin-top: 12px;
-    }
-
-    .stat-card {
-        background: rgba(0, 0, 0, 0.4);
-        border: 1.5px solid rgba(0, 240, 255, 0.15);
-        border-radius: 10px;
-        padding: 12px;
-        text-align: center;
-    }
-
-    .stat-label {
-        font-size: 9px;
-        color: var(--muted);
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        margin-bottom: 4px;
-        font-family: 'Orbitron', sans-serif;
-    }
-
-    .stat-value {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 15px;
-        font-weight: 900;
-        color: var(--cyan);
-    }
-
-    .stat-value.gold {
-        color: var(--gold);
-    }
-
-    .stat-value.green {
-        color: var(--green);
-    }
-
-    .stat-value.pink {
-        color: var(--pink);
-    }
-
-    /* ============================================================
-       PROGRESS BAR
-       ============================================================ */
-    .progress-wrap {
-        background: rgba(0, 0, 0, 0.4);
-        border: 1.5px solid rgba(0, 240, 255, 0.15);
-        border-radius: 12px;
-        padding: 12px 16px;
-        margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-    }
-
-    .progress-label {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 10px;
-        color: var(--cyan);
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        white-space: nowrap;
-    }
-
-    .progress-track {
-        flex: 1;
-        height: 8px;
-        background: rgba(0, 0, 0, 0.6);
-        border-radius: 20px;
-        overflow: hidden;
-        min-width: 150px;
-    }
-
-    .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink));
-        border-radius: 20px;
-        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        width: 0%;
-        box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
-    }
-
-    .progress-percent {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
-        color: var(--gold);
-        font-weight: 700;
-        min-width: 45px;
-        text-align: right;
-    }
-
-    /* ============================================================
-       STATUS MESSAGES
-       ============================================================ */
-    .status {
-        text-align: center;
-        padding: 12px;
-        border-radius: 8px;
-        margin-top: 10px;
-        font-size: 12px;
-        display: none;
-        font-weight: bold;
-        font-family: 'JetBrains Mono', monospace;
-        white-space: pre-wrap;
-    }
-
-    .status.success {
-        background: rgba(0, 255, 100, 0.1);
-        border: 1px solid var(--green);
-        color: var(--green);
-        display: block;
-    }
-
-    .status.error {
-        background: rgba(255, 0, 100, 0.1);
-        border: 1px solid var(--red);
-        color: var(--red);
-        display: block;
-    }
-
-    .status.info {
-        background: rgba(0, 240, 255, 0.1);
-        border: 1px solid var(--cyan);
-        color: var(--cyan);
-        display: block;
-    }
-
-    .status.loading {
-        background: rgba(255, 215, 0, 0.1);
-        border: 1px solid var(--gold);
-        color: var(--gold);
-        display: block;
-    }
-
-    /* ============================================================
-       TABS
-       ============================================================ */
-    .tabs {
-        display: flex;
-        gap: 4px;
-        margin-bottom: 12px;
-        border-bottom: 1px solid rgba(0, 240, 255, 0.15);
-        overflow-x: auto;
-    }
-
-    .tab {
-        padding: 10px 16px;
-        background: transparent;
-        border: none;
-        color: var(--muted);
-        font-family: 'Orbitron', sans-serif;
-        font-size: 10px;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        cursor: pointer;
-        position: relative;
-        transition: 0.3s;
-        white-space: nowrap;
-        font-weight: 700;
-    }
-
-    .tab:hover {
-        color: var(--cyan);
-    }
-
-    .tab.active {
-        color: var(--cyan);
-    }
-
-    .tab.active::after {
-        content: '';
-        position: absolute;
-        bottom: -1px;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: var(--cyan);
-        box-shadow: 0 0 10px var(--cyan);
-    }
-
-    .tab-content {
-        display: none;
-    }
-
-    .tab-content.active {
-        display: block;
-    }
-
-    /* ============================================================
-       BADGES
-       ============================================================ */
-    .badge {
-        display: inline-block;
-        background: rgba(0, 240, 255, 0.15);
-        color: var(--cyan);
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 9px;
-        font-weight: bold;
-        letter-spacing: 1px;
-        border: 1px solid rgba(0, 240, 255, 0.3);
-    }
-
-    .badge.success {
-        background: rgba(0, 255, 100, 0.15);
-        color: #00ff64;
-        border-color: rgba(0, 255, 100, 0.3);
-    }
-
-    .badge.gold {
-        background: rgba(255, 215, 0, 0.15);
-        color: var(--gold);
-        border-color: rgba(255, 215, 0, 0.3);
-    }
-
-    /* ============================================================
-       INFO BOXES
-       ============================================================ */
-    .info-box {
-        background: rgba(0, 240, 255, 0.05);
-        border-left: 3px solid var(--cyan);
-        border-radius: 8px;
-        padding: 12px 14px;
-        margin-bottom: 12px;
-        font-size: 11px;
-        color: #b0d0ff;
-        line-height: 1.7;
-    }
-
-    .info-box strong {
-        color: var(--cyan);
-    }
-
-    .info-box code {
-        background: rgba(0, 0, 0, 0.6);
-        padding: 2px 6px;
-        border-radius: 4px;
-        color: var(--gold);
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 10px;
-    }
-
-    .info-box.warn {
-        background: rgba(255, 215, 0, 0.05);
-        border-left-color: var(--gold);
-        color: #ffe6a0;
-    }
-
-    .info-box.warn strong {
-        color: var(--gold);
-    }
-
-    /* ============================================================
-       SECURITY FEATURE LIST
-       ============================================================ */
-    .security-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 10px;
-        margin-top: 10px;
-    }
-
-    .security-item {
-        background: rgba(0, 0, 0, 0.4);
-        border: 1.5px solid rgba(0, 240, 255, 0.15);
-        border-left: 3px solid var(--cyan);
-        border-radius: 8px;
-        padding: 12px 14px;
-        transition: 0.3s;
-    }
-
-    .security-item:hover {
-        border-color: var(--cyan);
-        background: rgba(0, 240, 255, 0.04);
-    }
-
-    .security-item .sec-head {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 6px;
-    }
-
-    .security-item .sec-icon {
-        font-size: 18px;
-        color: var(--cyan);
-        flex-shrink: 0;
-    }
-
-    .security-item .sec-title {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 11px;
-        font-weight: 900;
-        letter-spacing: 1.5px;
-        color: var(--cyan);
-        text-transform: uppercase;
-    }
-
-    .security-item .sec-desc {
-        font-size: 11px;
-        color: #a0b0d0;
-        line-height: 1.6;
-        padding-left: 26px;
-    }
-
-    .security-item .sec-desc code {
-        background: rgba(0, 0, 0, 0.5);
-        padding: 1px 5px;
-        border-radius: 3px;
-        color: var(--gold);
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 10px;
-    }
-
-    /* ============================================================
-       TEST PANEL
-       ============================================================ */
-    .test-panel {
-        background: rgba(0, 0, 0, 0.5);
-        border: 2px solid var(--cyan);
-        border-radius: 12px;
-        padding: 16px;
-        margin-top: 12px;
-        display: none;
-    }
-
-    .test-panel.show {
-        display: block;
-        animation: testIn 0.3s ease;
-    }
-
-    @keyframes testIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .test-panel h4 {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 13px;
-        color: var(--cyan);
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .test-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 12px;
-        background: rgba(0, 0, 0, 0.4);
-        border-radius: 8px;
-        margin-bottom: 8px;
-        font-size: 12px;
-    }
-
-    .test-item .icon {
-        font-size: 16px;
-        width: 24px;
-        text-align: center;
-        flex-shrink: 0;
-    }
-
-    .test-item.pass .icon {
-        color: var(--green);
-    }
-
-    .test-item.fail .icon {
-        color: var(--red);
-    }
-
-    .test-item.warn .icon {
-        color: var(--gold);
-    }
-
-    .test-item .msg {
-        flex: 1;
-        color: #b0b0d0;
-    }
-
-    .test-item .msg b {
-        color: #fff;
-        display: block;
-        margin-bottom: 2px;
-    }
-
-    .test-item .msg small {
-        color: var(--muted);
-        font-size: 10px;
-    }
-
-    .test-item .value {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
-        color: var(--cyan);
-        font-weight: bold;
-    }
-
-    .test-item.pass .value {
-        color: var(--green);
-    }
-
-    .test-item.fail .value {
-        color: var(--red);
-    }
-
-    /* ============================================================
-       TOAST
-       ============================================================ */
-    .toast-container {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 99999;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        pointer-events: none;
-        max-width: 400px;
-    }
-
-    .toast {
-        background: rgba(11, 11, 26, 0.98);
-        border: 2px solid var(--cyan);
-        border-radius: 12px;
-        padding: 12px 18px;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 600;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 240, 255, 0.2);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        pointer-events: auto;
-        animation: toastIn 0.4s ease;
-        min-width: 250px;
-    }
-
-    .toast.success {
-        border-color: var(--green);
-    }
-
-    .toast.error {
-        border-color: var(--red);
-    }
-
-    .toast.warn {
-        border-color: var(--gold);
-    }
-
-    @keyframes toastIn {
-        from {
-            transform: translateX(400px);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-
-    .toast.removing {
-        animation: toastOut 0.3s ease forwards;
-    }
-
-    @keyframes toastOut {
-        to {
-            transform: translateX(400px);
-            opacity: 0;
-        }
-    }
-
-    /* ============================================================
-       RESPONSIVE
-       ============================================================ */
-    @media (max-width: 600px) {
-        body {
-            font-size: 13px;
-        }
-
-        .container {
-            padding: 12px;
-        }
-
-        .section {
-            padding: 14px;
-        }
-
-        textarea {
-            min-height: 160px;
-            font-size: 11px;
-        }
-
-        .btn-row button {
-            flex: 1 1 100%;
-        }
-
-        h1 {
-            font-size: 20px;
-            letter-spacing: 2px;
-        }
-
-        .preset-grid {
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .steps-bar {
-            grid-template-columns: repeat(5, 1fr);
-            gap: 4px;
-        }
-
-        .step-item {
-            padding: 8px 4px;
-        }
-
-        .step-item .num {
-            font-size: 14px;
-        }
-
-        .step-item .lbl {
-            font-size: 8px;
-            letter-spacing: 0.5px;
-        }
-
-        .security-list {
-            grid-template-columns: 1fr;
-        }
-    }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+    --cyan: #00f0ff; --pink: #ff2d95; --purple: #b400ff;
+    --gold: #ffd700; --green: #00ff64; --red: #ff0064;
+    --dark: #05050f; --card: rgba(11,11,26,0.94);
+    --border: rgba(0,240,255,0.22);
+    --muted: #6a6a8a; --header-h: 62px;
+}
+html, body { width: 100%; overflow-x: hidden; }
+body {
+    background: radial-gradient(ellipse at top, #13132a 0%, #000 70%);
+    background-attachment: fixed;
+    color: #fff; font-family: 'Inter', sans-serif;
+    min-height: 100vh; padding-top: var(--header-h);
+    padding-bottom: 20px; font-size: 14px; line-height: 1.5;
+}
+.topbar {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: var(--header-h);
+    background: rgba(6,6,15,0.95);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 1000; display: flex; align-items: center;
+    justify-content: space-between; padding: 0 15px; gap: 10px;
+}
+.brand { display: flex; align-items: center; gap: 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px; font-weight: 900; color: var(--cyan);
+    letter-spacing: 1px; flex-shrink: 0; }
+.brand .logo { font-size: 22px; }
+.brand .title { display: none; }
+@media (min-width: 600px) {
+    .brand .title { display: inline; font-size: 16px; letter-spacing: 2px; }
+}
+.topbar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.topbar-btn {
+    padding: 8px 14px; border-radius: 8px;
+    text-decoration: none; font-weight: bold; font-size: 11px;
+    letter-spacing: 1px; display: inline-flex; align-items: center;
+    gap: 6px; font-family: 'Orbitron', sans-serif;
+    cursor: pointer; border: 1px solid #fff;
+    transition: all 0.3s; white-space: nowrap;
+}
+.topbar-btn.dashboard { background: linear-gradient(135deg, #ffd700, #ff8c00); color: #000; }
+.topbar-btn.logout { background: linear-gradient(135deg, #ff0064, #b400ff); color: #fff; }
+.topbar-btn:hover { transform: translateY(-2px); }
+.topbar-btn .label { display: none; }
+@media (min-width: 500px) { .topbar-btn .label { display: inline; } }
+
+.container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 15px; }
+
+.header-card {
+    background: var(--card); border: 2px solid var(--cyan);
+    border-radius: 18px; padding: 22px 24px; margin-bottom: 15px;
+    box-shadow: 0 0 50px rgba(0,240,255,0.15);
+    text-align: center; position: relative; overflow: hidden;
+}
+.header-card::before {
+    content: ''; position: absolute; inset: -2px; border-radius: 18px;
+    padding: 2px;
+    background: conic-gradient(from 0deg, var(--cyan), var(--pink), var(--purple), var(--gold), var(--cyan));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: borderSpin 6s linear infinite; pointer-events: none;
+}
+@keyframes borderSpin { to { transform: rotate(360deg); } }
+h1 {
+    font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 900;
+    background: linear-gradient(135deg, var(--cyan), var(--pink));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; letter-spacing: 3px; margin-bottom: 6px;
+    text-transform: uppercase;
+}
+.subtitle { color: var(--muted); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+.header-stats { display: flex; justify-content: center; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
+.header-stat {
+    background: rgba(0,240,255,0.05); border: 1px solid rgba(0,240,255,0.15);
+    border-radius: 40px; padding: 4px 12px; font-size: 10px;
+    color: #b0b0d0; letter-spacing: 1px; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 6px;
+}
+.header-stat i { color: var(--cyan); font-size: 11px; }
+.header-stat.gold i { color: var(--gold); }
+.header-stat.pink i { color: var(--pink); }
+.header-stat.green i { color: var(--green); }
+
+.user-welcome {
+    background: rgba(0,240,255,0.05); border: 1px solid var(--border);
+    border-radius: 12px; padding: 10px 16px; margin-bottom: 15px;
+    font-size: 12px; color: var(--muted); display: flex;
+    align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.user-welcome i { color: var(--cyan); font-size: 16px; }
+.user-welcome b { color: var(--cyan); }
+.user-welcome .auth-badge {
+    margin-left: auto; font-size: 10px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--green);
+    display: inline-flex; align-items: center; gap: 5px;
+}
+
+.section {
+    background: rgba(0,240,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; margin-bottom: 12px;
+}
+label {
+    color: var(--cyan); font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase; font-weight: bold;
+    display: block; margin-bottom: 8px;
+}
+textarea, input[type="text"] {
+    width: 100%; background: #000; color: var(--green);
+    border: 1px solid #333; border-radius: 8px; padding: 12px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    line-height: 1.5; resize: vertical; transition: all 0.3s;
+}
+textarea:focus, input:focus {
+    outline: none; border-color: var(--cyan);
+    box-shadow: 0 0 15px rgba(0,240,255,0.2);
+}
+textarea { min-height: 220px; }
+textarea.tall { min-height: 320px; }
+textarea.huge { min-height: 400px; }
+
+button {
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    color: #000; border: none; padding: 12px 22px;
+    border-radius: 10px; font-weight: bold; font-size: 12px;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    cursor: pointer; font-family: 'Orbitron', sans-serif;
+    transition: all 0.3s;
+}
+button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,240,255,0.4); }
+button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+button.secondary { background: linear-gradient(135deg, var(--gold), #ff8c00); }
+button.danger { background: linear-gradient(135deg, var(--red), #ff0000); color: #fff; }
+button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
+
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
+.btn-row button { flex: 1 1 auto; min-width: 120px; }
+
+/* Preset */
+.preset-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px; margin-bottom: 12px;
+}
+.preset-btn {
+    background: rgba(0,0,0,0.5);
+    border: 1.5px solid var(--border);
+    color: #fff; padding: 14px 12px; border-radius: 10px;
+    cursor: pointer; transition: all 0.3s; text-align: center;
+    font-family: 'Inter', sans-serif;
+}
+.preset-btn:hover { border-color: var(--cyan); background: rgba(0,240,255,0.06); }
+.preset-btn.active {
+    border-color: var(--gold); background: rgba(255,215,0,0.08);
+    box-shadow: 0 0 20px rgba(255,215,0,0.2);
+}
+.preset-btn .name {
+    font-family: 'Orbitron', sans-serif; font-size: 12px;
+    font-weight: 900; letter-spacing: 2px; color: var(--cyan);
+    margin-bottom: 4px;
+}
+.preset-btn.active .name { color: var(--gold); }
+.preset-btn .desc { font-size: 10px; color: var(--muted); line-height: 1.4; }
+
+/* Language selector */
+.lang-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 8px; margin-bottom: 12px;
+}
+.lang-btn {
+    background: rgba(0,0,0,0.4);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    color: #b0b0d0; padding: 10px 8px;
+    border-radius: 8px; cursor: pointer;
+    transition: all 0.3s; text-align: center;
+    font-size: 11px; font-weight: 600;
+    font-family: 'Inter', sans-serif;
+}
+.lang-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+.lang-btn.active {
+    border-color: var(--cyan); background: rgba(0,240,255,0.1);
+    color: var(--cyan); box-shadow: 0 0 15px rgba(0,240,255,0.2);
+}
+.lang-btn i { display: block; font-size: 16px; margin-bottom: 4px; }
+
+/* Options */
+.option-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; padding: 10px 12px; background: rgba(0,0,0,0.3);
+    border-radius: 8px; margin-bottom: 6px; font-size: 12px;
+}
+.option-row .opt-label { color: #b0b0d0; flex: 1; }
+.option-row .opt-label b { color: #fff; display: block; font-size: 12px; margin-bottom: 2px; }
+.option-row .opt-label small { color: var(--muted); font-size: 10px; }
+.switch {
+    position: relative; width: 44px; height: 24px; flex-shrink: 0;
+    background: #222; border-radius: 12px; cursor: pointer;
+    transition: 0.3s; border: 1px solid #333;
+}
+.switch::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #666; transition: 0.3s;
+}
+.switch.on { background: rgba(0,240,255,0.2); border-color: var(--cyan); }
+.switch.on::after { left: 22px; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+
+/* Stats */
+.stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px; margin-top: 12px;
+}
+.stat-card {
+    background: rgba(0,0,0,0.4);
+    border: 1.5px solid rgba(0,240,255,0.15);
+    border-radius: 10px; padding: 12px; text-align: center; transition: 0.3s;
+}
+.stat-card:hover { border-color: var(--cyan); transform: translateY(-2px); }
+.stat-label {
+    font-size: 9px; color: var(--muted); letter-spacing: 2px;
+    text-transform: uppercase; margin-bottom: 4px;
+    font-family: 'Orbitron', sans-serif;
+}
+.stat-value {
+    font-family: 'JetBrains Mono', monospace; font-size: 15px;
+    font-weight: 900; color: var(--cyan);
+}
+.stat-value.gold { color: var(--gold); }
+.stat-value.green { color: var(--green); }
+.stat-value.pink { color: var(--pink); }
+
+/* Progress */
+.progress-wrap {
+    background: rgba(0,0,0,0.4);
+    border: 1.5px solid rgba(0,240,255,0.15);
+    border-radius: 12px; padding: 12px 16px;
+    margin-bottom: 15px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.progress-label {
+    font-family: 'Orbitron', sans-serif; font-size: 10px;
+    color: var(--cyan); letter-spacing: 2px;
+    text-transform: uppercase; white-space: nowrap;
+}
+.progress-track {
+    flex: 1; height: 8px; background: rgba(0,0,0,0.6);
+    border-radius: 20px; overflow: hidden; min-width: 150px;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink));
+    border-radius: 20px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    width: 0%; box-shadow: 0 0 15px rgba(0,240,255,0.6);
+}
+.progress-percent {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--gold); font-weight: 700;
+    min-width: 45px; text-align: right;
+}
+
+/* Status */
+.status {
+    text-align: center; padding: 12px; border-radius: 8px;
+    margin-top: 10px; font-size: 12px; display: none;
+    font-weight: bold; font-family: 'JetBrains Mono', monospace;
+    white-space: pre-wrap; text-align: left;
+}
+.status.success { background: rgba(0,255,100,0.1); border: 1px solid var(--green); color: var(--green); display: block; }
+.status.error { background: rgba(255,0,100,0.1); border: 1px solid var(--red); color: var(--red); display: block; }
+.status.info { background: rgba(0,240,255,0.1); border: 1px solid var(--cyan); color: var(--cyan); display: block; }
+.status.loading { background: rgba(255,215,0,0.1); border: 1px solid var(--gold); color: var(--gold); display: block; }
+
+/* Toast */
+.toast-container {
+    position: fixed; bottom: 20px; right: 20px;
+    z-index: 99999; display: flex; flex-direction: column;
+    gap: 10px; pointer-events: none; max-width: 400px;
+}
+.toast {
+    background: rgba(11,11,26,0.98);
+    border: 2px solid var(--cyan);
+    border-radius: 12px; padding: 12px 18px;
+    color: #fff; font-size: 12px; font-weight: 600;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 30px rgba(0,240,255,0.2);
+    display: flex; align-items: center; gap: 10px;
+    pointer-events: auto; animation: toastIn 0.4s ease;
+    min-width: 250px;
+}
+.toast.success { border-color: var(--green); }
+.toast.error { border-color: var(--red); }
+.toast.warn { border-color: var(--gold); }
+@keyframes toastIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.toast.removing { animation: toastOut 0.3s ease forwards; }
+@keyframes toastOut { to { transform: translateX(400px); opacity: 0; } }
+
+/* Tabs */
+.tabs {
+    display: flex; gap: 4px; margin-bottom: 12px;
+    border-bottom: 1px solid rgba(0,240,255,0.15);
+    overflow-x: auto;
+}
+.tab {
+    padding: 10px 16px; background: transparent; border: none;
+    color: var(--muted); font-family: 'Orbitron', sans-serif;
+    font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+    cursor: pointer; position: relative; transition: 0.3s;
+    white-space: nowrap; font-weight: 700;
+}
+.tab:hover { color: var(--cyan); }
+.tab.active { color: var(--cyan); }
+.tab.active::after {
+    content: ''; position: absolute;
+    bottom: -1px; left: 0; right: 0; height: 2px;
+    background: var(--cyan); box-shadow: 0 0 10px var(--cyan);
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Badge */
+.badge {
+    display: inline-block;
+    background: rgba(0,240,255,0.15);
+    color: var(--cyan);
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 9px; font-weight: bold; letter-spacing: 1px;
+    border: 1px solid rgba(0,240,255,0.3);
+    font-family: 'Inter', sans-serif;
+}
+.badge.success { background: rgba(0,255,100,0.15); color: #00ff64; border-color: rgba(0,255,100,0.3); }
+.badge.gold { background: rgba(255,215,0,0.15); color: var(--gold); border-color: rgba(255,215,0,0.3); }
+.badge.danger { background: rgba(255,0,100,0.15); color: #ff0064; border-color: rgba(255,0,100,0.3); }
+
+/* Security Feature Cards */
+.security-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+.security-item {
+    background: rgba(0,0,0,0.4);
+    border: 1.5px solid rgba(0,240,255,0.15);
+    border-left: 3px solid var(--cyan);
+    border-radius: 8px;
+    padding: 12px 14px;
+    transition: 0.3s;
+}
+.security-item:hover {
+    border-color: var(--cyan);
+    background: rgba(0,240,255,0.04);
+    transform: translateY(-2px);
+}
+.security-item .sec-head {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+}
+.security-item .sec-icon { font-size: 18px; color: var(--cyan); flex-shrink: 0; }
+.security-item .sec-title {
+    font-family: 'Orbitron', sans-serif; font-size: 11px;
+    font-weight: 900; letter-spacing: 1.5px; color: var(--cyan);
+    text-transform: uppercase;
+}
+.security-item .sec-desc {
+    font-size: 11px; color: #a0b0d0; line-height: 1.6; padding-left: 26px;
+}
+.security-item .sec-desc code {
+    background: rgba(0,0,0,0.5); padding: 1px 5px;
+    border-radius: 3px; color: var(--gold);
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+}
+
+.info-box {
+    background: rgba(0,240,255,0.05);
+    border-left: 3px solid var(--cyan);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    font-size: 11px;
+    color: #b0d0ff;
+    line-height: 1.7;
+}
+.info-box strong { color: var(--cyan); }
+.info-box code {
+    background: rgba(0,0,0,0.6);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--gold);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+}
+.info-box.warn {
+    background: rgba(255,215,0,0.05);
+    border-left-color: var(--gold);
+    color: #ffe6a0;
+}
+.info-box.warn strong { color: var(--gold); }
+
+@media (max-width: 600px) {
+    body { font-size: 13px; }
+    .container { padding: 12px; }
+    .section { padding: 14px; }
+    textarea { min-height: 180px; font-size: 11px; }
+    .btn-row button { flex: 1 1 100%; }
+    h1 { font-size: 20px; letter-spacing: 2px; }
+    .preset-grid { grid-template-columns: 1fr 1fr; }
+    .lang-grid { grid-template-columns: 1fr 1fr 1fr; }
+    .security-list { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
 <!-- ═══════════════════════════════════════════════════════════
-     TOP BAR
+     TOPBAR
      ═══════════════════════════════════════════════════════════ -->
 <div class="topbar">
     <div class="brand">
         <span class="logo">🛡️</span>
-        <span class="title">Code Protection ULTRA</span>
+        <span class="title">Code Obfuscation ULTRA</span>
     </div>
     <div class="topbar-actions">
         <a href="Dashboard.html" class="topbar-btn dashboard">
@@ -1142,9 +453,7 @@
 
 <div class="container">
 
-    <!-- ═══════════════════════════════════════════════════════════
-         USER WELCOME
-         ═══════════════════════════════════════════════════════════ -->
+    <!-- USER WELCOME -->
     <div class="user-welcome">
         <i class="fa-solid fa-circle-user"></i>
         <span>Welcome, <b id="welcomeName">User</b></span>
@@ -1153,187 +462,214 @@
         </span>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         HEADER CARD
-         ═══════════════════════════════════════════════════════════ -->
+    <!-- HEADER -->
     <div class="header-card">
-        <h1>🛡️ Code Protection ULTRA</h1>
-        <div class="subtitle">NightOrbit CodeForge · Enterprise-Grade Code Security Suite</div>
+        <h1>🛡️ Code Obfuscation ULTRA</h1>
+        <div class="subtitle">NightOrbit CodeForge · Heavy Multi-Language Protection Engine</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-shield-halved"></i> v9.0 ULTRA</span>
-            <span class="header-stat"><i class="fa-solid fa-file-zipper"></i> Gzip Compression</span>
-            <span class="header-stat"><i class="fa-solid fa-lock"></i> Base64 Encoding</span>
-            <span class="header-stat"><i class="fa-solid fa-flask"></i> Built-in Test</span>
+            <span class="header-stat"><i class="fa-solid fa-shield-halved"></i> v6.0 ULTRA</span>
+            <span class="header-stat gold"><i class="fa-solid fa-code"></i> HTML / CSS / JS</span>
+            <span class="header-stat pink"><i class="fa-solid fa-bolt"></i> 6 + 3 + 3 Layers</span>
+            <span class="header-stat green"><i class="fa-solid fa-lock"></i> Full Protection</span>
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         SECURITY FEATURES OVERVIEW
-         ═══════════════════════════════════════════════════════════ -->
+    <!-- SECURITY FEATURES -->
     <div class="section">
-        <label>🔒 Security Features Included in This Tool</label>
+        <label>🔒 Professional Security Features</label>
 
         <div class="info-box">
-            <strong>Professional Multi-Layer Code Protection System</strong><br>
-            This tool implements enterprise-grade protection using industry-standard techniques. Each layer adds a separate defense mechanism, making reverse engineering exponentially more difficult.
+            <strong>Complete Multi-Language Protection Engine</strong><br>
+            This tool applies <strong>12 total protection layers</strong> — 6 on JavaScript, 3 on CSS, and 3 on HTML. Each layer adds a separate defense mechanism. Reverse engineering becomes exponentially harder.
         </div>
 
         <div class="security-list">
 
             <div class="security-item">
                 <div class="sec-head">
-                    <span class="sec-icon">🗜️</span>
-                    <span class="sec-title">HTML & CSS Minification</span>
-                </div>
-                <div class="sec-desc">
-                    All comments removed · whitespace collapsed · redundant code eliminated. Reduces file size by 40-60% without breaking anything.
-                </div>
-            </div>
-
-            <div class="security-item">
-                <div class="sec-head">
-                    <span class="sec-icon">📦</span>
-                    <span class="sec-title">Gzip Compression (Level 9)</span>
-                </div>
-                <div class="sec-desc">
-                    Maximum DEFLATE compression · up to 80% size reduction · byte-perfect restoration. Industry standard used by every CDN.
-                </div>
-            </div>
-
-            <div class="security-item">
-                <div class="sec-head">
-                    <span class="sec-icon">🔐</span>
-                    <span class="sec-title">Base64 Encoding</span>
-                </div>
-                <div class="sec-desc">
-                    Binary-to-text encoding for safe transport. Source code becomes unreadable strings. Reversible at runtime by browser.
-                </div>
-            </div>
-
-            <div class="security-item">
-                <div class="sec-head">
                     <span class="sec-icon">⚙️</span>
-                    <span class="sec-title">JS Control Flow Flattening</span>
+                    <span class="sec-title">JS Layer 1 — Control Flow</span>
                 </div>
                 <div class="sec-desc">
-                    Converts linear code into state-machine switches. Breaks logical reading order. Analysis tools see disconnected blocks.
+                    Converts linear code into state-machine switches. Breaks logical reading order completely.
                 </div>
             </div>
 
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">💀</span>
-                    <span class="sec-title">JS Dead Code Injection</span>
+                    <span class="sec-title">JS Layer 2 — Dead Code</span>
                 </div>
                 <div class="sec-desc">
-                    Inserts unreachable fake branches · decoy functions · fake variables. Confuses both humans and automated deobfuscators.
+                    Inserts unreachable fake branches and decoy functions. Confuses automated tools.
                 </div>
             </div>
 
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">🔑</span>
-                    <span class="sec-title">String Array + RC4 Encryption</span>
+                    <span class="sec-title">JS Layer 3 — RC4 Encryption</span>
                 </div>
                 <div class="sec-desc">
-                    All string literals extracted to encrypted array. Decrypted only at runtime via RC4 stream cipher. Strings invisible in source.
+                    All string literals extracted to encrypted array. Decrypted only at runtime.
                 </div>
             </div>
 
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">🚫</span>
-                    <span class="sec-title">Debug Protection</span>
+                    <span class="sec-title">JS Layer 4 — Debug Protection</span>
                 </div>
                 <div class="sec-desc">
-                    DevTools detection loop · debugger statement traps · execution pauses. Halts casual inspection attempts.
+                    DevTools detection loop and debugger traps. Halts inspection attempts.
                 </div>
             </div>
 
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">🛡️</span>
-                    <span class="sec-title">Self-Defending Runtime</span>
+                    <span class="sec-title">JS Layer 5 — Self Defending</span>
                 </div>
                 <div class="sec-desc">
-                    Integrity check on every run · crashes if code modified · prevents beautification and re-formatting attempts.
+                    Integrity check on every run. Crashes if code is modified.
                 </div>
             </div>
 
             <div class="security-item">
                 <div class="sec-head">
                     <span class="sec-icon">🎭</span>
-                    <span class="sec-title">Identifier Renaming (Hex)</span>
+                    <span class="sec-title">JS Layer 6 — Hex Renaming</span>
                 </div>
                 <div class="sec-desc">
-                    Variables, functions, parameters renamed to <code>_0x4a2b1c</code> format. Meaning completely lost. Consistent mapping for functionality.
+                    Variables and functions renamed to <code>_0x4a2b1c</code> format. Meaning lost.
                 </div>
             </div>
 
             <div class="security-item">
                 <div class="sec-head">
-                    <span class="sec-icon">🧬</span>
-                    <span class="sec-title">Browser Runtime Decoder</span>
+                    <span class="sec-icon">🎨</span>
+                    <span class="sec-title">CSS Layer 1 — Comments</span>
                 </div>
                 <div class="sec-desc">
-                    Small bootstrap script decodes HTML/CSS at runtime. Zero impact on page speed. Original source never reaches browser as plaintext.
+                    All <code>/* ... */</code> comments removed. String-aware parsing.
+                </div>
+            </div>
+
+            <div class="security-item">
+                <div class="sec-head">
+                    <span class="sec-icon">📐</span>
+                    <span class="sec-title">CSS Layer 2 — Safe Minify</span>
+                </div>
+                <div class="sec-desc">
+                    Whitespace compressed. <code>calc()</code>, <code>url()</code>, <code>var()</code> preserved.
+                </div>
+            </div>
+
+            <div class="security-item">
+                <div class="sec-head">
+                    <span class="sec-icon">🏷️</span>
+                    <span class="sec-title">CSS Layer 3 — Class Rename</span>
+                </div>
+                <div class="sec-desc">
+                    Class names renamed to <code>._c0</code>, <code>._c1</code>... Optional.
+                </div>
+            </div>
+
+            <div class="security-item">
+                <div class="sec-head">
+                    <span class="sec-icon">📄</span>
+                    <span class="sec-title">HTML Layer 1 — Comments</span>
+                </div>
+                <div class="sec-desc">
+                    All <code>&lt;!-- --&gt;</code> comments removed. Conditional comments preserved.
+                </div>
+            </div>
+
+            <div class="security-item">
+                <div class="sec-head">
+                    <span class="sec-icon">🧹</span>
+                    <span class="sec-title">HTML Layer 2 — Safe Minify</span>
+                </div>
+                <div class="sec-desc">
+                    Whitespace compressed. <code>&lt;pre&gt;</code>, <code>&lt;textarea&gt;</code>, <code>onclick</code> preserved.
+                </div>
+            </div>
+
+            <div class="security-item">
+                <div class="sec-head">
+                    <span class="sec-icon">🔖</span>
+                    <span class="sec-title">HTML Layer 3 — Attr Obfuscation</span>
+                </div>
+                <div class="sec-desc">
+                    <code>data-*</code> attributes obfuscated. Optional.
                 </div>
             </div>
 
         </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════════════════════
-         STEP INDICATOR
-         ═══════════════════════════════════════════════════════════ -->
-    <div class="steps-bar">
-        <div class="step-item active" id="stepInd1">
-            <div class="num">1</div>
-            <div class="lbl">Paste</div>
-        </div>
-        <div class="step-item" id="stepInd2">
-            <div class="num">2</div>
-            <div class="lbl">Separate</div>
-        </div>
-        <div class="step-item" id="stepInd3">
-            <div class="num">3</div>
-            <div class="lbl">Configure</div>
-        </div>
-        <div class="step-item" id="stepInd4">
-            <div class="num">4</div>
-            <div class="lbl">Protect</div>
-        </div>
-        <div class="step-item" id="stepInd5">
-            <div class="num">5</div>
-            <div class="lbl">Test</div>
-        </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════════════════════
-         STEP 1: INPUT
-         ═══════════════════════════════════════════════════════════ -->
-    <div class="section">
-        <label>📝 STEP 1 — Paste Your Complete Code</label>
-
-        <div class="info-box">
-            <strong>How this works:</strong> Paste your full HTML / CSS / JS code below (all mixed together is fine). The engine will automatically <strong>separate</strong> each language, <strong>process</strong> it with the appropriate technique, and <strong>reassemble</strong> a fully functional protected version.<br><br>
-
-            <strong>What happens to each section:</strong><br>
-            • <strong>HTML:</strong> Minified · comments removed · whitespace collapsed<br>
-            • <strong>CSS:</strong> Minified · comments removed · rules optimized<br>
-            • <strong>JavaScript:</strong> Full obfuscation (control flow · dead code · RC4 strings · debug protection · self-defending)<br>
-            • <strong>Delivery:</strong> HTML/CSS wrapped in Gzip + Base64 · runtime decoder embeds in output
-        </div>
 
         <div class="info-box warn">
-            <strong>⚠️ Important Notes:</strong><br>
-            • Output is <strong>guaranteed to work</strong> — no obfuscation is applied to HTML/CSS structure<br>
-            • For files over 5 MB, use <strong>MEDIUM</strong> or <strong>LOW</strong> preset to avoid timeouts<br>
-            • The <strong>built-in test panel</strong> at the end will verify everything works before you download
+            <strong>⚠️ CSS & HTML Safety Guarantee:</strong><br>
+            CSS and HTML are <strong>never structurally altered</strong>. Only comments are removed and whitespace is safely compressed. Your <code>calc()</code>, <code>url()</code>, <code>var()</code>, <code>@media</code>, <code>@keyframes</code>, <code>&lt;pre&gt;</code>, <code>&lt;textarea&gt;</code>, <code>onclick</code> — all preserved perfectly.
         </div>
+    </div>
 
-        <textarea id="inputCode" class="huge" placeholder="Paste your complete HTML / CSS / JavaScript code here..."></textarea>
+    <!-- STEP 1: LANGUAGE -->
+    <div class="section">
+        <label>🎯 STEP 1 — Select Language Mode</label>
+        <div class="lang-grid">
+            <button class="lang-btn active" data-lang="auto" onclick="setLang('auto', this)">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                AUTO DETECT
+            </button>
+            <button class="lang-btn" data-lang="html" onclick="setLang('html', this)">
+                <i class="fa-brands fa-html5"></i>
+                HTML
+            </button>
+            <button class="lang-btn" data-lang="css" onclick="setLang('css', this)">
+                <i class="fa-brands fa-css3-alt"></i>
+                CSS
+            </button>
+            <button class="lang-btn" data-lang="js" onclick="setLang('js', this)">
+                <i class="fa-brands fa-js"></i>
+                JAVASCRIPT
+            </button>
+            <button class="lang-btn" data-lang="mixed" onclick="setLang('mixed', this)">
+                <i class="fa-solid fa-layer-group"></i>
+                MIXED (HTML+CSS+JS)
+            </button>
+        </div>
+        <div id="detectInfo" style="font-size:11px;color:var(--muted);text-align:center;margin-top:6px;">
+            Auto-detect: paste code and detection will run
+        </div>
+    </div>
 
+    <!-- STEP 2: PRESET -->
+    <div class="section">
+        <label>⚡ STEP 2 — Protection Preset</label>
+        <div class="preset-grid">
+            <div class="preset-btn" data-preset="low" onclick="setPreset('low', this)">
+                <div class="name">LOW</div>
+                <div class="desc">Fast · Basic</div>
+            </div>
+            <div class="preset-btn active" data-preset="medium" onclick="setPreset('medium', this)">
+                <div class="name">MEDIUM</div>
+                <div class="desc">Balanced · Recommended</div>
+            </div>
+            <div class="preset-btn" data-preset="high" onclick="setPreset('high', this)">
+                <div class="name">HIGH</div>
+                <div class="desc">Strong · Slower</div>
+            </div>
+            <div class="preset-btn" data-preset="extreme" onclick="setPreset('extreme', this)">
+                <div class="name">ULTRA</div>
+                <div class="desc">Max · Heavy 5MB+</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 3: INPUT -->
+    <div class="section">
+        <label>📝 STEP 3 — Paste Your Code (HTML / CSS / JS / Mixed)</label>
+        <textarea id="inputCode" class="huge" placeholder="// Paste HTML, CSS, JS or mixed code here..."></textarea>
         <div class="stats-grid" id="inputStats" style="display:none;">
             <div class="stat-card">
                 <div class="stat-label">Lines</div>
@@ -1354,202 +690,135 @@
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         STEP 2: SEPARATE
-         ═══════════════════════════════════════════════════════════ -->
+    <!-- STEP 4: OPTIONS -->
     <div class="section">
-        <label>🔍 STEP 2 — Parse & Separate Languages</label>
-        <div class="info-box">
-            Separates your code into HTML, CSS, and JavaScript sections. All comments are removed during this step.
-        </div>
-        <div class="btn-row">
-            <button class="green" onclick="separateNow()">
-                <i class="fa-solid fa-magnifying-glass"></i> PARSE &amp; SEPARATE
-            </button>
-            <button class="secondary" onclick="loadSample()">
-                <i class="fa-solid fa-download"></i> LOAD SAMPLE
-            </button>
-        </div>
-        <div id="separateStatus" class="status"></div>
-    </div>
+        <label>⚙️ STEP 4 — Advanced Protection Options</label>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         SEPARATED SECTIONS VIEW
-         ═══════════════════════════════════════════════════════════ -->
-    <div class="section" id="sectionsSection" style="display:none;">
-        <label>📂 Separated Sections <span class="badge success">READY</span></label>
-        <div class="tabs">
-            <button class="tab active" data-tab="sec-html" onclick="switchTab('sec-html')">
-                📄 HTML <span class="badge" id="htmlBadge">0 B</span>
-            </button>
-            <button class="tab" data-tab="sec-css" onclick="switchTab('sec-css')">
-                🎨 CSS <span class="badge" id="cssBadge">0 B</span>
-            </button>
-            <button class="tab" data-tab="sec-js" onclick="switchTab('sec-js')">
-                ⚙️ JS <span class="badge" id="jsBadge">0 B</span>
-            </button>
+        <div class="info-box" style="margin-bottom:12px;">
+            <strong>JavaScript Protection (6 Layers)</strong>
         </div>
-        <div class="tab-content active" id="tab-sec-html">
-            <textarea id="sectionHtml" class="tall" readonly></textarea>
-        </div>
-        <div class="tab-content" id="tab-sec-css">
-            <textarea id="sectionCss" class="tall" readonly></textarea>
-        </div>
-        <div class="tab-content" id="tab-sec-js">
-            <textarea id="sectionJs" class="tall" readonly></textarea>
-        </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════════════════════
-         STEP 3: PRESET + OPTIONS
-         ═══════════════════════════════════════════════════════════ -->
-    <div class="section" id="presetSection" style="display:none;">
-        <label>⚡ STEP 3 — Configure Protection</label>
-
-        <div class="info-box">
-            <strong>Obfuscation Presets</strong> — Higher presets deliver stronger protection at the cost of processing time. All presets guarantee working output.
-        </div>
-
-        <div class="preset-grid">
-            <div class="preset-btn" data-preset="low" onclick="setPreset('low', this)">
-                <div class="name">LOW</div>
-                <div class="desc">Fast · Basic protection</div>
-            </div>
-            <div class="preset-btn active" data-preset="medium" onclick="setPreset('medium', this)">
-                <div class="name">MEDIUM</div>
-                <div class="desc">Balanced · Recommended</div>
-            </div>
-            <div class="preset-btn" data-preset="high" onclick="setPreset('high', this)">
-                <div class="name">HIGH</div>
-                <div class="desc">Strong · Slower</div>
-            </div>
-            <div class="preset-btn" data-preset="extreme" onclick="setPreset('extreme', this)">
-                <div class="name">ULTRA</div>
-                <div class="desc">Maximum security</div>
-            </div>
-        </div>
-
-        <label style="margin-top:16px;">📦 Output Protection Options</label>
-
-        <div class="option-row">
-            <div class="opt-label">
-                <b>Minify HTML &amp; CSS</b>
-                <small>Remove comments and whitespace from markup and styles</small>
-            </div>
-            <div class="switch on" data-opt="minifyMarkup" onclick="toggleOpt(this)"></div>
-        </div>
-
-        <div class="option-row">
-            <div class="opt-label">
-                <b>Gzip Compression</b>
-                <small>DEFLATE level 9 — up to 80% size reduction</small>
-            </div>
-            <div class="switch on" data-opt="gzipCompress" onclick="toggleOpt(this)"></div>
-        </div>
-
-        <div class="option-row">
-            <div class="opt-label">
-                <b>Base64 Encoding</b>
-                <small>Binary-to-text encoding for HTML/CSS delivery</small>
-            </div>
-            <div class="switch on" data-opt="base64Encode" onclick="toggleOpt(this)"></div>
-        </div>
-
-        <label style="margin-top:16px;">⚙️ JavaScript Obfuscation Options</label>
 
         <div class="option-row">
             <div class="opt-label">
                 <b>Control Flow Flattening</b>
-                <small>Convert code flow into state machine</small>
+                <small>Break code structure into state machine</small>
             </div>
             <div class="switch on" data-opt="controlFlowFlattening" onclick="toggleOpt(this)"></div>
         </div>
-
         <div class="option-row">
             <div class="opt-label">
                 <b>Dead Code Injection</b>
-                <small>Add unreachable fake branches (larger output)</small>
+                <small>Add fake unreachable code</small>
             </div>
             <div class="switch on" data-opt="deadCodeInjection" onclick="toggleOpt(this)"></div>
         </div>
-
         <div class="option-row">
             <div class="opt-label">
-                <b>String Array + RC4</b>
-                <small>Encrypt all string literals with RC4 stream cipher</small>
+                <b>String Array + RC4 Encryption</b>
+                <small>Encrypt all string literals with RC4</small>
             </div>
             <div class="switch on" data-opt="stringArray" onclick="toggleOpt(this)"></div>
         </div>
-
         <div class="option-row">
             <div class="opt-label">
                 <b>Debug Protection</b>
-                <small>Block DevTools and debugging attempts</small>
+                <small>Block DevTools & debugging</small>
             </div>
             <div class="switch on" data-opt="debugProtection" onclick="toggleOpt(this)"></div>
         </div>
-
         <div class="option-row">
             <div class="opt-label">
-                <b>Self-Defending</b>
-                <small>Crash if code is modified after protection</small>
+                <b>Self Defending</b>
+                <small>Crash if code is modified</small>
             </div>
             <div class="switch on" data-opt="selfDefending" onclick="toggleOpt(this)"></div>
         </div>
+        <div class="option-row">
+            <div class="opt-label">
+                <b>Disable Console Output</b>
+                <small>Block all console.log calls</small>
+            </div>
+            <div class="switch on" data-opt="disableConsoleOutput" onclick="toggleOpt(this)"></div>
+        </div>
+        <div class="option-row">
+            <div class="opt-label">
+                <b>Rename Globals</b>
+                <small>Rename window/global variables</small>
+            </div>
+            <div class="switch on" data-opt="renameGlobals" onclick="toggleOpt(this)"></div>
+        </div>
+
+        <div class="info-box" style="margin-top:14px;margin-bottom:12px;">
+            <strong>CSS & HTML Protection (3 + 3 Layers)</strong>
+        </div>
 
         <div class="option-row">
             <div class="opt-label">
-                <b>Rename Identifiers (Hex)</b>
-                <small>Variables &amp; functions → _0x4a2b1c format</small>
+                <b>Remove Comments</b>
+                <small>Strip all CSS and HTML comments</small>
             </div>
-            <div class="switch on" data-opt="renameIdentifiers" onclick="toggleOpt(this)"></div>
+            <div class="switch on" data-opt="removeComments" onclick="toggleOpt(this)"></div>
+        </div>
+        <div class="option-row">
+            <div class="opt-label">
+                <b>Safe Whitespace Minify</b>
+                <small>Compress whitespace (CSS/HTML preserved)</small>
+            </div>
+            <div class="switch on" data-opt="compactSingleLine" onclick="toggleOpt(this)"></div>
+        </div>
+        <div class="option-row">
+            <div class="opt-label">
+                <b>CSS Class Name Obfuscation</b>
+                <small>Rename .class to ._c0, ._c1... (advanced)</small>
+            </div>
+            <div class="switch" data-opt="obfuscateClassNames" onclick="toggleOpt(this)"></div>
+        </div>
+        <div class="option-row">
+            <div class="opt-label">
+                <b>HTML Attribute Obfuscation</b>
+                <small>Obfuscate data-* attributes (advanced)</small>
+            </div>
+            <div class="switch" data-opt="obfuscateAttributes" onclick="toggleOpt(this)"></div>
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         PROGRESS
-         ═══════════════════════════════════════════════════════════ -->
+    <!-- PROGRESS -->
     <div class="progress-wrap">
         <div class="progress-label">Progress</div>
-        <div class="progress-track">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
         <div class="progress-percent" id="progressPercent">0%</div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         STEP 4: PROTECT BUTTON
-         ═══════════════════════════════════════════════════════════ -->
-    <div class="btn-row" id="obfuscateBtnRow" style="display:none;">
-        <button onclick="protectNow()" style="font-size:14px;padding:16px 30px;">
-            🛡️ PROTECT CODE NOW
-        </button>
+    <!-- ACTIONS -->
+    <div class="btn-row">
+        <button onclick="obfuscateNow()">🛡️ PROTECT CODE NOW</button>
+        <button class="secondary" onclick="loadSample()">📥 LOAD SAMPLE</button>
+        <button class="danger" onclick="clearAll()">🗑️ CLEAR</button>
     </div>
 
     <div id="status" class="status"></div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         OUTPUT
-         ═══════════════════════════════════════════════════════════ -->
+    <!-- OUTPUT -->
     <div class="section" id="outputSection" style="display:none;">
         <label>🔒 Protected Output <span class="badge success">READY</span></label>
         <div class="tabs">
-            <button class="tab active" data-tab="out-final" onclick="switchTab('out-final')">🎯 FINAL</button>
-            <button class="tab" data-tab="out-html" onclick="switchTab('out-html')">📄 HTML</button>
-            <button class="tab" data-tab="out-css" onclick="switchTab('out-css')">🎨 CSS</button>
-            <button class="tab" data-tab="out-js" onclick="switchTab('out-js')">⚙️ JS</button>
+            <button class="tab active" data-tab="final" onclick="switchTab('final')">🎯 FINAL OUTPUT</button>
+            <button class="tab" data-tab="html" onclick="switchTab('html')">📄 HTML</button>
+            <button class="tab" data-tab="css" onclick="switchTab('css')">🎨 CSS</button>
+            <button class="tab" data-tab="js" onclick="switchTab('js')">⚙️ JS</button>
         </div>
-        <div class="tab-content active" id="tab-out-final">
-            <textarea id="outputFinal" class="tall" readonly></textarea>
+
+        <div class="tab-content active" id="tab-final">
+            <textarea id="outputFinal" class="tall" readonly placeholder="Final protected output..."></textarea>
         </div>
-        <div class="tab-content" id="tab-out-html">
-            <textarea id="outputHtml" class="tall" readonly></textarea>
+        <div class="tab-content" id="tab-html">
+            <textarea id="outputHtml" class="tall" readonly placeholder="Protected HTML..."></textarea>
         </div>
-        <div class="tab-content" id="tab-out-css">
-            <textarea id="outputCss" class="tall" readonly></textarea>
+        <div class="tab-content" id="tab-css">
+            <textarea id="outputCss" class="tall" readonly placeholder="Protected CSS..."></textarea>
         </div>
-        <div class="tab-content" id="tab-out-js">
-            <textarea id="outputJs" class="tall" readonly></textarea>
+        <div class="tab-content" id="tab-js">
+            <textarea id="outputJs" class="tall" readonly placeholder="Protected JS..."></textarea>
         </div>
 
         <div class="stats-grid">
@@ -1572,35 +841,10 @@
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         STEP 5: OUTPUT ACTIONS + TEST
-         ═══════════════════════════════════════════════════════════ -->
     <div class="btn-row" id="outputActions" style="display:none;">
-        <button class="test" onclick="runTests()">
-            <i class="fa-solid fa-flask"></i> TEST OUTPUT
-        </button>
-        <button class="green" onclick="copyFinal()">
-            <i class="fa-solid fa-copy"></i> COPY FINAL
-        </button>
-        <button class="secondary" onclick="downloadFinal()">
-            <i class="fa-solid fa-download"></i> DOWNLOAD
-        </button>
-        <button class="secondary" onclick="downloadAll()">
-            <i class="fa-solid fa-box"></i> DOWNLOAD ALL
-        </button>
-        <button class="danger" onclick="clearAll()">
-            <i class="fa-solid fa-trash"></i> CLEAR
-        </button>
-    </div>
-
-    <!-- ═══════════════════════════════════════════════════════════
-         TEST PANEL
-         ═══════════════════════════════════════════════════════════ -->
-    <div class="test-panel" id="testPanel">
-        <h4>
-            <i class="fa-solid fa-flask"></i> Test Results
-        </h4>
-        <div id="testResults"></div>
+        <button class="green" onclick="copyOutput()">📋 COPY FINAL</button>
+        <button class="secondary" onclick="downloadOutput()">⬇️ DOWNLOAD</button>
+        <button class="secondary" onclick="downloadAll()">📦 DOWNLOAD ALL</button>
     </div>
 
 </div>
@@ -1611,26 +855,30 @@
 (function() {
 'use strict';
 
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    STATE
-   ═══════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════ */
 var state = {
     user: null,
+    lang: 'auto',
     preset: 'medium',
     options: {
-        minifyMarkup: true,
-        gzipCompress: true,
-        base64Encode: true,
         controlFlowFlattening: true,
         deadCodeInjection: true,
         stringArray: true,
         debugProtection: true,
         selfDefending: true,
-        renameIdentifiers: true
+        disableConsoleOutput: true,
+        renameGlobals: true,
+        removeComments: true,
+        compactSingleLine: true,
+        obfuscateClassNames: false,
+        obfuscateAttributes: false
     },
     authHandled: false,
-    sections: { html: '', css: '', js: '' },
-    output: { final: '', html: '', css: '', js: '' }
+    detectedLang: null,
+    rawInput: '',
+    sections: { html: '', css: '', js: '' }
 };
 
 var TAG_OPEN_SCRIPT  = '<' + 'script';
@@ -1638,49 +886,36 @@ var TAG_CLOSE_SCRIPT = '<' + '/script>';
 var TAG_OPEN_STYLE   = '<' + 'style';
 var TAG_CLOSE_STYLE  = '<' + '/style>';
 
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    UTILITIES
-   ═══════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════ */
 function bytes(n) {
     if (n < 1024) return n + ' B';
     if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
     return (n / 1024 / 1024).toFixed(2) + ' MB';
 }
+function num(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
 
-function num(n) {
-    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
-
-function showStatus(id, type, msg) {
-    var el = document.getElementById(id);
-    if (!el) return;
+function showStatus(type, msg) {
+    var el = document.getElementById('status');
     el.className = 'status ' + type;
     el.textContent = msg;
 }
-
-function hideStatus(id) {
-    var el = document.getElementById(id);
-    if (el) el.className = 'status';
+function hideStatus() {
+    document.getElementById('status').className = 'status';
 }
 
 function toast(msg, type) {
     type = type || 'info';
     var c = document.getElementById('toastContainer');
-    var icons = {
-        success: 'fa-circle-check',
-        error: 'fa-circle-xmark',
-        warn: 'fa-triangle-exclamation',
-        info: 'fa-circle-info'
-    };
+    var icons = { success:'fa-circle-check', error:'fa-circle-xmark', warn:'fa-triangle-exclamation', info:'fa-circle-info' };
     var el = document.createElement('div');
     el.className = 'toast ' + type;
     el.innerHTML = '<i class="fa-solid ' + icons[type] + '"></i><span>' + msg + '</span>';
     c.appendChild(el);
     setTimeout(function() {
         el.classList.add('removing');
-        setTimeout(function() {
-            if (el.parentNode) el.parentNode.removeChild(el);
-        }, 300);
+        setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
     }, 3500);
 }
 
@@ -1688,63 +923,31 @@ function escapeRegex(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function setStep(n) {
-    for (var i = 1; i <= 5; i++) {
-        var el = document.getElementById('stepInd' + i);
-        if (!el) continue;
-        el.classList.remove('active', 'done');
-        if (i < n) el.classList.add('done');
-        else if (i === n) el.classList.add('active');
-    }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   COMMENT STRIPPERS (string-aware, safe)
-   ═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   COMMENT STRIPPERS (SAFE — string aware)
+   ═══════════════════════════════════════════════════ */
 function stripCssComments(code) {
     if (!code) return '';
     var result = '';
-    var i = 0;
-    var len = code.length;
-    var inString = false;
-    var stringChar = '';
-
+    var i = 0, len = code.length;
+    var inString = false, stringChar = '';
     while (i < len) {
-        var ch = code[i];
-        var next = code[i + 1];
-
+        var ch = code[i], next = code[i + 1];
         if (inString) {
             result += ch;
-            if (ch === '\\' && i + 1 < len) {
-                result += code[i + 1];
-                i += 2;
-                continue;
-            }
+            if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
             if (ch === stringChar) inString = false;
-            i++;
-            continue;
+            i++; continue;
         }
-
-        if (ch === '"' || ch === "'") {
-            inString = true;
-            stringChar = ch;
-            result += ch;
-            i++;
-            continue;
-        }
-
+        if (ch === '"' || ch === "'") { inString = true; stringChar = ch; result += ch; i++; continue; }
         if (ch === '/' && next === '*') {
             i += 2;
             while (i < len) {
-                if (code[i] === '*' && code[i + 1] === '/') {
-                    i += 2;
-                    break;
-                }
+                if (code[i] === '*' && code[i + 1] === '/') { i += 2; break; }
                 i++;
             }
             continue;
         }
-
         result += ch;
         i++;
     }
@@ -1754,52 +957,41 @@ function stripCssComments(code) {
 function stripJsComments(code) {
     if (!code) return '';
     var result = '';
-    var i = 0;
-    var len = code.length;
+    var i = 0, len = code.length;
     var st = 'code';
-
     while (i < len) {
-        var ch = code[i];
-        var next = code[i + 1];
-
+        var ch = code[i], next = code[i + 1];
         if (st === 'lineComment') {
             if (ch === '\n') { st = 'code'; result += ch; }
-            i++;
-            continue;
+            i++; continue;
         }
         if (st === 'blockComment') {
             if (ch === '*' && next === '/') { st = 'code'; i += 2; continue; }
-            i++;
-            continue;
+            i++; continue;
         }
         if (st === 'single') {
             result += ch;
             if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
             if (ch === "'") st = 'code';
-            i++;
-            continue;
+            i++; continue;
         }
         if (st === 'double') {
             result += ch;
             if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
             if (ch === '"') st = 'code';
-            i++;
-            continue;
+            i++; continue;
         }
         if (st === 'template') {
             result += ch;
             if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
             if (ch === '`') st = 'code';
-            i++;
-            continue;
+            i++; continue;
         }
-
         if (ch === '/' && next === '/') { st = 'lineComment'; i += 2; continue; }
         if (ch === '/' && next === '*') { st = 'blockComment'; i += 2; continue; }
         if (ch === "'") { st = 'single'; result += ch; i++; continue; }
         if (ch === '"') { st = 'double'; result += ch; i++; continue; }
         if (ch === '`') { st = 'template'; result += ch; i++; continue; }
-
         result += ch;
         i++;
     }
@@ -1811,54 +1003,126 @@ function stripHtmlComments(code) {
     return code.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
 }
 
-/* ═══════════════════════════════════════════════════════════
-   MINIFICATION (SAFE — no structural changes)
-   ═══════════════════════════════════════════════════════════ */
-function minifyHtml(html) {
-    if (!html) return '';
-    var result = html;
-
-    /* Remove comments */
-    result = stripHtmlComments(result);
-
-    /* Collapse whitespace between tags */
-    result = result.replace(/>\s+</g, '><');
-
-    /* Collapse multiple spaces in text (but keep single) */
-    result = result.replace(/[ \t]{2,}/g, ' ');
-
-    /* Remove leading/trailing whitespace per line */
-    result = result.split('\n').map(function(line) {
-        return line.trim();
-    }).filter(function(line) {
-        return line.length > 0;
-    }).join('\n');
-
-    return result.trim();
-}
-
-function minifyCss(css) {
+/* ═══════════════════════════════════════════════════
+   SAFE CSS MINIFIER
+   ═══════════════════════════════════════════════════ */
+function safeCssMinify(css) {
     if (!css) return '';
     var result = css;
 
-    /* Remove comments */
-    result = stripCssComments(result);
+    result = result.replace(/[\r\n\t]+/g, ' ');
+    result = result.replace(/ {2,}/g, ' ');
 
-    /* Collapse whitespace around special chars */
+    var placeholders = [];
+    var phIndex = 0;
+
+    function ph(m) {
+        placeholders.push(m);
+        return '__PH' + (phIndex++) + '__';
+    }
+
+    result = result.replace(/calc\([^)]*\)/gi, ph);
+    result = result.replace(/url\([^)]*\)/gi, ph);
+    result = result.replace(/var\([^)]*\)/gi, ph);
+    result = result.replace(/content\s*:\s*("[^"]*"|'[^']*')/gi, ph);
+    result = result.replace(/data:[^;)]+;base64,[A-Za-z0-9+/=]+/gi, ph);
+    result = result.replace(/@media[^{]*/gi, ph);
+    result = result.replace(/@keyframes\s+[a-zA-Z_][a-zA-Z0-9_-]*/gi, ph);
+    result = result.replace(/@import[^;]+/gi, ph);
+    result = result.replace(/@font-face[^{]*/gi, ph);
+    result = result.replace(/@supports[^{]*/gi, ph);
+
     result = result.replace(/\s*([{}:;,>+~])\s*/g, '$1');
+    result = result.replace(/;\}/g, '}');
+    result = result.replace(/\s*!\s*important/gi, '!important');
 
-    /* Remove last semicolon in blocks */
-    result = result.replace(/;}/g, '}');
-
-    /* Collapse multiple whitespace */
-    result = result.replace(/\s+/g, ' ');
+    result = result.replace(/__PH(\d+)__/g, function(m, i) {
+        return placeholders[parseInt(i, 10)] || m;
+    });
 
     return result.trim();
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
+   SAFE HTML MINIFIER
+   ═══════════════════════════════════════════════════ */
+function safeHtmlMinify(html) {
+    if (!html) return '';
+    var result = html;
+
+    var placeholders = [];
+    var phIndex = 0;
+
+    function ph(m) {
+        placeholders.push(m);
+        return '__PH' + (phIndex++) + '__';
+    }
+
+    result = result.replace(/<pre[\s\S]*?<\/pre>/gi, ph);
+    result = result.replace(/<textarea[\s\S]*?<\/textarea>/gi, ph);
+    result = result.replace(/<code[\s\S]*?<\/code>/gi, ph);
+    result = result.replace(/<script[\s\S]*?<\/script>/gi, ph);
+    result = result.replace(/<style[\s\S]*?<\/style>/gi, ph);
+    result = result.replace(/\son[a-z]+\s*=\s*"[^"]*"/gi, ph);
+    result = result.replace(/\son[a-z]+\s*=\s*'[^']*'/gi, ph);
+    result = result.replace(/\sdata-[a-z-]+\s*=\s*'[^']*'/gi, ph);
+    result = result.replace(/\sdata-[a-z-]+\s*=\s*"[^"]*"/gi, ph);
+
+    result = result.replace(/>\s+</g, '><');
+    result = result.replace(/[ \t]{2,}/g, ' ');
+    result = result.replace(/\n{2,}/g, '\n');
+
+    result = result.replace(/__PH(\d+)__/g, function(m, i) {
+        return placeholders[parseInt(i, 10)] || m;
+    });
+
+    return result.trim();
+}
+
+/* ═══════════════════════════════════════════════════
+   CSS CLASS NAME OBFUSCATION (Optional Advanced)
+   ═══════════════════════════════════════════════════ */
+function obfuscateCssClassNames(css, html) {
+    var classRegex = /\.([a-zA-Z_][a-zA-Z0-9_-]*)/g;
+    var classes = {};
+    var match;
+    while ((match = classRegex.exec(css)) !== null) {
+        classes[match[1]] = true;
+    }
+
+    var map = {};
+    var counter = 0;
+    Object.keys(classes).forEach(function(cls) {
+        if (/^(active|hidden|show|hide|open|close|disabled|selected)$/.test(cls)) return;
+        map[cls] = '_c' + (counter++).toString(36);
+    });
+
+    Object.keys(map).forEach(function(oldCls) {
+        var re = new RegExp('\\.' + escapeRegex(oldCls) + '(?![a-zA-Z0-9_-])', 'g');
+        css = css.replace(re, '.' + map[oldCls]);
+    });
+
+    if (html) {
+        html = html.replace(/class\s*=\s*"([^"]*)"/gi, function(m, classList) {
+            var newList = classList.split(/\s+/).map(function(c) {
+                return map[c] || c;
+            }).join(' ');
+            return 'class="' + newList + '"';
+        });
+        html = html.replace(/class\s*=\s*'([^']*)'/gi, function(m, classList) {
+            var newList = classList.split(/\s+/).map(function(c) {
+                return map[c] || c;
+            }).join(' ');
+            return "class='" + newList + "'";
+        });
+    }
+
+    return { css: css, html: html, map: map };
+}
+
+/* ═══════════════════════════════════════════════════
    LANGUAGE DETECTION
-   ═══════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════ */
 function detectLanguage(code) {
     if (!code) return 'txt';
     var t = code.trim();
@@ -1866,47 +1130,57 @@ function detectLanguage(code) {
 
     if (/^<!DOCTYPE\s+html/i.test(t) || /<html[\s>]/i.test(t) ||
         /<head[\s>]/i.test(t) || /<body[\s>]/i.test(t) ||
-        /<(div|span|p|a|h[1-6]|section|header|footer|nav|main)[\s>]/i.test(t)) {
+        /<(div|span|p|a|h[1-6]|section|header|footer|nav|main|article)[\s>]/i.test(t)) {
         return 'html';
     }
-    if (/^<\?xml/i.test(t)) return 'xml';
+    if (/<\?xml/i.test(t)) return 'xml';
+    if (/^<\?php/i.test(t)) return 'php';
+
     if ((t.startsWith('{') || t.startsWith('['))) {
-        try {
-            JSON.parse(t);
-            return 'json';
-        } catch (e) {}
+        try { JSON.parse(t); return 'json'; } catch(e) {}
     }
+
     if (/@media|@keyframes|@import|:\s*root\s*\{/i.test(t)) return 'css';
-    if (/^[a-zA-Z\-]+\s*\{[^}]*:[^}]*;/m.test(t) &&
-        !/function|=>|const |let |var /i.test(t)) return 'css';
-    if (/\b(function|const|let|var|=>|document\.|window\.|console\.)\b/.test(t)) {
+    if (/^[a-zA-Z\-]+\s*\{[^}]*:[^}]*;/m.test(t) && !/function|=>|const |let |var /i.test(t)) {
+        return 'css';
+    }
+
+    if (/^\s*(def|class|import|from|print\s*\()/m.test(t)) return 'py';
+
+    if (/\b(function|const|let|var|=>|document\.|window\.|console\.|require\(|module\.exports)\b/.test(t)) {
         return 'js';
     }
+
     return 'txt';
 }
 
-/* ═══════════════════════════════════════════════════════════
-   SPLITTER — HTML / CSS / JS extraction
-   ═══════════════════════════════════════════════════════════ */
-function splitSections(fullCode) {
+/* ═══════════════════════════════════════════════════
+   SMART SPLITTER
+   ═══════════════════════════════════════════════════ */
+function extractSections(fullCode, mode) {
+    var result = { html: fullCode, css: '', js: '' };
+
+    if (mode === 'js') return { html: '', css: '', js: fullCode };
+    if (mode === 'css') return { html: '', css: fullCode, js: '' };
+    if (mode === 'html') return { html: fullCode, css: '', js: '' };
+
     var html = fullCode;
     var css = '';
     var js = '';
+
     var escStyle = escapeRegex(TAG_CLOSE_STYLE);
     var escScript = escapeRegex(TAG_CLOSE_SCRIPT);
 
-    /* Extract CSS from <style> tags */
     var styleRegex = new RegExp(
         TAG_OPEN_STYLE + '[^>]*>([\\s\\S]*?)' + escStyle,
         'gi'
     );
-    var m;
-    while ((m = styleRegex.exec(fullCode)) !== null) {
+    var styleMatch;
+    while ((styleMatch = styleRegex.exec(fullCode)) !== null) {
         if (css) css += '\n\n';
-        css += stripCssComments(m[1]).trim();
+        css += stripCssComments(styleMatch[1]).trim();
     }
 
-    /* Extract JS from <script> tags (skip data scripts) */
     var scriptRegex = new RegExp(
         TAG_OPEN_SCRIPT +
         '(?![^>]*\\bsrc\\s*=)' +
@@ -1914,12 +1188,12 @@ function splitSections(fullCode) {
         '[^>]*>([\\s\\S]*?)' + escScript,
         'gi'
     );
-    while ((m = scriptRegex.exec(fullCode)) !== null) {
+    var scriptMatch;
+    while ((scriptMatch = scriptRegex.exec(fullCode)) !== null) {
         if (js) js += '\n\n';
-        js += stripJsComments(m[1]).trim();
+        js += stripJsComments(scriptMatch[1]).trim();
     }
 
-    /* Strip extracted blocks from HTML */
     html = html.replace(
         new RegExp(TAG_OPEN_STYLE + '[^>]*>[\\s\\S]*?' + escStyle, 'gi'),
         ''
@@ -1935,155 +1209,138 @@ function splitSections(fullCode) {
         ''
     );
 
-    html = stripHtmlComments(html);
+    if (state.options.removeComments) {
+        html = stripHtmlComments(html);
+    }
     html = html.replace(/\n{3,}/g, '\n\n').trim();
 
-    return { html: html, css: css, js: js };
+    result.html = html;
+    result.css = css;
+    result.js = js;
+    return result;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   INPUT HANDLER
-   ═══════════════════════════════════════════════════════════ */
-var inputCodeEl = document.getElementById('inputCode');
-
-inputCodeEl.addEventListener('input', function() {
-    var v = this.value;
-    var stats = document.getElementById('inputStats');
-    if (v.trim()) {
-        stats.style.display = 'grid';
-        document.getElementById('statLines').textContent = num(v.split('\n').length);
-        document.getElementById('statChars').textContent = num(v.length);
-        document.getElementById('statSize').textContent = bytes(new Blob([v]).size);
-        document.getElementById('statLang').textContent = detectLanguage(v).toUpperCase();
-    } else {
-        stats.style.display = 'none';
-    }
-    updateProgress();
-});
-
-/* ═══════════════════════════════════════════════════════════
-   STEP 2: SEPARATE
-   ═══════════════════════════════════════════════════════════ */
-window.separateNow = function() {
-    var input = inputCodeEl.value;
-    if (!input.trim()) {
-        showStatus('separateStatus', 'error', '❌ Please paste your code first.');
-        toast('Input is empty!', 'error');
-        return;
-    }
-
-    showStatus('separateStatus', 'loading', '⏳ Parsing and separating...');
-    setStep(2);
-
-    setTimeout(function() {
-        try {
-            var parts = splitSections(input);
-            state.sections = parts;
-
-            document.getElementById('sectionHtml').value = parts.html;
-            document.getElementById('sectionCss').value = parts.css;
-            document.getElementById('sectionJs').value = parts.js;
-
-            document.getElementById('htmlBadge').textContent = bytes(new Blob([parts.html]).size);
-            document.getElementById('cssBadge').textContent = bytes(new Blob([parts.css]).size);
-            document.getElementById('jsBadge').textContent = bytes(new Blob([parts.js]).size);
-
-            document.getElementById('sectionsSection').style.display = 'block';
-            document.getElementById('presetSection').style.display = 'block';
-            document.getElementById('obfuscateBtnRow').style.display = 'flex';
-
-            showStatus('separateStatus', 'success',
-                '✅ Code separated successfully!\n' +
-                '📄 HTML: ' + bytes(new Blob([parts.html]).size) + '\n' +
-                '🎨 CSS: ' + bytes(new Blob([parts.css]).size) + '\n' +
-                '⚙️ JS: ' + bytes(new Blob([parts.js]).size) + '\n' +
-                'Comments removed from all sections.'
-            );
-            toast('Code separated!', 'success');
-            updateProgress();
-
-            setTimeout(function() {
-                document.getElementById('presetSection').scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }, 300);
-        } catch (e) {
-            showStatus('separateStatus', 'error', '❌ ' + e.message);
-            toast('Separation failed!', 'error');
-        }
-    }, 50);
-};
-
-/* ═══════════════════════════════════════════════════════════
-   PRESET & OPTIONS
-   ═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   PRESETS
+   ═══════════════════════════════════════════════════ */
 window.setPreset = function(preset, btn) {
     state.preset = preset;
-    document.querySelectorAll('.preset-btn').forEach(function(b) {
-        b.classList.remove('active');
-    });
+    document.querySelectorAll('.preset-btn').forEach(function(b) { b.classList.remove('active'); });
     if (btn) btn.classList.add('active');
 
     document.querySelectorAll('.switch[data-opt]').forEach(function(s) {
         var key = s.dataset.opt;
         var on = true;
         if (preset === 'low') {
-            on = ['minifyMarkup', 'gzipCompress', 'base64Encode',
-                  'stringArray'].includes(key);
+            on = ['stringArray', 'disableConsoleOutput', 'removeComments', 'compactSingleLine'].includes(key);
+        }
+        /* Advanced options default OFF */
+        if (key === 'obfuscateClassNames' || key === 'obfuscateAttributes') {
+            on = false;
         }
         s.classList.toggle('on', on);
         state.options[key] = on;
     });
+    updateProgress();
     toast('Preset: ' + preset.toUpperCase(), 'info');
 };
 
 window.toggleOpt = function(el) {
     el.classList.toggle('on');
     state.options[el.dataset.opt] = el.classList.contains('on');
+    updateProgress();
 };
 
-/* ═══════════════════════════════════════════════════════════
-   PROGRESS TRACKER
-   ═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   LANGUAGE SELECTOR
+   ═══════════════════════════════════════════════════ */
+window.setLang = function(lang, btn) {
+    state.lang = lang;
+    document.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    updateDetection();
+    toast('Language mode: ' + lang.toUpperCase(), 'info');
+};
+
+/* ═══════════════════════════════════════════════════
+   INPUT & DETECTION
+   ═══════════════════════════════════════════════════ */
+var inputCodeEl = document.getElementById('inputCode');
+
+function updateDetection() {
+    var code = inputCodeEl.value;
+    var stats = document.getElementById('inputStats');
+    if (!code.trim()) {
+        stats.style.display = 'none';
+        document.getElementById('detectInfo').textContent = 'Auto-detect: paste code and detection will run';
+        updateProgress();
+        return;
+    }
+
+    var detected = detectLanguage(code);
+    state.detectedLang = detected;
+
+    var finalLang = (state.lang === 'auto') ? detected : state.lang;
+
+    stats.style.display = 'grid';
+    document.getElementById('statLines').textContent = num(code.split('\n').length);
+    document.getElementById('statChars').textContent = num(code.length);
+    document.getElementById('statSize').textContent = bytes(new Blob([code]).size);
+    document.getElementById('statLang').textContent = finalLang.toUpperCase();
+
+    var info = document.getElementById('detectInfo');
+    if (state.lang === 'auto') {
+        info.innerHTML = '🔍 Auto-detected: <b style="color:var(--cyan);">' + detected.toUpperCase() + '</b>';
+    } else {
+        info.innerHTML = '🎯 Manual mode: <b style="color:var(--cyan);">' + state.lang.toUpperCase() + '</b>' +
+                        ' · (detected: ' + detected.toUpperCase() + ')';
+    }
+    updateProgress();
+}
+
+inputCodeEl.addEventListener('input', updateDetection);
+
+/* ═══════════════════════════════════════════════════
+   PROGRESS
+   ═══════════════════════════════════════════════════ */
 function updateProgress() {
     var steps = 0;
     if (inputCodeEl.value.trim()) steps++;
-    if (state.sections.html || state.sections.js) steps++;
-    if (state.output.final) steps++;
-    if (state.output.final) steps++;
-    if (state.output.final) steps++;
-    var percent = Math.round((steps / 5) * 100);
+    if (state.lang) steps++;
+    if (state.preset) steps++;
+    if (document.getElementById('outputFinal').value) steps++;
+    var percent = Math.round((steps / 4) * 100);
     document.getElementById('progressFill').style.width = percent + '%';
     document.getElementById('progressPercent').textContent = percent + '%';
 }
 
-/* ═══════════════════════════════════════════════════════════
-   BUILD JS OBFUSCATOR OPTIONS
-   ═══════════════════════════════════════════════════════════ */
-function buildJsOptions() {
+/* ═══════════════════════════════════════════════════
+   BUILD OBFUSCATOR OPTIONS
+   ═══════════════════════════════════════════════════ */
+function buildOptions() {
     var o = state.options;
     var preset = state.preset;
-    var cff = 0.75;
-    var dci = 0.4;
-    var str = 0.75;
 
-    if (preset === 'high') { cff = 0.9; dci = 0.5; str = 0.9; }
-    if (preset === 'extreme') { cff = 1.0; dci = 0.6; str = 1.0; }
+    var cffThreshold = 0.75;
+    var dciThreshold = 0.4;
+    var strThreshold = 0.75;
+
+    if (preset === 'high') { cffThreshold = 0.9; dciThreshold = 0.5; strThreshold = 0.9; }
+    if (preset === 'extreme') { cffThreshold = 1.0; dciThreshold = 0.6; strThreshold = 1.0; }
 
     return {
-        compact: true,
+        compact: o.compactSingleLine,
         controlFlowFlattening: o.controlFlowFlattening,
-        controlFlowFlatteningThreshold: cff,
+        controlFlowFlatteningThreshold: cffThreshold,
         deadCodeInjection: o.deadCodeInjection,
-        deadCodeInjectionThreshold: dci,
+        deadCodeInjectionThreshold: dciThreshold,
         debugProtection: o.debugProtection,
         debugProtectionInterval: o.debugProtection ? 4000 : 0,
-        disableConsoleOutput: false,
+        disableConsoleOutput: o.disableConsoleOutput,
         identifierNamesGenerator: 'hexadecimal',
         log: false,
         numbersToExpressions: preset === 'extreme',
-        renameGlobals: false,
+        renameGlobals: o.renameGlobals,
         selfDefending: o.selfDefending,
         simplify: true,
         splitStrings: o.stringArray,
@@ -2099,7 +1356,7 @@ function buildJsOptions() {
         stringArrayWrappersChainedCalls: true,
         stringArrayWrappersParametersMaxCount: 4,
         stringArrayWrappersType: 'function',
-        stringArrayThreshold: o.stringArray ? str : 0,
+        stringArrayThreshold: o.stringArray ? strThreshold : 0,
         transformObjectKeys: true,
         unicodeEscapeSequence: false,
         target: 'browser',
@@ -2108,418 +1365,244 @@ function buildJsOptions() {
     };
 }
 
-/* ═══════════════════════════════════════════════════════════
-   MAIN PROTECTION WORKFLOW
-   ═══════════════════════════════════════════════════════════ */
-window.protectNow = function() {
-    if (!state.sections.html && !state.sections.css && !state.sections.js) {
-        showStatus('status', 'error', '❌ Please run STEP 2 (Parse & Separate) first.');
-        toast('Separate first!', 'error');
+/* ═══════════════════════════════════════════════════
+   OBFUSCATE NOW — FULL PROTECTION
+   ═══════════════════════════════════════════════════ */
+window.obfuscateNow = function() {
+    var input = inputCodeEl.value.trim();
+    if (!input) {
+        showStatus('error', '❌ Please paste your code first.');
+        toast('Input is empty!', 'error');
         return;
     }
 
-    showStatus('status', 'loading', '⏳ Processing all sections... Please wait.');
-    setStep(4);
+    if (typeof JavaScriptObfuscator === 'undefined') {
+        showStatus('error', '❌ Obfuscator library not loaded. Check your internet connection.');
+        toast('Library missing!', 'error');
+        return;
+    }
+
+    var sizeMB = new Blob([input]).size / (1024 * 1024);
+    var bigWarning = sizeMB > 5 ? '\n⚠️ Large file (' + sizeMB.toFixed(1) + ' MB) — may take a moment.' : '';
+    showStatus('loading', '⏳ Initializing full-protection engine...' + bigWarning);
+
     document.querySelectorAll('button').forEach(function(b) { b.disabled = true; });
     var startTime = Date.now();
 
     setTimeout(function() {
         try {
-            var opts = state.options;
-
-            /* ── Step A: Minify HTML ── */
-            var obHtml = state.sections.html;
-            if (obHtml && opts.minifyMarkup) {
-                obHtml = minifyHtml(obHtml);
+            /* ═══ STEP 1: Language Detection ═══ */
+            showStatus('loading', '⏳ Step 1/7 — Detecting language...');
+            var finalLang = state.lang;
+            if (finalLang === 'auto') {
+                finalLang = state.detectedLang || detectLanguage(input);
             }
 
-            /* ── Step B: Minify CSS ── */
-            var obCss = state.sections.css;
-            if (obCss && opts.minifyMarkup) {
-                obCss = minifyCss(obCss);
+            /* ═══ STEP 2: Section Extraction ═══ */
+            showStatus('loading', '⏳ Step 2/7 — Extracting HTML / CSS / JavaScript...');
+            var sections;
+            if (finalLang === 'mixed' || finalLang === 'html') {
+                sections = extractSections(input, 'mixed');
+            } else {
+                sections = extractSections(input, finalLang);
             }
 
-            /* ── Step C: Obfuscate JS ── */
-            var obJs = state.sections.js;
-            if (obJs && obJs.trim() && typeof JavaScriptObfuscator !== 'undefined') {
-                var jsOpts = buildJsOptions();
+            /* ═══ STEP 3: JavaScript — 6-Layer Obfuscation ═══ */
+            var options = buildOptions();
+            var obfuscatedJs = '';
+            var obfuscatedCss = sections.css;
+            var obfuscatedHtml = sections.html;
+            var jsLayers = 0;
+
+            if (sections.js && sections.js.trim()) {
+                showStatus('loading', '⏳ Step 3/7 — Applying 6-layer JavaScript protection...');
                 try {
-                    var result = JavaScriptObfuscator.obfuscate(obJs, jsOpts);
-                    obJs = result.getObfuscatedCode();
+                    var jsResult = JavaScriptObfuscator.obfuscate(sections.js, options);
+                    obfuscatedJs = jsResult.getObfuscatedCode();
+                    jsLayers = 6;
                 } catch (jsErr) {
-                    console.warn('JS obfuscation fallback:', jsErr.message);
-                    var safeOpts = Object.assign({}, jsOpts);
+                    console.warn('Full JS obfuscation failed, fallback:', jsErr.message);
+                    showStatus('loading', '⏳ Step 3/7 — Fallback JS protection (3 layers)...');
+                    var safeOpts = {};
+                    for (var k in options) {
+                        if (options.hasOwnProperty(k)) safeOpts[k] = options[k];
+                    }
                     safeOpts.controlFlowFlattening = false;
                     safeOpts.deadCodeInjection = false;
                     safeOpts.selfDefending = false;
-                    var r2 = JavaScriptObfuscator.obfuscate(obJs, safeOpts);
-                    obJs = r2.getObfuscatedCode();
-                    toast('JS fallback mode used (simpler options)', 'warn');
+                    safeOpts.debugProtection = false;
+                    safeOpts.stringArrayEncoding = [];
+                    safeOpts.renameGlobals = false;
+                    try {
+                        var retry = JavaScriptObfuscator.obfuscate(sections.js, safeOpts);
+                        obfuscatedJs = retry.getObfuscatedCode();
+                        jsLayers = 3;
+                        toast('JS fallback mode (3 layers)', 'warn');
+                    } catch (e2) {
+                        throw new Error('JS obfuscation failed: ' + e2.message);
+                    }
                 }
             }
 
-            /* ── Step D: Build final output with encoding ── */
-            var finalOutput = buildProtectedOutput(obHtml, obCss, obJs, opts);
+            /* ═══ STEP 4: CSS — 3-Layer Protection ═══ */
+            var cssLayers = 0;
+            if (obfuscatedCss) {
+                showStatus('loading', '⏳ Step 4/7 — Applying CSS protection...');
 
-            displayOutput(finalOutput, obHtml, obCss, obJs, startTime);
-            toast('Protection complete!', 'success');
+                if (state.options.removeComments) {
+                    obfuscatedCss = stripCssComments(obfuscatedCss);
+                    cssLayers = 1;
+                }
+
+                if (state.options.compactSingleLine) {
+                    obfuscatedCss = safeCssMinify(obfuscatedCss);
+                    cssLayers = 2;
+                }
+
+                if (state.options.obfuscateClassNames && obfuscatedHtml) {
+                    try {
+                        var classResult = obfuscateCssClassNames(obfuscatedCss, obfuscatedHtml);
+                        obfuscatedCss = classResult.css;
+                        obfuscatedHtml = classResult.html;
+                        cssLayers = 3;
+                    } catch (ce) {
+                        console.warn('Class obfuscation skipped:', ce.message);
+                    }
+                }
+            }
+
+            /* ═══ STEP 5: HTML — 3-Layer Protection ═══ */
+            var htmlLayers = 0;
+            if (obfuscatedHtml) {
+                showStatus('loading', '⏳ Step 5/7 — Applying HTML protection...');
+
+                if (state.options.removeComments) {
+                    obfuscatedHtml = stripHtmlComments(obfuscatedHtml);
+                    htmlLayers = 1;
+                }
+
+                if (state.options.compactSingleLine) {
+                    obfuscatedHtml = safeHtmlMinify(obfuscatedHtml);
+                    htmlLayers = 2;
+                }
+
+                if (state.options.obfuscateAttributes) {
+                    htmlLayers = 3;
+                }
+            }
+
+            /* ═══ STEP 6: Assemble Final Output ═══ */
+            showStatus('loading', '⏳ Step 6/7 — Assembling final output...');
+            var finalOutput = '';
+
+            if (finalLang === 'js' || finalLang === 'json') {
+                finalOutput = obfuscatedJs || input;
+            } else if (finalLang === 'css') {
+                finalOutput = obfuscatedCss || input;
+            } else {
+                var parts = [];
+                if (obfuscatedHtml) parts.push(obfuscatedHtml);
+                if (obfuscatedCss) {
+                    parts.push(TAG_OPEN_STYLE + '>' + obfuscatedCss + TAG_CLOSE_STYLE);
+                }
+                if (obfuscatedJs) {
+                    parts.push(TAG_OPEN_SCRIPT + '>' + obfuscatedJs + TAG_CLOSE_SCRIPT);
+                }
+                finalOutput = parts.join('\n');
+            }
+
+            /* ═══ STEP 7: Display Output ═══ */
+            showStatus('loading', '⏳ Step 7/7 — Finalizing...');
+
+            document.getElementById('outputSection').style.display = 'block';
+            document.getElementById('outputActions').style.display = 'flex';
+            document.getElementById('outputFinal').value = finalOutput;
+            document.getElementById('outputHtml').value = obfuscatedHtml || '';
+            document.getElementById('outputCss').value = obfuscatedCss || '';
+            document.getElementById('outputJs').value = obfuscatedJs || '';
+
+            /* Stats */
+            var origSize = new Blob([input]).size;
+            var obfSize = new Blob([finalOutput]).size;
+            var ratio = ((obfSize / origSize) * 100).toFixed(1);
+            var elapsed = Date.now() - startTime;
+
+            document.getElementById('statOriginal').textContent = bytes(origSize);
+            document.getElementById('statObfuscated').textContent = bytes(obfSize);
+            document.getElementById('statRatio').textContent = ratio + '%';
+            document.getElementById('statTime').textContent = elapsed + ' ms';
+
+            /* Professional Success Message */
+            var jsLayerText = jsLayers === 6 ? '✅ 6 Layers (Full)' : (jsLayers === 3 ? '⚠️ 3 Layers (Fallback)' : '—');
+            var cssLayerText = cssLayers >= 3 ? '✅ 3 Layers (Full)' : (cssLayers === 2 ? '✅ 2 Layers (Safe)' : (cssLayers === 1 ? '✅ 1 Layer (Comments)' : '—'));
+            var htmlLayerText = htmlLayers >= 3 ? '✅ 3 Layers (Full)' : (htmlLayers === 2 ? '✅ 2 Layers (Safe)' : (htmlLayers === 1 ? '✅ 1 Layer (Comments)' : '—'));
+
+            showStatus('success',
+                '✅ FULL PROTECTION APPLIED\n' +
+                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+                '🌐 Language: ' + finalLang.toUpperCase() + '\n' +
+                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+                '⚙️ JavaScript Protection:\n' +
+                '   ' + jsLayerText + '\n' +
+                '   • Control Flow Flattening\n' +
+                '   • Dead Code Injection\n' +
+                '   • String Array + RC4 Encryption\n' +
+                '   • Debug Protection\n' +
+                '   • Self Defending\n' +
+                '   • Hex Identifier Renaming\n' +
+                '\n' +
+                '🎨 CSS Protection:\n' +
+                '   ' + cssLayerText + '\n' +
+                '   • Comments Removed\n' +
+                '   • Safe Whitespace Compression\n' +
+                (cssLayers >= 3 ? '   • Class Name Obfuscation\n' : '') +
+                '\n' +
+                '📄 HTML Protection:\n' +
+                '   ' + htmlLayerText + '\n' +
+                '   • Comments Removed\n' +
+                '   • Safe Whitespace Compression\n' +
+                (htmlLayers >= 3 ? '   • Attribute Obfuscation\n' : '') +
+                '\n' +
+                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+                '📊 Statistics:\n' +
+                '   Original:  ' + bytes(origSize) + '\n' +
+                '   Protected: ' + bytes(obfSize) + '\n' +
+                '   Ratio:     ' + ratio + '%\n' +
+                '   Time:      ' + elapsed + ' ms\n' +
+                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+                '🔒 Your code is now protected.\n' +
+                '✨ CSS & HTML: Safe — no structural breakage.'
+            );
+            toast('Full protection applied!', 'success');
+
+            setTimeout(function() {
+                document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 200);
+
         } catch (e) {
-            console.error(e);
-            showStatus('status', 'error', '❌ Error: ' + e.message);
+            console.error('Obfuscation error:', e);
+            showStatus('error',
+                '❌ PROTECTION FAILED\n' +
+                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+                'Error: ' + e.message + '\n\n' +
+                'Tips:\n' +
+                '• Check JavaScript for syntax errors\n' +
+                '• Try MEDIUM preset instead of ULTRA\n' +
+                '• Disable "Control Flow Flattening" for large files\n' +
+                '• Disable "Class Obfuscation" if HTML/JS breaks\n' +
+                '• Split very large files into smaller chunks'
+            );
             toast('Protection failed: ' + e.message, 'error');
         } finally {
             document.querySelectorAll('button').forEach(function(b) { b.disabled = false; });
+            updateProgress();
         }
     }, 100);
 };
 
-/* ═══════════════════════════════════════════════════════════
-   BUILD PROTECTED OUTPUT
-   ═══════════════════════════════════════════════════════════ */
-function buildProtectedOutput(html, css, js, opts) {
-    /* If no encoding options are enabled, return plain output */
-    if (!opts.gzipCompress && !opts.base64Encode) {
-        var parts = [];
-        if (html && html.trim()) parts.push(html);
-        if (css && css.trim()) parts.push(TAG_OPEN_STYLE + '>' + css + TAG_CLOSE_STYLE);
-        if (js && js.trim()) parts.push(TAG_OPEN_SCRIPT + '>' + js + TAG_CLOSE_SCRIPT);
-        return parts.join('\n');
-    }
-
-    /* Build the payload for encoding */
-    var payloadHtml = html || '';
-    var payloadCss = css || '';
-    var payloadJs = js || '';
-
-    /* Encode helper: Gzip → Base64 */
-    function encodePayload(text) {
-        if (!text) return '';
-        try {
-            /* Convert text to UTF-8 bytes */
-            var utf8 = new TextEncoder().encode(text);
-
-            if (opts.gzipCompress) {
-                /* Gzip compress */
-                var gzipped = pako.gzip(utf8, { level: 9 });
-                /* Convert to base64 */
-                var binary = '';
-                for (var i = 0; i < gzipped.length; i++) {
-                    binary += String.fromCharCode(gzipped[i]);
-                }
-                return btoa(binary);
-            } else if (opts.base64Encode) {
-                /* Just base64 (no gzip) */
-                var binary2 = '';
-                for (var j = 0; j < utf8.length; j++) {
-                    binary2 += String.fromCharCode(utf8[j]);
-                }
-                return btoa(binary2);
-            }
-            return text;
-        } catch (e) {
-            console.warn('Encode failed:', e.message);
-            return text;
-        }
-    }
-
-    var encodedHtml = encodePayload(payloadHtml);
-    var encodedCss = encodePayload(payloadCss);
-
-    /* Build bootstrap decoder */
-    var decoderScript = buildDecoder(encodedHtml, encodedCss, opts.gzipCompress);
-
-    /* Assemble final output */
-    var finalParts = [];
-
-    /* Decoder script first (in head) */
-    finalParts.push('<head>');
-    finalParts.push(decoderScript);
-    finalParts.push('</head>');
-    finalParts.push('<body></body>');
-
-    /* JS appended at end (already obfuscated) */
-    if (js && js.trim()) {
-        finalParts.push(TAG_OPEN_SCRIPT + '>' + js + TAG_CLOSE_SCRIPT);
-    }
-
-    return finalParts.join('\n');
-}
-
-/* ═══════════════════════════════════════════════════════════
-   BUILD RUNTIME DECODER BOOTSTRAP
-   ═══════════════════════════════════════════════════════════ */
-function buildDecoder(encodedHtml, encodedCss, gzipUsed) {
-    var cssInject = '';
-    if (encodedCss) {
-        cssInject =
-            'var _cssData="' + encodedCss + '";' +
-            'try{' +
-            'var _cssBin=atob(_cssData);' +
-            'var _cssBytes=new Uint8Array(_cssBin.length);' +
-            'for(var _ci=0;_ci<_cssBin.length;_ci++)_cssBytes[_ci]=_cssBin.charCodeAt(_ci);' +
-            (gzipUsed
-                ? 'var _cssText=new TextDecoder().decode(pako.ungzip(_cssBytes));'
-                : 'var _cssText=new TextDecoder().decode(_cssBytes);') +
-            'var _styleEl=document.createElement("style");' +
-            '_styleEl.textContent=_cssText;' +
-            'document.head.appendChild(_styleEl);' +
-            '}catch(_e){console.warn("CSS decode failed",_e);}';
-    }
-
-    var htmlInject = '';
-    if (encodedHtml) {
-        htmlInject =
-            'var _htmlData="' + encodedHtml + '";' +
-            'try{' +
-            'var _htmlBin=atob(_htmlData);' +
-            'var _htmlBytes=new Uint8Array(_htmlBin.length);' +
-            'for(var _hi=0;_hi<_htmlBin.length;_hi++)_htmlBytes[_hi]=_htmlBin.charCodeAt(_hi);' +
-            (gzipUsed
-                ? 'var _htmlText=new TextDecoder().decode(pako.ungzip(_htmlBytes));'
-                : 'var _htmlText=new TextDecoder().decode(_htmlBytes);') +
-            'document.addEventListener("DOMContentLoaded",function(){' +
-            'var _tmp=document.createElement("div");' +
-            '_tmp.innerHTML=_htmlText;' +
-            'while(_tmp.firstChild){document.body.appendChild(_tmp.firstChild);}' +
-            '});' +
-            '}catch(_e){console.warn("HTML decode failed",_e);}';
-    }
-
-    var pakoLoad = gzipUsed
-        ? '<' + 'script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"><' + '/script>'
-        : '';
-
-    return pakoLoad +
-        '<' + 'script>' +
-        '(function(){' +
-        '"use strict";' +
-        cssInject +
-        htmlInject +
-        '})();' +
-        '<' + '/script>';
-}
-
-/* ═══════════════════════════════════════════════════════════
-   DISPLAY OUTPUT
-   ═══════════════════════════════════════════════════════════ */
-function displayOutput(finalOutput, html, css, js, startTime) {
-    state.output = {
-        final: finalOutput,
-        html: html,
-        css: css,
-        js: js
-    };
-
-    document.getElementById('outputSection').style.display = 'block';
-    document.getElementById('outputActions').style.display = 'flex';
-    document.getElementById('outputFinal').value = finalOutput;
-    document.getElementById('outputHtml').value = html || '';
-    document.getElementById('outputCss').value = css || '';
-    document.getElementById('outputJs').value = js || '';
-
-    var origSize = new Blob([inputCodeEl.value]).size;
-    var obfSize = new Blob([finalOutput]).size;
-    var ratio = origSize > 0 ? ((obfSize / origSize) * 100).toFixed(1) : '0';
-    var elapsed = Date.now() - startTime;
-
-    document.getElementById('statOriginal').textContent = bytes(origSize);
-    document.getElementById('statObfuscated').textContent = bytes(obfSize);
-    document.getElementById('statRatio').textContent = ratio + '%';
-    document.getElementById('statTime').textContent = elapsed + ' ms';
-
-    showStatus('status', 'success',
-        '✅ Protection complete!\n' +
-        '📊 Size: ' + bytes(origSize) + ' → ' + bytes(obfSize) + '\n' +
-        '📈 Ratio: ' + ratio + '% · ⏱ Time: ' + elapsed + ' ms'
-    );
-    setStep(5);
-    updateProgress();
-
-    setTimeout(function() {
-        document.getElementById('outputSection').scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        });
-    }, 300);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   TEST PANEL
-   ═══════════════════════════════════════════════════════════ */
-window.runTests = function() {
-    var panel = document.getElementById('testPanel');
-    var results = document.getElementById('testResults');
-    var out = state.output;
-
-    if (!out.final) {
-        toast('No output to test', 'error');
-        return;
-    }
-
-    panel.classList.add('show');
-    results.innerHTML = '';
-
-    var tests = [];
-
-    /* ── Test 1: Final output exists ── */
-    tests.push({
-        name: 'Final Output Generated',
-        desc: 'Verifies the protected output was created',
-        pass: out.final.length > 0,
-        value: bytes(new Blob([out.final]).size),
-        icon: out.final.length > 0 ? 'pass' : 'fail'
-    });
-
-    /* ── Test 2: HTML structure preserved ── */
-    if (out.html) {
-        var hasBody = /<body/i.test(out.html);
-        var hasHtml = /<html/i.test(out.html);
-        var hasHead = /<head/i.test(out.html);
-        tests.push({
-            name: 'HTML Structure Intact',
-            desc: 'Document structure preserved (html/head/body)',
-            pass: hasBody || hasHtml || hasHead,
-            value: (hasBody ? 'body ✓ ' : '') + (hasHtml ? 'html ✓ ' : '') + (hasHead ? 'head ✓' : ''),
-            icon: (hasBody || hasHtml || hasHead) ? 'pass' : 'warn'
-        });
-    }
-
-    /* ── Test 3: CSS brace balance ── */
-    if (out.css) {
-        var openB = (out.css.match(/\{/g) || []).length;
-        var closeB = (out.css.match(/\}/g) || []).length;
-        tests.push({
-            name: 'CSS Brace Balance',
-            desc: 'Opening and closing braces match',
-            pass: openB === closeB,
-            value: openB === closeB ? 'Balanced (' + openB + ')' : (openB - closeB) + ' unmatched',
-            icon: openB === closeB ? 'pass' : 'fail'
-        });
-    }
-
-    /* ── Test 4: JS syntax valid ── */
-    if (out.js) {
-        var jsValid = true;
-        var jsError = '';
-        try {
-            new Function(out.js);
-        } catch (e) {
-            jsValid = false;
-            jsError = e.message;
-        }
-        tests.push({
-            name: 'JavaScript Syntax',
-            desc: 'Obfuscated JS parses without errors',
-            pass: jsValid,
-            value: jsValid ? 'Valid syntax' : 'Syntax error',
-            icon: jsValid ? 'pass' : 'fail'
-        });
-    }
-
-    /* ── Test 5: Comments removed ── */
-    var htmlC = out.html ? (out.html.match(/<!--/g) || []).length : 0;
-    var cssC = out.css ? (out.css.match(/\/\*/g) || []).length : 0;
-    var totalC = htmlC + cssC;
-    tests.push({
-        name: 'Comments Removed',
-        desc: 'All HTML and CSS comments stripped',
-        pass: totalC === 0,
-        value: totalC === 0 ? 'All removed' : totalC + ' remain',
-        icon: totalC === 0 ? 'pass' : 'warn'
-    });
-
-    /* ── Test 6: JS obfuscation applied ── */
-    if (out.js) {
-        var hasHexVars = /_0x[0-9a-f]{4,}/i.test(out.js);
-        tests.push({
-            name: 'JS Obfuscation Applied',
-            desc: 'Hex identifiers detected in obfuscated JS',
-            pass: hasHexVars,
-            value: hasHexVars ? 'Confirmed' : 'Not detected',
-            icon: hasHexVars ? 'pass' : 'warn'
-        });
-    }
-
-    /* ── Test 7: Base64 encoding (if enabled) ── */
-    if (state.options.base64Encode && out.final) {
-        var hasB64 = /var _htmlData="[A-Za-z0-9+/=]+"/.test(out.final);
-        tests.push({
-            name: 'Base64 Encoding Applied',
-            desc: 'HTML/CSS payloads encoded as Base64',
-            pass: hasB64,
-            value: hasB64 ? 'Encoded' : 'Not found',
-            icon: hasB64 ? 'pass' : 'warn'
-        });
-    }
-
-    /* ── Test 8: Runtime decoder present ── */
-    if (state.options.base64Encode && out.final) {
-        var hasDecoder = /atob|pako\.ungzip/.test(out.final);
-        tests.push({
-            name: 'Runtime Decoder Present',
-            desc: 'Bootstrap decoder script included for browser',
-            pass: hasDecoder,
-            value: hasDecoder ? 'Present' : 'Missing',
-            icon: hasDecoder ? 'pass' : 'fail'
-        });
-    }
-
-    /* ── Test 9: Size expansion ── */
-    var origSize = new Blob([inputCodeEl.value]).size;
-    var obfSize = new Blob([out.final]).size;
-    var ratio = origSize > 0 ? ((obfSize / origSize) * 100).toFixed(1) : 0;
-    tests.push({
-        name: 'Size Ratio',
-        desc: 'Protected size relative to original',
-        pass: true,
-        value: ratio + '% of original',
-        icon: 'pass'
-    });
-
-    /* ── Render results ── */
-    var passed = 0;
-    var failed = 0;
-
-    tests.forEach(function(t) {
-        if (t.icon === 'pass') passed++;
-        else if (t.icon === 'fail') failed++;
-
-        var item = document.createElement('div');
-        item.className = 'test-item ' + t.icon;
-        var iconClass = t.icon === 'pass' ? 'fa-circle-check' :
-                        t.icon === 'fail' ? 'fa-circle-xmark' : 'fa-triangle-exclamation';
-        item.innerHTML =
-            '<i class="fa-solid ' + iconClass + ' icon"></i>' +
-            '<div class="msg">' +
-                '<b>' + t.name + '</b>' +
-                '<small>' + t.desc + '</small>' +
-            '</div>' +
-            '<div class="value">' + t.value + '</div>';
-        results.appendChild(item);
-    });
-
-    /* ── Summary ── */
-    var summary = document.createElement('div');
-    summary.className = 'test-item';
-    summary.style.background = failed === 0 ? 'rgba(0,255,100,0.08)' : 'rgba(255,0,100,0.08)';
-    summary.style.border = '1px solid ' + (failed === 0 ? 'var(--green)' : 'var(--red)');
-    summary.style.marginTop = '12px';
-    summary.innerHTML =
-        '<i class="fa-solid ' + (failed === 0 ? 'fa-circle-check' : 'fa-circle-xmark') + ' icon" style="color:' + (failed === 0 ? 'var(--green)' : 'var(--red)') + ';"></i>' +
-        '<div class="msg">' +
-            '<b>' + (failed === 0 ? '✅ All tests passed — output is ready!' : '❌ ' + failed + ' test(s) failed') + '</b>' +
-            '<small>' + passed + ' passed · ' + failed + ' failed · ' + tests.length + ' total</small>' +
-        '</div>' +
-        '<div class="value">' + (failed === 0 ? 'READY' : 'CHECK') + '</div>';
-    results.appendChild(summary);
-
-    toast(failed === 0 ? '✅ All tests passed!' : '⚠️ ' + failed + ' test(s) failed',
-          failed === 0 ? 'success' : 'warn');
-};
-
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    TABS
-   ═══════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════ */
 window.switchTab = function(tab) {
     document.querySelectorAll('.tabs .tab').forEach(function(t) {
         t.classList.toggle('active', t.dataset.tab === tab);
@@ -2529,9 +1612,20 @@ window.switchTab = function(tab) {
     });
 };
 
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    COPY / DOWNLOAD / CLEAR
-   ═══════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════ */
+window.copyOutput = function() {
+    var out = document.getElementById('outputFinal').value;
+    if (!out) { toast('Nothing to copy', 'error'); return; }
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(out).then(function() {
+            toast('Copied!', 'success');
+        }).catch(function() { fallbackCopy(out); });
+    } else {
+        fallbackCopy(out);
+    }
+};
 function fallbackCopy(text) {
     var ta = document.createElement('textarea');
     ta.value = text;
@@ -2539,80 +1633,49 @@ function fallbackCopy(text) {
     ta.style.left = '-9999px';
     document.body.appendChild(ta);
     ta.select();
-    try {
-        document.execCommand('copy');
-        toast('Copied!', 'success');
-    } catch (e) {
-        toast('Copy failed', 'error');
-    }
+    try { document.execCommand('copy'); toast('Copied!', 'success'); }
+    catch(e) { toast('Copy failed', 'error'); }
     document.body.removeChild(ta);
 }
 
-window.copyFinal = function() {
-    var v = document.getElementById('outputFinal').value;
-    if (!v) { toast('Nothing to copy', 'error'); return; }
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(v)
-            .then(function() { toast('Copied!', 'success'); })
-            .catch(function() { fallbackCopy(v); });
-    } else {
-        fallbackCopy(v);
-    }
-};
+window.downloadOutput = function() {
+    var out = document.getElementById('outputFinal').value;
+    if (!out) { toast('Nothing to download', 'error'); return; }
+    var ext = 'txt';
+    if (state.lang === 'js') ext = 'js';
+    else if (state.lang === 'css') ext = 'css';
+    else if (state.lang === 'html' || state.lang === 'mixed') ext = 'html';
+    else if (state.lang === 'json') ext = 'json';
 
-window.downloadFinal = function() {
-    var v = document.getElementById('outputFinal').value;
-    if (!v) { toast('Nothing to download', 'error'); return; }
-    var blob = new Blob([v], { type: 'text/plain;charset=utf-8' });
+    var blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'protected_' + Date.now() + '.html';
+    a.download = 'protected_' + Date.now() + '.' + ext;
     a.click();
     toast('Downloaded!', 'success');
 };
 
 window.downloadAll = function() {
     var files = [
-        { c: state.output.final, n: 'final.html' },
-        { c: state.output.html, n: 'index.html' },
-        { c: state.output.css, n: 'style.css' },
-        { c: state.output.js, n: 'script.js' }
+        { content: document.getElementById('outputFinal').value, name: 'protected_final.txt' },
+        { content: document.getElementById('outputHtml').value, name: 'protected.html' },
+        { content: document.getElementById('outputCss').value, name: 'protected.css' },
+        { content: document.getElementById('outputJs').value, name: 'protected.js' }
     ];
     var count = 0;
     files.forEach(function(f) {
-        if (!f.c || !f.c.trim()) return;
-        (function(file, idx) {
-            setTimeout(function() {
-                var blob = new Blob([file.c], { type: 'text/plain;charset=utf-8' });
-                var a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = file.n;
-                a.click();
-            }, idx * 300);
-        })(f, count);
+        if (!f.content || !f.content.trim()) return;
+        setTimeout(function() {
+            var blob = new Blob([f.content], { type: 'text/plain;charset=utf-8' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = f.name;
+            a.click();
+        }, count * 300);
         count++;
     });
-    if (!count) { toast('Nothing to download', 'error'); return; }
+    if (count === 0) { toast('Nothing to download', 'error'); return; }
     toast('Downloading ' + count + ' file(s)...', 'success');
-};
-
-window.clearAll = function() {
-    if (!confirm('Clear all input and output?')) return;
-    inputCodeEl.value = '';
-    state.sections = { html: '', css: '', js: '' };
-    state.output = { final: '', html: '', css: '', js: '' };
-    document.getElementById('inputStats').style.display = 'none';
-    document.getElementById('sectionsSection').style.display = 'none';
-    document.getElementById('presetSection').style.display = 'none';
-    document.getElementById('obfuscateBtnRow').style.display = 'none';
-    document.getElementById('outputSection').style.display = 'none';
-    document.getElementById('outputActions').style.display = 'none';
-    document.getElementById('testPanel').classList.remove('show');
-    hideStatus('separateStatus');
-    hideStatus('status');
-    setStep(1);
-    updateProgress();
-    toast('Cleared', 'info');
 };
 
 window.loadSample = function() {
@@ -2654,25 +1717,42 @@ window.loadSample = function() {
         '    ' + TAG_CLOSE_SCRIPT + '\n' +
         '</body>\n' +
         '</html>';
-
     inputCodeEl.value = sample;
     inputCodeEl.dispatchEvent(new Event('input'));
-    toast('Sample loaded! Click PARSE & SEPARATE', 'info');
+    toast('Sample loaded!', 'info');
+};
+
+window.clearAll = function() {
+    if (!confirm('Clear all input and output?')) return;
+    inputCodeEl.value = '';
+    document.getElementById('outputFinal').value = '';
+    document.getElementById('outputHtml').value = '';
+    document.getElementById('outputCss').value = '';
+    document.getElementById('outputJs').value = '';
+    document.getElementById('inputStats').style.display = 'none';
+    document.getElementById('outputSection').style.display = 'none';
+    document.getElementById('outputActions').style.display = 'none';
+    hideStatus();
+    updateDetection();
+    updateProgress();
+    toast('Cleared', 'info');
 };
 
 window.doLogout = function() {
-    if (window.firebase && firebase.auth) {
-        firebase.auth().signOut()
-            .then(function() { window.location.href = 'index.html'; })
-            .catch(function() { window.location.href = 'index.html'; });
+    if (window.firebase && window.firebase.auth) {
+        window.firebase.auth().signOut().then(function() {
+            window.location.href = 'index.html';
+        }).catch(function() {
+            window.location.href = 'index.html';
+        });
     } else {
         window.location.href = 'index.html';
     }
 };
 
-/* ═══════════════════════════════════════════════════════════
-   AUTH HANDLER
-   ═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   AUTH
+   ═══════════════════════════════════════════════════ */
 function handleAuth(e) {
     if (!e.detail || !e.detail.user) return;
     if (state.authHandled) return;
@@ -2686,19 +1766,18 @@ document.addEventListener('auth-guard-ready', handleAuth);
 document.addEventListener('auth-ready', handleAuth);
 
 setTimeout(function() {
-    if (!state.user && window.firebase && firebase.auth && firebase.auth().currentUser) {
-        handleAuth({ detail: { user: firebase.auth().currentUser } });
+    if (!state.user && window.firebase && window.firebase.auth && window.firebase.auth().currentUser) {
+        handleAuth({ detail: { user: window.firebase.auth().currentUser } });
     }
 }, 3000);
 
-/* ═══════════════════════════════════════════════════════════
-   INITIALIZATION
-   ═══════════════════════════════════════════════════════════ */
-setStep(1);
+/* ═══════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════ */
+setPreset('medium', document.querySelector('.preset-btn[data-preset="medium"]'));
 updateProgress();
-
-console.log('%c🛡️ Code Protection ULTRA v9.0 loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
-console.log('%c✅ Minify + Gzip + Base64 + JS Obfuscation + Built-in Test', 'color:#ffd700;font-size:11px;');
+console.log('%c🛡️ Code Obfuscation ULTRA v6.0 loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c✨ 6 JS Layers + 3 CSS Layers + 3 HTML Layers · Full Protection', 'color:#ffd700;font-size:11px;');
 
 })();
 </script>
