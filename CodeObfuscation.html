@@ -1451,50 +1451,89 @@ var TAG_CLOSE_SCRIPT = '<' + '/script>';
 var TAG_OPEN_STYLE   = '<' + 'style>';
 var TAG_CLOSE_STYLE  = '<' + '/style>';
 
-var MAX_INPUT_SIZE = 50 * 1024 * 1024;       /* 50 MB safety limit */
-var HEAVY_THRESHOLD = 512 * 1024;             /* 512 KB = heavy */
-var CHUNK_DELAY = 50;                         /* ms between chunks */
-var DETECT_SAMPLE_SIZE = 12000;               /* chars to scan for detection */
+var MAX_INPUT_SIZE = 50 * 1024 * 1024;
+var HEAVY_THRESHOLD = 512 * 1024;
+var CHUNK_DELAY = 50;
+var DETECT_SAMPLE_SIZE = 12000;
+
+/* ✅ CRITICAL: Reserved names — never rename these */
+var RESERVED_NAMES = [
+    /* HTML onclick handlers */
+    'showPage', 'calculate', 'doLogout', 'init', 'load', 'save',
+    'delete', 'open', 'close', 'toggle', 'submit', 'reset', 'clear',
+    'loadSample', 'clearAll', 'copyOutput', 'downloadOutput',
+    'downloadAll', 'switchTab', 'obfuscateNow', 'setPreset', 'setLang',
+    'toggleOpt', 'handleAuth', 'fallbackCopy',
+
+    /* Native JS globals */
+    'window', 'document', 'console', 'localStorage', 'sessionStorage',
+    'navigator', 'location', 'history', 'screen', 'performance',
+    'Blob', 'URL', 'FileReader', 'Promise', 'JSON', 'Math', 'Date',
+    'Array', 'Object', 'String', 'Number', 'Boolean', 'RegExp',
+    'Function', 'Error', 'Map', 'Set', 'WeakMap', 'WeakSet',
+    'setTimeout', 'setInterval', 'clearTimeout', 'clearInterval',
+    'requestAnimationFrame', 'cancelAnimationFrame',
+    'firebase', 'JavaScriptObfuscator', 'pako',
+
+    /* Native DOM properties */
+    'dataset', 'classList', 'textContent', 'innerHTML', 'outerHTML',
+    'value', 'style', 'className', 'id', 'tagName', 'nodeName',
+    'children', 'parentNode', 'parentElement', 'firstChild', 'lastChild',
+    'nextSibling', 'previousSibling', 'childNodes', 'attributes',
+    'getElementById', 'querySelector', 'querySelectorAll',
+    'getElementsByTagName', 'getElementsByClassName',
+    'addEventListener', 'removeEventListener', 'dispatchEvent',
+    'setAttribute', 'getAttribute', 'removeAttribute', 'hasAttribute',
+    'appendChild', 'removeChild', 'insertBefore', 'replaceChild',
+    'createElement', 'createTextNode', 'createDocumentFragment',
+    'scrollTo', 'scrollIntoView', 'focus', 'blur', 'click',
+    'preventDefault', 'stopPropagation', 'stopImmediatePropagation',
+
+    /* DOM events */
+    'click', 'input', 'change', 'submit', 'keydown', 'keyup',
+    'keypress', 'mouseover', 'mouseout', 'mousedown', 'mouseup',
+    'touchstart', 'touchend', 'touchmove', 'load', 'error',
+    'DOMContentLoaded', 'readystatechange',
+
+    /* Common properties */
+    'length', 'push', 'pop', 'shift', 'unshift', 'slice', 'splice',
+    'concat', 'join', 'split', 'replace', 'match', 'test', 'exec',
+    'toString', 'valueOf', 'hasOwnProperty', 'prototype', 'constructor',
+    'forEach', 'map', 'filter', 'reduce', 'find', 'findIndex',
+    'indexOf', 'lastIndexOf', 'includes', 'some', 'every',
+    'keys', 'values', 'entries', 'assign', 'freeze',
+    'then', 'catch', 'finally', 'resolve', 'reject', 'all', 'race',
+
+    /* Common variable names */
+    'state', 'config', 'options', 'data', 'result', 'response',
+    'error', 'err', 'e', 'i', 'j', 'k', 'n', 'x', 'y', 'z',
+    'self', 'this', 'arguments', 'undefined', 'null', 'true', 'false'
+];
 
 var SHIELD = {
-    /* Runtime state */
     user: null,
     authHandled: false,
     isProcessing: false,
     processingStartTime: 0,
-
-    /* Detection state */
     detectedLang: 'txt',
     detectedSize: 0,
     detectedLines: 0,
     detectedChars: 0,
     isHeavy: false,
-
-    /* Section state */
     sections: { html: '', css: '', js: '', raw: '' },
-
-    /* Output state */
     output: { final: '', html: '', css: '', js: '' },
     outputStats: {
         jsLayers: 0, cssLayers: 0, htmlLayers: 0,
         totalLayers: 0, elapsedMs: 0, fallbackUsed: false
     },
-
-    /* Mapping state */
     classMap: null,
     attrMap: null,
-
-    /* Layer status */
     layers: {
         js1: false, js2: false, js3: false, js4: false, js5: false, js6: false,
         css1: false, css2: false, css3: false,
         html1: false, html2: false, html3: false
     },
-
-    /* DOM cache */
     dom: {},
-
-    /* Debug flag */
     debug: false
 };
 
@@ -1503,8 +1542,6 @@ var SHIELD = {
    ═══════════════════════════════════════════════════════════════════ */
 
 var Utils = {
-
-    /* Format bytes */
     bytes: function(n) {
         if (typeof n !== 'number' || isNaN(n)) return '0 B';
         if (n < 1024) return n + ' B';
@@ -1512,20 +1549,15 @@ var Utils = {
         if (n < 1024 * 1024 * 1024) return (n / 1024 / 1024).toFixed(2) + ' MB';
         return (n / 1024 / 1024 / 1024).toFixed(2) + ' GB';
     },
-
-    /* Format number with commas */
     num: function(n) {
         if (typeof n !== 'number' || isNaN(n)) return '0';
         return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     },
-
-    /* Get byte size of string */
     sizeOf: function(str) {
         if (!str) return 0;
         try {
             return new Blob([str]).size;
         } catch (e) {
-            /* Fallback: UTF-8 byte length */
             var len = 0;
             for (var i = 0; i < str.length; i++) {
                 var c = str.charCodeAt(i);
@@ -1537,14 +1569,10 @@ var Utils = {
             return len;
         }
     },
-
-    /* Escape regex special chars */
     escapeRegex: function(str) {
         if (!str) return '';
         return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     },
-
-    /* Escape HTML entities */
     escapeHtml: function(str) {
         if (!str) return '';
         return str
@@ -1554,8 +1582,6 @@ var Utils = {
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
     },
-
-    /* Generate random hex string */
     randomHex: function(prefix, length) {
         prefix = prefix || '_0x';
         length = length || 6;
@@ -1566,8 +1592,6 @@ var Utils = {
         }
         return prefix + hex;
     },
-
-    /* Safe string hash (for consistent naming) */
     hashCode: function(str) {
         if (!str) return 0;
         var hash = 0;
@@ -1578,19 +1602,21 @@ var Utils = {
         }
         return Math.abs(hash);
     },
-
-    /* Trim string with length cap */
     trimLength: function(str, max) {
         if (!str) return '';
         if (str.length <= max) return str;
         return str.substring(0, max);
     },
-
-    /* Timing helper */
     now: function() {
         return (window.performance && window.performance.now)
             ? window.performance.now()
             : Date.now();
+    },
+    /* Convert data-page to page (camelCase) */
+    toCamelCase: function(str) {
+        return str.replace(/-([a-z])/g, function(m, c) {
+            return c.toUpperCase();
+        });
     }
 };
 
@@ -1599,8 +1625,6 @@ var Utils = {
    ═══════════════════════════════════════════════════════════════════ */
 
 var UI = {
-
-    /* Cache DOM elements once */
     cache: function() {
         var ids = [
             'inputCode', 'inputStats', 'statLines', 'statChars', 'statSize', 'statLang',
@@ -1618,22 +1642,16 @@ var UI = {
             SHIELD.dom[id] = document.getElementById(id);
         });
     },
-
-    /* Show status message */
     status: function(type, msg) {
         var el = SHIELD.dom.status;
         if (!el) return;
         el.className = 'status ' + type;
         el.textContent = msg;
     },
-
-    /* Hide status */
     hideStatus: function() {
         var el = SHIELD.dom.status;
         if (el) el.className = 'status';
     },
-
-    /* Show toast */
     toast: function(msg, type, duration) {
         type = type || 'info';
         duration = duration || 4000;
@@ -1660,8 +1678,6 @@ var UI = {
             }, 400);
         }, duration);
     },
-
-    /* Set progress bar */
     progress: function(pct) {
         pct = Math.max(0, Math.min(100, pct));
         var fill = SHIELD.dom.progressFill;
@@ -1669,22 +1685,16 @@ var UI = {
         if (fill) fill.style.width = pct + '%';
         if (txt) txt.textContent = Math.round(pct) + '%';
     },
-
-    /* Set detection progress */
     detectProgress: function(pct) {
         var fill = SHIELD.dom.detectProgressFill;
         if (fill) fill.style.width = Math.max(0, Math.min(100, pct)) + '%';
     },
-
-    /* Mark a layer as active */
     setLayer: function(key) {
         if (!SHIELD.layers.hasOwnProperty(key)) return;
         SHIELD.layers[key] = true;
         var el = document.querySelector('[data-layer="' + key + '"]');
         if (el) el.classList.add('active');
     },
-
-    /* Reset all layers */
     resetLayers: function() {
         Object.keys(SHIELD.layers).forEach(function(k) {
             SHIELD.layers[k] = false;
@@ -1692,8 +1702,6 @@ var UI = {
             if (el) el.classList.remove('active');
         });
     },
-
-    /* Show processing overlay */
     showProcessing: function(title, subtitle) {
         var ov = SHIELD.dom.processingOverlay;
         var tx = SHIELD.dom.processingText;
@@ -1703,23 +1711,17 @@ var UI = {
         if (ov) ov.classList.add('show');
         SHIELD.isProcessing = true;
     },
-
-    /* Hide processing overlay */
     hideProcessing: function() {
         var ov = SHIELD.dom.processingOverlay;
         if (ov) ov.classList.remove('show');
         SHIELD.isProcessing = false;
     },
-
-    /* Update processing subtitle live */
     updateProcessing: function(title, subtitle) {
         var tx = SHIELD.dom.processingText;
         var sb = SHIELD.dom.processingSub;
         if (title && tx) tx.textContent = title;
         if (subtitle && sb) sb.textContent = subtitle;
     },
-
-    /* Disable/enable all buttons */
     lockButtons: function(locked) {
         var btns = document.querySelectorAll('button');
         for (var i = 0; i < btns.length; i++) {
@@ -1733,8 +1735,6 @@ var UI = {
    ═══════════════════════════════════════════════════════════════════ */
 
 var Comments = {
-
-    /* Strip CSS comments — preserves asterisk-slash pairs inside strings */
     stripCss: function(code) {
         if (!code) return '';
         var result = '';
@@ -1782,101 +1782,48 @@ var Comments = {
         return result;
     },
 
-    /* Strip JS comments — handles strings, template literals, regex */
     stripJs: function(code) {
         if (!code) return '';
         var result = '';
         var i = 0, len = code.length;
-        var state = 'code'; /* code | line | block | single | double | template | regex */
+        var state = 'code';
 
         while (i < len) {
             var ch = code[i];
             var next = code[i + 1];
 
             if (state === 'line') {
-                if (ch === '\n') {
-                    state = 'code';
-                    result += ch;
-                }
-                i++;
-                continue;
+                if (ch === '\n') { state = 'code'; result += ch; }
+                i++; continue;
             }
-
             if (state === 'block') {
-                if (ch === '*' && next === '/') {
-                    state = 'code';
-                    i += 2;
-                    continue;
-                }
-                i++;
-                continue;
+                if (ch === '*' && next === '/') { state = 'code'; i += 2; continue; }
+                i++; continue;
             }
-
             if (state === 'single') {
                 result += ch;
-                if (ch === '\\' && i + 1 < len) {
-                    result += code[i + 1];
-                    i += 2;
-                    continue;
-                }
+                if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
                 if (ch === "'") state = 'code';
-                i++;
-                continue;
+                i++; continue;
             }
-
             if (state === 'double') {
                 result += ch;
-                if (ch === '\\' && i + 1 < len) {
-                    result += code[i + 1];
-                    i += 2;
-                    continue;
-                }
+                if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
                 if (ch === '"') state = 'code';
-                i++;
-                continue;
+                i++; continue;
             }
-
             if (state === 'template') {
                 result += ch;
-                if (ch === '\\' && i + 1 < len) {
-                    result += code[i + 1];
-                    i += 2;
-                    continue;
-                }
+                if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
                 if (ch === '`') state = 'code';
-                i++;
-                continue;
+                i++; continue;
             }
 
-            /* Normal code state */
-            if (ch === '/' && next === '/') {
-                state = 'line';
-                i += 2;
-                continue;
-            }
-            if (ch === '/' && next === '*') {
-                state = 'block';
-                i += 2;
-                continue;
-            }
-            if (ch === "'") {
-                state = 'single';
-                result += ch;
-                i++;
-                continue;
-            }
-            if (ch === '"') {
-                state = 'double';
-                result += ch;
-                i++;
-                continue;
-            }
-            if (ch === '`') {
-                state = 'template';
-                result += ch;
-                i++;
-                continue;
-            }
+            if (ch === '/' && next === '/') { state = 'line'; i += 2; continue; }
+            if (ch === '/' && next === '*') { state = 'block'; i += 2; continue; }
+            if (ch === "'") { state = 'single'; result += ch; i++; continue; }
+            if (ch === '"') { state = 'double'; result += ch; i++; continue; }
+            if (ch === '`') { state = 'template'; result += ch; i++; continue; }
 
             result += ch;
             i++;
@@ -1884,7 +1831,6 @@ var Comments = {
         return result;
     },
 
-    /* Strip HTML comments — preserves conditional comments */
     stripHtml: function(code) {
         if (!code) return '';
         return code.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
@@ -1892,7 +1838,7 @@ var Comments = {
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 5: TAG ESCAPING (Prevents Parse Errors)
+   SECTION 5: TAG ESCAPING
    ═══════════════════════════════════════════════════════════════════ */
 
 var Tags = {
@@ -1907,16 +1853,14 @@ var Tags = {
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 6: CSS PROCESSING ENGINE (3 Layers)
+   SECTION 6: CSS PROCESSING ENGINE (3 Layers + JS Sync)
    ═══════════════════════════════════════════════════════════════════ */
 
 var CssEngine = {
 
-    /* Preserve image extensions */
     preserveExtensions: function(css) {
         var extensions = {};
         var extIndex = 0;
-
         var extPattern = /\.(png|jpg|jpeg|gif|svg|webp|ico|bmp|tiff|woff|woff2|ttf|otf|eot|mp4|mp3|wav|ogg|webm|pdf|zip)(?=["')\s,;}])/gi;
 
         css = css.replace(extPattern, function(m) {
@@ -1928,7 +1872,6 @@ var CssEngine = {
         return { css: css, extensions: extensions };
     },
 
-    /* Restore image extensions */
     restoreExtensions: function(css, extensions) {
         Object.keys(extensions).forEach(function(key) {
             css = css.split(key).join(extensions[key]);
@@ -1936,12 +1879,10 @@ var CssEngine = {
         return css;
     },
 
-    /* Layer 2: Safe minify */
     minify: function(css) {
         if (!css) return '';
         var result = css;
 
-        /* Normalize whitespace */
         result = result.replace(/[\r\n\t]+/g, ' ');
         result = result.replace(/ {2,}/g, ' ');
 
@@ -1953,7 +1894,6 @@ var CssEngine = {
             return '__NB_CSS_PH_' + (phIndex++) + '__';
         }
 
-        /* Protect critical patterns */
         result = result.replace(/calc\([^)]*\)/gi, ph);
         result = result.replace(/url\([^)]*\)/gi, ph);
         result = result.replace(/var\([^)]*\)/gi, ph);
@@ -1969,12 +1909,10 @@ var CssEngine = {
         result = result.replace(/-moz-[a-z-]+/gi, ph);
         result = result.replace(/-ms-[a-z-]+/gi, ph);
 
-        /* Safe compress */
         result = result.replace(/\s*([{}:;,>+~])\s*/g, '$1');
         result = result.replace(/;\}/g, '}');
         result = result.replace(/\s*!\s*important/gi, '!important');
 
-        /* Restore */
         result = result.replace(/__NB_CSS_PH_(\d+)__/g, function(m, i) {
             return placeholders[parseInt(i, 10)] || m;
         });
@@ -1982,15 +1920,13 @@ var CssEngine = {
         return result.trim();
     },
 
-    /* Layer 3: Class name obfuscation */
-    obfuscateClasses: function(css, html) {
-        if (!css) return { css: css, html: html, classMap: {} };
+    /* ✅ FIXED: obfuscateClasses with JS sync */
+    obfuscateClasses: function(css, html, js) {
+        if (!css) return { css: css, html: html, js: js, classMap: {} };
 
-        /* Preserve extensions first */
         var extResult = this.preserveExtensions(css);
         css = extResult.css;
 
-        /* Extract class names */
         var classRegex = /\.([a-zA-Z_][a-zA-Z0-9_-]*)/g;
         var classes = {};
         var m;
@@ -1998,19 +1934,15 @@ var CssEngine = {
         while ((m = classRegex.exec(css)) !== null) {
             var cls = m[1];
 
-            /* Skip safe/common names */
             var safeList = ['active', 'hidden', 'show', 'hide', 'open', 'close',
                 'disabled', 'selected', 'visible', 'focus', 'hover', 'loaded',
                 'loading', 'error', 'success', 'warn', 'danger', 'info'];
             if (safeList.indexOf(cls.toLowerCase()) !== -1) continue;
-
-            /* Skip placeholders */
             if (/^__NB_/.test(cls)) continue;
 
             classes[cls] = true;
         }
 
-        /* Generate class map */
         var classMap = {};
         Object.keys(classes).forEach(function(cls) {
             classMap[cls] = Utils.randomHex('_0x', 6);
@@ -2022,7 +1954,6 @@ var CssEngine = {
             css = css.replace(re, '.' + classMap[oldCls]);
         });
 
-        /* Restore extensions */
         css = this.restoreExtensions(css, extResult.extensions);
 
         /* Replace in HTML */
@@ -2041,13 +1972,35 @@ var CssEngine = {
             });
         }
 
-        return { css: css, html: html, classMap: classMap };
+        /* ✅ CRITICAL FIX: Sync class references in JS */
+        if (js && Object.keys(classMap).length > 0) {
+            Object.keys(classMap).forEach(function(oldCls) {
+                var newCls = classMap[oldCls];
+
+                /* 1. querySelector('.class') / querySelectorAll('.class') */
+                var re1 = new RegExp("(['\"`]\\s*\\.)" + Utils.escapeRegex(oldCls) + "(?![a-zA-Z0-9_-])", 'g');
+                js = js.replace(re1, '$1' + newCls);
+
+                /* 2. classList.add('class') / remove / toggle / contains */
+                var re2 = new RegExp("((?:classList\\.(?:add|remove|toggle|contains|replace))\\s*\\(\\s*['\"`])" + Utils.escapeRegex(oldCls) + "(['\"`])", 'g');
+                js = js.replace(re2, '$1' + newCls + '$2');
+
+                /* 3. className === 'class' / className == 'class' */
+                var re3 = new RegExp("(className\\s*[=!]==?\\s*['\"`])" + Utils.escapeRegex(oldCls) + "(['\"`])", 'g');
+                js = js.replace(re3, '$1' + newCls + '$2');
+
+                /* 4. getElementsByClassName('class') */
+                var re4 = new RegExp("(getElementsByClassName\\s*\\(\\s*['\"`])" + Utils.escapeRegex(oldCls) + "(['\"`])", 'g');
+                js = js.replace(re4, '$1' + newCls + '$2');
+            });
+        }
+
+        return { css: css, html: html, js: js, classMap: classMap };
     },
 
-    /* Full pipeline */
-    process: function(css, html) {
+    process: function(css, html, js) {
         if (!css || !css.trim()) {
-            return { css: css || '', html: html, layers: 0 };
+            return { css: css || '', html: html, js: js, layers: 0 };
         }
 
         var result = css;
@@ -2063,25 +2016,25 @@ var CssEngine = {
         layers++;
         UI.setLayer('css2');
 
-        /* Layer 3: Class obfuscation */
-        var obfResult = this.obfuscateClasses(result, html);
+        /* Layer 3: Class obfuscation with JS sync */
+        var obfResult = this.obfuscateClasses(result, html, js);
         result = obfResult.css;
         if (obfResult.html) html = obfResult.html;
+        if (obfResult.js) js = obfResult.js;
         SHIELD.classMap = obfResult.classMap;
         layers++;
         UI.setLayer('css3');
 
-        return { css: result, html: html, layers: layers };
+        return { css: result, html: html, js: js, layers: layers };
     }
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 7: HTML PROCESSING ENGINE (3 Layers)
+   SECTION 7: HTML PROCESSING ENGINE (3 Layers + JS Sync)
    ═══════════════════════════════════════════════════════════════════ */
 
 var HtmlEngine = {
 
-    /* Layer 2: Safe minify */
     minify: function(html) {
         if (!html) return '';
         var result = html;
@@ -2093,7 +2046,6 @@ var HtmlEngine = {
             return '__NB_HTML_PH_' + (phIndex++) + '__';
         }
 
-        /* Protect sensitive blocks */
         var preOpen = '<' + 'pre';
         var preClose = '<' + '\\/' + 'pre>';
         var textareaOpen = '<' + 'textarea';
@@ -2114,18 +2066,15 @@ var HtmlEngine = {
         result = result.replace(new RegExp(styleOpen + '[\\s\\S]*?' + styleClose, 'gi'), ph);
         result = result.replace(new RegExp(svgOpen + '[\\s\\S]*?' + svgClose, 'gi'), ph);
 
-        /* Protect event handlers and data attributes */
         result = result.replace(/\son[a-z]+\s*=\s*"[^"]*"/gi, ph);
         result = result.replace(/\son[a-z]+\s*=\s*'[^']*'/gi, ph);
         result = result.replace(/\sdata-[a-z-]+\s*=\s*'[^']*'/gi, ph);
         result = result.replace(/\sdata-[a-z-]+\s*=\s*"[^"]*"/gi, ph);
 
-        /* Safe compress */
         result = result.replace(/>\s+</g, '><');
         result = result.replace(/[ \t]{2,}/g, ' ');
         result = result.replace(/\n{2,}/g, '\n');
 
-        /* Restore */
         result = result.replace(/__NB_HTML_PH_(\d+)__/g, function(m, i) {
             return placeholders[parseInt(i, 10)] || m;
         });
@@ -2133,18 +2082,14 @@ var HtmlEngine = {
         return result.trim();
     },
 
-    /* Layer 3: Attribute obfuscation with JS sync */
+    /* ✅ FIXED: obfuscateAttributes with complete JS sync */
     obfuscateAttributes: function(html, js) {
         if (!html) return { html: html, js: js, attrMap: {} };
 
         var attrMap = {};
-        var attrCounter = 0;
-
-        /* Safe attributes — never rename */
         var safeAttrs = ['data-id', 'data-value', 'data-url', 'data-src', 'data-href',
             'data-target', 'data-toggle', 'data-testid', 'data-cy'];
 
-        /* Replace data-* attributes */
         html = html.replace(/\s(data-[a-z][a-z0-9-]*)\s*=\s*"([^"]*)"/gi, function(m, attr, val) {
             if (safeAttrs.indexOf(attr.toLowerCase()) !== -1) return m;
             if (/^data-(bs-|toggle|target|dismiss|ride|slide|spy|backdrop)/.test(attr)) return m;
@@ -2165,11 +2110,47 @@ var HtmlEngine = {
             return " " + attrMap[attr] + "='" + val + "'";
         });
 
-        /* Auto-sync attribute names in JS */
+        /* ✅ CRITICAL FIX: Complete JS sync */
         if (js && Object.keys(attrMap).length > 0) {
             Object.keys(attrMap).forEach(function(oldAttr) {
-                var re = new RegExp('(["\'])(' + Utils.escapeRegex(oldAttr) + ')(["\'])', 'g');
-                js = js.replace(re, '$1' + attrMap[oldAttr] + '$3');
+                var newAttr = attrMap[oldAttr];
+                var camelName = Utils.toCamelCase(oldAttr.replace(/^data-/, ''));
+
+                /* 1. Attribute string: "data-page" → "_0x4a2f" */
+                var re1 = new RegExp('(["\'])(' + Utils.escapeRegex(oldAttr) + ')(["\'])', 'g');
+                js = js.replace(re1, '$1' + newAttr + '$3');
+
+                /* 2. dataset.page → dataset._0x4a2f */
+                var re2 = new RegExp('(\\.dataset\\.)' + Utils.escapeRegex(camelName) + '\\b', 'g');
+                js = js.replace(re2, '$1' + newAttr);
+
+                /* 3. dataset['page'] → dataset['_0x4a2f'] */
+                var re3 = new RegExp('(\\.dataset\\s*\\[\\s*["\'])' + Utils.escapeRegex(camelName) + '(["\']\\s*\\])', 'g');
+                js = js.replace(re3, '$1' + newAttr + '$2');
+
+                /* 4. getAttribute('data-page') → getAttribute('_0x4a2f') */
+                var re4 = new RegExp('(getAttribute\\s*\\(\\s*["\'])' + Utils.escapeRegex(oldAttr) + '(["\'])', 'g');
+                js = js.replace(re4, '$1' + newAttr + '$2');
+
+                /* 5. setAttribute('data-page', ...) → setAttribute('_0x4a2f', ...) */
+                var re5 = new RegExp('(setAttribute\\s*\\(\\s*["\'])' + Utils.escapeRegex(oldAttr) + '(["\'])', 'g');
+                js = js.replace(re5, '$1' + newAttr + '$2');
+
+                /* 6. hasAttribute('data-page') → hasAttribute('_0x4a2f') */
+                var re6 = new RegExp('(hasAttribute\\s*\\(\\s*["\'])' + Utils.escapeRegex(oldAttr) + '(["\'])', 'g');
+                js = js.replace(re6, '$1' + newAttr + '$2');
+
+                /* 7. removeAttribute('data-page') → removeAttribute('_0x4a2f') */
+                var re7 = new RegExp('(removeAttribute\\s*\\(\\s*["\'])' + Utils.escapeRegex(oldAttr) + '(["\'])', 'g');
+                js = js.replace(re7, '$1' + newAttr + '$2');
+
+                /* 8. querySelector('[data-page]') → querySelector('[_0x4a2f]') */
+                var re8 = new RegExp('(\\[\\s*["\']?)' + Utils.escapeRegex(oldAttr) + '([\\s*\\]="\'])', 'g');
+                js = js.replace(re8, '$1' + newAttr + '$2');
+
+                /* 9. querySelector('[data-page="value"]') → querySelector('[_0x4a2f="value"]') */
+                var re9 = new RegExp('(\\[\\s*["\']?)' + Utils.escapeRegex(oldAttr) + '(\\s*=\\s*["\'])', 'g');
+                js = js.replace(re9, '$1' + newAttr + '$2');
             });
         }
 
@@ -2177,7 +2158,6 @@ var HtmlEngine = {
         return { html: html, js: js, attrMap: attrMap };
     },
 
-    /* Full pipeline */
     process: function(html, js) {
         if (!html || !html.trim()) {
             return { html: html || '', js: js, layers: 0 };
@@ -2196,7 +2176,7 @@ var HtmlEngine = {
         layers++;
         UI.setLayer('html2');
 
-        /* Layer 3: Attribute obfuscation */
+        /* Layer 3: Attribute obfuscation with JS sync */
         var attrResult = this.obfuscateAttributes(result, js);
         result = attrResult.html;
         if (attrResult.js) js = attrResult.js;
@@ -2213,13 +2193,11 @@ var HtmlEngine = {
 
 var JsEngine = {
 
-    /* Validate JS syntax before obfuscation */
     validateSyntax: function(code) {
         if (!code || !code.trim()) {
             return { valid: false, reason: 'Empty code' };
         }
         try {
-            /* Parse only — no execution */
             new Function(code);
             return { valid: true };
         } catch (e) {
@@ -2231,70 +2209,81 @@ var JsEngine = {
         }
     },
 
-    /* Build obfuscator options based on size */
+    /* ✅ FIXED: buildOptions with reservedNames */
     buildOptions: function(jsSize) {
-    var sizeKB = jsSize / 1024;
-    var sizeMB = sizeKB / 1024;
+        var sizeKB = jsSize / 1024;
+        var sizeMB = sizeKB / 1024;
 
-    /* ═══ SPEED-OPTIMIZED AUTO PRESET ═══ */
-    /* Chhota → Medium speed, Bara → Fast speed */
-    var preset;
-    if (sizeKB < 20) preset = 'high';        /* < 20 KB → full */
-    else if (sizeKB < 100) preset = 'medium'; /* 20-100 KB → balanced */
-    else preset = 'low';                      /* 100 KB+ → fast */
+        var preset;
+        if (sizeKB < 20) preset = 'high';
+        else if (sizeKB < 100) preset = 'medium';
+        else preset = 'low';
 
-    var cffThreshold = 0.5;   /* reduced from 0.75 */
-    var dciThreshold = 0.3;   /* reduced from 0.4 */
-    var strThreshold = 0.6;   /* reduced from 0.75 */
+        var cffThreshold = 0.5;
+        var dciThreshold = 0.3;
+        var strThreshold = 0.6;
 
-    if (preset === 'high') {
-        cffThreshold = 0.75;
-        dciThreshold = 0.4;
-        strThreshold = 0.8;
-    } else if (preset === 'low') {
-        cffThreshold = 0;
-        dciThreshold = 0;
-        strThreshold = 0.5;
-    }
+        if (preset === 'high') {
+            cffThreshold = 0.75;
+            dciThreshold = 0.4;
+            strThreshold = 0.8;
+        } else if (preset === 'low') {
+            cffThreshold = 0;
+            dciThreshold = 0;
+            strThreshold = 0.5;
+        }
 
-    return {
-        compact: true,
-        controlFlowFlattening: preset === 'high',      /* ✅ Off in low/medium */
-        controlFlowFlatteningThreshold: cffThreshold,
-        deadCodeInjection: preset === 'high',           /* ✅ Off in low/medium */
-        deadCodeInjectionThreshold: dciThreshold,
-        debugProtection: preset !== 'low',              /* ✅ On in high/medium */
-        debugProtectionInterval: preset !== 'low' ? 4000 : 0,
-        disableConsoleOutput: false,
-        identifierNamesGenerator: 'hexadecimal',
-        log: false,
-        numbersToExpressions: false,
-        renameGlobals: false,
-        selfDefending: preset !== 'low',                /* ✅ Off in low */
-        simplify: true,
-        splitStrings: preset !== 'low',                 /* ✅ Off in low */
-        splitStringsChunkLength: 10,                    /* increased from 5 */
-        stringArray: true,
-        stringArrayCallsTransform: preset === 'high',   /* ✅ Only high */
-        stringArrayCallsTransformThreshold: 0.5,
-        stringArrayEncoding: preset === 'low' ? [] : ['rc4'],
-        stringArrayIndexShift: preset !== 'low',
-        stringArrayRotate: preset !== 'low',
-        stringArrayShuffle: preset !== 'low',
-        stringArrayWrappersCount: 1,                    /* reduced from 2 */
-        stringArrayWrappersChainedCalls: false,         /* ✅ OFF — was big slowdown */
-        stringArrayWrappersParametersMaxCount: 2,
-        stringArrayWrappersType: 'variable',
-        stringArrayThreshold: strThreshold,
-        transformObjectKeys: preset === 'high',         /* ✅ Only high */
-        unicodeEscapeSequence: false,
-        target: 'browser',
-        sourceMap: false,
-        seed: 0
-    };
-},
+        return {
+            compact: true,
+            controlFlowFlattening: preset === 'high',
+            controlFlowFlatteningThreshold: cffThreshold,
+            deadCodeInjection: preset === 'high',
+            deadCodeInjectionThreshold: dciThreshold,
+            debugProtection: preset !== 'low',
+            debugProtectionInterval: preset !== 'low' ? 4000 : 0,
+            disableConsoleOutput: false,
+            identifierNamesGenerator: 'hexadecimal',
+            log: false,
+            numbersToExpressions: false,
+            renameGlobals: false,
+            selfDefending: preset !== 'low',
+            simplify: true,
+            splitStrings: preset !== 'low',
+            splitStringsChunkLength: 10,
+            stringArray: true,
+            stringArrayCallsTransform: preset === 'high',
+            stringArrayCallsTransformThreshold: 0.5,
+            stringArrayEncoding: preset === 'low' ? [] : ['rc4'],
+            stringArrayIndexShift: preset !== 'low',
+            stringArrayRotate: preset !== 'low',
+            stringArrayShuffle: preset !== 'low',
+            stringArrayWrappersCount: 1,
+            stringArrayWrappersChainedCalls: false,
+            stringArrayWrappersParametersMaxCount: 2,
+            stringArrayWrappersType: 'variable',
+            stringArrayThreshold: strThreshold,
+            transformObjectKeys: preset === 'high',
+            unicodeEscapeSequence: false,
+            target: 'browser',
+            sourceMap: false,
 
-    /* Full 6-layer protection with 5-level progressive fallback */
+            /* ✅ CRITICAL FIX: Preserve comments properly */
+            comments: false,
+            preserveComments: false,
+
+            /* ✅ CRITICAL FIX: Reserved names — never rename */
+            reservedNames: RESERVED_NAMES,
+
+            /* ✅ Extra safety: Reserved strings */
+            reservedStrings: [
+                'data-', 'classList', 'dataset', 'querySelector',
+                'getElementById', 'addEventListener'
+            ],
+
+            seed: 0
+        };
+    },
+
     protect: function(rawJs) {
         if (!rawJs || !rawJs.trim()) {
             return { js: '', layers: 0, fallback: false };
@@ -2309,7 +2298,9 @@ var JsEngine = {
             };
         }
 
-        /* Pre-validate syntax */
+        /* ═══ FORCE COMMENT REMOVAL FIRST ═══ */
+        rawJs = Comments.stripJs(rawJs);
+
         var validation = this.validateSyntax(rawJs);
         if (!validation.valid) {
             console.warn('JS syntax validation failed:', validation.reason);
@@ -2328,7 +2319,6 @@ var JsEngine = {
             var result = JavaScriptObfuscator.obfuscate(rawJs, options);
             var code = result.getObfuscatedCode();
 
-            /* Verify output */
             var verify = this.validateSyntax(code);
             if (verify.valid) {
                 UI.setLayer('js1'); UI.setLayer('js2'); UI.setLayer('js3');
@@ -2355,7 +2345,7 @@ var JsEngine = {
             console.warn('5-layer failed:', e2.message);
         }
 
-        /* ═══ Attempt 3: 4 layers (no CFF, no dead code) ═══ */
+        /* ═══ Attempt 3: 4 layers ═══ */
         try {
             var opts3 = this._copyOptions(options);
             opts3.controlFlowFlattening = false;
@@ -2371,7 +2361,7 @@ var JsEngine = {
             console.warn('4-layer failed:', e3.message);
         }
 
-        /* ═══ Attempt 4: 3 layers (basic) ═══ */
+        /* ═══ Attempt 4: 3 layers (safe mode) ═══ */
         try {
             var opts4 = this._copyOptions(options);
             opts4.controlFlowFlattening = false;
@@ -2408,7 +2398,8 @@ var JsEngine = {
                 stringArrayEncoding: [],
                 stringArrayThreshold: 0.5,
                 target: 'browser',
-                sourceMap: false
+                sourceMap: false,
+                reservedNames: RESERVED_NAMES
             };
             var r5 = JavaScriptObfuscator.obfuscate(rawJs, opts5);
             var c5 = r5.getObfuscatedCode();
@@ -2420,7 +2411,7 @@ var JsEngine = {
             console.warn('2-layer failed:', e5.message);
         }
 
-        /* ═══ Last resort: return original ═══ */
+        /* Last resort */
         return {
             js: rawJs,
             layers: 0,
@@ -2429,7 +2420,6 @@ var JsEngine = {
         };
     },
 
-    /* Safe options copy without Object.assign */
     _copyOptions: function(src) {
         var copy = {};
         for (var k in src) {
@@ -2440,57 +2430,33 @@ var JsEngine = {
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 9: LANGUAGE DETECTION ENGINE (Multi-Heuristic)
+   SECTION 9: LANGUAGE DETECTION ENGINE
    ═══════════════════════════════════════════════════════════════════ */
 
 var Detector = {
-
-    /* Main detection function */
     detect: function(code) {
         if (!code || !code.trim()) return 'txt';
-
-        /* Sample only first N characters for performance */
         var sample = Utils.trimLength(code.trim(), DETECT_SAMPLE_SIZE);
 
-        /* Priority 1: Full HTML document */
         if (/^<!DOCTYPE\s+html/i.test(sample)) return 'html';
         if (/<html[\s>]/i.test(sample)) return 'html';
-
-        /* Priority 2: HTML with head/body */
         if (/<(head|body)[\s>]/i.test(sample)) return 'html';
-
-        /* Priority 3: PHP */
         if (/^<\?php/i.test(sample)) return 'php';
-
-        /* Priority 4: XML */
         if (/^<\?xml/i.test(sample)) return 'xml';
 
-        /* Priority 5: JSON */
         var trimmed = sample.trim();
         if (trimmed.charAt(0) === '{' || trimmed.charAt(0) === '[') {
-            try {
-                JSON.parse(code);
-                return 'json';
-            } catch (e) { /* not JSON */ }
+            try { JSON.parse(code); return 'json'; } catch (e) {}
         }
 
-        /* Priority 6: HTML with embedded assets */
         if (/<(style|script)[\s>]/i.test(sample)) return 'html';
-
-        /* Priority 7: HTML fragment */
         if (/<(div|span|p|a|h[1-6]|section|nav|header|footer|main|article|button|input|form|table|ul|ol|li|img)[\s>]/i.test(sample)) {
             return 'html';
         }
 
-        /* Priority 8: Standalone CSS */
-        if (/@media|@keyframes|@import|@font-face|@supports|:\s*root\s*\{/i.test(sample)) {
-            return 'css';
-        }
-        if (/^[a-zA-Z\-]+\s*\{[^}]*:[^}]*;/m.test(sample)) {
-            return 'css';
-        }
+        if (/@media|@keyframes|@import|@font-face|@supports|:\s*root\s*\{/i.test(sample)) return 'css';
+        if (/^[a-zA-Z\-]+\s*\{[^}]*:[^}]*;/m.test(sample)) return 'css';
 
-        /* Priority 9: Standalone JS */
         var jsSignals = 0;
         if (/\b(function|const|let|var)\s+[a-zA-Z_$]/.test(sample)) jsSignals++;
         if (/\b(=>|async|await)\b/.test(sample)) jsSignals++;
@@ -2499,27 +2465,17 @@ var Detector = {
         if (/;\s*$|{\s*$/m.test(sample)) jsSignals++;
         if (jsSignals >= 2) return 'js';
 
-        /* Priority 10: Python */
         if (/^\s*(def|class|import|from)\s+/m.test(sample)) return 'py';
-
-        /* Fallback */
         return 'txt';
     },
-
-    /* Get human-readable mode description */
     describe: function(lang, code) {
         if (lang === 'html' && /<(style|script)[\s>]/i.test(code)) {
             return 'HTML + CSS + JS (Mixed)';
         }
         var map = {
-            html: 'HTML',
-            css: 'CSS',
-            js: 'JavaScript',
-            json: 'JSON',
-            php: 'PHP',
-            py: 'Python',
-            xml: 'XML',
-            txt: 'Plain Text'
+            html: 'HTML', css: 'CSS', js: 'JavaScript',
+            json: 'JSON', php: 'PHP', py: 'Python',
+            xml: 'XML', txt: 'Plain Text'
         };
         return map[lang] || lang.toUpperCase();
     }
@@ -2530,12 +2486,9 @@ var Detector = {
    ═══════════════════════════════════════════════════════════════════ */
 
 var Extractor = {
-
-    /* Extract HTML/CSS/JS from mixed code */
     extract: function(code, mode) {
         var result = { html: code, css: '', js: '' };
 
-        /* Direct overrides */
         if (mode === 'js') return { html: '', css: '', js: code };
         if (mode === 'css') return { html: '', css: code, js: '' };
         if (mode === 'html' && !/<(style|script)[\s>]/i.test(code)) {
@@ -2551,7 +2504,6 @@ var Extractor = {
         var styleOpen = '<' + 'style';
         var styleClose = '<' + '\\/' + 'style>';
 
-        /* Extract CSS blocks */
         var styleRegex = new RegExp(styleOpen + '[^>]*>([\\s\\S]*?)' + styleClose, 'gi');
         var styleMatch;
         while ((styleMatch = styleRegex.exec(code)) !== null) {
@@ -2559,7 +2511,6 @@ var Extractor = {
             css += Comments.stripCss(styleMatch[1]).trim();
         }
 
-        /* Extract JS blocks (skip src and data scripts) */
         var scriptRegex = new RegExp(
             scriptOpen +
             '(?![^>]*\\bsrc\\s*=)' +
@@ -2573,7 +2524,6 @@ var Extractor = {
             js += Comments.stripJs(scriptMatch[1]).trim();
         }
 
-        /* Remove extracted blocks from HTML */
         html = html.replace(
             new RegExp(styleOpen + '[^>]*>[\\s\\S]*?' + styleClose, 'gi'),
             ''
@@ -2603,19 +2553,13 @@ var Extractor = {
    ═══════════════════════════════════════════════════════════════════ */
 
 var Pipeline = {
-
-    /* Execute full 12-layer protection */
     run: function(input, onProgress) {
         onProgress = onProgress || function() {};
 
         var startTime = Utils.now();
         var report = {
-            jsLayers: 0,
-            cssLayers: 0,
-            htmlLayers: 0,
-            totalLayers: 0,
-            fallbackUsed: false,
-            error: null
+            jsLayers: 0, cssLayers: 0, htmlLayers: 0,
+            totalLayers: 0, fallbackUsed: false, error: null
         };
 
         /* Step 1: Detect language */
@@ -2636,6 +2580,11 @@ var Pipeline = {
         var obfuscatedCss = sections.css || '';
         var obfuscatedJs = sections.js || '';
 
+        /* ═══ FORCE COMMENT REMOVAL ═══ */
+        if (obfuscatedHtml) obfuscatedHtml = Comments.stripHtml(obfuscatedHtml);
+        if (obfuscatedCss) obfuscatedCss = Comments.stripCss(obfuscatedCss);
+        if (obfuscatedJs) obfuscatedJs = Comments.stripJs(obfuscatedJs);
+
         /* Step 3: JS protection */
         if (sections.js && sections.js.trim()) {
             onProgress('Step 3/6 — Applying 6-layer JavaScript protection...', 55);
@@ -2646,16 +2595,17 @@ var Pipeline = {
             if (jsResult.error) report.error = jsResult.error;
         }
 
-        /* Step 4: CSS protection */
+        /* Step 4: CSS protection — with JS sync */
         if (obfuscatedCss && obfuscatedCss.trim()) {
             onProgress('Step 4/6 — Applying CSS protection...', 70);
-            var cssResult = CssEngine.process(obfuscatedCss, obfuscatedHtml);
+            var cssResult = CssEngine.process(obfuscatedCss, obfuscatedHtml, obfuscatedJs);
             obfuscatedCss = cssResult.css;
             if (cssResult.html) obfuscatedHtml = cssResult.html;
+            if (cssResult.js) obfuscatedJs = cssResult.js;
             report.cssLayers = cssResult.layers;
         }
 
-        /* Step 5: HTML protection */
+        /* Step 5: HTML protection — with JS sync */
         if (obfuscatedHtml && obfuscatedHtml.trim()) {
             onProgress('Step 5/6 — Applying HTML protection...', 85);
             var htmlResult = HtmlEngine.process(obfuscatedHtml, obfuscatedJs);
@@ -2720,7 +2670,6 @@ window.obfuscateNow = function() {
         return;
     }
 
-    /* Size analysis */
     var sizeBytes = Utils.sizeOf(input);
     if (sizeBytes > MAX_INPUT_SIZE) {
         UI.status('error', '❌ File too large (max ' + Utils.bytes(MAX_INPUT_SIZE) + ').');
@@ -2730,19 +2679,15 @@ window.obfuscateNow = function() {
 
     var isHeavy = sizeBytes > HEAVY_THRESHOLD;
 
-    /* Lock UI */
     UI.lockButtons(true);
     UI.resetLayers();
 
     var layerSection = SHIELD.dom.layerStatusSection;
     if (layerSection) layerSection.style.display = 'block';
 
-    /* Show processing overlay */
     if (isHeavy) {
-        UI.showProcessing(
-            'PROCESSING HEAVY FILE',
-            Utils.bytes(sizeBytes) + ' · This may take a moment...'
-        );
+        UI.showProcessing('PROCESSING HEAVY FILE',
+            Utils.bytes(sizeBytes) + ' · This may take a moment...');
     }
 
     UI.progress(25);
@@ -2754,7 +2699,6 @@ window.obfuscateNow = function() {
 
     SHIELD.processingStartTime = Utils.now();
 
-    /* Defer for UI update */
     setTimeout(function() {
         try {
             var report = Pipeline.run(input, function(msg, pct) {
@@ -2763,7 +2707,6 @@ window.obfuscateNow = function() {
                 if (isHeavy) UI.updateProcessing('PROCESSING', msg.replace(/^Step \d\/\d — /, ''));
             });
 
-            /* Display output */
             var outputSection = SHIELD.dom.outputSection;
             var outputActions = SHIELD.dom.outputActions;
 
@@ -2775,7 +2718,6 @@ window.obfuscateNow = function() {
             if (SHIELD.dom.outputCss) SHIELD.dom.outputCss.value = report.obfuscatedCss || '';
             if (SHIELD.dom.outputJs) SHIELD.dom.outputJs.value = report.obfuscatedJs || '';
 
-            /* Store output */
             SHIELD.output = {
                 final: report.finalOutput,
                 html: report.obfuscatedHtml,
@@ -2784,7 +2726,6 @@ window.obfuscateNow = function() {
             };
             SHIELD.outputStats = report;
 
-            /* Stats */
             var origSize = sizeBytes;
             var obfSize = Utils.sizeOf(report.finalOutput);
             var ratio = origSize > 0 ? ((obfSize / origSize) * 100).toFixed(1) : '0';
@@ -2794,10 +2735,8 @@ window.obfuscateNow = function() {
             if (SHIELD.dom.statRatio) SHIELD.dom.statRatio.textContent = ratio + '%';
             if (SHIELD.dom.statTime) SHIELD.dom.statTime.textContent = report.elapsedMs + ' ms';
 
-            /* Status message */
             var jsStatus = report.jsLayers >= 6 ? '✅ 6/6 Layers (Full)' :
-                          (report.jsLayers >= 3 ? '⚠️ ' + report.jsLayers + '/6 Layers (Safe)' :
-                          '⛔ 0/6');
+                          (report.jsLayers >= 3 ? '⚠️ ' + report.jsLayers + '/6 Layers (Safe)' : '⛔ 0/6');
             var cssStatus = report.cssLayers >= 3 ? '✅ 3/3 Layers (Full)' :
                            (report.cssLayers >= 1 ? '✅ ' + report.cssLayers + '/3 Layers' : '⛔ 0/3');
             var htmlStatus = report.htmlLayers >= 3 ? '✅ 3/3 Layers (Full)' :
@@ -2824,13 +2763,13 @@ window.obfuscateNow = function() {
                 '🔒 Protected by NightOrbit CodeForge.\n' +
                 '✨ CSS & HTML: Safe — no structural breakage.\n' +
                 '🖼️ Image extensions: Preserved.\n' +
-                '🔗 Attributes: Auto-synced with JavaScript.'
+                '🔗 Attributes: Auto-synced with JavaScript.\n' +
+                '⚡ Reserved names: Protected.'
             );
 
             UI.progress(100);
             UI.toast('🌌 12-Layer Shield applied!', 'success');
 
-            /* Scroll */
             setTimeout(function() {
                 if (outputSection) {
                     outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2861,8 +2800,6 @@ window.obfuscateNow = function() {
    ═══════════════════════════════════════════════════════════════════ */
 
 var InputHandler = {
-
-    /* Update detection stats live */
     update: function() {
         var el = SHIELD.dom.inputCode;
         if (!el) return;
@@ -2881,7 +2818,6 @@ var InputHandler = {
             return;
         }
 
-        /* Progress animation */
         UI.detectProgress(40);
 
         setTimeout(function() {
@@ -2894,7 +2830,6 @@ var InputHandler = {
 
             UI.detectProgress(100);
 
-            /* Update stats */
             if (stats) stats.style.display = 'grid';
             if (SHIELD.dom.statLines) SHIELD.dom.statLines.textContent = Utils.num(SHIELD.detectedLines);
             if (SHIELD.dom.statChars) SHIELD.dom.statChars.textContent = Utils.num(SHIELD.detectedChars);
@@ -2903,20 +2838,17 @@ var InputHandler = {
             var langDesc = Detector.describe(lang, code);
             if (SHIELD.dom.statLang) SHIELD.dom.statLang.textContent = langDesc;
 
-            /* Update detect panel */
             if (detectPanel) detectPanel.classList.add('active');
             if (detectMsg) {
                 var sizeNote = SHIELD.isHeavy ? ' · <strong style="color:var(--gold);">Heavy file — chunked processing</strong>' : '';
                 detectMsg.innerHTML =
-                    '🔍 Auto-detected: <span class="detected-lang">' + langDesc + '</span>' +
-                    sizeNote;
+                    '🔍 Auto-detected: <span class="detected-lang">' + langDesc + '</span>' + sizeNote;
             }
 
             UI.progress(20);
         }, 150);
     },
 
-    /* Bind events */
     bind: function() {
         var el = SHIELD.dom.inputCode;
         if (!el) return;
@@ -3193,7 +3125,7 @@ function init() {
     UI.progress(0);
     UI.detectProgress(0);
 
-    console.log('%c🌌 NightOrbit 12-Layer Shield v9.0 loaded',
+    console.log('%c🌌 NightOrbit 12-Layer Shield v9.0 ULTRA loaded',
         'color:#00f0ff;font-size:16px;font-weight:bold;');
     console.log('%c✨ Auto-detect · Auto-preset · Full 12-layer protection',
         'color:#ffd700;font-size:11px;');
@@ -3201,6 +3133,8 @@ function init() {
         'color:#ff2d95;font-size:11px;');
     console.log('%c📦 5-level progressive fallback · Syntax pre-validation',
         'color:#00ff64;font-size:11px;');
+    console.log('%c⚡ Reserved names: ' + RESERVED_NAMES.length + ' protected',
+        'color:#00f0ff;font-size:11px;');
 }
 
 if (document.readyState === 'loading') {
