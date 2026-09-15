@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b0b1a">
-<title>Code Obfuscation ULTRA — NightOrbit CodeForge</title>
+<title>JavaScript Obfuscation ULTRA — NightOrbit CodeForge</title>
 
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
@@ -17,42 +17,47 @@
 
 <style>
 /* ═══════════════════════════════════════════════════════════════
-   NIGHTORBIT ULTRA v8.0 — HEAVY PROFESSIONAL UI
+   RESET & BASE
    ═══════════════════════════════════════════════════════════════ */
-
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
 
 :root {
     --cyan: #00f0ff;
     --cyan-dim: #00a8b3;
     --pink: #ff2d95;
     --purple: #b400ff;
-    --purple-dim: #6b00a8;
     --gold: #ffd700;
     --gold-dim: #b89600;
     --green: #00ff64;
     --green-dim: #00aa44;
     --red: #ff0064;
     --orange: #ff8c00;
-    --blue: #3b82f6;
-    --dark: #05050f;
-    --card: rgba(11,11,26,0.94);
-    --card-2: rgba(15,15,35,0.96);
-    --border: rgba(0,240,255,0.22);
-    --border-soft: rgba(0,240,255,0.08);
+    --card: rgba(11, 11, 26, 0.94);
+    --border: rgba(0, 240, 255, 0.22);
     --muted: #6a6a8a;
     --text: #e5e5ef;
     --text-dim: #b0b0d0;
     --header-h: 68px;
-    --glow-cyan: 0 0 30px rgba(0,240,255,0.4);
-    --glow-pink: 0 0 30px rgba(255,45,149,0.4);
-    --glow-gold: 0 0 30px rgba(255,215,0,0.4);
-    --glow-green: 0 0 30px rgba(0,255,100,0.4);
-    --shadow-card: 0 20px 60px rgba(0,0,0,0.6);
+    --glow-cyan: 0 0 30px rgba(0, 240, 255, 0.4);
+    --glow-gold: 0 0 30px rgba(255, 215, 0, 0.4);
+    --glow-green: 0 0 30px rgba(0, 255, 100, 0.4);
+    --shadow-card: 0 20px 60px rgba(0, 0, 0, 0.6);
 }
 
-html { scroll-behavior: smooth; }
-html, body { width: 100%; overflow-x: hidden; }
+html {
+    scroll-behavior: smooth;
+}
+
+html,
+body {
+    width: 100%;
+    overflow-x: hidden;
+}
 
 body {
     background: radial-gradient(ellipse at top, #13132a 0%, #000 70%);
@@ -68,19 +73,19 @@ body {
     position: relative;
 }
 
-/* Animated background grid */
 body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: 
-        linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px);
+    background-image:
+        linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
     background-size: 50px 50px;
     pointer-events: none;
     z-index: -1;
     animation: gridMove 20s linear infinite;
 }
+
 @keyframes gridMove {
     0% { transform: translate(0, 0); }
     100% { transform: translate(50px, 50px); }
@@ -91,9 +96,11 @@ body::before {
    ═══════════════════════════════════════════════════════════════ */
 .topbar {
     position: fixed;
-    top: 0; left: 0; right: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     height: var(--header-h);
-    background: rgba(6,6,15,0.96);
+    background: rgba(6, 6, 15, 0.96);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid var(--border);
@@ -103,8 +110,9 @@ body::before {
     justify-content: space-between;
     padding: 0 20px;
     gap: 12px;
-    box-shadow: 0 4px 30px rgba(0,240,255,0.08);
+    box-shadow: 0 4px 30px rgba(0, 240, 255, 0.08);
 }
+
 .brand {
     display: flex;
     align-items: center;
@@ -117,21 +125,25 @@ body::before {
     flex-shrink: 0;
     text-shadow: var(--glow-cyan);
 }
+
 .brand .logo {
     font-size: 26px;
     filter: drop-shadow(0 0 10px var(--cyan));
     animation: logoPulse 3s ease-in-out infinite;
 }
+
 @keyframes logoPulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.08); }
 }
+
 .brand .title {
     background: linear-gradient(135deg, var(--cyan), var(--pink));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
+
 .brand .title-ver {
     font-size: 9px;
     color: var(--gold);
@@ -141,7 +153,11 @@ body::before {
     border-radius: 20px;
     text-shadow: var(--glow-gold);
 }
-.brand .title-sub { display: none; }
+
+.brand .title-sub {
+    display: none;
+}
+
 @media (min-width: 700px) {
     .brand .title-sub {
         display: inline;
@@ -151,12 +167,14 @@ body::before {
         font-weight: 500;
     }
 }
+
 .topbar-actions {
     display: flex;
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
 }
+
 .topbar-btn {
     padding: 8px 16px;
     border-radius: 10px;
@@ -170,25 +188,36 @@ body::before {
     font-family: 'Orbitron', sans-serif;
     cursor: pointer;
     border: 1px solid transparent;
-    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
 }
+
 .topbar-btn.dashboard {
     background: linear-gradient(135deg, var(--gold), var(--orange));
     color: #000;
-    box-shadow: 0 4px 15px rgba(255,140,0,0.3);
+    box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
 }
+
 .topbar-btn.logout {
     background: linear-gradient(135deg, var(--red), var(--purple));
     color: #fff;
-    box-shadow: 0 4px 15px rgba(255,0,100,0.3);
+    box-shadow: 0 4px 15px rgba(255, 0, 100, 0.3);
 }
-.topbar-btn:hover { 
+
+.topbar-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,240,255,0.4);
+    box-shadow: 0 8px 25px rgba(0, 240, 255, 0.4);
 }
-.topbar-btn .label { display: none; }
-@media (min-width: 500px) { .topbar-btn .label { display: inline; } }
+
+.topbar-btn .label {
+    display: none;
+}
+
+@media (min-width: 500px) {
+    .topbar-btn .label {
+        display: inline;
+    }
+}
 
 /* ═══════════════════════════════════════════════════════════════
    CONTAINER
@@ -204,7 +233,7 @@ body::before {
    USER WELCOME
    ═══════════════════════════════════════════════════════════════ */
 .user-welcome {
-    background: linear-gradient(135deg, rgba(0,240,255,0.06), rgba(180,0,255,0.06));
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.06), rgba(180, 0, 255, 0.06));
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 12px 18px;
@@ -219,17 +248,28 @@ body::before {
     position: relative;
     overflow: hidden;
 }
+
 .user-welcome::before {
     content: '';
     position: absolute;
-    top: 0; left: 0;
+    top: 0;
+    left: 0;
     width: 3px;
     height: 100%;
     background: linear-gradient(180deg, var(--cyan), var(--purple));
     box-shadow: var(--glow-cyan);
 }
-.user-welcome i { color: var(--cyan); font-size: 18px; }
-.user-welcome b { color: var(--cyan); font-weight: 700; }
+
+.user-welcome i {
+    color: var(--cyan);
+    font-size: 18px;
+}
+
+.user-welcome b {
+    color: var(--cyan);
+    font-weight: 700;
+}
+
 .user-welcome .auth-badge {
     margin-left: auto;
     font-size: 10px;
@@ -239,15 +279,135 @@ body::before {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(0,255,100,0.08);
+    background: rgba(0, 255, 100, 0.08);
     padding: 5px 12px;
     border-radius: 20px;
-    border: 1px solid rgba(0,255,100,0.2);
+    border: 1px solid rgba(0, 255, 100, 0.2);
     font-weight: 700;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   HEADER CARD — Hero section with animated border
+   REDIRECT BANNER
+   ═══════════════════════════════════════════════════════════════ */
+.redirect-banner {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(255, 140, 0, 0.12));
+    border: 2px solid var(--gold);
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.redirect-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 0% 50%, rgba(255, 215, 0, 0.1), transparent 60%);
+    pointer-events: none;
+}
+
+.redirect-banner .rb-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.redirect-banner .rb-icon {
+    font-size: 28px;
+    color: var(--gold);
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.redirect-banner .rb-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+}
+
+.redirect-banner .rb-sub {
+    font-size: 11px;
+    color: #ffe6a0;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+}
+
+.redirect-banner .rb-link-box {
+    margin-top: 14px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1.5px solid var(--gold);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+.redirect-banner .rb-link-box i {
+    color: var(--gold);
+    font-size: 20px;
+}
+
+.redirect-banner .rb-link-box .link-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #ffe6a0;
+    flex: 1;
+    min-width: 180px;
+}
+
+.redirect-banner .rb-link-box a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--gold), var(--orange));
+    color: #000;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 20px rgba(255, 140, 0, 0.3);
+    white-space: nowrap;
+}
+
+.redirect-banner .rb-link-box a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(255, 215, 0, 0.5);
+    filter: brightness(1.1);
+}
+
+.redirect-banner .rb-link-box a i {
+    color: #000;
+    font-size: 14px;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.1); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HEADER CARD
    ═══════════════════════════════════════════════════════════════ */
 .header-card {
     background: var(--card);
@@ -255,32 +415,35 @@ body::before {
     border-radius: 22px;
     padding: 32px 28px;
     margin-bottom: 20px;
-    box-shadow: 0 0 80px rgba(0,240,255,0.15), var(--shadow-card);
+    box-shadow: 0 0 80px rgba(0, 240, 255, 0.15), var(--shadow-card);
     text-align: center;
     position: relative;
     overflow: hidden;
 }
+
 .header-card::before {
     content: '';
     position: absolute;
     inset: -2px;
     border-radius: 22px;
     padding: 2px;
-    background: conic-gradient(from 0deg,
-        var(--cyan), var(--pink), var(--purple), var(--gold), var(--green), var(--cyan));
+    background: conic-gradient(from 0deg, var(--cyan), var(--pink), var(--purple), var(--gold), var(--green), var(--cyan));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     animation: borderSpin 8s linear infinite;
     pointer-events: none;
 }
-@keyframes borderSpin { to { transform: rotate(360deg); } }
+
+@keyframes borderSpin {
+    to { transform: rotate(360deg); }
+}
 
 .header-card::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(0,240,255,0.08), transparent 60%);
+    background: radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.08), transparent 60%);
     pointer-events: none;
 }
 
@@ -300,6 +463,7 @@ body::before {
     position: relative;
     z-index: 1;
 }
+
 @keyframes gradientShift {
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -322,9 +486,10 @@ body::before {
     position: relative;
     z-index: 1;
 }
+
 .header-stat {
-    background: rgba(0,240,255,0.05);
-    border: 1px solid rgba(0,240,255,0.2);
+    background: rgba(0, 240, 255, 0.05);
+    border: 1px solid rgba(0, 240, 255, 0.2);
     border-radius: 40px;
     padding: 6px 14px;
     font-size: 10px;
@@ -337,23 +502,29 @@ body::before {
     font-weight: 700;
     transition: all 0.3s;
 }
+
 .header-stat:hover {
-    background: rgba(0,240,255,0.1);
+    background: rgba(0, 240, 255, 0.1);
     transform: translateY(-2px);
 }
-.header-stat i { color: var(--cyan); font-size: 12px; }
-.header-stat.gold { border-color: rgba(255,215,0,0.3); }
+
+.header-stat i {
+    color: var(--cyan);
+    font-size: 12px;
+}
+
+.header-stat.gold { border-color: rgba(255, 215, 0, 0.3); }
 .header-stat.gold i { color: var(--gold); }
-.header-stat.pink { border-color: rgba(255,45,149,0.3); }
+.header-stat.pink { border-color: rgba(255, 45, 149, 0.3); }
 .header-stat.pink i { color: var(--pink); }
-.header-stat.green { border-color: rgba(0,255,100,0.3); }
+.header-stat.green { border-color: rgba(0, 255, 100, 0.3); }
 .header-stat.green i { color: var(--green); }
 
 /* ═══════════════════════════════════════════════════════════════
-   SECTIONS
+   SECTION
    ═══════════════════════════════════════════════════════════════ */
 .section {
-    background: rgba(0,240,255,0.02);
+    background: rgba(0, 240, 255, 0.02);
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 20px;
@@ -361,7 +532,10 @@ body::before {
     backdrop-filter: blur(10px);
     transition: all 0.3s;
 }
-.section:hover { border-color: rgba(0,240,255,0.35); }
+
+.section:hover {
+    border-color: rgba(0, 240, 255, 0.35);
+}
 
 label {
     color: var(--cyan);
@@ -375,9 +549,10 @@ label {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   TEXTAREA
+   TEXTAREA / INPUT
    ═══════════════════════════════════════════════════════════════ */
-textarea, input[type="text"] {
+textarea,
+input[type="text"] {
     width: 100%;
     background: #000;
     color: var(--green);
@@ -389,13 +564,16 @@ textarea, input[type="text"] {
     line-height: 1.7;
     resize: vertical;
     transition: all 0.3s;
-    box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
 }
-textarea:focus, input:focus {
+
+textarea:focus,
+input:focus {
     outline: none;
     border-color: var(--cyan);
-    box-shadow: inset 0 0 30px rgba(0,0,0,0.5), 0 0 25px rgba(0,240,255,0.3);
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 240, 255, 0.3);
 }
+
 textarea { min-height: 240px; }
 textarea.tall { min-height: 340px; }
 textarea.huge { min-height: 420px; }
@@ -415,38 +593,56 @@ button {
     text-transform: uppercase;
     cursor: pointer;
     font-family: 'Orbitron', sans-serif;
-    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-    box-shadow: 0 6px 20px rgba(0,240,255,0.25);
+    box-shadow: 0 6px 20px rgba(0, 240, 255, 0.25);
 }
+
 button::before {
     content: '';
     position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     transition: left 0.5s;
 }
-button:hover:not(:disabled)::before { left: 100%; }
+
+button:hover:not(:disabled)::before {
+    left: 100%;
+}
+
 button:hover:not(:disabled) {
     transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(0,240,255,0.5);
+    box-shadow: 0 12px 35px rgba(0, 240, 255, 0.5);
 }
-button:active:not(:disabled) { transform: translateY(-1px); }
-button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+button:active:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
 button.secondary {
     background: linear-gradient(135deg, var(--gold), var(--orange));
-    box-shadow: 0 6px 20px rgba(255,140,0,0.25);
+    box-shadow: 0 6px 20px rgba(255, 140, 0, 0.25);
 }
+
 button.danger {
     background: linear-gradient(135deg, var(--red), #c00040);
     color: #fff;
-    box-shadow: 0 6px 20px rgba(255,0,100,0.25);
+    box-shadow: 0 6px 20px rgba(255, 0, 100, 0.25);
 }
+
 button.green {
     background: linear-gradient(135deg, var(--green), var(--green-dim));
-    box-shadow: 0 6px 20px rgba(0,255,100,0.25);
+    box-shadow: 0 6px 20px rgba(0, 255, 100, 0.25);
 }
 
 .btn-row {
@@ -456,7 +652,63 @@ button.green {
     justify-content: center;
     margin: 16px 0;
 }
-.btn-row button { flex: 1 1 auto; min-width: 140px; }
+
+.btn-row button {
+    flex: 1 1 auto;
+    min-width: 140px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PRESET GRID
+   ═══════════════════════════════════════════════════════════════ */
+.preset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.preset-btn {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1.5px solid var(--border);
+    color: #fff;
+    padding: 14px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+}
+
+.preset-btn:hover {
+    border-color: var(--cyan);
+    background: rgba(0, 240, 255, 0.06);
+}
+
+.preset-btn.active {
+    border-color: var(--gold);
+    background: rgba(255, 215, 0, 0.08);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.preset-btn .name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: var(--cyan);
+    margin-bottom: 4px;
+}
+
+.preset-btn.active .name {
+    color: var(--gold);
+}
+
+.preset-btn .desc {
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.4;
+}
 
 /* ═══════════════════════════════════════════════════════════════
    STATS GRID
@@ -467,28 +719,32 @@ button.green {
     gap: 12px;
     margin-top: 16px;
 }
+
 .stat-card {
-    background: rgba(0,0,0,0.4);
-    border: 1.5px solid rgba(0,240,255,0.15);
+    background: rgba(0, 0, 0, 0.4);
+    border: 1.5px solid rgba(0, 240, 255, 0.15);
     border-radius: 12px;
     padding: 14px 12px;
     text-align: center;
-    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
+
 .stat-card::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 50% 100%, rgba(0,240,255,0.08), transparent);
+    background: radial-gradient(circle at 50% 100%, rgba(0, 240, 255, 0.08), transparent);
     pointer-events: none;
 }
+
 .stat-card:hover {
     border-color: var(--cyan);
     transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0,240,255,0.15);
+    box-shadow: 0 10px 30px rgba(0, 240, 255, 0.15);
 }
+
 .stat-label {
     font-size: 9px;
     color: var(--muted);
@@ -498,12 +754,14 @@ button.green {
     font-family: 'Orbitron', sans-serif;
     font-weight: 700;
 }
+
 .stat-value {
     font-family: 'JetBrains Mono', monospace;
     font-size: 16px;
     font-weight: 900;
     color: var(--cyan);
 }
+
 .stat-value.gold { color: var(--gold); }
 .stat-value.green { color: var(--green); }
 .stat-value.pink { color: var(--pink); }
@@ -512,8 +770,8 @@ button.green {
    PROGRESS
    ═══════════════════════════════════════════════════════════════ */
 .progress-wrap {
-    background: rgba(0,0,0,0.5);
-    border: 1.5px solid rgba(0,240,255,0.15);
+    background: rgba(0, 0, 0, 0.5);
+    border: 1.5px solid rgba(0, 240, 255, 0.15);
     border-radius: 14px;
     padding: 14px 18px;
     margin-bottom: 20px;
@@ -521,8 +779,9 @@ button.green {
     align-items: center;
     gap: 14px;
     flex-wrap: wrap;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
 }
+
 .progress-label {
     font-family: 'Orbitron', sans-serif;
     font-size: 10px;
@@ -532,35 +791,40 @@ button.green {
     white-space: nowrap;
     font-weight: 800;
 }
+
 .progress-track {
     flex: 1;
     height: 10px;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0, 0, 0, 0.7);
     border-radius: 20px;
     overflow: hidden;
     min-width: 150px;
     position: relative;
 }
+
 .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink));
     border-radius: 20px;
-    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     width: 0%;
-    box-shadow: 0 0 20px rgba(0,240,255,0.8);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.8);
     position: relative;
 }
+
 .progress-fill::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     animation: progressShine 2s linear infinite;
 }
+
 @keyframes progressShine {
     0% { transform: translateX(-100%); }
     100% { transform: translateX(100%); }
 }
+
 .progress-percent {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
@@ -584,28 +848,32 @@ button.green {
     font-family: 'JetBrains Mono', monospace;
     white-space: pre-wrap;
     line-height: 1.8;
-    box-shadow: inset 0 0 30px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3);
 }
+
 .status.success {
-    background: rgba(0,255,100,0.08);
+    background: rgba(0, 255, 100, 0.08);
     border: 1.5px solid var(--green);
     color: var(--green);
     display: block;
 }
+
 .status.error {
-    background: rgba(255,0,100,0.08);
+    background: rgba(255, 0, 100, 0.08);
     border: 1.5px solid var(--red);
     color: var(--red);
     display: block;
 }
+
 .status.info {
-    background: rgba(0,240,255,0.08);
+    background: rgba(0, 240, 255, 0.08);
     border: 1.5px solid var(--cyan);
     color: var(--cyan);
     display: block;
 }
+
 .status.loading {
-    background: rgba(255,215,0,0.08);
+    background: rgba(255, 215, 0, 0.08);
     border: 1.5px solid var(--gold);
     color: var(--gold);
     display: block;
@@ -625,23 +893,25 @@ button.green {
     pointer-events: none;
     max-width: 420px;
 }
+
 .toast {
-    background: rgba(11,11,26,0.98);
+    background: rgba(11, 11, 26, 0.98);
     border: 2px solid var(--cyan);
     border-radius: 14px;
     padding: 14px 20px;
     color: #fff;
     font-size: 12px;
     font-weight: 700;
-    box-shadow: 0 15px 50px rgba(0,0,0,0.7), 0 0 30px rgba(0,240,255,0.25);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 240, 255, 0.25);
     display: flex;
     align-items: center;
     gap: 12px;
     pointer-events: auto;
-    animation: toastIn 0.5s cubic-bezier(0.4,0,0.2,1);
+    animation: toastIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     min-width: 280px;
     backdrop-filter: blur(20px);
 }
+
 .toast i { font-size: 18px; }
 .toast.success { border-color: var(--green); }
 .toast.success i { color: var(--green); }
@@ -650,11 +920,16 @@ button.green {
 .toast.warn { border-color: var(--gold); }
 .toast.warn i { color: var(--gold); }
 .toast.info i { color: var(--cyan); }
+
 @keyframes toastIn {
     from { transform: translateX(420px); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
-.toast.removing { animation: toastOut 0.35s ease forwards; }
+
+.toast.removing {
+    animation: toastOut 0.35s ease forwards;
+}
+
 @keyframes toastOut {
     to { transform: translateX(420px); opacity: 0; }
 }
@@ -666,12 +941,17 @@ button.green {
     display: flex;
     gap: 4px;
     margin-bottom: 16px;
-    border-bottom: 1px solid rgba(0,240,255,0.15);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.15);
     overflow-x: auto;
     scrollbar-width: thin;
 }
+
 .tabs::-webkit-scrollbar { height: 4px; }
-.tabs::-webkit-scrollbar-thumb { background: var(--cyan-dim); border-radius: 4px; }
+.tabs::-webkit-scrollbar-thumb {
+    background: var(--cyan-dim);
+    border-radius: 4px;
+}
+
 .tab {
     padding: 12px 20px;
     background: transparent;
@@ -687,19 +967,28 @@ button.green {
     white-space: nowrap;
     font-weight: 800;
 }
+
 .tab:hover { color: var(--cyan); }
 .tab.active { color: var(--cyan); }
+
 .tab.active::after {
     content: '';
     position: absolute;
-    bottom: -1px; left: 0; right: 0;
+    bottom: -1px;
+    left: 0;
+    right: 0;
     height: 3px;
     background: var(--cyan);
     box-shadow: 0 0 15px var(--cyan);
     border-radius: 3px 3px 0 0;
 }
+
 .tab-content { display: none; }
-.tab-content.active { display: block; animation: tabFadeIn 0.3s ease; }
+.tab-content.active {
+    display: block;
+    animation: tabFadeIn 0.3s ease;
+}
+
 @keyframes tabFadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -710,30 +999,32 @@ button.green {
    ═══════════════════════════════════════════════════════════════ */
 .badge {
     display: inline-block;
-    background: rgba(0,240,255,0.15);
+    background: rgba(0, 240, 255, 0.15);
     color: var(--cyan);
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 9px;
     font-weight: 800;
     letter-spacing: 1.5px;
-    border: 1px solid rgba(0,240,255,0.3);
+    border: 1px solid rgba(0, 240, 255, 0.3);
     font-family: 'Orbitron', sans-serif;
     text-transform: uppercase;
 }
+
 .badge.success {
-    background: rgba(0,255,100,0.15);
+    background: rgba(0, 255, 100, 0.15);
     color: #00ff64;
-    border-color: rgba(0,255,100,0.3);
+    border-color: rgba(0, 255, 100, 0.3);
 }
+
 .badge.gold {
-    background: rgba(255,215,0,0.15);
+    background: rgba(255, 215, 0, 0.15);
     color: var(--gold);
-    border-color: rgba(255,215,0,0.3);
+    border-color: rgba(255, 215, 0, 0.3);
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SECURITY FEATURE CARDS — Advanced grid
+   SECURITY LIST
    ═══════════════════════════════════════════════════════════════ */
 .security-list {
     display: grid;
@@ -741,43 +1032,50 @@ button.green {
     gap: 12px;
     margin-top: 12px;
 }
+
 .security-item {
-    background: rgba(0,0,0,0.45);
-    border: 1.5px solid rgba(0,240,255,0.15);
+    background: rgba(0, 0, 0, 0.45);
+    border: 1.5px solid rgba(0, 240, 255, 0.15);
     border-left: 3px solid var(--cyan);
     border-radius: 12px;
     padding: 14px 16px;
-    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
+
 .security-item::before {
     content: '';
     position: absolute;
-    top: 0; right: 0;
+    top: 0;
+    right: 0;
     width: 80px;
     height: 80px;
-    background: radial-gradient(circle, rgba(0,240,255,0.06), transparent 70%);
+    background: radial-gradient(circle, rgba(0, 240, 255, 0.06), transparent 70%);
     pointer-events: none;
 }
+
 .security-item:hover {
     border-color: var(--cyan);
-    background: rgba(0,240,255,0.05);
+    background: rgba(0, 240, 255, 0.05);
     transform: translateY(-3px);
-    box-shadow: 0 12px 30px rgba(0,240,255,0.12);
+    box-shadow: 0 12px 30px rgba(0, 240, 255, 0.12);
 }
+
 .security-item .sec-head {
     display: flex;
     align-items: center;
     gap: 10px;
     margin-bottom: 8px;
 }
+
 .security-item .sec-icon {
     font-size: 22px;
     color: var(--cyan);
     flex-shrink: 0;
-    filter: drop-shadow(0 0 6px rgba(0,240,255,0.5));
+    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.5));
 }
+
 .security-item .sec-title {
     font-family: 'Orbitron', sans-serif;
     font-size: 11px;
@@ -786,27 +1084,29 @@ button.green {
     color: var(--cyan);
     text-transform: uppercase;
 }
+
 .security-item .sec-desc {
     font-size: 11px;
     color: var(--text-dim);
     line-height: 1.7;
     padding-left: 32px;
 }
+
 .security-item .sec-desc code {
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     padding: 2px 6px;
     border-radius: 4px;
     color: var(--gold);
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
-    border: 1px solid rgba(255,215,0,0.15);
+    border: 1px solid rgba(255, 215, 0, 0.15);
 }
 
 /* ═══════════════════════════════════════════════════════════════
    INFO BOX
    ═══════════════════════════════════════════════════════════════ */
 .info-box {
-    background: rgba(0,240,255,0.05);
+    background: rgba(0, 240, 255, 0.05);
     border-left: 4px solid var(--cyan);
     border-radius: 10px;
     padding: 14px 16px;
@@ -816,37 +1116,50 @@ button.green {
     line-height: 1.8;
     position: relative;
 }
+
 .info-box::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(90deg, rgba(0,240,255,0.02), transparent);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, rgba(0, 240, 255, 0.02), transparent);
     border-radius: 10px;
     pointer-events: none;
 }
-.info-box strong { color: var(--cyan); font-weight: 800; }
+
+.info-box strong {
+    color: var(--cyan);
+    font-weight: 800;
+}
+
 .info-box code {
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     padding: 2px 7px;
     border-radius: 4px;
     color: var(--gold);
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
-    border: 1px solid rgba(255,215,0,0.15);
+    border: 1px solid rgba(255, 215, 0, 0.15);
 }
+
 .info-box.warn {
-    background: rgba(255,215,0,0.05);
+    background: rgba(255, 215, 0, 0.05);
     border-left-color: var(--gold);
     color: #ffe6a0;
 }
-.info-box.warn strong { color: var(--gold); }
+
+.info-box.warn strong {
+    color: var(--gold);
+}
 
 /* ═══════════════════════════════════════════════════════════════
-   AUTO-DETECT PANEL — Live detection indicator
+   DETECT PANEL
    ═══════════════════════════════════════════════════════════════ */
 .detect-panel {
-    background: rgba(0,0,0,0.5);
-    border: 1.5px solid rgba(0,240,255,0.15);
+    background: rgba(0, 0, 0, 0.5);
+    border: 1.5px solid rgba(0, 240, 255, 0.15);
     border-radius: 12px;
     padding: 14px 18px;
     margin-top: 14px;
@@ -856,32 +1169,33 @@ button.green {
     flex-wrap: wrap;
     transition: all 0.3s;
 }
+
 .detect-panel.active {
     border-color: var(--green);
-    background: rgba(0,255,100,0.05);
+    background: rgba(0, 255, 100, 0.05);
 }
+
 .detect-icon {
     font-size: 20px;
     color: var(--cyan);
     animation: pulse 2s ease-in-out infinite;
 }
-@keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.6; transform: scale(1.1); }
-}
+
 .detect-info {
     flex: 1;
     font-size: 11px;
     color: var(--text-dim);
     line-height: 1.6;
 }
+
 .detect-info strong {
     color: var(--cyan);
     font-weight: 800;
 }
+
 .detect-info .detected-lang {
     display: inline-block;
-    background: rgba(0,240,255,0.15);
+    background: rgba(0, 240, 255, 0.15);
     color: var(--cyan);
     padding: 2px 10px;
     border-radius: 20px;
@@ -890,16 +1204,18 @@ button.green {
     font-weight: 900;
     letter-spacing: 1.5px;
     margin-left: 6px;
-    border: 1px solid rgba(0,240,255,0.3);
+    border: 1px solid rgba(0, 240, 255, 0.3);
 }
+
 .detect-progress {
     width: 100%;
     height: 4px;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     border-radius: 4px;
     overflow: hidden;
     margin-top: 10px;
 }
+
 .detect-progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--cyan), var(--green));
@@ -910,12 +1226,12 @@ button.green {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   PROCESSING OVERLAY — For heavy files
+   PROCESSING OVERLAY
    ═══════════════════════════════════════════════════════════════ */
 .processing-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.85);
+    background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     z-index: 99998;
@@ -925,18 +1241,24 @@ button.green {
     flex-direction: column;
     gap: 30px;
 }
+
 .processing-overlay.show { display: flex; }
+
 .processing-spinner {
     width: 80px;
     height: 80px;
-    border: 4px solid rgba(0,240,255,0.1);
+    border: 4px solid rgba(0, 240, 255, 0.1);
     border-top-color: var(--cyan);
     border-right-color: var(--pink);
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    box-shadow: 0 0 40px rgba(0,240,255,0.3);
+    box-shadow: 0 0 40px rgba(0, 240, 255, 0.3);
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 .processing-text {
     font-family: 'Orbitron', sans-serif;
     font-size: 16px;
@@ -947,6 +1269,7 @@ button.green {
     text-align: center;
     padding: 0 20px;
 }
+
 .processing-sub {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
@@ -958,7 +1281,7 @@ button.green {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   LAYER STATUS INDICATORS
+   LAYER STATUS
    ═══════════════════════════════════════════════════════════════ */
 .layer-status {
     display: grid;
@@ -966,9 +1289,10 @@ button.green {
     gap: 10px;
     margin-top: 16px;
 }
+
 .layer-item {
-    background: rgba(0,0,0,0.4);
-    border: 1.5px solid rgba(0,240,255,0.1);
+    background: rgba(0, 0, 0, 0.4);
+    border: 1.5px solid rgba(0, 240, 255, 0.1);
     border-radius: 10px;
     padding: 12px 14px;
     display: flex;
@@ -977,12 +1301,14 @@ button.green {
     transition: all 0.4s;
     opacity: 0.5;
 }
+
 .layer-item.active {
     border-color: var(--green);
-    background: rgba(0,255,100,0.05);
+    background: rgba(0, 255, 100, 0.05);
     opacity: 1;
-    box-shadow: 0 0 20px rgba(0,255,100,0.15);
+    box-shadow: 0 0 20px rgba(0, 255, 100, 0.15);
 }
+
 .layer-item .layer-check {
     width: 24px;
     height: 24px;
@@ -995,11 +1321,13 @@ button.green {
     transition: all 0.3s;
     font-size: 11px;
 }
+
 .layer-item.active .layer-check {
     border-color: var(--green);
     background: var(--green);
     color: #000;
 }
+
 .layer-item .layer-name {
     font-family: 'Orbitron', sans-serif;
     font-size: 10px;
@@ -1008,7 +1336,10 @@ button.green {
     text-transform: uppercase;
     font-weight: 700;
 }
-.layer-item.active .layer-name { color: var(--green); }
+
+.layer-item.active .layer-name {
+    color: var(--green);
+}
 
 /* ═══════════════════════════════════════════════════════════════
    RESPONSIVE
@@ -1022,58 +1353,39 @@ button.green {
     .btn-row button { flex: 1 1 100%; }
     .security-list { grid-template-columns: 1fr; }
     .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .toast-container { bottom: 15px; right: 15px; left: 15px; }
+    .toast-container {
+        bottom: 15px;
+        right: 15px;
+        left: 15px;
+    }
+    .redirect-banner .rb-link-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .redirect-banner .rb-link-box a {
+        justify-content: center;
+    }
+    .preset-grid { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 480px) {
     .header-card h1 { font-size: 18px; }
     .brand .title { display: none; }
-    .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   CUSTOM SCROLLBAR
-   ═══════════════════════════════════════════════════════════════ */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, var(--cyan), var(--purple));
-    border-radius: 10px;
-    border: 2px solid rgba(0,0,0,0.3);
-}
-::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--pink), var(--purple)); }
-
-/* ═══════════════════════════════════════════════════════════════
-   SELECTION
-   ═══════════════════════════════════════════════════════════════ */
-::selection {
-    background: rgba(0,240,255,0.3);
-    color: #fff;
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
 }
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     PROCESSING OVERLAY (for heavy files)
-     ═══════════════════════════════════════════════════════════════ -->
-<div class="processing-overlay" id="processingOverlay">
-    <div class="processing-spinner"></div>
-    <div>
-        <div class="processing-text" id="processingText">PROCESSING</div>
-        <div class="processing-sub" id="processingSub">Initializing 12-layer engine...</div>
-    </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════════
-     TOPBAR
-     ═══════════════════════════════════════════════════════════════ -->
 <div class="topbar">
     <div class="brand">
         <span class="logo">🌌</span>
         <span class="title">NightOrbit</span>
-        <span class="title-ver">v8.0</span>
-        <span class="title-sub">· CodeForge</span>
+        <span class="title-ver">v11.0</span>
+        <span class="title-sub">· JS Shield ULTRA Heavy</span>
     </div>
     <div class="topbar-actions">
         <a href="Dashboard.html" class="topbar-btn dashboard">
@@ -1089,9 +1401,6 @@ button.green {
 
 <div class="container">
 
-    <!-- ═══════════════════════════════════════════════════════════
-         USER WELCOME
-         ═══════════════════════════════════════════════════════════ -->
     <div class="user-welcome">
         <i class="fa-solid fa-circle-user"></i>
         <span>Welcome, <b id="welcomeName">User</b></span>
@@ -1100,159 +1409,141 @@ button.green {
         </span>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         HEADER CARD
-         ═══════════════════════════════════════════════════════════ -->
-    <div class="header-card">
-        <h1>🌌 NightOrbit 12-Layer Shield</h1>
-        <div class="subtitle">Enterprise Multi-Language Protection Matrix · Auto Engine v8.0</div>
-        <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-shield-halved"></i> v8.0 AUTO</span>
-            <span class="header-stat gold"><i class="fa-solid fa-layer-group"></i> 12 Layers</span>
-            <span class="header-stat pink"><i class="fa-solid fa-bolt"></i> Heavy Safe</span>
-            <span class="header-stat green"><i class="fa-solid fa-lock"></i> Zero Config</span>
+    <!-- REDIRECT BANNER -->
+    <div class="redirect-banner">
+        <div class="rb-head">
+            <span class="rb-icon">⚠️</span>
+            <span class="rb-title">HTML &amp; CSS Protection</span>
+        </div>
+        <div class="rb-sub">
+            This tool is <strong>only for JavaScript</strong> protection. For HTML &amp; CSS protection, please use our dedicated tool.
+        </div>
+        <div class="rb-link-box">
+            <i class="fa-solid fa-arrow-right"></i>
+            <span class="link-text">Open HTML &amp; CSS protection tool:</span>
+            <a href="Codecompressor.html">
+                <i class="fa-solid fa-code"></i>
+                Codecompressor
+            </a>
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         SECURITY FEATURES — Full 12-layer list
-         ═══════════════════════════════════════════════════════════ -->
+    <div class="header-card">
+        <h1>🌌 JavaScript Obfuscation ULTRA</h1>
+        <div class="subtitle">NightOrbit CodeForge · Full ULTRA Heavy 24-Layer JavaScript Protection</div>
+        <div class="header-stats">
+            <span class="header-stat"><i class="fa-solid fa-shield-halved"></i> v11.0</span>
+            <span class="header-stat gold"><i class="fa-solid fa-layer-group"></i> Up to 24 Layers</span>
+            <span class="header-stat pink"><i class="fa-solid fa-bolt"></i> Chunked Mode</span>
+            <span class="header-stat green"><i class="fa-solid fa-lock"></i> JS Only</span>
+        </div>
+    </div>
+
     <div class="section">
-        <label>🔒 12-Layer Auto Protection Matrix</label>
+        <label>🔒 Heavy Multi-Layer JavaScript Protection Matrix</label>
 
         <div class="info-box">
-            <strong>Zero-Configuration Full Protection</strong><br>
-            Paste any code — HTML, CSS, JS or mixed. Engine auto-detects language, auto-selects optimal preset, and applies <strong>all 12 protection layers</strong>. Same protection applied to every code.
+            <strong>Full ULTRA Heavy JavaScript Protection</strong><br>
+            Paste your JavaScript code and apply up to <strong>24 heavy protection layers</strong>. Control Flow Flattening · Dead Code · RC4 + Base64 · String Wrappers · Chained Calls · Split Strings · Debug Protection · Self Defending · Hex Renaming · Numbers to Expressions · Transform Object Keys · Unicode Escape.
         </div>
 
         <div class="security-list">
-
             <div class="security-item">
-                <div class="sec-head">
-                    <span class="sec-icon">⚙️</span>
-                    <span class="sec-title">JS L1 — Control Flow Flattening</span>
-                </div>
-                <div class="sec-desc">Converts linear code into state-machine switches. Breaks logical reading order completely. Threshold: <code>0.75-1.0</code> depending on file size.</div>
+                <div class="sec-head"><span class="sec-icon">⚙️</span><span class="sec-title">JS L1 — Control Flow Flattening</span></div>
+                <div class="sec-desc">Converts linear code into state-machine switches. Breaks logical reading order completely.</div>
             </div>
-
             <div class="security-item">
-                <div class="sec-head">
-                    <span class="sec-icon">💀</span>
-                    <span class="sec-title">JS L2 — Dead Code Injection</span>
-                </div>
-                <div class="sec-desc">Inserts unreachable fake branches and decoy functions. Confuses both humans and automated deobfuscators. Threshold: <code>0.4-0.6</code>.</div>
+                <div class="sec-head"><span class="sec-icon">💀</span><span class="sec-title">JS L2 — Dead Code Injection</span></div>
+                <div class="sec-desc">Inserts unreachable fake branches and decoy functions. Confuses deobfuscators.</div>
             </div>
-
             <div class="security-item">
-                <div class="sec-head">
-                    <span class="sec-icon">🔑</span>
-                    <span class="sec-title">JS L3 — RC4 String Encryption</span>
-                </div>
-                <div class="sec-desc">All string literals extracted to encrypted array. Decrypted only at runtime via RC4 stream cipher. Strings invisible in source.</div>
+                <div class="sec-head"><span class="sec-icon">🔑</span><span class="sec-title">JS L3 — RC4 + Base64 Encryption</span></div>
+                <div class="sec-desc">All string literals extracted to encrypted array. Double-layer encoding (RC4 + Base64).</div>
             </div>
-
             <div class="security-item">
-                <div class="sec-head">
-                    <span class="sec-icon">🚫</span>
-                    <span class="sec-title">JS L4 — Debug Protection</span>
-                </div>
-                <div class="sec-desc">DevTools detection loop and debugger traps. Execution pauses when inspection attempted. Interval: <code>4000ms</code> (safe).</div>
+                <div class="sec-head"><span class="sec-icon">🔗</span><span class="sec-title">JS L4 — String Wrappers (5x)</span></div>
+                <div class="sec-desc">5 wrapper functions for string access. Chained calls. Confuses static analysis.</div>
             </div>
-
             <div class="security-item">
-                <div class="sec-head">
-                    <span class="sec-icon">🛡️</span>
-                    <span class="sec-title">JS L5 — Self Defending Runtime</span>
-                </div>
-                <div class="sec-desc">Integrity check on every run. Crashes if code modified, preventing beautification and reformatting attempts.</div>
+                <div class="sec-head"><span class="sec-icon">✂️</span><span class="sec-title">JS L5 — Split Strings</span></div>
+                <div class="sec-desc">Every string split into small chunks. Reassembled at runtime.</div>
             </div>
-
             <div class="security-item">
-                <div class="sec-head">
-                    <span class="sec-icon">🎭</span>
-                    <span class="sec-title">JS L6 — Hexadecimal Identifier Renaming</span>
-                </div>
-                <div class="sec-desc">Variables and functions renamed to <code>_0x4a2b1c</code> format. Meaning completely lost, consistent mapping for functionality.</div>
+                <div class="sec-head"><span class="sec-icon">🚫</span><span class="sec-title">JS L6 — Debug Protection</span></div>
+                <div class="sec-desc">DevTools detection traps. Halts inspection attempts.</div>
             </div>
-
             <div class="security-item">
-                <div class="sec-head">
-                    <span class="sec-icon">🎨</span>
-                    <span class="sec-title">CSS L1 — Comment Removal</span>
-                </div>
-                <div class="sec-desc">All <code>/* ... */</code> comments removed. String-aware parsing — URLs and content properties preserved.</div>
+                <div class="sec-head"><span class="sec-icon">🛡️</span><span class="sec-title">JS L7 — Self Defending Runtime</span></div>
+                <div class="sec-desc">Integrity check on every run. Crashes if code is modified.</div>
             </div>
-
             <div class="security-item">
-                <div class="sec-head">
-                    <span class="sec-icon">📐</span>
-                    <span class="sec-title">CSS L2 — Safe Whitespace Minify</span>
-                </div>
-                <div class="sec-desc">Whitespace compressed. <code>calc()</code>, <code>url()</code>, <code>var()</code>, <code>@media</code>, <code>!important</code>, and <strong>image extensions</strong> preserved.</div>
+                <div class="sec-head"><span class="sec-icon">🎭</span><span class="sec-title">JS L8 — Hexadecimal Renaming</span></div>
+                <div class="sec-desc">Variables and functions renamed to <code>_0x4a2b1c</code> format.</div>
             </div>
-
             <div class="security-item">
-                <div class="sec-head">
-                    <span class="sec-icon">🏷️</span>
-                    <span class="sec-title">CSS L3 — Class Name Obfuscation</span>
-                </div>
-                <div class="sec-desc">Class names renamed to random hex format <code>._0x4a2f</code>. Image extensions <code>.png .jpg</code> — <strong>never renamed</strong>.</div>
+                <div class="sec-head"><span class="sec-icon">🔢</span><span class="sec-title">JS L9 — Numbers to Expressions</span></div>
+                <div class="sec-desc">Every number becomes a complex mathematical expression.</div>
             </div>
-
             <div class="security-item">
-                <div class="sec-head">
-                    <span class="sec-icon">📄</span>
-                    <span class="sec-title">HTML L1 — Comment Removal</span>
-                </div>
-                <div class="sec-desc">All <code>&lt;!-- --&gt;</code> comments removed. Conditional comments preserved.</div>
+                <div class="sec-head"><span class="sec-icon">🗝️</span><span class="sec-title">JS L10 — Transform Object Keys</span></div>
+                <div class="sec-desc">Object property keys are encrypted and transformed.</div>
             </div>
-
             <div class="security-item">
-                <div class="sec-head">
-                    <span class="sec-icon">🧹</span>
-                    <span class="sec-title">HTML L2 — Safe Whitespace Minify</span>
-                </div>
-                <div class="sec-desc"><code>&lt;pre&gt;</code>, <code>&lt;textarea&gt;</code>, <code>&lt;code&gt;</code>, <code>onclick</code>, and <code>data-*</code> attributes preserved perfectly.</div>
+                <div class="sec-head"><span class="sec-icon">🔇</span><span class="sec-title">JS L11 — Disable Console Output</span></div>
+                <div class="sec-desc">All console.log/debug calls are blocked at runtime.</div>
             </div>
-
             <div class="security-item">
-                <div class="sec-head">
-                    <span class="sec-icon">🔖</span>
-                    <span class="sec-title">HTML L3 — Attribute Auto-Sync</span>
-                </div>
-                <div class="sec-desc"><code>data-*</code> attributes renamed with auto JS sync. Class attributes updated to match CSS. No functionality broken.</div>
+                <div class="sec-head"><span class="sec-icon">🌐</span><span class="sec-title">JS L12 — Unicode Escape</span></div>
+                <div class="sec-desc">Characters are escaped as unicode sequences. Extreme protection.</div>
             </div>
-
         </div>
 
         <div class="info-box warn">
-            <strong>⚠️ Auto Safety Guarantees:</strong><br>
-            • Image extensions <code>.png .jpg .svg .webp</code> — <strong>never renamed</strong><br>
-            • JS attribute references — <strong>auto-synced</strong> with HTML<br>
-            • <code>calc()</code>, <code>url()</code>, <code>var()</code>, <code>!important</code> — preserved<br>
-            • <code>&lt;pre&gt;</code>, <code>&lt;textarea&gt;</code>, <code>onclick</code> — preserved<br>
-            • Heavy files (5MB+) — <strong>chunked processing</strong> with progress overlay<br>
-            • Auto fallback — if 6-layer fails, applies 3-layer safe mode
+            <strong>⚠️ JavaScript Only:</strong><br>
+            • This tool protects <strong>only JavaScript</strong><br>
+            • HTML &amp; CSS are <strong>not touched</strong> — safe as-is<br>
+            • For HTML &amp; CSS protection, use <strong>Codecompressor</strong><br>
+            • Native DOM APIs, reserved names, and events are <strong>fully protected</strong>
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         STEP 1 — INPUT
-         ═══════════════════════════════════════════════════════════ -->
+    <!-- STEP 1: PRESET -->
     <div class="section">
-        <label>📝 STEP 1 — Paste Your Code</label>
+        <label>⚡ STEP 1 — Protection Level</label>
+        <div class="preset-grid">
+            <div class="preset-btn" data-preset="light" onclick="setPreset('light', this)">
+                <div class="name">LIGHT</div>
+                <div class="desc">8 Layers · Fast</div>
+            </div>
+            <div class="preset-btn active" data-preset="medium" onclick="setPreset('medium', this)">
+                <div class="name">MEDIUM</div>
+                <div class="desc">14 Layers · Balanced</div>
+            </div>
+            <div class="preset-btn" data-preset="heavy" onclick="setPreset('heavy', this)">
+                <div class="name">HEAVY</div>
+                <div class="desc">20 Layers · Strong</div>
+            </div>
+            <div class="preset-btn" data-preset="extreme" onclick="setPreset('extreme', this)">
+                <div class="name">EXTREME</div>
+                <div class="desc">24 Layers · Maximum</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 2: INPUT -->
+    <div class="section">
+        <label>📝 STEP 2 — Paste Your JavaScript Code</label>
 
         <div class="info-box">
-            <strong>Auto-Detection Active:</strong> Paste HTML, CSS, JS, or mixed code — the engine will auto-detect language and apply the appropriate protection pipeline. No configuration needed.
+            <strong>JavaScript Only:</strong> Paste your JavaScript code — the engine will apply the selected protection layers. No configuration needed.
         </div>
 
-        <textarea id="inputCode" class="huge" placeholder="// Paste your complete HTML, CSS, JavaScript or mixed code here...&#10;//&#10;// The engine will automatically:&#10;//   1. Detect the language type&#10;//   2. Choose optimal preset (based on file size)&#10;//   3. Apply all 12 protection layers&#10;//   4. Verify output integrity"></textarea>
+        <textarea id="inputCode" class="huge" placeholder="// Paste your JavaScript code here...&#10;//&#10;// Protection layers will be applied automatically based on selected level:&#10;//   1. Control Flow Flattening&#10;//   2. Dead Code Injection&#10;//   3. RC4 + Base64 String Encryption&#10;//   4. String Wrappers (5x chained)&#10;//   5. Split Strings&#10;//   6. Debug Protection&#10;//   7. Self Defending&#10;//   8. Hexadecimal Identifier Renaming&#10;//   9. Numbers to Expressions&#10;//  10. Transform Object Keys"></textarea>
 
-        <!-- Live detection panel -->
         <div class="detect-panel" id="detectPanel">
             <span class="detect-icon"><i class="fa-solid fa-radar"></i></span>
             <div class="detect-info">
-                <span id="detectMessage">Awaiting input — paste your code to begin auto-detection</span>
+                <span id="detectMessage">Awaiting input — paste your JavaScript code</span>
                 <div class="detect-progress">
                     <div class="detect-progress-fill" id="detectProgressFill"></div>
                 </div>
@@ -1279,9 +1570,7 @@ button.green {
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         PROGRESS
-         ═══════════════════════════════════════════════════════════ -->
+    <!-- PROGRESS -->
     <div class="progress-wrap">
         <div class="progress-label">Progress</div>
         <div class="progress-track">
@@ -1290,12 +1579,10 @@ button.green {
         <div class="progress-percent" id="progressPercent">0%</div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         ACTION BUTTONS
-         ═══════════════════════════════════════════════════════════ -->
+    <!-- ACTIONS -->
     <div class="btn-row">
         <button onclick="obfuscateNow()">
-            <i class="fa-solid fa-shield-halved"></i> PROTECT CODE — AUTO
+            <i class="fa-solid fa-shield-halved"></i> PROTECT JAVASCRIPT
         </button>
         <button class="secondary" onclick="loadSample()">
             <i class="fa-solid fa-download"></i> LOAD SAMPLE
@@ -1307,78 +1594,44 @@ button.green {
 
     <div id="status" class="status"></div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         LAYER STATUS TRACKER
-         ═══════════════════════════════════════════════════════════ -->
+    <!-- LAYER STATUS — 24 LAYERS -->
     <div class="section" id="layerStatusSection" style="display:none;">
-        <label>🛡️ Layer Processing Status</label>
+        <label>🛡️ Layer Processing Status (24 Layers)</label>
         <div class="layer-status" id="layerStatus">
-            <div class="layer-item" data-layer="js1">
-                <div class="layer-check"><i class="fa-solid fa-check"></i></div>
-                <span class="layer-name">JS L1 — Control Flow</span>
-            </div>
-            <div class="layer-item" data-layer="js2">
-                <div class="layer-check"><i class="fa-solid fa-check"></i></div>
-                <span class="layer-name">JS L2 — Dead Code</span>
-            </div>
-            <div class="layer-item" data-layer="js3">
-                <div class="layer-check"><i class="fa-solid fa-check"></i></div>
-                <span class="layer-name">JS L3 — RC4 String</span>
-            </div>
-            <div class="layer-item" data-layer="js4">
-                <div class="layer-check"><i class="fa-solid fa-check"></i></div>
-                <span class="layer-name">JS L4 — Debug Guard</span>
-            </div>
-            <div class="layer-item" data-layer="js5">
-                <div class="layer-check"><i class="fa-solid fa-check"></i></div>
-                <span class="layer-name">JS L5 — Self Defend</span>
-            </div>
-            <div class="layer-item" data-layer="js6">
-                <div class="layer-check"><i class="fa-solid fa-check"></i></div>
-                <span class="layer-name">JS L6 — Hex Rename</span>
-            </div>
-            <div class="layer-item" data-layer="css1">
-                <div class="layer-check"><i class="fa-solid fa-check"></i></div>
-                <span class="layer-name">CSS L1 — Comments</span>
-            </div>
-            <div class="layer-item" data-layer="css2">
-                <div class="layer-check"><i class="fa-solid fa-check"></i></div>
-                <span class="layer-name">CSS L2 — Safe Minify</span>
-            </div>
-            <div class="layer-item" data-layer="css3">
-                <div class="layer-check"><i class="fa-solid fa-check"></i></div>
-                <span class="layer-name">CSS L3 — Class Rename</span>
-            </div>
-            <div class="layer-item" data-layer="html1">
-                <div class="layer-check"><i class="fa-solid fa-check"></i></div>
-                <span class="layer-name">HTML L1 — Comments</span>
-            </div>
-            <div class="layer-item" data-layer="html2">
-                <div class="layer-check"><i class="fa-solid fa-check"></i></div>
-                <span class="layer-name">HTML L2 — Safe Minify</span>
-            </div>
-            <div class="layer-item" data-layer="html3">
-                <div class="layer-check"><i class="fa-solid fa-check"></i></div>
-                <span class="layer-name">HTML L3 — Attr Sync</span>
-            </div>
+            <div class="layer-item" data-layer="js1"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L1 — Control Flow</span></div>
+            <div class="layer-item" data-layer="js2"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L2 — Dead Code</span></div>
+            <div class="layer-item" data-layer="js3"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L3 — RC4</span></div>
+            <div class="layer-item" data-layer="js4"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L4 — Base64</span></div>
+            <div class="layer-item" data-layer="js5"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L5 — Calls Transform</span></div>
+            <div class="layer-item" data-layer="js6"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L6 — Index Shift</span></div>
+            <div class="layer-item" data-layer="js7"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L7 — Array Rotate</span></div>
+            <div class="layer-item" data-layer="js8"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L8 — Array Shuffle</span></div>
+            <div class="layer-item" data-layer="js9"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L9 — String Wrappers</span></div>
+            <div class="layer-item" data-layer="js10"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L10 — Chained Calls</span></div>
+            <div class="layer-item" data-layer="js11"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L11 — Split Strings</span></div>
+            <div class="layer-item" data-layer="js12"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L12 — Debug Protection</span></div>
+            <div class="layer-item" data-layer="js13"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L13 — Self Defending</span></div>
+            <div class="layer-item" data-layer="js14"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L14 — Disable Console</span></div>
+            <div class="layer-item" data-layer="js15"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L15 — Hex Rename</span></div>
+            <div class="layer-item" data-layer="js16"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L16 — Numbers→Expr</span></div>
+            <div class="layer-item" data-layer="js17"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L17 — Object Keys</span></div>
+            <div class="layer-item" data-layer="js18"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L18 — Unicode Escape</span></div>
+            <div class="layer-item" data-layer="js19"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L19 — Compact</span></div>
+            <div class="layer-item" data-layer="js20"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L20 — Simplify</span></div>
+            <div class="layer-item" data-layer="js21"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L21 — Reserved Names</span></div>
+            <div class="layer-item" data-layer="js22"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L22 — Comments Strip</span></div>
+            <div class="layer-item" data-layer="js23"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L23 — Chunked Process</span></div>
+            <div class="layer-item" data-layer="js24"><div class="layer-check"><i class="fa-solid fa-check"></i></div><span class="layer-name">JS L24 — Fallback Safe</span></div>
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         OUTPUT
-         ═══════════════════════════════════════════════════════════ -->
+    <!-- OUTPUT -->
     <div class="section" id="outputSection" style="display:none;">
-        <label>🔒 Protected Output <span class="badge success">READY</span></label>
+        <label>🔒 Protected JavaScript <span class="badge success">READY</span></label>
 
         <div class="tabs">
             <button class="tab active" data-tab="final" onclick="switchTab('final')">
                 <i class="fa-solid fa-bullseye"></i> FINAL
-            </button>
-            <button class="tab" data-tab="html" onclick="switchTab('html')">
-                <i class="fa-brands fa-html5"></i> HTML
-            </button>
-            <button class="tab" data-tab="css" onclick="switchTab('css')">
-                <i class="fa-brands fa-css3-alt"></i> CSS
             </button>
             <button class="tab" data-tab="js" onclick="switchTab('js')">
                 <i class="fa-brands fa-js"></i> JS
@@ -1387,12 +1640,6 @@ button.green {
 
         <div class="tab-content active" id="tab-final">
             <textarea id="outputFinal" class="tall" readonly></textarea>
-        </div>
-        <div class="tab-content" id="tab-html">
-            <textarea id="outputHtml" class="tall" readonly></textarea>
-        </div>
-        <div class="tab-content" id="tab-css">
-            <textarea id="outputCss" class="tall" readonly></textarea>
         </div>
         <div class="tab-content" id="tab-js">
             <textarea id="outputJs" class="tall" readonly></textarea>
@@ -1415,6 +1662,10 @@ button.green {
                 <div class="stat-label">Time</div>
                 <div class="stat-value green" id="statTime">0 ms</div>
             </div>
+            <div class="stat-card">
+                <div class="stat-label">Chunks</div>
+                <div class="stat-value" id="statChunks">1</div>
+            </div>
         </div>
     </div>
 
@@ -1425,143 +1676,129 @@ button.green {
         <button class="secondary" onclick="downloadOutput()">
             <i class="fa-solid fa-download"></i> DOWNLOAD
         </button>
-        <button class="secondary" onclick="downloadAll()">
-            <i class="fa-solid fa-box"></i> DOWNLOAD ALL
-        </button>
     </div>
 
 </div>
 
+<div class="processing-overlay" id="processingOverlay">
+    <div class="processing-spinner"></div>
+    <div>
+        <div class="processing-text" id="processingText">PROCESSING</div>
+        <div class="processing-sub" id="processingSub">Initializing engine...</div>
+    </div>
+</div>
+
 <div class="toast-container" id="toastContainer"></div>
 
- <!-- ═══════════════════════════════════════════════════════════════
-     NIGHTORBIT 12-LAYER SHIELD ENGINE v9.0 — ADVANCED HEAVY
-     Full Auto Protection · Zero Configuration · Heavy-Safe
-     ═══════════════════════════════════════════════════════════════ -->
 <script>
 (function() {
 'use strict';
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 1: CONSTANTS & GLOBAL STATE
+   NIGHTORBIT — JAVASCRIPT ULTRA HEAVY PROTECTION ENGINE v11.0
+   Real 24-Layer · Chunked · Memory-Safe · Auto-Fallback
    ═══════════════════════════════════════════════════════════════════ */
 
-var TAG_OPEN_SCRIPT  = '<' + 'script>';
-var TAG_CLOSE_SCRIPT = '<' + '/script>';
-var TAG_OPEN_STYLE   = '<' + 'style>';
-var TAG_CLOSE_STYLE  = '<' + '/style>';
+var CONFIG = {
+    MAX_INPUT_SIZE: 50 * 1024 * 1024,
+    CHUNK_THRESHOLD: 2 * 1024 * 1024,
+    CHUNK_SIZE: 512 * 1024,
+    HEAVY_THRESHOLD: 512 * 1024
+};
 
-var MAX_INPUT_SIZE = 50 * 1024 * 1024;
-var HEAVY_THRESHOLD = 512 * 1024;
-var DETECT_SAMPLE_SIZE = 12000;
-
-/* ═══ RESERVED NAMES — ALL UNIQUE (no duplicates) ═══ */
+/* ═══ RESERVED NAMES — only globals + DOM, NOT user variables ═══ */
 var RESERVED_NAMES = [
-    /* HTML onclick handlers */
-    'showPage', 'calculate', 'doLogout', 'loadSample', 'clearAll',
-    'copyOutput', 'downloadOutput', 'downloadAll', 'switchTab',
-    'obfuscateNow', 'setPreset', 'setLang', 'toggleOpt', 'handleAuth',
-    'fallbackCopy',
-
-    /* Native JS globals */
-    'window', 'document', 'console', 'localStorage', 'sessionStorage',
-    'navigator', 'location', 'history', 'screen', 'performance',
-    'Blob', 'URL', 'FileReader', 'Promise', 'JSON', 'Math', 'Date',
-    'Array', 'Object', 'String', 'Number', 'Boolean', 'RegExp',
-    'Function', 'Error', 'Map', 'Set', 'WeakMap', 'WeakSet',
-    'setTimeout', 'setInterval', 'clearTimeout', 'clearInterval',
-    'requestAnimationFrame', 'cancelAnimationFrame',
-    'firebase', 'JavaScriptObfuscator', 'pako',
-
-    /* Native DOM properties */
-    'dataset', 'classList', 'textContent', 'innerHTML', 'outerHTML',
-    'value', 'style', 'className', 'tagName', 'nodeName',
-    'children', 'parentNode', 'parentElement', 'firstChild', 'lastChild',
-    'nextSibling', 'previousSibling', 'childNodes', 'attributes',
-    'getElementById', 'querySelector', 'querySelectorAll',
-    'getElementsByTagName', 'getElementsByClassName',
-    'addEventListener', 'removeEventListener', 'dispatchEvent',
-    'setAttribute', 'getAttribute', 'removeAttribute', 'hasAttribute',
-    'appendChild', 'removeChild', 'insertBefore', 'replaceChild',
-    'createElement', 'createTextNode', 'createDocumentFragment',
-    'scrollIntoView',
-    'preventDefault', 'stopPropagation', 'stopImmediatePropagation',
-
-    /* DOM events */
-    'click', 'input', 'change', 'keydown', 'keyup', 'keypress',
-    'mouseover', 'mouseout', 'mousedown', 'mouseup',
-    'touchstart', 'touchend', 'touchmove',
-    'DOMContentLoaded', 'readystatechange',
-
-    /* Common array/string methods */
-    'length', 'push', 'pop', 'shift', 'unshift', 'slice', 'splice',
-    'concat', 'join', 'split', 'replace', 'match', 'test', 'exec',
-    'valueOf', 'hasOwnProperty', 'prototype', 'constructor',
-    'forEach', 'map', 'filter', 'reduce', 'find', 'findIndex',
-    'indexOf', 'lastIndexOf', 'includes', 'some', 'every',
-    'keys', 'values', 'entries', 'assign', 'freeze',
-    'then', 'catch', 'finally', 'resolve', 'reject', 'all', 'race',
-
-    /* Common variables */
-    'state', 'config', 'data', 'result', 'response',
-    'self', 'arguments', 'undefined', 'null'
+    // App functions
+    'showPage','calculate','doLogout','loadSample','clearAll','copyOutput',
+    'downloadOutput','downloadAll','switchTab','obfuscateNow','setPreset',
+    'setLang','toggleOpt','handleAuth','fallbackCopy','init','analyzeInput',
+    'stripJsComments','buildOptions','getUniqueReservedNames','processChunk',
+    // Global objects
+    'window','document','console','localStorage','sessionStorage',
+    'navigator','location','history','screen','performance','globalThis',
+    'Blob','URL','FileReader','Promise','JSON','Math','Date',
+    'Array','Object','String','Number','Boolean','RegExp','Symbol','BigInt',
+    'Function','Error','TypeError','RangeError','SyntaxError','EvalError',
+    'Map','Set','WeakMap','WeakSet','Proxy','Reflect','Intl',
+    // Global functions
+    'setTimeout','setInterval','clearTimeout','clearInterval','setImmediate',
+    'requestAnimationFrame','cancelAnimationFrame','queueMicrotask',
+    'fetch','XMLHttpRequest','WebSocket','Worker','EventSource',
+    'AbortController','TextEncoder','TextDecoder','atob','btoa',
+    'encodeURIComponent','decodeURIComponent','parseInt','parseFloat',
+    'isNaN','isFinite','alert','confirm','prompt',
+    // Libraries
+    'firebase','JavaScriptObfuscator','pako',
+    // DOM properties
+    'dataset','classList','textContent','innerHTML','outerHTML','innerText',
+    'value','style','className','tagName','nodeName','nodeType','id','name',
+    'children','parentNode','parentElement','firstChild','lastChild',
+    'nextSibling','previousSibling','childNodes','attributes','ownerDocument',
+    'getElementById','querySelector','querySelectorAll',
+    'getElementsByTagName','getElementsByClassName','getElementsByName',
+    'addEventListener','removeEventListener','dispatchEvent','preventDefault',
+    'stopPropagation','stopImmediatePropagation','setAttribute','getAttribute',
+    'removeAttribute','hasAttribute','appendChild','removeChild','insertBefore',
+    'replaceChild','createElement','createTextNode','createDocumentFragment',
+    'scrollIntoView','scrollTo','focus','blur','closest','matches','contains',
+    'cloneNode','isEqualNode','normalize','hasChildNodes',
+    // Events
+    'click','input','change','submit','reset','keydown','keyup','keypress',
+    'mouseover','mouseout','mousedown','mouseup','mousemove','dblclick',
+    'touchstart','touchend','touchmove','touchcancel','pointerdown','pointerup',
+    'load','error','resize','scroll','DOMContentLoaded',
+    'readystatechange','hashchange','popstate',
+    // Array/String methods
+    'length','push','pop','shift','unshift','slice','splice','concat','join',
+    'split','replace','replaceAll','match','matchAll','test','exec','trim',
+    'trimStart','trimEnd','charAt','charCodeAt','codePointAt','startsWith',
+    'endsWith','padStart','padEnd','repeat','toLowerCase','toUpperCase',
+    'valueOf','toString','hasOwnProperty','isPrototypeOf','propertyIsEnumerable',
+    'forEach','map','filter','reduce','reduceRight','find','findIndex',
+    'findLast','findLastIndex','indexOf','lastIndexOf','includes','some','every',
+    'flat','flatMap','sort','reverse','fill','copyWithin','at',
+    'keys','values','entries','from','of','isArray','is','assign','freeze',
+    'seal','create','defineProperty','defineProperties','getPrototypeOf',
+    'setPrototypeOf','getOwnPropertyNames','getOwnPropertyDescriptor',
+    'then','catch','finally','resolve','reject','all','allSettled','race','any',
+    // Language keywords (safe to keep)
+    'undefined','null','NaN','Infinity','this',
+    'exports','module','require','process','__dirname','__filename',
+    'import','default','await','async','yield'
 ];
 
-/* ✅ Auto-dedupe reserved names */
 function getUniqueReservedNames() {
-    var unique = [];
-    var seen = {};
-    RESERVED_NAMES.forEach(function(name) {
-        if (!seen[name]) {
-            seen[name] = true;
-            unique.push(name);
-        }
-    });
+    var unique = [], seen = Object.create(null);
+    for (var i = 0; i < RESERVED_NAMES.length; i++) {
+        var n = RESERVED_NAMES[i];
+        if (!seen[n]) { seen[n] = true; unique.push(n); }
+    }
     return unique;
 }
 
-var SHIELD = {
-    user: null,
-    authHandled: false,
+/* ═══ STATE ═══ */
+var STATE = {
+    preset: 'medium',
     isProcessing: false,
-    processingStartTime: 0,
-    detectedLang: 'txt',
-    detectedSize: 0,
-    detectedLines: 0,
-    detectedChars: 0,
-    isHeavy: false,
-    sections: { html: '', css: '', js: '', raw: '' },
-    output: { final: '', html: '', css: '', js: '' },
-    outputStats: {
-        jsLayers: 0, cssLayers: 0, htmlLayers: 0,
-        totalLayers: 0, elapsedMs: 0, fallbackUsed: false
-    },
-    classMap: null,
-    attrMap: null,
+    output: { final: '', js: '' },
+    stats: { origSize: 0, obfSize: 0, elapsed: 0, ratio: '—', chunks: 0 },
     layers: {
-        js1: false, js2: false, js3: false, js4: false, js5: false, js6: false,
-        css1: false, css2: false, css3: false,
-        html1: false, html2: false, html3: false
+        js1:false,js2:false,js3:false,js4:false,js5:false,js6:false,
+        js7:false,js8:false,js9:false,js10:false,js11:false,js12:false,
+        js13:false,js14:false,js15:false,js16:false,js17:false,js18:false,
+        js19:false,js20:false,js21:false,js22:false,js23:false,js24:false
     },
-    dom: {},
-    debug: false
+    dom: {}
 };
 
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION 2: UTILITIES
-   ═══════════════════════════════════════════════════════════════════ */
-
+/* ═══ UTILS ═══ */
 var Utils = {
     bytes: function(n) {
         if (typeof n !== 'number' || isNaN(n)) return '0 B';
         if (n < 1024) return n + ' B';
-        if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
-        if (n < 1024 * 1024 * 1024) return (n / 1024 / 1024).toFixed(2) + ' MB';
-        return (n / 1024 / 1024 / 1024).toFixed(2) + ' GB';
-    },
-    num: function(n) {
-        if (typeof n !== 'number' || isNaN(n)) return '0';
-        return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (n < 1048576) return (n/1024).toFixed(2) + ' KB';
+        if (n < 1073741824) return (n/1048576).toFixed(2) + ' MB';
+        return (n/1073741824).toFixed(2) + ' GB';
     },
     sizeOf: function(str) {
         if (!str) return 0;
@@ -1578,74 +1815,320 @@ var Utils = {
             return len;
         }
     },
-    escapeRegex: function(str) {
-        if (!str) return '';
-        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    },
     escapeHtml: function(str) {
         if (!str) return '';
-        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-    },
-    randomHex: function(prefix, length) {
-        prefix = prefix || '_0x';
-        length = length || 6;
-        var hex = '';
-        var chars = '0123456789abcdef';
-        for (var i = 0; i < length; i++) {
-            hex += chars[Math.floor(Math.random() * 16)];
-        }
-        return prefix + hex;
-    },
-    trimLength: function(str, max) {
-        if (!str) return '';
-        if (str.length <= max) return str;
-        return str.substring(0, max);
+        return String(str)
+            .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+            .replace(/'/g,'&#39;');
     },
     now: function() {
         return (window.performance && window.performance.now)
             ? window.performance.now() : Date.now();
     },
-    toCamelCase: function(str) {
-        return str.replace(/-([a-z])/g, function(m, c) { return c.toUpperCase(); });
+    yield: function() {
+        return new Promise(function(resolve) {
+            if (typeof requestAnimationFrame === 'function') {
+                requestAnimationFrame(function(){ resolve(); });
+            } else {
+                setTimeout(resolve, 0);
+            }
+        });
     }
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 3: UI HELPERS
+   SAFE COMMENT STRIPPER — string/template/regex-aware, O(n)
    ═══════════════════════════════════════════════════════════════════ */
+function stripJsComments(code) {
+    if (!code) return '';
+    var result = [], i = 0, len = code.length, state = 'code';
+    var lastNonWs = '';
+    var tailBuffer = '';
 
+    while (i < len) {
+        var ch = code[i], next = code[i+1];
+
+        if (state === 'line') {
+            if (ch === '\n') { state = 'code'; result.push(ch); }
+            i++; continue;
+        }
+        if (state === 'block') {
+            if (ch === '*' && next === '/') { state = 'code'; i += 2; continue; }
+            i++; continue;
+        }
+        if (state === 'single') {
+            result.push(ch);
+            if (ch === '\\' && i+1 < len) { result.push(code[i+1]); i += 2; continue; }
+            if (ch === "'") state = 'code';
+            i++; continue;
+        }
+        if (state === 'double') {
+            result.push(ch);
+            if (ch === '\\' && i+1 < len) { result.push(code[i+1]); i += 2; continue; }
+            if (ch === '"') state = 'code';
+            i++; continue;
+        }
+        if (state === 'template') {
+            result.push(ch);
+            if (ch === '\\' && i+1 < len) { result.push(code[i+1]); i += 2; continue; }
+            if (ch === '`') state = 'code';
+            i++; continue;
+        }
+        if (state === 'regex') {
+            result.push(ch);
+            if (ch === '\\' && i+1 < len) { result.push(code[i+1]); i += 2; continue; }
+            if (ch === '[') state = 'regex-class';
+            else if (ch === '/') {
+                state = 'code';
+                while (i+1 < len && /[gimsuy]/.test(code[i+1])) { i++; result.push(code[i]); }
+            }
+            i++; continue;
+        }
+        if (state === 'regex-class') {
+            result.push(ch);
+            if (ch === '\\' && i+1 < len) { result.push(code[i+1]); i += 2; continue; }
+            if (ch === ']') state = 'regex';
+            i++; continue;
+        }
+
+        // code state
+        if (ch === '/' && next === '/') { state = 'line'; i += 2; continue; }
+        if (ch === '/' && next === '*') { state = 'block'; i += 2; continue; }
+        if (ch === "'") { state = 'single'; result.push(ch); i++; lastNonWs = ch; continue; }
+        if (ch === '"') { state = 'double'; result.push(ch); i++; lastNonWs = ch; continue; }
+        if (ch === '`') { state = 'template'; result.push(ch); i++; lastNonWs = ch; continue; }
+
+        // Regex detection — O(1) using tailBuffer
+        if (ch === '/') {
+            var prev = lastNonWs;
+            if (prev === '' || /[=(:,;!&|?{}\[\]<>+\-*%^~]/.test(prev) ||
+                /\b(return|typeof|instanceof|in|of|new|delete|void|do|else|case)\s*$/.test(tailBuffer)) {
+                state = 'regex';
+                result.push(ch); i++; continue;
+            }
+        }
+
+        if (!/\s/.test(ch)) {
+            lastNonWs = ch;
+            tailBuffer = (tailBuffer + ch).slice(-30);
+        }
+        result.push(ch); i++;
+    }
+    return result.join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ULTRA HEAVY PRESETS
+   ═══════════════════════════════════════════════════════════════════ */
+var PRESETS = {
+    light: {
+        compact: true,
+        controlFlowFlattening: false,
+        deadCodeInjection: false,
+        stringArray: true,
+        stringArrayEncoding: [],
+        stringArrayThreshold: 0.5,
+        stringArrayRotate: false,
+        stringArrayShuffle: false,
+        stringArrayIndexShift: false,
+        splitStrings: false,
+        debugProtection: false,
+        selfDefending: false,
+        disableConsoleOutput: false,
+        numbersToExpressions: false,
+        transformObjectKeys: false,
+        unicodeEscapeSequence: false,
+        identifierNamesGenerator: 'hexadecimal',
+        renameGlobals: false,
+        renameProperties: false,
+        simplify: true
+    },
+    medium: {
+        compact: true,
+        controlFlowFlattening: true,
+        controlFlowFlatteningThreshold: 0.5,
+        deadCodeInjection: true,
+        deadCodeInjectionThreshold: 0.3,
+        stringArray: true,
+        stringArrayEncoding: ['rc4'],
+        stringArrayThreshold: 0.75,
+        stringArrayRotate: true,
+        stringArrayShuffle: true,
+        stringArrayIndexShift: true,
+        stringArrayCallsTransform: false,
+        stringArrayWrappersCount: 1,
+        stringArrayWrappersChainedCalls: false,
+        splitStrings: true,
+        splitStringsChunkLength: 10,
+        debugProtection: true,
+        selfDefending: true,
+        disableConsoleOutput: false,
+        numbersToExpressions: false,
+        transformObjectKeys: true,
+        unicodeEscapeSequence: false,
+        identifierNamesGenerator: 'hexadecimal',
+        renameGlobals: false,
+        renameProperties: false,
+        simplify: true
+    },
+    heavy: {
+        compact: true,
+        controlFlowFlattening: true,
+        controlFlowFlatteningThreshold: 0.9,
+        deadCodeInjection: true,
+        deadCodeInjectionThreshold: 0.5,
+        stringArray: true,
+        stringArrayEncoding: ['rc4', 'base64'],
+        stringArrayThreshold: 1.0,
+        stringArrayRotate: true,
+        stringArrayShuffle: true,
+        stringArrayIndexShift: true,
+        stringArrayCallsTransform: true,
+        stringArrayCallsTransformThreshold: 0.9,
+        stringArrayWrappersCount: 3,
+        stringArrayWrappersChainedCalls: true,
+        stringArrayWrappersParametersMaxCount: 4,
+        splitStrings: true,
+        splitStringsChunkLength: 6,
+        debugProtection: true,
+        selfDefending: true,
+        disableConsoleOutput: true,
+        numbersToExpressions: true,
+        transformObjectKeys: true,
+        unicodeEscapeSequence: false,
+        identifierNamesGenerator: 'hexadecimal',
+        renameGlobals: false,
+        renameProperties: false,
+        simplify: true
+    },
+    extreme: {
+        compact: true,
+        controlFlowFlattening: true,
+        controlFlowFlatteningThreshold: 1.0,
+        deadCodeInjection: true,
+        deadCodeInjectionThreshold: 0.6,
+        stringArray: true,
+        stringArrayEncoding: ['rc4', 'base64'],
+        stringArrayThreshold: 1.0,
+        stringArrayRotate: true,
+        stringArrayShuffle: true,
+        stringArrayIndexShift: true,
+        stringArrayCallsTransform: true,
+        stringArrayCallsTransformThreshold: 1.0,
+        stringArrayWrappersCount: 5,
+        stringArrayWrappersChainedCalls: true,
+        stringArrayWrappersParametersMaxCount: 5,
+        splitStrings: true,
+        splitStringsChunkLength: 5,
+        debugProtection: true,
+        selfDefending: true,
+        disableConsoleOutput: true,
+        numbersToExpressions: true,
+        transformObjectKeys: true,
+        unicodeEscapeSequence: true,
+        identifierNamesGenerator: 'hexadecimal',
+        renameGlobals: false,
+        renameProperties: false,
+        simplify: true
+    }
+};
+
+function buildOptions(preset) {
+    preset = preset || 'medium';
+    var base = {
+        compact: true,
+        identifierNamesGenerator: 'hexadecimal',
+        renameGlobals: false,
+        simplify: true,
+        log: false,
+        target: 'browser',
+        sourceMap: false,
+        comments: false,
+        preserveComments: false,
+        reservedNames: getUniqueReservedNames(),
+        reservedStrings: [],
+        seed: 0,
+        stringArrayWrappersType: 'variable'
+    };
+    var selected = PRESETS[preset] || PRESETS.medium;
+    var finalOpts = {};
+    for (var k in base) if (base.hasOwnProperty(k)) finalOpts[k] = base[k];
+    for (var k2 in selected) if (selected.hasOwnProperty(k2)) finalOpts[k2] = selected[k2];
+    return finalOpts;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FALLBACK CHAIN
+   ═══════════════════════════════════════════════════════════════════ */
+var FALLBACK_CHAIN = {
+    extreme: ['extreme', 'heavy', 'medium', 'light'],
+    heavy:   ['heavy', 'medium', 'light'],
+    medium:  ['medium', 'light'],
+    light:   ['light']
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   CHUNKED PROCESSING — safe split at double-newline
+   ═══════════════════════════════════════════════════════════════════ */
+function splitIntoChunks(code, chunkSize) {
+    if (code.length <= chunkSize) return [code];
+    var chunks = [], i = 0, len = code.length;
+    while (i < len) {
+        var end = Math.min(i + chunkSize, len);
+        if (end < len) {
+            var searchStart = Math.max(i + Math.floor(chunkSize * 0.5), i);
+            var safeEnd = -1;
+            for (var j = end; j >= searchStart; j--) {
+                if (code[j] === '\n' && code[j+1] === '\n') {
+                    safeEnd = j + 2; break;
+                }
+            }
+            if (safeEnd === -1) {
+                for (var k = end; k >= searchStart; k--) {
+                    if (code[k] === '\n') { safeEnd = k + 1; break; }
+                }
+            }
+            if (safeEnd > i) end = safeEnd;
+        }
+        chunks.push(code.slice(i, end));
+        i = end;
+    }
+    return chunks;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   UI HELPERS
+   ═══════════════════════════════════════════════════════════════════ */
 var UI = {
     cache: function() {
         var ids = [
-            'inputCode', 'inputStats', 'statLines', 'statChars', 'statSize', 'statLang',
-            'detectPanel', 'detectMessage', 'detectProgressFill',
-            'progressFill', 'progressPercent', 'status',
-            'layerStatusSection', 'layerStatus',
-            'outputSection', 'outputActions',
-            'outputFinal', 'outputHtml', 'outputCss', 'outputJs',
-            'statOriginal', 'statObfuscated', 'statRatio', 'statTime',
-            'processingOverlay', 'processingText', 'processingSub',
-            'toastContainer', 'welcomeName'
+            'inputCode','inputStats','statLines','statChars','statSize','statLang',
+            'detectPanel','detectMessage','detectProgressFill','progressFill',
+            'progressPercent','status','layerStatusSection','layerStatus',
+            'outputSection','outputActions','outputFinal','outputJs',
+            'statOriginal','statObfuscated','statRatio','statTime','statChunks',
+            'processingOverlay','processingText','processingSub',
+            'toastContainer','welcomeName'
         ];
-        ids.forEach(function(id) {
-            SHIELD.dom[id] = document.getElementById(id);
-        });
+        for (var i = 0; i < ids.length; i++) {
+            STATE.dom[ids[i]] = document.getElementById(ids[i]);
+        }
     },
     status: function(type, msg) {
-        var el = SHIELD.dom.status;
+        var el = STATE.dom.status;
         if (!el) return;
         el.className = 'status ' + type;
         el.textContent = msg;
     },
     hideStatus: function() {
-        var el = SHIELD.dom.status;
+        var el = STATE.dom.status;
         if (el) el.className = 'status';
     },
     toast: function(msg, type, duration) {
         type = type || 'info';
         duration = duration || 4000;
-        var c = SHIELD.dom.toastContainer;
+        var c = STATE.dom.toastContainer;
         if (!c) return;
         var iconMap = {
             success: 'fa-circle-check', error: 'fa-circle-xmark',
@@ -1653,7 +2136,8 @@ var UI = {
         };
         var el = document.createElement('div');
         el.className = 'toast ' + type;
-        el.innerHTML = '<i class="fa-solid ' + (iconMap[type] || iconMap.info) + '"></i><span>' + Utils.escapeHtml(msg) + '</span>';
+        el.innerHTML = '<i class="fa-solid ' + (iconMap[type] || iconMap.info) +
+            '"></i><span>' + Utils.escapeHtml(msg) + '</span>';
         c.appendChild(el);
         setTimeout(function() {
             el.classList.add('removing');
@@ -1664,1249 +2148,440 @@ var UI = {
     },
     progress: function(pct) {
         pct = Math.max(0, Math.min(100, pct));
-        var fill = SHIELD.dom.progressFill;
-        var txt = SHIELD.dom.progressPercent;
-        if (fill) fill.style.width = pct + '%';
-        if (txt) txt.textContent = Math.round(pct) + '%';
+        if (STATE.dom.progressFill) STATE.dom.progressFill.style.width = pct + '%';
+        if (STATE.dom.progressPercent) STATE.dom.progressPercent.textContent = Math.round(pct) + '%';
     },
     detectProgress: function(pct) {
-        var fill = SHIELD.dom.detectProgressFill;
-        if (fill) fill.style.width = Math.max(0, Math.min(100, pct)) + '%';
+        if (STATE.dom.detectProgressFill)
+            STATE.dom.detectProgressFill.style.width = Math.max(0, Math.min(100, pct)) + '%';
     },
     setLayer: function(key) {
-        if (!SHIELD.layers.hasOwnProperty(key)) return;
-        SHIELD.layers[key] = true;
+        if (!STATE.layers.hasOwnProperty(key)) return;
+        STATE.layers[key] = true;
         var el = document.querySelector('[data-layer="' + key + '"]');
         if (el) el.classList.add('active');
     },
     resetLayers: function() {
-        Object.keys(SHIELD.layers).forEach(function(k) {
-            SHIELD.layers[k] = false;
-            var el = document.querySelector('[data-layer="' + k + '"]');
-            if (el) el.classList.remove('active');
-        });
+        for (var k in STATE.layers) {
+            if (STATE.layers.hasOwnProperty(k)) {
+                STATE.layers[k] = false;
+                var el = document.querySelector('[data-layer="' + k + '"]');
+                if (el) el.classList.remove('active');
+            }
+        }
     },
     showProcessing: function(title, subtitle) {
-        var ov = SHIELD.dom.processingOverlay;
-        var tx = SHIELD.dom.processingText;
-        var sb = SHIELD.dom.processingSub;
-        if (tx) tx.textContent = title || 'PROCESSING';
-        if (sb) sb.textContent = subtitle || 'Initializing engine...';
-        if (ov) ov.classList.add('show');
-        SHIELD.isProcessing = true;
+        if (STATE.dom.processingText) STATE.dom.processingText.textContent = title || 'PROCESSING';
+        if (STATE.dom.processingSub) STATE.dom.processingSub.textContent = subtitle || 'Initializing...';
+        if (STATE.dom.processingOverlay) STATE.dom.processingOverlay.classList.add('show');
+        STATE.isProcessing = true;
     },
     hideProcessing: function() {
-        var ov = SHIELD.dom.processingOverlay;
-        if (ov) ov.classList.remove('show');
-        SHIELD.isProcessing = false;
+        if (STATE.dom.processingOverlay) STATE.dom.processingOverlay.classList.remove('show');
+        STATE.isProcessing = false;
     },
     updateProcessing: function(title, subtitle) {
-        var tx = SHIELD.dom.processingText;
-        var sb = SHIELD.dom.processingSub;
-        if (title && tx) tx.textContent = title;
-        if (subtitle && sb) sb.textContent = subtitle;
-    },
-    lockButtons: function(locked) {
-        var btns = document.querySelectorAll('button');
-        for (var i = 0; i < btns.length; i++) {
-            btns[i].disabled = !!locked;
-        }
+        if (title && STATE.dom.processingText) STATE.dom.processingText.textContent = title;
+        if (subtitle && STATE.dom.processingSub) STATE.dom.processingSub.textContent = subtitle;
     }
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 4: COMMENT STRIPPERS
+   INPUT ANALYSIS
    ═══════════════════════════════════════════════════════════════════ */
-
-var Comments = {
-    stripCss: function(code) {
-        if (!code) return '';
-        var result = '', i = 0, len = code.length;
-        var inString = false, stringChar = '';
-        while (i < len) {
-            var ch = code[i], next = code[i + 1];
-            if (inString) {
-                result += ch;
-                if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-                if (ch === stringChar) inString = false;
-                i++; continue;
-            }
-            if (ch === '"' || ch === "'") {
-                inString = true; stringChar = ch; result += ch; i++; continue;
-            }
-            if (ch === '/' && next === '*') {
-                i += 2;
-                while (i < len) {
-                    if (code[i] === '*' && code[i + 1] === '/') { i += 2; break; }
-                    i++;
-                }
-                continue;
-            }
-            result += ch; i++;
-        }
-        return result;
-    },
-
-    stripJs: function(code) {
-        if (!code) return '';
-        var result = '', i = 0, len = code.length;
-        var state = 'code';
-        while (i < len) {
-            var ch = code[i], next = code[i + 1];
-            if (state === 'line') {
-                if (ch === '\n') { state = 'code'; result += ch; }
-                i++; continue;
-            }
-            if (state === 'block') {
-                if (ch === '*' && next === '/') { state = 'code'; i += 2; continue; }
-                i++; continue;
-            }
-            if (state === 'single') {
-                result += ch;
-                if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-                if (ch === "'") state = 'code';
-                i++; continue;
-            }
-            if (state === 'double') {
-                result += ch;
-                if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-                if (ch === '"') state = 'code';
-                i++; continue;
-            }
-            if (state === 'template') {
-                result += ch;
-                if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
-                if (ch === '`') state = 'code';
-                i++; continue;
-            }
-            if (ch === '/' && next === '/') { state = 'line'; i += 2; continue; }
-            if (ch === '/' && next === '*') { state = 'block'; i += 2; continue; }
-            if (ch === "'") { state = 'single'; result += ch; i++; continue; }
-            if (ch === '"') { state = 'double'; result += ch; i++; continue; }
-            if (ch === '`') { state = 'template'; result += ch; i++; continue; }
-            result += ch; i++;
-        }
-        return result;
-    },
-
-    stripHtml: function(code) {
-        if (!code) return '';
-        return code.replace(/<!--(?!\[if)[\s\S]*?-->/g, '');
-    }
-};
-
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION 5: TAG ESCAPING
-   ═══════════════════════════════════════════════════════════════════ */
-
-var Tags = {
-    escapeScript: function(code) {
-        if (!code) return '';
-        return code.replace(/<\/(script)/gi, '<\\/$1');
-    },
-    escapeStyle: function(code) {
-        if (!code) return '';
-        return code.replace(/<\/(style)/gi, '<\\/$1');
-    }
-};
-
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION 6: CSS ENGINE (3 Layers + JS Sync)
-   ═══════════════════════════════════════════════════════════════════ */
-
-var CssEngine = {
-    preserveExtensions: function(css) {
-        var extensions = {}, extIndex = 0;
-        var extPattern = /\.(png|jpg|jpeg|gif|svg|webp|ico|bmp|tiff|woff|woff2|ttf|otf|eot|mp4|mp3|wav|ogg|webm|pdf|zip)(?=["')\s,;}])/gi;
-        css = css.replace(extPattern, function(m) {
-            var key = '__NB_EXT_' + (extIndex++) + '__';
-            extensions[key] = m;
-            return key;
-        });
-        return { css: css, extensions: extensions };
-    },
-
-    restoreExtensions: function(css, extensions) {
-        Object.keys(extensions).forEach(function(key) {
-            css = css.split(key).join(extensions[key]);
-        });
-        return css;
-    },
-
-    minify: function(css) {
-        if (!css) return '';
-        var result = css;
-        result = result.replace(/[\r\n\t]+/g, ' ');
-        result = result.replace(/ {2,}/g, ' ');
-
-        var placeholders = [], phIndex = 0;
-        function ph(m) {
-            placeholders.push(m);
-            return '__NB_CSS_PH_' + (phIndex++) + '__';
-        }
-
-        result = result.replace(/calc\([^)]*\)/gi, ph);
-        result = result.replace(/url\([^)]*\)/gi, ph);
-        result = result.replace(/var\([^)]*\)/gi, ph);
-        result = result.replace(/content\s*:\s*("[^"]*"|'[^']*')/gi, ph);
-        result = result.replace(/data:[^;)]+;base64,[A-Za-z0-9+/=]+/gi, ph);
-        result = result.replace(/@media[^{]*/gi, ph);
-        result = result.replace(/@keyframes\s+[a-zA-Z_][a-zA-Z0-9_-]*/gi, ph);
-        result = result.replace(/@import[^;]+/gi, ph);
-        result = result.replace(/@font-face[^{]*/gi, ph);
-        result = result.replace(/@supports[^{]*/gi, ph);
-        result = result.replace(/@charset[^;]+/gi, ph);
-        result = result.replace(/-webkit-[a-z-]+/gi, ph);
-        result = result.replace(/-moz-[a-z-]+/gi, ph);
-        result = result.replace(/-ms-[a-z-]+/gi, ph);
-
-        result = result.replace(/\s*([{}:;,>+~])\s*/g, '$1');
-        result = result.replace(/;\}/g, '}');
-        result = result.replace(/\s*!\s*important/gi, '!important');
-
-        result = result.replace(/__NB_CSS_PH_(\d+)__/g, function(m, i) {
-            return placeholders[parseInt(i, 10)] || m;
-        });
-
-        return result.trim();
-    },
-
-    obfuscateClasses: function(css, html, js) {
-        if (!css) return { css: css, html: html, js: js, classMap: {} };
-
-        var extResult = this.preserveExtensions(css);
-        css = extResult.css;
-
-        var classRegex = /\.([a-zA-Z_][a-zA-Z0-9_-]*)/g;
-        var classes = {}, m;
-
-        while ((m = classRegex.exec(css)) !== null) {
-            var cls = m[1];
-            var safeList = ['active', 'hidden', 'show', 'hide', 'open', 'close',
-                'disabled', 'selected', 'visible', 'focus', 'hover', 'loaded',
-                'loading', 'error', 'success', 'warn', 'danger', 'info'];
-            if (safeList.indexOf(cls.toLowerCase()) !== -1) continue;
-            if (/^__NB_/.test(cls)) continue;
-            classes[cls] = true;
-        }
-
-        var classMap = {};
-        Object.keys(classes).forEach(function(cls) {
-            classMap[cls] = Utils.randomHex('_0x', 6);
-        });
-
-        Object.keys(classMap).forEach(function(oldCls) {
-            var re = new RegExp('\\.' + Utils.escapeRegex(oldCls) + '(?![a-zA-Z0-9_-])', 'g');
-            css = css.replace(re, '.' + classMap[oldCls]);
-        });
-
-        css = this.restoreExtensions(css, extResult.extensions);
-
-        if (html) {
-            html = html.replace(/class\s*=\s*"([^"]*)"/gi, function(m, classList) {
-                var newList = classList.split(/\s+/).map(function(c) {
-                    return classMap[c] || c;
-                }).join(' ');
-                return 'class="' + newList + '"';
-            });
-            html = html.replace(/class\s*=\s*'([^']*)'/gi, function(m, classList) {
-                var newList = classList.split(/\s+/).map(function(c) {
-                    return classMap[c] || c;
-                }).join(' ');
-                return "class='" + newList + "'";
-            });
-        }
-
-        if (js && Object.keys(classMap).length > 0) {
-            Object.keys(classMap).forEach(function(oldCls) {
-                var newCls = classMap[oldCls];
-
-                var re1 = new RegExp("(['\"`]\\s*\\.)" + Utils.escapeRegex(oldCls) + "(?![a-zA-Z0-9_-])", 'g');
-                js = js.replace(re1, '$1' + newCls);
-
-                var re2 = new RegExp("((?:classList\\.(?:add|remove|toggle|contains|replace))\\s*\\(\\s*['\"`])" + Utils.escapeRegex(oldCls) + "(['\"`])", 'g');
-                js = js.replace(re2, '$1' + newCls + '$2');
-
-                var re3 = new RegExp("(className\\s*[=!]==?\\s*['\"`])" + Utils.escapeRegex(oldCls) + "(['\"`])", 'g');
-                js = js.replace(re3, '$1' + newCls + '$2');
-
-                var re4 = new RegExp("(getElementsByClassName\\s*\\(\\s*['\"`])" + Utils.escapeRegex(oldCls) + "(['\"`])", 'g');
-                js = js.replace(re4, '$1' + newCls + '$2');
-            });
-        }
-
-        return { css: css, html: html, js: js, classMap: classMap };
-    },
-
-    process: function(css, html, js) {
-        if (!css || !css.trim()) {
-            return { css: css || '', html: html, js: js, layers: 0 };
-        }
-        var result = css, layers = 0;
-
-        result = Comments.stripCss(result);
-        layers++;
-        UI.setLayer('css1');
-
-        result = this.minify(result);
-        layers++;
-        UI.setLayer('css2');
-
-        var obfResult = this.obfuscateClasses(result, html, js);
-        result = obfResult.css;
-        if (obfResult.html) html = obfResult.html;
-        if (obfResult.js) js = obfResult.js;
-        SHIELD.classMap = obfResult.classMap;
-        layers++;
-        UI.setLayer('css3');
-
-        return { css: result, html: html, js: js, layers: layers };
-    }
-};
-
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION 7: HTML ENGINE (3 Layers + JS Sync)
-   ═══════════════════════════════════════════════════════════════════ */
-
-var HtmlEngine = {
-    minify: function(html) {
-        if (!html) return '';
-        var result = html;
-        var placeholders = [], phIndex = 0;
-
-        function ph(m) {
-            placeholders.push(m);
-            return '__NB_HTML_PH_' + (phIndex++) + '__';
-        }
-
-        var preOpen = '<' + 'pre';
-        var preClose = '<' + '\\/' + 'pre>';
-        var textareaOpen = '<' + 'textarea';
-        var textareaClose = '<' + '\\/' + 'textarea>';
-        var codeOpen = '<' + 'code';
-        var codeClose = '<' + '\\/' + 'code>';
-        var scriptOpen = '<' + 'script';
-        var scriptClose = '<' + '\\/' + 'script>';
-        var styleOpen = '<' + 'style';
-        var styleClose = '<' + '\\/' + 'style>';
-        var svgOpen = '<' + 'svg';
-        var svgClose = '<' + '\\/' + 'svg>';
-
-        result = result.replace(new RegExp(preOpen + '[\\s\\S]*?' + preClose, 'gi'), ph);
-        result = result.replace(new RegExp(textareaOpen + '[\\s\\S]*?' + textareaClose, 'gi'), ph);
-        result = result.replace(new RegExp(codeOpen + '[\\s\\S]*?' + codeClose, 'gi'), ph);
-        result = result.replace(new RegExp(scriptOpen + '[\\s\\S]*?' + scriptClose, 'gi'), ph);
-        result = result.replace(new RegExp(styleOpen + '[\\s\\S]*?' + styleClose, 'gi'), ph);
-        result = result.replace(new RegExp(svgOpen + '[\\s\\S]*?' + svgClose, 'gi'), ph);
-
-        result = result.replace(/\son[a-z]+\s*=\s*"[^"]*"/gi, ph);
-        result = result.replace(/\son[a-z]+\s*=\s*'[^']*'/gi, ph);
-        result = result.replace(/\sdata-[a-z-]+\s*=\s*'[^']*'/gi, ph);
-        result = result.replace(/\sdata-[a-z-]+\s*=\s*"[^"]*"/gi, ph);
-
-        result = result.replace(/>\s+</g, '><');
-        result = result.replace(/[ \t]{2,}/g, ' ');
-        result = result.replace(/\n{2,}/g, '\n');
-
-        result = result.replace(/__NB_HTML_PH_(\d+)__/g, function(m, i) {
-            return placeholders[parseInt(i, 10)] || m;
-        });
-
-        return result.trim();
-    },
-
-    obfuscateAttributes: function(html, js) {
-        if (!html) return { html: html, js: js, attrMap: {} };
-
-        var attrMap = {};
-        var safeAttrs = ['data-id', 'data-value', 'data-url', 'data-src', 'data-href',
-            'data-target', 'data-toggle', 'data-testid', 'data-cy'];
-
-        /* ✅ Keep data- prefix */
-        html = html.replace(/\s(data-[a-z][a-z0-9-]*)\s*=\s*"([^"]*)"/gi, function(m, attr, val) {
-            if (safeAttrs.indexOf(attr.toLowerCase()) !== -1) return m;
-            if (/^data-(bs-|toggle|target|dismiss|ride|slide|spy|backdrop)/.test(attr)) return m;
-
-            if (!attrMap[attr]) {
-                attrMap[attr] = 'data-' + Utils.randomHex('', 8);
-            }
-            return ' ' + attrMap[attr] + '="' + val + '"';
-        });
-
-        html = html.replace(/\s(data-[a-z][a-z0-9-]*)\s*=\s*'([^']*)'/gi, function(m, attr, val) {
-            if (safeAttrs.indexOf(attr.toLowerCase()) !== -1) return m;
-            if (/^data-(bs-|toggle|target|dismiss|ride|slide|spy|backdrop)/.test(attr)) return m;
-
-            if (!attrMap[attr]) {
-                attrMap[attr] = 'data-' + Utils.randomHex('', 8);
-            }
-            return " " + attrMap[attr] + "='" + val + "'";
-        });
-
-        if (js && Object.keys(attrMap).length > 0) {
-            Object.keys(attrMap).forEach(function(oldAttr) {
-                var newAttr = attrMap[oldAttr];
-                var camelName = Utils.toCamelCase(oldAttr.replace(/^data-/, ''));
-                var newCamel = Utils.toCamelCase(newAttr.replace(/^data-/, ''));
-
-                var re1 = new RegExp('(["\'])(' + Utils.escapeRegex(oldAttr) + ')(["\'])', 'g');
-                js = js.replace(re1, '$1' + newAttr + '$3');
-
-                var re2 = new RegExp('(\\.dataset\\.)' + Utils.escapeRegex(camelName) + '\\b', 'g');
-                js = js.replace(re2, '$1' + newCamel);
-
-                var re3 = new RegExp('(\\.dataset\\s*\\[\\s*["\'])' + Utils.escapeRegex(camelName) + '(["\']\\s*\\])', 'g');
-                js = js.replace(re3, '$1' + newCamel + '$2');
-
-                var re4 = new RegExp('((?:get|set|has|remove)Attribute\\s*\\(\\s*["\'])' + Utils.escapeRegex(oldAttr) + '(["\'])', 'g');
-                js = js.replace(re4, '$1' + newAttr + '$2');
-
-                var re5 = new RegExp('(\\[\\s*["\']?)' + Utils.escapeRegex(oldAttr) + '(\\s*[\\]="\'])', 'g');
-                js = js.replace(re5, '$1' + newAttr + '$2');
-            });
-        }
-
-        SHIELD.attrMap = attrMap;
-        return { html: html, js: js, attrMap: attrMap };
-    },
-
-    process: function(html, js) {
-        if (!html || !html.trim()) {
-            return { html: html || '', js: js, layers: 0 };
-        }
-        var result = html, layers = 0;
-
-        result = Comments.stripHtml(result);
-        layers++;
-        UI.setLayer('html1');
-
-        result = this.minify(result);
-        layers++;
-        UI.setLayer('html2');
-
-        var attrResult = this.obfuscateAttributes(result, js);
-        result = attrResult.html;
-        if (attrResult.js) js = attrResult.js;
-        layers++;
-        UI.setLayer('html3');
-
-        return { html: result, js: js, layers: layers };
-    }
-};
-
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION 8: JAVASCRIPT ENGINE (6 Layers + Fallbacks)
-   ═══════════════════════════════════════════════════════════════════ */
-
-var JsEngine = {
-    validateSyntax: function(code) {
-        if (!code || !code.trim()) {
-            return { valid: false, reason: 'Empty code' };
-        }
-        try {
-            new Function(code);
-            return { valid: true };
-        } catch (e) {
-            return { valid: false, reason: e.message || 'Syntax error', error: e };
-        }
-    },
-
-    buildOptions: function(jsSize) {
-        /* ✅ FIXED: Use unique reserved names */
-        var uniqueReserved = getUniqueReservedNames();
-
-        return {
-            compact: true,
-            controlFlowFlattening: true,
-            controlFlowFlatteningThreshold: 0.5,
-            deadCodeInjection: true,
-            deadCodeInjectionThreshold: 0.3,
-            debugProtection: true,
-            debugProtectionInterval: 4000,
-            disableConsoleOutput: false,
-            identifierNamesGenerator: 'hexadecimal',
-            log: false,
-            numbersToExpressions: false,
-            renameGlobals: false,
-            selfDefending: true,
-            simplify: true,
-            splitStrings: true,
-            splitStringsChunkLength: 10,
-            stringArray: true,
-            stringArrayCallsTransform: true,
-            stringArrayCallsTransformThreshold: 0.5,
-            stringArrayEncoding: ['rc4'],
-            stringArrayIndexShift: true,
-            stringArrayRotate: true,
-            stringArrayShuffle: true,
-            stringArrayWrappersCount: 1,
-            stringArrayWrappersChainedCalls: false,
-            stringArrayWrappersParametersMaxCount: 2,
-            stringArrayWrappersType: 'variable',
-            stringArrayThreshold: 0.6,
-            transformObjectKeys: true,
-            unicodeEscapeSequence: false,
-            target: 'browser',
-            sourceMap: false,
-            comments: false,
-            preserveComments: false,
-            /* ✅ Unique reserved names — no duplicates */
-            reservedNames: uniqueReserved,
-            seed: 0
-        };
-    },
-
-    protect: function(rawJs) {
-        if (!rawJs || !rawJs.trim()) {
-            return { js: '', layers: 0, fallback: false };
-        }
-
-        if (typeof JavaScriptObfuscator === 'undefined') {
-            return {
-                js: rawJs, layers: 0, fallback: false,
-                error: 'JavaScriptObfuscator library not loaded'
-            };
-        }
-
-        /* Force comment removal first */
-        rawJs = Comments.stripJs(rawJs);
-
-        var validation = this.validateSyntax(rawJs);
-        if (!validation.valid) {
-            console.warn('JS syntax validation failed:', validation.reason);
-            return {
-                js: rawJs, layers: 0, fallback: false,
-                error: 'JS syntax error: ' + validation.reason
-            };
-        }
-
-        var options = this.buildOptions(rawJs.length);
-
-        /* Attempt 1: Full 6 layers */
-        try {
-            var result = JavaScriptObfuscator.obfuscate(rawJs, options);
-            var code = result.getObfuscatedCode();
-            var verify = this.validateSyntax(code);
-            if (verify.valid) {
-                UI.setLayer('js1'); UI.setLayer('js2'); UI.setLayer('js3');
-                UI.setLayer('js4'); UI.setLayer('js5'); UI.setLayer('js6');
-                return { js: code, layers: 6, fallback: false };
-            }
-        } catch (e1) {
-            console.warn('Full 6-layer failed:', e1.message);
-        }
-
-        /* Attempt 2: 5 layers */
-        try {
-            var opts2 = this._copyOptions(options);
-            opts2.controlFlowFlattening = false;
-            var r2 = JavaScriptObfuscator.obfuscate(rawJs, opts2);
-            var c2 = r2.getObfuscatedCode();
-            if (this.validateSyntax(c2).valid) {
-                UI.setLayer('js2'); UI.setLayer('js3'); UI.setLayer('js4');
-                UI.setLayer('js5'); UI.setLayer('js6');
-                return { js: c2, layers: 5, fallback: true };
-            }
-        } catch (e2) { console.warn('5-layer failed:', e2.message); }
-
-        /* Attempt 3: 4 layers */
-        try {
-            var opts3 = this._copyOptions(options);
-            opts3.controlFlowFlattening = false;
-            opts3.deadCodeInjection = false;
-            var r3 = JavaScriptObfuscator.obfuscate(rawJs, opts3);
-            var c3 = r3.getObfuscatedCode();
-            if (this.validateSyntax(c3).valid) {
-                UI.setLayer('js3'); UI.setLayer('js4');
-                UI.setLayer('js5'); UI.setLayer('js6');
-                return { js: c3, layers: 4, fallback: true };
-            }
-        } catch (e3) { console.warn('4-layer failed:', e3.message); }
-
-        /* Attempt 4: 3 layers */
-        try {
-            var opts4 = this._copyOptions(options);
-            opts4.controlFlowFlattening = false;
-            opts4.deadCodeInjection = false;
-            opts4.selfDefending = false;
-            opts4.debugProtection = false;
-            opts4.debugProtectionInterval = 0;
-            opts4.stringArrayEncoding = [];
-            var r4 = JavaScriptObfuscator.obfuscate(rawJs, opts4);
-            var c4 = r4.getObfuscatedCode();
-            if (this.validateSyntax(c4).valid) {
-                UI.setLayer('js3'); UI.setLayer('js4'); UI.setLayer('js6');
-                return { js: c4, layers: 3, fallback: true };
-            }
-        } catch (e4) { console.warn('3-layer failed:', e4.message); }
-
-        /* Attempt 5: 2 layers */
-        try {
-            var opts5 = {
-                compact: true,
-                controlFlowFlattening: false,
-                deadCodeInjection: false,
-                debugProtection: false,
-                disableConsoleOutput: false,
-                identifierNamesGenerator: 'hexadecimal',
-                renameGlobals: false,
-                selfDefending: false,
-                simplify: true,
-                stringArray: true,
-                stringArrayEncoding: [],
-                stringArrayThreshold: 0.5,
-                target: 'browser',
-                sourceMap: false,
-                reservedNames: getUniqueReservedNames()
-            };
-            var r5 = JavaScriptObfuscator.obfuscate(rawJs, opts5);
-            var c5 = r5.getObfuscatedCode();
-            if (this.validateSyntax(c5).valid) {
-                UI.setLayer('js3'); UI.setLayer('js6');
-                return { js: c5, layers: 2, fallback: true };
-            }
-        } catch (e5) { console.warn('2-layer failed:', e5.message); }
-
-        /* Last resort */
-        return {
-            js: rawJs, layers: 0, fallback: true,
-            error: 'All obfuscation attempts failed — returning original'
-        };
-    },
-
-    _copyOptions: function(src) {
-        var copy = {};
-        for (var k in src) {
-            if (src.hasOwnProperty(k)) copy[k] = src[k];
-        }
-        return copy;
-    }
-};
-
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION 9: LANGUAGE DETECTION
-   ═══════════════════════════════════════════════════════════════════ */
-
-var Detector = {
-    detect: function(code) {
-        if (!code || !code.trim()) return 'txt';
-        var sample = Utils.trimLength(code.trim(), DETECT_SAMPLE_SIZE);
-
-        if (/^<!DOCTYPE\s+html/i.test(sample)) return 'html';
-        if (/<html[\s>]/i.test(sample)) return 'html';
-        if (/<(head|body)[\s>]/i.test(sample)) return 'html';
-        if (/^<\?php/i.test(sample)) return 'php';
-        if (/^<\?xml/i.test(sample)) return 'xml';
-
-        var trimmed = sample.trim();
-        if (trimmed.charAt(0) === '{' || trimmed.charAt(0) === '[') {
-            try { JSON.parse(code); return 'json'; } catch (e) {}
-        }
-
-        if (/<(style|script)[\s>]/i.test(sample)) return 'html';
-        if (/<(div|span|p|a|h[1-6]|section|nav|header|footer|main|article|button|input|form|table|ul|ol|li|img)[\s>]/i.test(sample)) {
-            return 'html';
-        }
-
-        if (/@media|@keyframes|@import|@font-face|@supports|:\s*root\s*\{/i.test(sample)) return 'css';
-        if (/^[a-zA-Z\-]+\s*\{[^}]*:[^}]*;/m.test(sample)) return 'css';
-
-        var jsSignals = 0;
-        if (/\b(function|const|let|var)\s+[a-zA-Z_$]/.test(sample)) jsSignals++;
-        if (/\b(=>|async|await)\b/.test(sample)) jsSignals++;
-        if (/\b(document|window|console|require|module|exports|process)\b/.test(sample)) jsSignals++;
-        if (/\b(if|for|while|return|try|catch|throw)\s*\(/.test(sample)) jsSignals++;
-        if (/;\s*$|{\s*$/m.test(sample)) jsSignals++;
-        if (jsSignals >= 2) return 'js';
-
-        if (/^\s*(def|class|import|from)\s+/m.test(sample)) return 'py';
-        return 'txt';
-    },
-    describe: function(lang, code) {
-        if (lang === 'html' && /<(style|script)[\s>]/i.test(code)) {
-            return 'HTML + CSS + JS (Mixed)';
-        }
-        var map = {
-            html: 'HTML', css: 'CSS', js: 'JavaScript',
-            json: 'JSON', php: 'PHP', py: 'Python',
-            xml: 'XML', txt: 'Plain Text'
-        };
-        return map[lang] || lang.toUpperCase();
-    }
-};
-
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION 10: SECTION EXTRACTOR
-   ═══════════════════════════════════════════════════════════════════ */
-
-var Extractor = {
-    extract: function(code, mode) {
-        var result = { html: code, css: '', js: '' };
-
-        if (mode === 'js') return { html: '', css: '', js: code };
-        if (mode === 'css') return { html: '', css: code, js: '' };
-        if (mode === 'html' && !/<(style|script)[\s>]/i.test(code)) {
-            return { html: code, css: '', js: '' };
-        }
-
-        var html = code, css = '', js = '';
-        var scriptOpen = '<' + 'script';
-        var scriptClose = '<' + '\\/' + 'script>';
-        var styleOpen = '<' + 'style';
-        var styleClose = '<' + '\\/' + 'style>';
-
-        var styleRegex = new RegExp(styleOpen + '[^>]*>([\\s\\S]*?)' + styleClose, 'gi');
-        var styleMatch;
-        while ((styleMatch = styleRegex.exec(code)) !== null) {
-            if (css) css += '\n\n';
-            css += Comments.stripCss(styleMatch[1]).trim();
-        }
-
-        var scriptRegex = new RegExp(
-            scriptOpen + '(?![^>]*\\bsrc\\s*=)' +
-            '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template|application\\/json\\+ld)[^>]*)' +
-            '[^>]*>([\\s\\S]*?)' + scriptClose, 'gi'
-        );
-        var scriptMatch;
-        while ((scriptMatch = scriptRegex.exec(code)) !== null) {
-            if (js) js += '\n\n';
-            js += Comments.stripJs(scriptMatch[1]).trim();
-        }
-
-        html = html.replace(new RegExp(styleOpen + '[^>]*>[\\s\\S]*?' + styleClose, 'gi'), '');
-        html = html.replace(new RegExp(
-            scriptOpen + '(?![^>]*\\bsrc\\s*=)' +
-            '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template|application\\/json\\+ld)[^>]*)' +
-            '[^>]*>[\\s\\S]*?' + scriptClose, 'gi'), '');
-
-        html = html.replace(/\n{3,}/g, '\n\n').trim();
-
-        result.html = html;
-        result.css = css;
-        result.js = js;
-        return result;
-    }
-};
-
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION 11: PIPELINE ORCHESTRATOR
-   ═══════════════════════════════════════════════════════════════════ */
-
-var Pipeline = {
-    run: function(input, onProgress) {
-        onProgress = onProgress || function() {};
-
-        var startTime = Utils.now();
-        var report = {
-            jsLayers: 0, cssLayers: 0, htmlLayers: 0,
-            totalLayers: 0, fallbackUsed: false, error: null
-        };
-
-        onProgress('Step 1/6 — Detecting language...', 30);
-        var lang = Detector.detect(input);
-        SHIELD.detectedLang = lang;
-
-        onProgress('Step 2/6 — Extracting sections...', 40);
-        var useMode = lang;
-        if (lang === 'html' && /<(style|script)[\s>]/i.test(input)) {
-            useMode = 'mixed';
-        }
-        var sections = Extractor.extract(input, useMode);
-        SHIELD.sections = sections;
-
-        var obfuscatedHtml = sections.html || '';
-        var obfuscatedCss = sections.css || '';
-        var obfuscatedJs = sections.js || '';
-
-        /* Force comment removal */
-        if (obfuscatedHtml) obfuscatedHtml = Comments.stripHtml(obfuscatedHtml);
-        if (obfuscatedCss) obfuscatedCss = Comments.stripCss(obfuscatedCss);
-        if (obfuscatedJs) obfuscatedJs = Comments.stripJs(obfuscatedJs);
-
-        /* Step 3: JS protection */
-        if (sections.js && sections.js.trim()) {
-            onProgress('Step 3/6 — Applying 6-layer JavaScript protection...', 55);
-            var jsResult = JsEngine.protect(sections.js);
-            obfuscatedJs = jsResult.js || sections.js;
-            report.jsLayers = jsResult.layers || 0;
-            if (jsResult.fallback) report.fallbackUsed = true;
-            if (jsResult.error) report.error = jsResult.error;
-        }
-
-        /* Step 4: CSS protection */
-        if (obfuscatedCss && obfuscatedCss.trim()) {
-            onProgress('Step 4/6 — Applying CSS protection...', 70);
-            var cssResult = CssEngine.process(obfuscatedCss, obfuscatedHtml, obfuscatedJs);
-            obfuscatedCss = cssResult.css;
-            if (cssResult.html) obfuscatedHtml = cssResult.html;
-            if (cssResult.js) obfuscatedJs = cssResult.js;
-            report.cssLayers = cssResult.layers;
-        }
-
-        /* Step 5: HTML protection */
-        if (obfuscatedHtml && obfuscatedHtml.trim()) {
-            onProgress('Step 5/6 — Applying HTML protection...', 85);
-            var htmlResult = HtmlEngine.process(obfuscatedHtml, obfuscatedJs);
-            obfuscatedHtml = htmlResult.html;
-            if (htmlResult.js) obfuscatedJs = htmlResult.js;
-            report.htmlLayers = htmlResult.layers;
-        }
-
-        /* Step 6: Assemble */
-        onProgress('Step 6/6 — Assembling final output...', 95);
-
-        var finalOutput = '';
-        var parts = [];
-
-        if (lang === 'js' || lang === 'json') {
-            finalOutput = obfuscatedJs || input;
-        } else if (lang === 'css') {
-            finalOutput = obfuscatedCss || input;
-        } else {
-            if (obfuscatedHtml) parts.push(obfuscatedHtml);
-            if (obfuscatedCss && obfuscatedCss.trim()) {
-                parts.push(TAG_OPEN_STYLE + obfuscatedCss + TAG_CLOSE_STYLE);
-            }
-            if (obfuscatedJs && obfuscatedJs.trim()) {
-                var safeJs = Tags.escapeScript(obfuscatedJs);
-                parts.push(TAG_OPEN_SCRIPT + safeJs + TAG_CLOSE_SCRIPT);
-            }
-            finalOutput = parts.join('\n');
-        }
-
-        report.totalLayers = report.jsLayers + report.cssLayers + report.htmlLayers;
-        report.elapsedMs = Math.round(Utils.now() - startTime);
-        report.finalOutput = finalOutput;
-        report.obfuscatedHtml = obfuscatedHtml;
-        report.obfuscatedCss = obfuscatedCss;
-        report.obfuscatedJs = obfuscatedJs;
-        report.lang = lang;
-
-        return report;
-    }
-};
-
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION 12: MAIN PROTECT FUNCTION
-   ═══════════════════════════════════════════════════════════════════ */
-
-window.obfuscateNow = function() {
-    var inputEl = SHIELD.dom.inputCode;
-    if (!inputEl) return;
-
-    var input = inputEl.value.trim();
-
-    if (!input) {
-        UI.status('error', '❌ Please paste your code first.');
-        UI.toast('Input is empty!', 'error');
+function analyzeInput() {
+    var code = STATE.dom.inputCode ? STATE.dom.inputCode.value : '';
+    var stats = STATE.dom.inputStats;
+    var detectPanel = STATE.dom.detectPanel;
+    var detectMsg = STATE.dom.detectMessage;
+
+    if (!code.trim()) {
+        if (stats) stats.style.display = 'none';
+        if (detectPanel) detectPanel.classList.remove('active');
+        if (detectMsg) detectMsg.textContent = 'Awaiting input — paste your JavaScript code';
+        UI.detectProgress(0);
         return;
     }
 
-    if (typeof JavaScriptObfuscator === 'undefined') {
-        UI.status('error', '❌ Obfuscator library not loaded. Check your internet.');
-        UI.toast('Library missing!', 'error');
-        return;
+    var lines = code.split('\n').length;
+    var chars = code.length;
+    var size = Utils.sizeOf(code);
+
+    if (STATE.dom.statLines) STATE.dom.statLines.textContent = lines.toLocaleString();
+    if (STATE.dom.statChars) STATE.dom.statChars.textContent = chars.toLocaleString();
+    if (STATE.dom.statSize) STATE.dom.statSize.textContent = Utils.bytes(size);
+    if (STATE.dom.statLang) STATE.dom.statLang.textContent = 'JS';
+    if (stats) stats.style.display = 'grid';
+
+    var looksLikeJs = /function|var |let |const |=>|\breturn\b|console\.|document\.|window\.|class |import |export /.test(code);
+    if (detectPanel) detectPanel.classList.toggle('active', looksLikeJs);
+    if (detectMsg) {
+        detectMsg.innerHTML = looksLikeJs
+            ? 'Detected: <strong>JavaScript</strong> <span class="detected-lang">JS</span> · ' +
+              (size > CONFIG.CHUNK_THRESHOLD ? '<strong style="color:var(--gold)">CHUNKED MODE</strong>' : 'Standard mode')
+            : 'No JavaScript patterns detected — proceed with caution';
     }
-
-    var sizeBytes = Utils.sizeOf(input);
-    if (sizeBytes > MAX_INPUT_SIZE) {
-        UI.status('error', '❌ File too large (max ' + Utils.bytes(MAX_INPUT_SIZE) + ').');
-        UI.toast('File exceeds size limit!', 'error');
-        return;
-    }
-
-    var isHeavy = sizeBytes > HEAVY_THRESHOLD;
-
-    UI.lockButtons(true);
-    UI.resetLayers();
-
-    var layerSection = SHIELD.dom.layerStatusSection;
-    if (layerSection) layerSection.style.display = 'block';
-
-    if (isHeavy) {
-        UI.showProcessing('PROCESSING HEAVY FILE',
-            Utils.bytes(sizeBytes) + ' · This may take a moment...');
-    }
-
-    UI.progress(25);
-    UI.status('loading',
-        '🌌 Initializing NightOrbit 12-Layer Shield...\n' +
-        '📊 File size: ' + Utils.bytes(sizeBytes) +
-        (isHeavy ? ' (heavy — chunked processing)' : ''));
-
-    SHIELD.processingStartTime = Utils.now();
-
-    setTimeout(function() {
-        try {
-            var report = Pipeline.run(input, function(msg, pct) {
-                UI.status('loading', '⏳ ' + msg);
-                UI.progress(pct);
-                if (isHeavy) UI.updateProcessing('PROCESSING', msg.replace(/^Step \d\/\d — /, ''));
-            });
-
-            var outputSection = SHIELD.dom.outputSection;
-            var outputActions = SHIELD.dom.outputActions;
-
-            if (outputSection) outputSection.style.display = 'block';
-            if (outputActions) outputActions.style.display = 'flex';
-
-            if (SHIELD.dom.outputFinal) SHIELD.dom.outputFinal.value = report.finalOutput;
-            if (SHIELD.dom.outputHtml) SHIELD.dom.outputHtml.value = report.obfuscatedHtml || '';
-            if (SHIELD.dom.outputCss) SHIELD.dom.outputCss.value = report.obfuscatedCss || '';
-            if (SHIELD.dom.outputJs) SHIELD.dom.outputJs.value = report.obfuscatedJs || '';
-
-            SHIELD.output = {
-                final: report.finalOutput,
-                html: report.obfuscatedHtml,
-                css: report.obfuscatedCss,
-                js: report.obfuscatedJs
-            };
-            SHIELD.outputStats = report;
-
-            var origSize = sizeBytes;
-            var obfSize = Utils.sizeOf(report.finalOutput);
-            var ratio = origSize > 0 ? ((obfSize / origSize) * 100).toFixed(1) : '0';
-
-            if (SHIELD.dom.statOriginal) SHIELD.dom.statOriginal.textContent = Utils.bytes(origSize);
-            if (SHIELD.dom.statObfuscated) SHIELD.dom.statObfuscated.textContent = Utils.bytes(obfSize);
-            if (SHIELD.dom.statRatio) SHIELD.dom.statRatio.textContent = ratio + '%';
-            if (SHIELD.dom.statTime) SHIELD.dom.statTime.textContent = report.elapsedMs + ' ms';
-
-            var jsStatus = report.jsLayers >= 6 ? '✅ 6/6 Layers (Full)' :
-                          (report.jsLayers >= 3 ? '⚠️ ' + report.jsLayers + '/6 Layers (Safe)' : '⛔ 0/6');
-            var cssStatus = report.cssLayers >= 3 ? '✅ 3/3 Layers (Full)' :
-                           (report.cssLayers >= 1 ? '✅ ' + report.cssLayers + '/3 Layers' : '⛔ 0/3');
-            var htmlStatus = report.htmlLayers >= 3 ? '✅ 3/3 Layers (Full)' :
-                            (report.htmlLayers >= 1 ? '✅ ' + report.htmlLayers + '/3 Layers' : '⛔ 0/3');
-
-            var langDesc = Detector.describe(report.lang, input);
-
-            UI.status('success',
-                '🌌 NIGHTORBIT 12-LAYER SHIELD APPLIED\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '🌐 Language Mode: ' + langDesc + '\n' +
-                '🛡️ Total Layers: ' + report.totalLayers + '/12\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '⚙️ JavaScript: ' + jsStatus + '\n' +
-                '🎨 CSS:        ' + cssStatus + '\n' +
-                '📄 HTML:       ' + htmlStatus + '\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '📊 Statistics:\n' +
-                '   Original:  ' + Utils.bytes(origSize) + '\n' +
-                '   Protected: ' + Utils.bytes(obfSize) + '\n' +
-                '   Ratio:     ' + ratio + '%\n' +
-                '   Time:      ' + report.elapsedMs + ' ms\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '🔒 Protected by NightOrbit CodeForge.');
-
-            UI.progress(100);
-            UI.toast('🌌 12-Layer Shield applied!', 'success');
-
-            setTimeout(function() {
-                if (outputSection) {
-                    outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }, 300);
-
-        } catch (e) {
-            console.error('Protection error:', e);
-            UI.status('error', '❌ PROTECTION FAILED\nError: ' + (e.message || e));
-            UI.toast('Protection failed: ' + (e.message || e), 'error', 6000);
-        } finally {
-            UI.lockButtons(false);
-            UI.hideProcessing();
-        }
-    }, isHeavy ? 400 : 100);
-};
-
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION 13: INPUT DETECTION
-   ═══════════════════════════════════════════════════════════════════ */
-
-var InputHandler = {
-    update: function() {
-        var el = SHIELD.dom.inputCode;
-        if (!el) return;
-        var code = el.value;
-        var stats = SHIELD.dom.inputStats;
-        var detectPanel = SHIELD.dom.detectPanel;
-        var detectMsg = SHIELD.dom.detectMessage;
-
-        if (!code.trim()) {
-            if (stats) stats.style.display = 'none';
-            if (detectPanel) detectPanel.classList.remove('active');
-            if (detectMsg) detectMsg.innerHTML = 'Awaiting input — paste your code to begin auto-detection';
-            UI.detectProgress(0);
-            UI.progress(0);
-            return;
-        }
-
-        UI.detectProgress(40);
-
-        setTimeout(function() {
-            var lang = Detector.detect(code);
-            SHIELD.detectedLang = lang;
-            SHIELD.detectedSize = Utils.sizeOf(code);
-            SHIELD.detectedLines = code.split('\n').length;
-            SHIELD.detectedChars = code.length;
-            SHIELD.isHeavy = SHIELD.detectedSize > HEAVY_THRESHOLD;
-
-            UI.detectProgress(100);
-
-            if (stats) stats.style.display = 'grid';
-            if (SHIELD.dom.statLines) SHIELD.dom.statLines.textContent = Utils.num(SHIELD.detectedLines);
-            if (SHIELD.dom.statChars) SHIELD.dom.statChars.textContent = Utils.num(SHIELD.detectedChars);
-            if (SHIELD.dom.statSize) SHIELD.dom.statSize.textContent = Utils.bytes(SHIELD.detectedSize);
-
-            var langDesc = Detector.describe(lang, code);
-            if (SHIELD.dom.statLang) SHIELD.dom.statLang.textContent = langDesc;
-
-            if (detectPanel) detectPanel.classList.add('active');
-            if (detectMsg) {
-                var sizeNote = SHIELD.isHeavy ? ' · <strong style="color:var(--gold);">Heavy file</strong>' : '';
-                detectMsg.innerHTML = '🔍 Auto-detected: <span class="detected-lang">' + langDesc + '</span>' + sizeNote;
-            }
-
-            UI.progress(20);
-        }, 150);
-    },
-
-    bind: function() {
-        var el = SHIELD.dom.inputCode;
-        if (!el) return;
-        el.addEventListener('input', InputHandler.update);
-    }
-};
-
-/* ═══════════════════════════════════════════════════════════════════
-   SECTION 14: TABS / COPY / DOWNLOAD / CLEAR
-   ═══════════════════════════════════════════════════════════════════ */
-
-window.switchTab = function(tab) {
-    var tabs = document.querySelectorAll('.tabs .tab');
-    for (var i = 0; i < tabs.length; i++) {
-        tabs[i].classList.toggle('active', tabs[i].dataset.tab === tab);
-    }
-    var contents = document.querySelectorAll('.tab-content');
-    for (var j = 0; j < contents.length; j++) {
-        contents[j].classList.toggle('active', contents[j].id === 'tab-' + tab);
-    }
-};
-
-function fallbackCopy(text) {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.left = '-9999px';
-    document.body.appendChild(ta);
-    ta.focus();
-    ta.select();
-    try {
-        if (document.execCommand('copy')) UI.toast('Copied!', 'success');
-        else UI.toast('Copy failed', 'error');
-    } catch (e) { UI.toast('Copy failed', 'error'); }
-    document.body.removeChild(ta);
+    UI.detectProgress(Math.min(100, size / 1024));
 }
 
-window.copyOutput = function() {
-    var out = SHIELD.dom.outputFinal;
-    if (!out || !out.value) { UI.toast('Nothing to copy', 'error'); return; }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(out.value)
-            .then(function() { UI.toast('Copied!', 'success'); })
-            .catch(function() { fallbackCopy(out.value); });
-    } else {
-        fallbackCopy(out.value);
+/* ═══════════════════════════════════════════════════════════════════
+   CORE OBFUSCATION
+   ═══════════════════════════════════════════════════════════════════ */
+function obfuscateOnce(code, preset) {
+    var options = buildOptions(preset);
+    var result = JavaScriptObfuscator.obfuscate(code, options);
+    return result.getObfuscatedCode();
+}
+
+function obfuscateWithFallback(code, startPreset) {
+    var chain = FALLBACK_CHAIN[startPreset] || ['medium'];
+    var lastError = null;
+    for (var i = 0; i < chain.length; i++) {
+        var preset = chain[i];
+        try {
+            var out = obfuscateOnce(code, preset);
+            return { code: out, preset: preset, fellBack: i > 0 };
+        } catch (err) {
+            lastError = err;
+            console.warn('Preset "' + preset + '" failed:', err.message);
+        }
     }
-};
+    throw lastError || new Error('All presets failed');
+}
 
-window.downloadOutput = function() {
-    var out = SHIELD.dom.outputFinal;
-    if (!out || !out.value) { UI.toast('Nothing to download', 'error'); return; }
-    var ext = 'txt';
-    var lang = SHIELD.detectedLang;
-    if (lang === 'js') ext = 'js';
-    else if (lang === 'css') ext = 'css';
-    else if (lang === 'html') ext = 'html';
-    else if (lang === 'json') ext = 'json';
+/* ═══════════════════════════════════════════════════════════════════
+   MAIN — obfuscateNow
+   ═══════════════════════════════════════════════════════════════════ */
+window.obfuscateNow = function() {
+    if (STATE.isProcessing) return;
 
-    try {
-        var blob = new Blob([out.value], { type: 'text/plain;charset=utf-8' });
-        var a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'nightorbit_protected_' + Date.now() + '.' + ext;
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(function() {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(a.href);
-        }, 100);
-        UI.toast('Downloaded!', 'success');
-    } catch (e) { UI.toast('Download failed', 'error'); }
-};
+    var rawCode = STATE.dom.inputCode ? STATE.dom.inputCode.value : '';
+    if (!rawCode.trim()) {
+        UI.toast('Please paste some JavaScript code first', 'warn');
+        return;
+    }
+    if (rawCode.length > CONFIG.MAX_INPUT_SIZE) {
+        UI.toast('Input too large (max 50MB)', 'error');
+        return;
+    }
+    if (typeof JavaScriptObfuscator === 'undefined') {
+        UI.toast('Obfuscator library not loaded — check internet', 'error');
+        return;
+    }
 
-window.downloadAll = function() {
-    var files = [
-        { c: SHIELD.output.final, n: 'nightorbit_final.txt' },
-        { c: SHIELD.output.html, n: 'nightorbit.html' },
-        { c: SHIELD.output.css, n: 'nightorbit.css' },
-        { c: SHIELD.output.js, n: 'nightorbit.js' }
-    ];
-    var count = 0;
-    files.forEach(function(f) {
-        if (!f.c || !f.c.trim()) return;
-        (function(file, idx) {
-            setTimeout(function() {
-                try {
-                    var blob = new Blob([file.c], { type: 'text/plain;charset=utf-8' });
-                    var a = document.createElement('a');
-                    a.href = URL.createObjectURL(blob);
-                    a.download = file.n;
-                    a.style.display = 'none';
-                    document.body.appendChild(a);
-                    a.click();
-                    setTimeout(function() {
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(a.href);
-                    }, 100);
-                } catch (e) {}
-            }, idx * 300);
-        })(f, count);
-        count++;
-    });
-    if (count === 0) { UI.toast('Nothing to download', 'error'); return; }
-    UI.toast('Downloading ' + count + ' file(s)...', 'success');
-};
-
-window.loadSample = function() {
-    var el = SHIELD.dom.inputCode;
-    if (!el) return;
-
-    var lines = [
-        '<!DOCTYPE html>', '<html lang="en">', '<head>',
-        '    <meta charset="UTF-8">',
-        '    <title>NightOrbit Sample</title>',
-        '    <style>',
-        '        /* Sample CSS */',
-        '        body { background: #000; color: #fff; padding: calc(2rem + 8px); }',
-        '        .container { max-width: 600px; margin: 0 auto; }',
-        '        .btn { background: #00f0ff; padding: 12px 24px; border: none; color: #000; cursor: pointer; border-radius: 6px; }',
-        '    </style>',
-        '</head>', '<body>',
-        '    <div class="container">',
-        '        <h1>Protected by NightOrbit</h1>',
-        '        <button class="btn" onclick="calculate()">Calculate</button>',
-        '        <div id="result"></div>',
-        '    </div>',
-        '    ' + TAG_OPEN_SCRIPT,
-        '        function calculate() {',
-        '            var items = [',
-        '                { name: "Laptop", price: 1200 },',
-        '                { name: "Mouse", price: 25 },',
-        '                { name: "Keyboard", price: 80 }',
-        '            ];',
-        '            var total = 0;',
-        '            for (var i = 0; i < items.length; i++) {',
-        '                total += items[i].price;',
-        '            }',
-        '            document.getElementById("result").textContent = "Total: $" + total;',
-        '        }',
-        '        calculate();',
-        '    ' + TAG_CLOSE_SCRIPT,
-        '</body>', '</html>'
-    ];
-
-    el.value = lines.join('\n');
-    el.dispatchEvent(new Event('input'));
-    UI.toast('Sample loaded! Click PROTECT CODE — AUTO', 'info');
-};
-
-window.clearAll = function() {
-    if (!confirm('Clear all input and output?')) return;
-
-    var el = SHIELD.dom.inputCode;
-    if (el) el.value = '';
-
-    ['outputFinal', 'outputHtml', 'outputCss', 'outputJs'].forEach(function(id) {
-        var e = SHIELD.dom[id];
-        if (e) e.value = '';
-    });
-
-    if (SHIELD.dom.inputStats) SHIELD.dom.inputStats.style.display = 'none';
-    if (SHIELD.dom.outputSection) SHIELD.dom.outputSection.style.display = 'none';
-    if (SHIELD.dom.outputActions) SHIELD.dom.outputActions.style.display = 'none';
-    if (SHIELD.dom.layerStatusSection) SHIELD.dom.layerStatusSection.style.display = 'none';
-
+    UI.showProcessing('PROTECTING', 'Preparing...');
+    UI.resetLayers();
     UI.hideStatus();
+    UI.progress(2);
+
+    setTimeout(function() {
+        var t0 = Utils.now();
+        var clean = stripJsComments(rawCode);
+        UI.progress(8);
+
+        var useChunks = clean.length > CONFIG.CHUNK_THRESHOLD;
+        var chunks = useChunks ? splitIntoChunks(clean, CONFIG.CHUNK_SIZE) : [clean];
+        STATE.stats.chunks = chunks.length;
+
+        UI.updateProcessing('PROTECTING',
+            useChunks ? 'Chunked mode: ' + chunks.length + ' chunks' : 'Single-pass mode');
+
+        var obfuscatedChunks = [];
+        var usedPreset = STATE.preset;
+        var fellBack = false;
+        var idx = 0;
+
+        function processNextChunk() {
+            if (idx >= chunks.length) {
+                finish();
+                return;
+            }
+
+            var pct = 10 + ((idx / chunks.length) * 70);
+            UI.progress(pct);
+            UI.updateProcessing('PROTECTING',
+                'Processing chunk ' + (idx+1) + '/' + chunks.length + ' — ' + STATE.preset.toUpperCase());
+
+            Utils.yield().then(function() {
+                try {
+                    var res = obfuscateWithFallback(chunks[idx], STATE.preset);
+                    obfuscatedChunks.push(res.code);
+                    if (res.fellBack) {
+                        fellBack = true;
+                        usedPreset = res.preset;
+                    }
+                    idx++;
+                    processNextChunk();
+                } catch (err) {
+                    handleError(err);
+                }
+            });
+        }
+
+        function finish() {
+            try {
+                UI.progress(85);
+                UI.updateProcessing('PROTECTING', 'Assembling output...');
+
+                var finalCode = obfuscatedChunks.join('\n');
+                var layerKeys = Object.keys(STATE.layers);
+                for (var li = 0; li < layerKeys.length; li++) {
+                    UI.setLayer(layerKeys[li]);
+                }
+
+                var t1 = Utils.now();
+                var elapsed = Math.round(t1 - t0);
+                var origSize = Utils.sizeOf(clean);
+                var obfSize = Utils.sizeOf(finalCode);
+                var ratio = origSize > 0 ? (obfSize / origSize).toFixed(2) + 'x' : '—';
+
+                STATE.output.final = finalCode;
+                STATE.output.js = finalCode;
+                STATE.stats.origSize = origSize;
+                STATE.stats.obfSize = obfSize;
+                STATE.stats.elapsed = elapsed;
+                STATE.stats.ratio = ratio;
+
+                if (STATE.dom.outputFinal) STATE.dom.outputFinal.value = finalCode;
+                if (STATE.dom.outputJs) STATE.dom.outputJs.value = finalCode;
+                if (STATE.dom.statOriginal) STATE.dom.statOriginal.textContent = Utils.bytes(origSize);
+                if (STATE.dom.statObfuscated) STATE.dom.statObfuscated.textContent = Utils.bytes(obfSize);
+                if (STATE.dom.statRatio) STATE.dom.statRatio.textContent = ratio;
+                if (STATE.dom.statTime) STATE.dom.statTime.textContent = elapsed + ' ms';
+                if (STATE.dom.statChunks) STATE.dom.statChunks.textContent = STATE.stats.chunks;
+
+                if (STATE.dom.layerStatusSection) STATE.dom.layerStatusSection.style.display = 'block';
+                if (STATE.dom.outputSection) STATE.dom.outputSection.style.display = 'block';
+                if (STATE.dom.outputActions) STATE.dom.outputActions.style.display = 'flex';
+
+                UI.progress(100);
+
+                var msg = '✅ JavaScript protected successfully!\n';
+                msg += 'Requested: ' + STATE.preset.toUpperCase() + '\n';
+                msg += 'Used: ' + usedPreset.toUpperCase();
+                if (fellBack) msg += ' (auto-fallback)';
+                msg += '\n';
+                msg += 'Chunks: ' + STATE.stats.chunks + '\n';
+                msg += 'Original: ' + Utils.bytes(origSize) + '\n';
+                msg += 'Protected: ' + Utils.bytes(obfSize) + '\n';
+                msg += 'Ratio: ' + ratio + '\n';
+                msg += 'Time: ' + elapsed + ' ms';
+                UI.status('success', msg);
+
+                UI.toast('Protection complete! ' + (fellBack ? '(fell back to ' + usedPreset + ')' : ''), 'success', 5000);
+            } catch (err) {
+                handleError(err);
+            } finally {
+                UI.hideProcessing();
+            }
+        }
+
+        function handleError(err) {
+            console.error(err);
+            UI.status('error',
+                '❌ Obfuscation failed:\n' +
+                (err && err.message ? err.message : String(err)) +
+                '\n\nTry a lower preset or smaller input.');
+            UI.toast('Obfuscation failed: ' + (err.message || 'unknown'), 'error', 6000);
+            UI.hideProcessing();
+        }
+
+        processNextChunk();
+    }, 50);
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   PRESET HANDLER
+   ═══════════════════════════════════════════════════════════════════ */
+window.setPreset = function(preset, el) {
+    STATE.preset = preset;
+    var btns = document.querySelectorAll('.preset-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+    if (el) el.classList.add('active');
+    UI.toast('Preset: ' + preset.toUpperCase(), 'info', 1800);
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   SAMPLE
+   ═══════════════════════════════════════════════════════════════════ */
+window.loadSample = function() {
+    var sample = [
+        '// NightOrbit sample JavaScript',
+        '"use strict";',
+        '',
+        'const CONFIG = {',
+        '    apiUrl: "https://api.example.com/v1",',
+        '    timeout: 5000,',
+        '    retries: 3,',
+        '    debug: false',
+        '};',
+        '',
+        'class ApiClient {',
+        '    constructor(config) {',
+        '        this.config = config;',
+        '        this.cache = new Map();',
+        '    }',
+        '',
+        '    async request(endpoint, options) {',
+        '        options = options || {};',
+        '        const url = this.config.apiUrl + endpoint;',
+        '        const opts = Object.assign({ method: "GET" }, options);',
+        '        for (let i = 0; i < this.config.retries; i++) {',
+        '            try {',
+        '                const res = await fetch(url, opts);',
+        '                if (!res.ok) throw new Error("HTTP " + res.status);',
+        '                return await res.json();',
+        '            } catch (err) {',
+        '                if (i === this.config.retries - 1) throw err;',
+        '                await new Promise(function(r) { setTimeout(r, 1000 * (i + 1)); });',
+        '            }',
+        '        }',
+        '    }',
+        '',
+        '    clearCache() {',
+        '        this.cache.clear();',
+        '    }',
+        '}',
+        '',
+        'function greet(name) {',
+        '    const msg = "Hello, " + name + "!";',
+        '    return msg;',
+        '}',
+        '',
+        'const user = { id: 42, name: "NightOrbit", role: "admin", tags: ["js", "secure"] };',
+        'greet(user.name);'
+    ].join('\n');
+
+    if (STATE.dom.inputCode) STATE.dom.inputCode.value = sample;
+    analyzeInput();
+    UI.toast('Sample loaded', 'success');
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   CLEAR
+   ═══════════════════════════════════════════════════════════════════ */
+window.clearAll = function() {
+    if (STATE.dom.inputCode) STATE.dom.inputCode.value = '';
+    if (STATE.dom.outputFinal) STATE.dom.outputFinal.value = '';
+    if (STATE.dom.outputJs) STATE.dom.outputJs.value = '';
+    if (STATE.dom.outputSection) STATE.dom.outputSection.style.display = 'none';
+    if (STATE.dom.outputActions) STATE.dom.outputActions.style.display = 'none';
+    if (STATE.dom.layerStatusSection) STATE.dom.layerStatusSection.style.display = 'none';
+    if (STATE.dom.inputStats) STATE.dom.inputStats.style.display = 'none';
     UI.resetLayers();
     UI.progress(0);
-    UI.detectProgress(0);
-
-    if (SHIELD.dom.detectMessage) {
-        SHIELD.dom.detectMessage.innerHTML = 'Awaiting input — paste your code to begin auto-detection';
-    }
-    if (SHIELD.dom.detectPanel) SHIELD.dom.detectPanel.classList.remove('active');
-
-    SHIELD.output = { final: '', html: '', css: '', js: '' };
-    SHIELD.classMap = null;
-    SHIELD.attrMap = null;
-
+    UI.hideStatus();
     UI.toast('Cleared', 'info');
 };
 
-window.doLogout = function() {
-    if (window.firebase && window.firebase.auth) {
-        window.firebase.auth().signOut()
-            .then(function() { window.location.href = 'index.html'; })
-            .catch(function() { window.location.href = 'index.html'; });
-    } else {
-        window.location.href = 'index.html';
+/* ═══════════════════════════════════════════════════════════════════
+   TABS
+   ═══════════════════════════════════════════════════════════════════ */
+window.switchTab = function(name) {
+    var tabs = document.querySelectorAll('.tab');
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.toggle('active', tabs[i].dataset.tab === name);
+    }
+    var contents = document.querySelectorAll('.tab-content');
+    for (var j = 0; j < contents.length; j++) {
+        contents[j].classList.toggle('active', contents[j].id === 'tab-' + name);
     }
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 15: AUTH HANDLER
+   COPY / DOWNLOAD
    ═══════════════════════════════════════════════════════════════════ */
+window.copyOutput = function() {
+    var txt = STATE.output.final || '';
+    if (!txt) { UI.toast('Nothing to copy', 'warn'); return; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(function() {
+            UI.toast('Copied to clipboard', 'success');
+        }).catch(function() {
+            fallbackCopy(txt);
+        });
+    } else {
+        fallbackCopy(txt);
+    }
+};
 
-function handleAuth(e) {
-    if (!e || !e.detail || !e.detail.user) return;
-    if (SHIELD.authHandled) return;
-    SHIELD.authHandled = true;
-    SHIELD.user = e.detail.user;
-
-    var name = e.detail.name ||
-        (SHIELD.user.email ? SHIELD.user.email.split('@')[0] : 'User');
-
-    var welcomeEl = SHIELD.dom.welcomeName;
-    if (welcomeEl) welcomeEl.textContent = name;
+function fallbackCopy(txt) {
+    var ta = document.createElement('textarea');
+    ta.value = txt;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        UI.toast('Copied to clipboard', 'success');
+    } catch (e) {
+        UI.toast('Copy failed', 'error');
+    }
+    document.body.removeChild(ta);
 }
 
-document.addEventListener('auth-guard-ready', handleAuth);
-document.addEventListener('auth-ready', handleAuth);
-
-setTimeout(function() {
-    if (!SHIELD.user && window.firebase && window.firebase.auth && window.firebase.auth().currentUser) {
-        handleAuth({ detail: { user: window.firebase.auth().currentUser } });
-    }
-}, 3000);
+window.downloadOutput = function() {
+    var txt = STATE.output.final || '';
+    if (!txt) { UI.toast('Nothing to download', 'warn'); return; }
+    var blob = new Blob([txt], { type: 'application/javascript' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'nightorbit-protected-' + Date.now() + '.js';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+    UI.toast('Download started', 'success');
+};
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 16: INITIALIZATION
+   LOGOUT
    ═══════════════════════════════════════════════════════════════════ */
+window.doLogout = function() {
+    try {
+        if (typeof firebase !== 'undefined' && firebase.auth) {
+            firebase.auth().signOut().then(function() {
+                window.location.href = 'Login.html';
+            }).catch(function() {
+                window.location.href = 'Login.html';
+            });
+        } else {
+            window.location.href = 'Login.html';
+        }
+    } catch (e) {
+        window.location.href = 'Login.html';
+    }
+};
 
+/* ═══════════════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════════════ */
 function init() {
     UI.cache();
-    InputHandler.bind();
-    UI.progress(0);
-    UI.detectProgress(0);
 
-    console.log('%c🌌 NightOrbit 12-Layer Shield v9.0 ULTRA',
-        'color:#00f0ff;font-size:16px;font-weight:bold;');
-    console.log('%c✨ Auto-detect · Auto-preset · Full 12-layer',
-        'color:#ffd700;font-size:11px;');
-    console.log('%c⚡ Reserved: ' + getUniqueReservedNames().length + ' unique names',
-        'color:#00ff64;font-size:11px;');
+    var input = STATE.dom.inputCode;
+    if (input) {
+        var debounce;
+        input.addEventListener('input', function() {
+            clearTimeout(debounce);
+            debounce = setTimeout(analyzeInput, 250);
+        });
+    }
+
+    try {
+        if (typeof firebase !== 'undefined' && firebase.auth) {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    var name = user.displayName || user.email || 'User';
+                    if (STATE.dom.welcomeName) STATE.dom.welcomeName.textContent = name;
+                }
+            });
+        }
+    } catch (e) {}
+
+    UI.toast('NightOrbit ULTRA Heavy v11.0 ready', 'success', 3000);
 }
 
 if (document.readyState === 'loading') {
@@ -2917,6 +2592,5 @@ if (document.readyState === 'loading') {
 
 })();
 </script>
-
 </body>
-</html>  
+</html>
