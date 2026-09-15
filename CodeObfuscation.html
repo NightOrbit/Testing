@@ -1453,17 +1453,15 @@ var TAG_CLOSE_STYLE  = '<' + '/style>';
 
 var MAX_INPUT_SIZE = 50 * 1024 * 1024;
 var HEAVY_THRESHOLD = 512 * 1024;
-var CHUNK_DELAY = 50;
 var DETECT_SAMPLE_SIZE = 12000;
 
-/* ✅ CRITICAL: Reserved names — never rename these */
+/* ═══ RESERVED NAMES — ALL UNIQUE (no duplicates) ═══ */
 var RESERVED_NAMES = [
     /* HTML onclick handlers */
-    'showPage', 'calculate', 'doLogout', 'init', 'load', 'save',
-    'delete', 'open', 'close', 'toggle', 'submit', 'reset', 'clear',
-    'loadSample', 'clearAll', 'copyOutput', 'downloadOutput',
-    'downloadAll', 'switchTab', 'obfuscateNow', 'setPreset', 'setLang',
-    'toggleOpt', 'handleAuth', 'fallbackCopy',
+    'showPage', 'calculate', 'doLogout', 'loadSample', 'clearAll',
+    'copyOutput', 'downloadOutput', 'downloadAll', 'switchTab',
+    'obfuscateNow', 'setPreset', 'setLang', 'toggleOpt', 'handleAuth',
+    'fallbackCopy',
 
     /* Native JS globals */
     'window', 'document', 'console', 'localStorage', 'sessionStorage',
@@ -1477,7 +1475,7 @@ var RESERVED_NAMES = [
 
     /* Native DOM properties */
     'dataset', 'classList', 'textContent', 'innerHTML', 'outerHTML',
-    'value', 'style', 'className', 'id', 'tagName', 'nodeName',
+    'value', 'style', 'className', 'tagName', 'nodeName',
     'children', 'parentNode', 'parentElement', 'firstChild', 'lastChild',
     'nextSibling', 'previousSibling', 'childNodes', 'attributes',
     'getElementById', 'querySelector', 'querySelectorAll',
@@ -1486,29 +1484,41 @@ var RESERVED_NAMES = [
     'setAttribute', 'getAttribute', 'removeAttribute', 'hasAttribute',
     'appendChild', 'removeChild', 'insertBefore', 'replaceChild',
     'createElement', 'createTextNode', 'createDocumentFragment',
-    'scrollTo', 'scrollIntoView', 'focus', 'blur', 'click',
+    'scrollIntoView',
     'preventDefault', 'stopPropagation', 'stopImmediatePropagation',
 
     /* DOM events */
-    'click', 'input', 'change', 'submit', 'keydown', 'keyup',
-    'keypress', 'mouseover', 'mouseout', 'mousedown', 'mouseup',
-    'touchstart', 'touchend', 'touchmove', 'load', 'error',
+    'click', 'input', 'change', 'keydown', 'keyup', 'keypress',
+    'mouseover', 'mouseout', 'mousedown', 'mouseup',
+    'touchstart', 'touchend', 'touchmove',
     'DOMContentLoaded', 'readystatechange',
 
-    /* Common properties */
+    /* Common array/string methods */
     'length', 'push', 'pop', 'shift', 'unshift', 'slice', 'splice',
     'concat', 'join', 'split', 'replace', 'match', 'test', 'exec',
-    'toString', 'valueOf', 'hasOwnProperty', 'prototype', 'constructor',
+    'valueOf', 'hasOwnProperty', 'prototype', 'constructor',
     'forEach', 'map', 'filter', 'reduce', 'find', 'findIndex',
     'indexOf', 'lastIndexOf', 'includes', 'some', 'every',
     'keys', 'values', 'entries', 'assign', 'freeze',
     'then', 'catch', 'finally', 'resolve', 'reject', 'all', 'race',
 
-    /* Common variable names */
-    'state', 'config', 'options', 'data', 'result', 'response',
-    'error', 'err', 'e', 'i', 'j', 'k', 'n', 'x', 'y', 'z',
-    'self', 'this', 'arguments', 'undefined', 'null', 'true', 'false'
+    /* Common variables */
+    'state', 'config', 'data', 'result', 'response',
+    'self', 'arguments', 'undefined', 'null'
 ];
+
+/* ✅ Auto-dedupe reserved names */
+function getUniqueReservedNames() {
+    var unique = [];
+    var seen = {};
+    RESERVED_NAMES.forEach(function(name) {
+        if (!seen[name]) {
+            seen[name] = true;
+            unique.push(name);
+        }
+    });
+    return unique;
+}
 
 var SHIELD = {
     user: null,
@@ -1538,7 +1548,7 @@ var SHIELD = {
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 2: LOW-LEVEL UTILITIES
+   SECTION 2: UTILITIES
    ═══════════════════════════════════════════════════════════════════ */
 
 var Utils = {
@@ -1555,9 +1565,8 @@ var Utils = {
     },
     sizeOf: function(str) {
         if (!str) return 0;
-        try {
-            return new Blob([str]).size;
-        } catch (e) {
+        try { return new Blob([str]).size; }
+        catch (e) {
             var len = 0;
             for (var i = 0; i < str.length; i++) {
                 var c = str.charCodeAt(i);
@@ -1575,12 +1584,8 @@ var Utils = {
     },
     escapeHtml: function(str) {
         if (!str) return '';
-        return str
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     },
     randomHex: function(prefix, length) {
         prefix = prefix || '_0x';
@@ -1592,16 +1597,6 @@ var Utils = {
         }
         return prefix + hex;
     },
-    hashCode: function(str) {
-        if (!str) return 0;
-        var hash = 0;
-        for (var i = 0; i < str.length; i++) {
-            var c = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + c;
-            hash = hash & hash;
-        }
-        return Math.abs(hash);
-    },
     trimLength: function(str, max) {
         if (!str) return '';
         if (str.length <= max) return str;
@@ -1609,19 +1604,15 @@ var Utils = {
     },
     now: function() {
         return (window.performance && window.performance.now)
-            ? window.performance.now()
-            : Date.now();
+            ? window.performance.now() : Date.now();
     },
-    /* Convert data-page to page (camelCase) */
     toCamelCase: function(str) {
-        return str.replace(/-([a-z])/g, function(m, c) {
-            return c.toUpperCase();
-        });
+        return str.replace(/-([a-z])/g, function(m, c) { return c.toUpperCase(); });
     }
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 3: DOM CACHE & UI HELPERS
+   SECTION 3: UI HELPERS
    ═══════════════════════════════════════════════════════════════════ */
 
 var UI = {
@@ -1629,8 +1620,7 @@ var UI = {
         var ids = [
             'inputCode', 'inputStats', 'statLines', 'statChars', 'statSize', 'statLang',
             'detectPanel', 'detectMessage', 'detectProgressFill',
-            'progressFill', 'progressPercent',
-            'status',
+            'progressFill', 'progressPercent', 'status',
             'layerStatusSection', 'layerStatus',
             'outputSection', 'outputActions',
             'outputFinal', 'outputHtml', 'outputCss', 'outputJs',
@@ -1657,20 +1647,14 @@ var UI = {
         duration = duration || 4000;
         var c = SHIELD.dom.toastContainer;
         if (!c) return;
-
         var iconMap = {
-            success: 'fa-circle-check',
-            error: 'fa-circle-xmark',
-            warn: 'fa-triangle-exclamation',
-            info: 'fa-circle-info'
+            success: 'fa-circle-check', error: 'fa-circle-xmark',
+            warn: 'fa-triangle-exclamation', info: 'fa-circle-info'
         };
-        var iconClass = iconMap[type] || iconMap.info;
-
         var el = document.createElement('div');
         el.className = 'toast ' + type;
-        el.innerHTML = '<i class="fa-solid ' + iconClass + '"></i><span>' + Utils.escapeHtml(msg) + '</span>';
+        el.innerHTML = '<i class="fa-solid ' + (iconMap[type] || iconMap.info) + '"></i><span>' + Utils.escapeHtml(msg) + '</span>';
         c.appendChild(el);
-
         setTimeout(function() {
             el.classList.add('removing');
             setTimeout(function() {
@@ -1731,67 +1715,44 @@ var UI = {
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 4: COMMENT STRIPPERS (String-Aware, Safe)
+   SECTION 4: COMMENT STRIPPERS
    ═══════════════════════════════════════════════════════════════════ */
 
 var Comments = {
     stripCss: function(code) {
         if (!code) return '';
-        var result = '';
-        var i = 0, len = code.length;
+        var result = '', i = 0, len = code.length;
         var inString = false, stringChar = '';
-
         while (i < len) {
             var ch = code[i], next = code[i + 1];
-
             if (inString) {
                 result += ch;
-                if (ch === '\\' && i + 1 < len) {
-                    result += code[i + 1];
-                    i += 2;
-                    continue;
-                }
+                if (ch === '\\' && i + 1 < len) { result += code[i + 1]; i += 2; continue; }
                 if (ch === stringChar) inString = false;
-                i++;
-                continue;
+                i++; continue;
             }
-
             if (ch === '"' || ch === "'") {
-                inString = true;
-                stringChar = ch;
-                result += ch;
-                i++;
-                continue;
+                inString = true; stringChar = ch; result += ch; i++; continue;
             }
-
             if (ch === '/' && next === '*') {
                 i += 2;
                 while (i < len) {
-                    if (code[i] === '*' && code[i + 1] === '/') {
-                        i += 2;
-                        break;
-                    }
+                    if (code[i] === '*' && code[i + 1] === '/') { i += 2; break; }
                     i++;
                 }
                 continue;
             }
-
-            result += ch;
-            i++;
+            result += ch; i++;
         }
         return result;
     },
 
     stripJs: function(code) {
         if (!code) return '';
-        var result = '';
-        var i = 0, len = code.length;
+        var result = '', i = 0, len = code.length;
         var state = 'code';
-
         while (i < len) {
-            var ch = code[i];
-            var next = code[i + 1];
-
+            var ch = code[i], next = code[i + 1];
             if (state === 'line') {
                 if (ch === '\n') { state = 'code'; result += ch; }
                 i++; continue;
@@ -1818,15 +1779,12 @@ var Comments = {
                 if (ch === '`') state = 'code';
                 i++; continue;
             }
-
             if (ch === '/' && next === '/') { state = 'line'; i += 2; continue; }
             if (ch === '/' && next === '*') { state = 'block'; i += 2; continue; }
             if (ch === "'") { state = 'single'; result += ch; i++; continue; }
             if (ch === '"') { state = 'double'; result += ch; i++; continue; }
             if (ch === '`') { state = 'template'; result += ch; i++; continue; }
-
-            result += ch;
-            i++;
+            result += ch; i++;
         }
         return result;
     },
@@ -1853,22 +1811,18 @@ var Tags = {
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 6: CSS PROCESSING ENGINE (3 Layers + JS Sync)
+   SECTION 6: CSS ENGINE (3 Layers + JS Sync)
    ═══════════════════════════════════════════════════════════════════ */
 
 var CssEngine = {
-
     preserveExtensions: function(css) {
-        var extensions = {};
-        var extIndex = 0;
+        var extensions = {}, extIndex = 0;
         var extPattern = /\.(png|jpg|jpeg|gif|svg|webp|ico|bmp|tiff|woff|woff2|ttf|otf|eot|mp4|mp3|wav|ogg|webm|pdf|zip)(?=["')\s,;}])/gi;
-
         css = css.replace(extPattern, function(m) {
             var key = '__NB_EXT_' + (extIndex++) + '__';
             extensions[key] = m;
             return key;
         });
-
         return { css: css, extensions: extensions };
     },
 
@@ -1882,13 +1836,10 @@ var CssEngine = {
     minify: function(css) {
         if (!css) return '';
         var result = css;
-
         result = result.replace(/[\r\n\t]+/g, ' ');
         result = result.replace(/ {2,}/g, ' ');
 
-        var placeholders = [];
-        var phIndex = 0;
-
+        var placeholders = [], phIndex = 0;
         function ph(m) {
             placeholders.push(m);
             return '__NB_CSS_PH_' + (phIndex++) + '__';
@@ -1920,7 +1871,6 @@ var CssEngine = {
         return result.trim();
     },
 
-    /* ✅ FIXED: obfuscateClasses with JS sync */
     obfuscateClasses: function(css, html, js) {
         if (!css) return { css: css, html: html, js: js, classMap: {} };
 
@@ -1928,18 +1878,15 @@ var CssEngine = {
         css = extResult.css;
 
         var classRegex = /\.([a-zA-Z_][a-zA-Z0-9_-]*)/g;
-        var classes = {};
-        var m;
+        var classes = {}, m;
 
         while ((m = classRegex.exec(css)) !== null) {
             var cls = m[1];
-
             var safeList = ['active', 'hidden', 'show', 'hide', 'open', 'close',
                 'disabled', 'selected', 'visible', 'focus', 'hover', 'loaded',
                 'loading', 'error', 'success', 'warn', 'danger', 'info'];
             if (safeList.indexOf(cls.toLowerCase()) !== -1) continue;
             if (/^__NB_/.test(cls)) continue;
-
             classes[cls] = true;
         }
 
@@ -1948,7 +1895,6 @@ var CssEngine = {
             classMap[cls] = Utils.randomHex('_0x', 6);
         });
 
-        /* Replace in CSS */
         Object.keys(classMap).forEach(function(oldCls) {
             var re = new RegExp('\\.' + Utils.escapeRegex(oldCls) + '(?![a-zA-Z0-9_-])', 'g');
             css = css.replace(re, '.' + classMap[oldCls]);
@@ -1956,7 +1902,6 @@ var CssEngine = {
 
         css = this.restoreExtensions(css, extResult.extensions);
 
-        /* Replace in HTML */
         if (html) {
             html = html.replace(/class\s*=\s*"([^"]*)"/gi, function(m, classList) {
                 var newList = classList.split(/\s+/).map(function(c) {
@@ -1972,24 +1917,19 @@ var CssEngine = {
             });
         }
 
-        /* ✅ CRITICAL FIX: Sync class references in JS */
         if (js && Object.keys(classMap).length > 0) {
             Object.keys(classMap).forEach(function(oldCls) {
                 var newCls = classMap[oldCls];
 
-                /* 1. querySelector('.class') / querySelectorAll('.class') */
                 var re1 = new RegExp("(['\"`]\\s*\\.)" + Utils.escapeRegex(oldCls) + "(?![a-zA-Z0-9_-])", 'g');
                 js = js.replace(re1, '$1' + newCls);
 
-                /* 2. classList.add('class') / remove / toggle / contains */
                 var re2 = new RegExp("((?:classList\\.(?:add|remove|toggle|contains|replace))\\s*\\(\\s*['\"`])" + Utils.escapeRegex(oldCls) + "(['\"`])", 'g');
                 js = js.replace(re2, '$1' + newCls + '$2');
 
-                /* 3. className === 'class' / className == 'class' */
                 var re3 = new RegExp("(className\\s*[=!]==?\\s*['\"`])" + Utils.escapeRegex(oldCls) + "(['\"`])", 'g');
                 js = js.replace(re3, '$1' + newCls + '$2');
 
-                /* 4. getElementsByClassName('class') */
                 var re4 = new RegExp("(getElementsByClassName\\s*\\(\\s*['\"`])" + Utils.escapeRegex(oldCls) + "(['\"`])", 'g');
                 js = js.replace(re4, '$1' + newCls + '$2');
             });
@@ -2002,21 +1942,16 @@ var CssEngine = {
         if (!css || !css.trim()) {
             return { css: css || '', html: html, js: js, layers: 0 };
         }
+        var result = css, layers = 0;
 
-        var result = css;
-        var layers = 0;
-
-        /* Layer 1: Comments */
         result = Comments.stripCss(result);
         layers++;
         UI.setLayer('css1');
 
-        /* Layer 2: Safe minify */
         result = this.minify(result);
         layers++;
         UI.setLayer('css2');
 
-        /* Layer 3: Class obfuscation with JS sync */
         var obfResult = this.obfuscateClasses(result, html, js);
         result = obfResult.css;
         if (obfResult.html) html = obfResult.html;
@@ -2030,16 +1965,14 @@ var CssEngine = {
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 7: HTML PROCESSING ENGINE (3 Layers + JS Sync)
+   SECTION 7: HTML ENGINE (3 Layers + JS Sync)
    ═══════════════════════════════════════════════════════════════════ */
 
 var HtmlEngine = {
-
     minify: function(html) {
         if (!html) return '';
         var result = html;
-        var placeholders = [];
-        var phIndex = 0;
+        var placeholders = [], phIndex = 0;
 
         function ph(m) {
             placeholders.push(m);
@@ -2082,7 +2015,6 @@ var HtmlEngine = {
         return result.trim();
     },
 
-    /* ✅ FIXED: obfuscateAttributes with complete JS sync */
     obfuscateAttributes: function(html, js) {
         if (!html) return { html: html, js: js, attrMap: {} };
 
@@ -2090,12 +2022,13 @@ var HtmlEngine = {
         var safeAttrs = ['data-id', 'data-value', 'data-url', 'data-src', 'data-href',
             'data-target', 'data-toggle', 'data-testid', 'data-cy'];
 
+        /* ✅ Keep data- prefix */
         html = html.replace(/\s(data-[a-z][a-z0-9-]*)\s*=\s*"([^"]*)"/gi, function(m, attr, val) {
             if (safeAttrs.indexOf(attr.toLowerCase()) !== -1) return m;
             if (/^data-(bs-|toggle|target|dismiss|ride|slide|spy|backdrop)/.test(attr)) return m;
 
             if (!attrMap[attr]) {
-                attrMap[attr] = Utils.randomHex('_0x', 6);
+                attrMap[attr] = 'data-' + Utils.randomHex('', 8);
             }
             return ' ' + attrMap[attr] + '="' + val + '"';
         });
@@ -2105,52 +2038,31 @@ var HtmlEngine = {
             if (/^data-(bs-|toggle|target|dismiss|ride|slide|spy|backdrop)/.test(attr)) return m;
 
             if (!attrMap[attr]) {
-                attrMap[attr] = Utils.randomHex('_0x', 6);
+                attrMap[attr] = 'data-' + Utils.randomHex('', 8);
             }
             return " " + attrMap[attr] + "='" + val + "'";
         });
 
-        /* ✅ CRITICAL FIX: Complete JS sync */
         if (js && Object.keys(attrMap).length > 0) {
             Object.keys(attrMap).forEach(function(oldAttr) {
                 var newAttr = attrMap[oldAttr];
                 var camelName = Utils.toCamelCase(oldAttr.replace(/^data-/, ''));
+                var newCamel = Utils.toCamelCase(newAttr.replace(/^data-/, ''));
 
-                /* 1. Attribute string: "data-page" → "_0x4a2f" */
                 var re1 = new RegExp('(["\'])(' + Utils.escapeRegex(oldAttr) + ')(["\'])', 'g');
                 js = js.replace(re1, '$1' + newAttr + '$3');
 
-                /* 2. dataset.page → dataset._0x4a2f */
                 var re2 = new RegExp('(\\.dataset\\.)' + Utils.escapeRegex(camelName) + '\\b', 'g');
-                js = js.replace(re2, '$1' + newAttr);
+                js = js.replace(re2, '$1' + newCamel);
 
-                /* 3. dataset['page'] → dataset['_0x4a2f'] */
                 var re3 = new RegExp('(\\.dataset\\s*\\[\\s*["\'])' + Utils.escapeRegex(camelName) + '(["\']\\s*\\])', 'g');
-                js = js.replace(re3, '$1' + newAttr + '$2');
+                js = js.replace(re3, '$1' + newCamel + '$2');
 
-                /* 4. getAttribute('data-page') → getAttribute('_0x4a2f') */
-                var re4 = new RegExp('(getAttribute\\s*\\(\\s*["\'])' + Utils.escapeRegex(oldAttr) + '(["\'])', 'g');
+                var re4 = new RegExp('((?:get|set|has|remove)Attribute\\s*\\(\\s*["\'])' + Utils.escapeRegex(oldAttr) + '(["\'])', 'g');
                 js = js.replace(re4, '$1' + newAttr + '$2');
 
-                /* 5. setAttribute('data-page', ...) → setAttribute('_0x4a2f', ...) */
-                var re5 = new RegExp('(setAttribute\\s*\\(\\s*["\'])' + Utils.escapeRegex(oldAttr) + '(["\'])', 'g');
+                var re5 = new RegExp('(\\[\\s*["\']?)' + Utils.escapeRegex(oldAttr) + '(\\s*[\\]="\'])', 'g');
                 js = js.replace(re5, '$1' + newAttr + '$2');
-
-                /* 6. hasAttribute('data-page') → hasAttribute('_0x4a2f') */
-                var re6 = new RegExp('(hasAttribute\\s*\\(\\s*["\'])' + Utils.escapeRegex(oldAttr) + '(["\'])', 'g');
-                js = js.replace(re6, '$1' + newAttr + '$2');
-
-                /* 7. removeAttribute('data-page') → removeAttribute('_0x4a2f') */
-                var re7 = new RegExp('(removeAttribute\\s*\\(\\s*["\'])' + Utils.escapeRegex(oldAttr) + '(["\'])', 'g');
-                js = js.replace(re7, '$1' + newAttr + '$2');
-
-                /* 8. querySelector('[data-page]') → querySelector('[_0x4a2f]') */
-                var re8 = new RegExp('(\\[\\s*["\']?)' + Utils.escapeRegex(oldAttr) + '([\\s*\\]="\'])', 'g');
-                js = js.replace(re8, '$1' + newAttr + '$2');
-
-                /* 9. querySelector('[data-page="value"]') → querySelector('[_0x4a2f="value"]') */
-                var re9 = new RegExp('(\\[\\s*["\']?)' + Utils.escapeRegex(oldAttr) + '(\\s*=\\s*["\'])', 'g');
-                js = js.replace(re9, '$1' + newAttr + '$2');
             });
         }
 
@@ -2162,21 +2074,16 @@ var HtmlEngine = {
         if (!html || !html.trim()) {
             return { html: html || '', js: js, layers: 0 };
         }
+        var result = html, layers = 0;
 
-        var result = html;
-        var layers = 0;
-
-        /* Layer 1: Comments */
         result = Comments.stripHtml(result);
         layers++;
         UI.setLayer('html1');
 
-        /* Layer 2: Safe minify */
         result = this.minify(result);
         layers++;
         UI.setLayer('html2');
 
-        /* Layer 3: Attribute obfuscation with JS sync */
         var attrResult = this.obfuscateAttributes(result, js);
         result = attrResult.html;
         if (attrResult.js) js = attrResult.js;
@@ -2188,11 +2095,10 @@ var HtmlEngine = {
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 8: JAVASCRIPT PROCESSING ENGINE (6 Layers + Fallbacks)
+   SECTION 8: JAVASCRIPT ENGINE (6 Layers + Fallbacks)
    ═══════════════════════════════════════════════════════════════════ */
 
 var JsEngine = {
-
     validateSyntax: function(code) {
         if (!code || !code.trim()) {
             return { valid: false, reason: 'Empty code' };
@@ -2201,85 +2107,51 @@ var JsEngine = {
             new Function(code);
             return { valid: true };
         } catch (e) {
-            return {
-                valid: false,
-                reason: e.message || 'Syntax error',
-                error: e
-            };
+            return { valid: false, reason: e.message || 'Syntax error', error: e };
         }
     },
 
-    /* ✅ FIXED: buildOptions with reservedNames */
     buildOptions: function(jsSize) {
-        var sizeKB = jsSize / 1024;
-        var sizeMB = sizeKB / 1024;
-
-        var preset;
-        if (sizeKB < 20) preset = 'high';
-        else if (sizeKB < 100) preset = 'medium';
-        else preset = 'low';
-
-        var cffThreshold = 0.5;
-        var dciThreshold = 0.3;
-        var strThreshold = 0.6;
-
-        if (preset === 'high') {
-            cffThreshold = 0.75;
-            dciThreshold = 0.4;
-            strThreshold = 0.8;
-        } else if (preset === 'low') {
-            cffThreshold = 0;
-            dciThreshold = 0;
-            strThreshold = 0.5;
-        }
+        /* ✅ FIXED: Use unique reserved names */
+        var uniqueReserved = getUniqueReservedNames();
 
         return {
             compact: true,
-            controlFlowFlattening: preset === 'high',
-            controlFlowFlatteningThreshold: cffThreshold,
-            deadCodeInjection: preset === 'high',
-            deadCodeInjectionThreshold: dciThreshold,
-            debugProtection: preset !== 'low',
-            debugProtectionInterval: preset !== 'low' ? 4000 : 0,
+            controlFlowFlattening: true,
+            controlFlowFlatteningThreshold: 0.5,
+            deadCodeInjection: true,
+            deadCodeInjectionThreshold: 0.3,
+            debugProtection: true,
+            debugProtectionInterval: 4000,
             disableConsoleOutput: false,
             identifierNamesGenerator: 'hexadecimal',
             log: false,
             numbersToExpressions: false,
             renameGlobals: false,
-            selfDefending: preset !== 'low',
+            selfDefending: true,
             simplify: true,
-            splitStrings: preset !== 'low',
+            splitStrings: true,
             splitStringsChunkLength: 10,
             stringArray: true,
-            stringArrayCallsTransform: preset === 'high',
+            stringArrayCallsTransform: true,
             stringArrayCallsTransformThreshold: 0.5,
-            stringArrayEncoding: preset === 'low' ? [] : ['rc4'],
-            stringArrayIndexShift: preset !== 'low',
-            stringArrayRotate: preset !== 'low',
-            stringArrayShuffle: preset !== 'low',
+            stringArrayEncoding: ['rc4'],
+            stringArrayIndexShift: true,
+            stringArrayRotate: true,
+            stringArrayShuffle: true,
             stringArrayWrappersCount: 1,
             stringArrayWrappersChainedCalls: false,
             stringArrayWrappersParametersMaxCount: 2,
             stringArrayWrappersType: 'variable',
-            stringArrayThreshold: strThreshold,
-            transformObjectKeys: preset === 'high',
+            stringArrayThreshold: 0.6,
+            transformObjectKeys: true,
             unicodeEscapeSequence: false,
             target: 'browser',
             sourceMap: false,
-
-            /* ✅ CRITICAL FIX: Preserve comments properly */
             comments: false,
             preserveComments: false,
-
-            /* ✅ CRITICAL FIX: Reserved names — never rename */
-            reservedNames: RESERVED_NAMES,
-
-            /* ✅ Extra safety: Reserved strings */
-            reservedStrings: [
-                'data-', 'classList', 'dataset', 'querySelector',
-                'getElementById', 'addEventListener'
-            ],
-
+            /* ✅ Unique reserved names — no duplicates */
+            reservedNames: uniqueReserved,
             seed: 0
         };
     },
@@ -2291,46 +2163,40 @@ var JsEngine = {
 
         if (typeof JavaScriptObfuscator === 'undefined') {
             return {
-                js: rawJs,
-                layers: 0,
-                fallback: false,
+                js: rawJs, layers: 0, fallback: false,
                 error: 'JavaScriptObfuscator library not loaded'
             };
         }
 
-        /* ═══ FORCE COMMENT REMOVAL FIRST ═══ */
+        /* Force comment removal first */
         rawJs = Comments.stripJs(rawJs);
 
         var validation = this.validateSyntax(rawJs);
         if (!validation.valid) {
             console.warn('JS syntax validation failed:', validation.reason);
             return {
-                js: rawJs,
-                layers: 0,
-                fallback: false,
+                js: rawJs, layers: 0, fallback: false,
                 error: 'JS syntax error: ' + validation.reason
             };
         }
 
         var options = this.buildOptions(rawJs.length);
 
-        /* ═══ Attempt 1: Full 6 layers ═══ */
+        /* Attempt 1: Full 6 layers */
         try {
             var result = JavaScriptObfuscator.obfuscate(rawJs, options);
             var code = result.getObfuscatedCode();
-
             var verify = this.validateSyntax(code);
             if (verify.valid) {
                 UI.setLayer('js1'); UI.setLayer('js2'); UI.setLayer('js3');
                 UI.setLayer('js4'); UI.setLayer('js5'); UI.setLayer('js6');
                 return { js: code, layers: 6, fallback: false };
             }
-            throw new Error('Output validation failed');
         } catch (e1) {
             console.warn('Full 6-layer failed:', e1.message);
         }
 
-        /* ═══ Attempt 2: 5 layers (no CFF) ═══ */
+        /* Attempt 2: 5 layers */
         try {
             var opts2 = this._copyOptions(options);
             opts2.controlFlowFlattening = false;
@@ -2341,11 +2207,9 @@ var JsEngine = {
                 UI.setLayer('js5'); UI.setLayer('js6');
                 return { js: c2, layers: 5, fallback: true };
             }
-        } catch (e2) {
-            console.warn('5-layer failed:', e2.message);
-        }
+        } catch (e2) { console.warn('5-layer failed:', e2.message); }
 
-        /* ═══ Attempt 3: 4 layers ═══ */
+        /* Attempt 3: 4 layers */
         try {
             var opts3 = this._copyOptions(options);
             opts3.controlFlowFlattening = false;
@@ -2357,11 +2221,9 @@ var JsEngine = {
                 UI.setLayer('js5'); UI.setLayer('js6');
                 return { js: c3, layers: 4, fallback: true };
             }
-        } catch (e3) {
-            console.warn('4-layer failed:', e3.message);
-        }
+        } catch (e3) { console.warn('4-layer failed:', e3.message); }
 
-        /* ═══ Attempt 4: 3 layers (safe mode) ═══ */
+        /* Attempt 4: 3 layers */
         try {
             var opts4 = this._copyOptions(options);
             opts4.controlFlowFlattening = false;
@@ -2370,19 +2232,15 @@ var JsEngine = {
             opts4.debugProtection = false;
             opts4.debugProtectionInterval = 0;
             opts4.stringArrayEncoding = [];
-            opts4.renameGlobals = false;
             var r4 = JavaScriptObfuscator.obfuscate(rawJs, opts4);
             var c4 = r4.getObfuscatedCode();
             if (this.validateSyntax(c4).valid) {
-                UI.setLayer('js3'); UI.setLayer('js4');
-                UI.setLayer('js6');
+                UI.setLayer('js3'); UI.setLayer('js4'); UI.setLayer('js6');
                 return { js: c4, layers: 3, fallback: true };
             }
-        } catch (e4) {
-            console.warn('3-layer failed:', e4.message);
-        }
+        } catch (e4) { console.warn('3-layer failed:', e4.message); }
 
-        /* ═══ Attempt 5: 2 layers (minimal) ═══ */
+        /* Attempt 5: 2 layers */
         try {
             var opts5 = {
                 compact: true,
@@ -2399,7 +2257,7 @@ var JsEngine = {
                 stringArrayThreshold: 0.5,
                 target: 'browser',
                 sourceMap: false,
-                reservedNames: RESERVED_NAMES
+                reservedNames: getUniqueReservedNames()
             };
             var r5 = JavaScriptObfuscator.obfuscate(rawJs, opts5);
             var c5 = r5.getObfuscatedCode();
@@ -2407,15 +2265,11 @@ var JsEngine = {
                 UI.setLayer('js3'); UI.setLayer('js6');
                 return { js: c5, layers: 2, fallback: true };
             }
-        } catch (e5) {
-            console.warn('2-layer failed:', e5.message);
-        }
+        } catch (e5) { console.warn('2-layer failed:', e5.message); }
 
         /* Last resort */
         return {
-            js: rawJs,
-            layers: 0,
-            fallback: true,
+            js: rawJs, layers: 0, fallback: true,
             error: 'All obfuscation attempts failed — returning original'
         };
     },
@@ -2430,7 +2284,7 @@ var JsEngine = {
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 9: LANGUAGE DETECTION ENGINE
+   SECTION 9: LANGUAGE DETECTION
    ═══════════════════════════════════════════════════════════════════ */
 
 var Detector = {
@@ -2495,10 +2349,7 @@ var Extractor = {
             return { html: code, css: '', js: '' };
         }
 
-        var html = code;
-        var css = '';
-        var js = '';
-
+        var html = code, css = '', js = '';
         var scriptOpen = '<' + 'script';
         var scriptClose = '<' + '\\/' + 'script>';
         var styleOpen = '<' + 'style';
@@ -2512,11 +2363,9 @@ var Extractor = {
         }
 
         var scriptRegex = new RegExp(
-            scriptOpen +
-            '(?![^>]*\\bsrc\\s*=)' +
+            scriptOpen + '(?![^>]*\\bsrc\\s*=)' +
             '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template|application\\/json\\+ld)[^>]*)' +
-            '[^>]*>([\\s\\S]*?)' + scriptClose,
-            'gi'
+            '[^>]*>([\\s\\S]*?)' + scriptClose, 'gi'
         );
         var scriptMatch;
         while ((scriptMatch = scriptRegex.exec(code)) !== null) {
@@ -2524,20 +2373,11 @@ var Extractor = {
             js += Comments.stripJs(scriptMatch[1]).trim();
         }
 
-        html = html.replace(
-            new RegExp(styleOpen + '[^>]*>[\\s\\S]*?' + styleClose, 'gi'),
-            ''
-        );
-        html = html.replace(
-            new RegExp(
-                scriptOpen +
-                '(?![^>]*\\bsrc\\s*=)' +
-                '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template|application\\/json\\+ld)[^>]*)' +
-                '[^>]*>[\\s\\S]*?' + scriptClose,
-                'gi'
-            ),
-            ''
-        );
+        html = html.replace(new RegExp(styleOpen + '[^>]*>[\\s\\S]*?' + styleClose, 'gi'), '');
+        html = html.replace(new RegExp(
+            scriptOpen + '(?![^>]*\\bsrc\\s*=)' +
+            '(?![^>]*\\btype\\s*=\\s*["\'](?:application\\/(?:ld\\+json|json)|text\\/template|application\\/json\\+ld)[^>]*)' +
+            '[^>]*>[\\s\\S]*?' + scriptClose, 'gi'), '');
 
         html = html.replace(/\n{3,}/g, '\n\n').trim();
 
@@ -2562,12 +2402,10 @@ var Pipeline = {
             totalLayers: 0, fallbackUsed: false, error: null
         };
 
-        /* Step 1: Detect language */
         onProgress('Step 1/6 — Detecting language...', 30);
         var lang = Detector.detect(input);
         SHIELD.detectedLang = lang;
 
-        /* Step 2: Extract sections */
         onProgress('Step 2/6 — Extracting sections...', 40);
         var useMode = lang;
         if (lang === 'html' && /<(style|script)[\s>]/i.test(input)) {
@@ -2580,7 +2418,7 @@ var Pipeline = {
         var obfuscatedCss = sections.css || '';
         var obfuscatedJs = sections.js || '';
 
-        /* ═══ FORCE COMMENT REMOVAL ═══ */
+        /* Force comment removal */
         if (obfuscatedHtml) obfuscatedHtml = Comments.stripHtml(obfuscatedHtml);
         if (obfuscatedCss) obfuscatedCss = Comments.stripCss(obfuscatedCss);
         if (obfuscatedJs) obfuscatedJs = Comments.stripJs(obfuscatedJs);
@@ -2595,7 +2433,7 @@ var Pipeline = {
             if (jsResult.error) report.error = jsResult.error;
         }
 
-        /* Step 4: CSS protection — with JS sync */
+        /* Step 4: CSS protection */
         if (obfuscatedCss && obfuscatedCss.trim()) {
             onProgress('Step 4/6 — Applying CSS protection...', 70);
             var cssResult = CssEngine.process(obfuscatedCss, obfuscatedHtml, obfuscatedJs);
@@ -2605,7 +2443,7 @@ var Pipeline = {
             report.cssLayers = cssResult.layers;
         }
 
-        /* Step 5: HTML protection — with JS sync */
+        /* Step 5: HTML protection */
         if (obfuscatedHtml && obfuscatedHtml.trim()) {
             onProgress('Step 5/6 — Applying HTML protection...', 85);
             var htmlResult = HtmlEngine.process(obfuscatedHtml, obfuscatedJs);
@@ -2665,7 +2503,7 @@ window.obfuscateNow = function() {
     }
 
     if (typeof JavaScriptObfuscator === 'undefined') {
-        UI.status('error', '❌ Obfuscator library not loaded. Check your internet connection.');
+        UI.status('error', '❌ Obfuscator library not loaded. Check your internet.');
         UI.toast('Library missing!', 'error');
         return;
     }
@@ -2694,8 +2532,7 @@ window.obfuscateNow = function() {
     UI.status('loading',
         '🌌 Initializing NightOrbit 12-Layer Shield...\n' +
         '📊 File size: ' + Utils.bytes(sizeBytes) +
-        (isHeavy ? ' (heavy — chunked processing)' : '')
-    );
+        (isHeavy ? ' (heavy — chunked processing)' : ''));
 
     SHIELD.processingStartTime = Utils.now();
 
@@ -2760,12 +2597,7 @@ window.obfuscateNow = function() {
                 '   Ratio:     ' + ratio + '%\n' +
                 '   Time:      ' + report.elapsedMs + ' ms\n' +
                 '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '🔒 Protected by NightOrbit CodeForge.\n' +
-                '✨ CSS & HTML: Safe — no structural breakage.\n' +
-                '🖼️ Image extensions: Preserved.\n' +
-                '🔗 Attributes: Auto-synced with JavaScript.\n' +
-                '⚡ Reserved names: Protected.'
-            );
+                '🔒 Protected by NightOrbit CodeForge.');
 
             UI.progress(100);
             UI.toast('🌌 12-Layer Shield applied!', 'success');
@@ -2778,15 +2610,7 @@ window.obfuscateNow = function() {
 
         } catch (e) {
             console.error('Protection error:', e);
-            UI.status('error',
-                '❌ PROTECTION FAILED\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                'Error: ' + (e.message || e) + '\n\n' +
-                'Tips:\n' +
-                '• Check JavaScript for syntax errors\n' +
-                '• Try pasting smaller sections first\n' +
-                '• Verify the library is loaded correctly'
-            );
+            UI.status('error', '❌ PROTECTION FAILED\nError: ' + (e.message || e));
             UI.toast('Protection failed: ' + (e.message || e), 'error', 6000);
         } finally {
             UI.lockButtons(false);
@@ -2796,14 +2620,13 @@ window.obfuscateNow = function() {
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   SECTION 13: INPUT DETECTION (Live)
+   SECTION 13: INPUT DETECTION
    ═══════════════════════════════════════════════════════════════════ */
 
 var InputHandler = {
     update: function() {
         var el = SHIELD.dom.inputCode;
         if (!el) return;
-
         var code = el.value;
         var stats = SHIELD.dom.inputStats;
         var detectPanel = SHIELD.dom.detectPanel;
@@ -2840,9 +2663,8 @@ var InputHandler = {
 
             if (detectPanel) detectPanel.classList.add('active');
             if (detectMsg) {
-                var sizeNote = SHIELD.isHeavy ? ' · <strong style="color:var(--gold);">Heavy file — chunked processing</strong>' : '';
-                detectMsg.innerHTML =
-                    '🔍 Auto-detected: <span class="detected-lang">' + langDesc + '</span>' + sizeNote;
+                var sizeNote = SHIELD.isHeavy ? ' · <strong style="color:var(--gold);">Heavy file</strong>' : '';
+                detectMsg.innerHTML = '🔍 Auto-detected: <span class="detected-lang">' + langDesc + '</span>' + sizeNote;
             }
 
             UI.progress(20);
@@ -2876,26 +2698,19 @@ function fallbackCopy(text) {
     ta.value = text;
     ta.style.position = 'fixed';
     ta.style.left = '-9999px';
-    ta.style.top = '0';
     document.body.appendChild(ta);
     ta.focus();
     ta.select();
     try {
-        var ok = document.execCommand('copy');
-        if (ok) UI.toast('Copied!', 'success');
+        if (document.execCommand('copy')) UI.toast('Copied!', 'success');
         else UI.toast('Copy failed', 'error');
-    } catch (e) {
-        UI.toast('Copy failed', 'error');
-    }
+    } catch (e) { UI.toast('Copy failed', 'error'); }
     document.body.removeChild(ta);
 }
 
 window.copyOutput = function() {
     var out = SHIELD.dom.outputFinal;
-    if (!out || !out.value) {
-        UI.toast('Nothing to copy', 'error');
-        return;
-    }
+    if (!out || !out.value) { UI.toast('Nothing to copy', 'error'); return; }
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(out.value)
             .then(function() { UI.toast('Copied!', 'success'); })
@@ -2907,10 +2722,7 @@ window.copyOutput = function() {
 
 window.downloadOutput = function() {
     var out = SHIELD.dom.outputFinal;
-    if (!out || !out.value) {
-        UI.toast('Nothing to download', 'error');
-        return;
-    }
+    if (!out || !out.value) { UI.toast('Nothing to download', 'error'); return; }
     var ext = 'txt';
     var lang = SHIELD.detectedLang;
     if (lang === 'js') ext = 'js';
@@ -2931,9 +2743,7 @@ window.downloadOutput = function() {
             URL.revokeObjectURL(a.href);
         }, 100);
         UI.toast('Downloaded!', 'success');
-    } catch (e) {
-        UI.toast('Download failed', 'error');
-    }
+    } catch (e) { UI.toast('Download failed', 'error'); }
 };
 
 window.downloadAll = function() {
@@ -2965,10 +2775,7 @@ window.downloadAll = function() {
         })(f, count);
         count++;
     });
-    if (count === 0) {
-        UI.toast('Nothing to download', 'error');
-        return;
-    }
+    if (count === 0) { UI.toast('Nothing to download', 'error'); return; }
     UI.toast('Downloading ' + count + ' file(s)...', 'success');
 };
 
@@ -2977,68 +2784,37 @@ window.loadSample = function() {
     if (!el) return;
 
     var lines = [
-        '<!DOCTYPE html>',
-        '<html lang="en">',
-        '<head>',
+        '<!DOCTYPE html>', '<html lang="en">', '<head>',
         '    <meta charset="UTF-8">',
-        '    <meta name="viewport" content="width=device-width, initial-scale=1.0">',
         '    <title>NightOrbit Sample</title>',
         '    <style>',
         '        /* Sample CSS */',
-        '        body {',
-        '            background: #000;',
-        '            color: #fff;',
-        '            font-family: sans-serif;',
-        '            padding: calc(2rem + 8px);',
-        '        }',
-        '        .container {',
-        '            max-width: 600px;',
-        '            margin: 0 auto;',
-        '        }',
-        '        .btn {',
-        '            background: #00f0ff;',
-        '            padding: 12px 24px;',
-        '            border: none;',
-        '            color: #000;',
-        '            cursor: pointer;',
-        '            border-radius: 6px;',
-        '        }',
-        '        #result {',
-        '            color: #00ff64;',
-        '            font-size: 20px;',
-        '            margin-top: 20px;',
-        '        }',
+        '        body { background: #000; color: #fff; padding: calc(2rem + 8px); }',
+        '        .container { max-width: 600px; margin: 0 auto; }',
+        '        .btn { background: #00f0ff; padding: 12px 24px; border: none; color: #000; cursor: pointer; border-radius: 6px; }',
         '    </style>',
-        '</head>',
-        '<body>',
+        '</head>', '<body>',
         '    <div class="container">',
         '        <h1>Protected by NightOrbit</h1>',
-        '        <button class="btn" data-action="calculate">Calculate Total</button>',
+        '        <button class="btn" onclick="calculate()">Calculate</button>',
         '        <div id="result"></div>',
         '    </div>',
         '    ' + TAG_OPEN_SCRIPT,
-        '        // Sample JS',
-        '        (function() {',
+        '        function calculate() {',
         '            var items = [',
         '                { name: "Laptop", price: 1200 },',
         '                { name: "Mouse", price: 25 },',
         '                { name: "Keyboard", price: 80 }',
         '            ];',
-        '            function calculate() {',
-        '                var total = 0;',
-        '                for (var i = 0; i < items.length; i++) {',
-        '                    total += items[i].price;',
-        '                }',
-        '                var result = document.getElementById("result");',
-        '                if (result) result.textContent = "Total: $" + total;',
+        '            var total = 0;',
+        '            for (var i = 0; i < items.length; i++) {',
+        '                total += items[i].price;',
         '            }',
-        '            var btn = document.querySelector(\'[data-action="calculate"]\');',
-        '            if (btn) btn.addEventListener("click", calculate);',
-        '            calculate();',
-        '        })();',
+        '            document.getElementById("result").textContent = "Total: $" + total;',
+        '        }',
+        '        calculate();',
         '    ' + TAG_CLOSE_SCRIPT,
-        '</body>',
-        '</html>'
+        '</body>', '</html>'
     ];
 
     el.value = lines.join('\n');
@@ -3125,16 +2901,12 @@ function init() {
     UI.progress(0);
     UI.detectProgress(0);
 
-    console.log('%c🌌 NightOrbit 12-Layer Shield v9.0 ULTRA loaded',
+    console.log('%c🌌 NightOrbit 12-Layer Shield v9.0 ULTRA',
         'color:#00f0ff;font-size:16px;font-weight:bold;');
-    console.log('%c✨ Auto-detect · Auto-preset · Full 12-layer protection',
+    console.log('%c✨ Auto-detect · Auto-preset · Full 12-layer',
         'color:#ffd700;font-size:11px;');
-    console.log('%c🛡️ Zero-config · Heavy-safe · Image-safe · JS-sync',
-        'color:#ff2d95;font-size:11px;');
-    console.log('%c📦 5-level progressive fallback · Syntax pre-validation',
+    console.log('%c⚡ Reserved: ' + getUniqueReservedNames().length + ' unique names',
         'color:#00ff64;font-size:11px;');
-    console.log('%c⚡ Reserved names: ' + RESERVED_NAMES.length + ' protected',
-        'color:#00f0ff;font-size:11px;');
 }
 
 if (document.readyState === 'loading') {
