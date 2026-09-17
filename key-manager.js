@@ -1,17 +1,14 @@
 /* ═══════════════════════════════════════════════════════════
-   key-manager.js — v18 STRONG
+   key-manager.js — v20 ULTRA HEAVY
    NightOrbit CodeForge
 
-   UPGRADE FROM V17:
-   ✅ HMAC-SHA256 integrity check (tamper-proof)
-   ✅ Rate limiting (5 attempts → 15 min lock)
-   ✅ Audit history (last 50 events)
-   ✅ Device fingerprinting
-   ✅ File size tracking (bytes + formatted)
-   ✅ Generation count (kitni baar banayi)
-   ✅ Encryption count (kitni baar encrypt)
-   ✅ Total bytes encrypted (cumulative)
-   ✅ Legacy migration (auto upgrade)
+   UPGRADE FROM V18:
+   ✅ zxcvbn check FIXED (dictionary words allowed)
+   ✅ deleteKey() upgraded → proper deactivation
+   ✅ Regenerate support after deactivation
+   ✅ All v18 functions preserved
+   ✅ Heavy audit logging
+   ✅ Rate limiting preserved
    ✅ Zero-knowledge preserved
 
    DATA STORAGE (Firebase):
@@ -20,7 +17,11 @@
    ├── keyData/          → passwordHash, salt, encryptedKey (HMAC)
    │   ├── stats/        → generations, encryptions, history
    │   └── rateLimit/    → attempts, lockedUntil
+   ├── keyStatus/        → ACTIVE | DEACTIVATED | DELETED
    └── settings/         → preferences
+
+   deactivated_keys/{uid}/
+   └── {timestamp}/      → old key audit trail
 
    SECURITY:
    - Crypto-secure RNG (window.crypto)
@@ -44,7 +45,7 @@ var KEY_MANAGER = {
     _AES_KEY_ITER: 100000,
     _PASSWORD_MIN: 16,
     _PASSWORD_MAX: 64,
-    _KEY_VERSION: 18,
+    _KEY_VERSION: 20,
     _MAX_ATTEMPTS: 5,
     _LOCKOUT_DURATION: 15 * 60 * 1000,  /* 15 minutes */
     _MAX_HISTORY: 50,
@@ -97,7 +98,7 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       DEVICE FINGERPRINT (NEW in v18)
+       DEVICE FINGERPRINT
        ═══════════════════════════════════════════════════════ */
     _getDeviceFingerprint: function() {
         if (this._deviceFingerprint) return this._deviceFingerprint;
@@ -293,7 +294,7 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       AES-256 ENCRYPTION (WITH HMAC — NEW in v18)
+       AES-256 ENCRYPTION (WITH HMAC)
        ═══════════════════════════════════════════════════════ */
     _deriveAESKey: function(password, salt) {
         return CryptoJS.PBKDF2(password, salt, {
@@ -303,7 +304,6 @@ var KEY_MANAGER = {
         });
     },
 
-    /* ✅ NEW: AES-256-CBC + HMAC-SHA256 */
     encryptKey: function(originalKey, password) {
         try {
             var aesSalt = CryptoJS.lib.WordArray.random(16);
@@ -316,7 +316,6 @@ var KEY_MANAGER = {
                 padding: CryptoJS.pad.Pkcs7
             });
 
-            /* ✅ HMAC for integrity */
             var hmacKey = CryptoJS.PBKDF2(password, aesSalt, {
                 keySize: 256 / 32,
                 iterations: this._AES_KEY_ITER,
@@ -327,7 +326,6 @@ var KEY_MANAGER = {
                 hmacKey
             ).toString();
 
-            /* v2 format: v2:salt:iv:ciphertext:hmac */
             return 'v2:' + aesSalt.toString() + ':' + iv.toString() + 
                    ':' + encrypted.toString() + ':' + hmac;
         } catch (e) {
@@ -335,19 +333,16 @@ var KEY_MANAGER = {
         }
     },
 
-    /* ✅ NEW: Decrypt with HMAC verification + legacy support */
     decryptKey: function(encryptedKey, password) {
         try {
             var parts = encryptedKey.split(':');
             
-            /* v2 format with HMAC */
             if (parts[0] === 'v2' && parts.length === 5) {
                 var aesSalt = CryptoJS.enc.Hex.parse(parts[1]);
                 var iv = CryptoJS.enc.Hex.parse(parts[2]);
                 var ciphertext = parts[3];
                 var storedHmac = parts[4];
 
-                /* Verify HMAC first */
                 var hmacKey = CryptoJS.PBKDF2(password, aesSalt, {
                     keySize: 256 / 32,
                     iterations: this._AES_KEY_ITER,
@@ -375,7 +370,6 @@ var KEY_MANAGER = {
                 return decrypted;
             }
 
-            /* v1 format (legacy) */
             if (parts.length === 3) {
                 var aesSalt2 = CryptoJS.enc.Hex.parse(parts[0]);
                 var iv2 = CryptoJS.enc.Hex.parse(parts[1]);
@@ -411,7 +405,16 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       PASSWORD VALIDATION
+       PASSWORD VALIDATION — FIXED (zxcvbn removed)
+       ═══════════════════════════════════════════════════════
+       IMPORTANT: zxcvbn check REMOVED kyunki dictionary words
+       wale passwords bhi accept hone chahiye (jaise ANASfaroog).
+       Sirf FORMAT check rakha hai:
+       - 16-64 characters
+       - 3+ digits
+       - 4+ lowercase
+       - 3+ uppercase
+       - 3+ symbols
        ═══════════════════════════════════════════════════════ */
     validatePasswordFormat: function(pwd) {
         if (!pwd) return false;
@@ -423,13 +426,12 @@ var KEY_MANAGER = {
         var upper = (pwd.match(/[A-Z]/g) || []).length;
         var symbols = (pwd.match(/[^a-zA-Z0-9]/g) || []).length;
 
-        if (digits < 3 || lower < 4 || upper < 3 || symbols < 3) return false;
+        if (digits < 3) return false;
+        if (lower < 4) return false;
+        if (upper < 3) return false;
+        if (symbols < 3) return false;
 
-        if (typeof zxcvbn !== 'undefined') {
-            try {
-                if (zxcvbn(pwd).score < 3) return false;
-            } catch (e) {}
-        }
+        /* ✅ zxcvbn check REMOVED — sirf format check */
         return true;
     },
 
@@ -447,7 +449,7 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       RATE LIMITING (NEW in v18)
+       RATE LIMITING
        ═══════════════════════════════════════════════════════ */
     _checkRateLimit: function(userId) {
         return firebase.database()
@@ -472,7 +474,6 @@ var KEY_MANAGER = {
         return ref.transaction(function(current) {
             current = current || { attempts: 0, lockedUntil: 0 };
             
-            /* Reset if lock expired */
             if (current.lockedUntil && current.lockedUntil < Date.now()) {
                 current.attempts = 0;
                 current.lockedUntil = 0;
@@ -497,7 +498,7 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       AUDIT LOGGING (NEW in v18)
+       AUDIT LOGGING
        ═══════════════════════════════════════════════════════ */
     _logEvent: function(userId, action) {
         var deviceInfo = this._getDeviceInfo();
@@ -562,9 +563,25 @@ var KEY_MANAGER = {
         return new Promise(function(resolve, reject) {
             if (!userId) { reject(new Error('User ID required')); return; }
 
-            firebase.database().ref('users/' + userId + '/keyData').once('value')
+            firebase.database().ref('users/' + userId).once('value')
                 .then(function(snap) {
-                    var data = snap.val();
+                    var userData = snap.val() || {};
+                    var data = userData.keyData;
+                    var status = userData.keyStatus || 'ACTIVE';
+
+                    /* Check if key is DEACTIVATED or DELETED */
+                    if (status === 'DEACTIVATED' || status === 'DELETED') {
+                        self._hasPassword = false;
+                        self._displayKey = null;
+                        resolve({ 
+                            hasKey: false, 
+                            keyStatus: status,
+                            deactivatedAt: userData.keyDeactivatedAt || null,
+                            meta: null 
+                        });
+                        return;
+                    }
+
                     if (data && data.passwordHash && data.salt && data.encryptedKey && data.keyVersion) {
                         self._hasPassword = true;
                         self._userId = userId;
@@ -574,6 +591,7 @@ var KEY_MANAGER = {
 
                         resolve({
                             hasKey: true,
+                            keyStatus: 'ACTIVE',
                             salt: data.salt,
                             encryptedKey: data.encryptedKey,
                             keyVersion: data.keyVersion,
@@ -588,7 +606,7 @@ var KEY_MANAGER = {
                         }
                         self._hasPassword = false;
                         self._displayKey = null;
-                        resolve({ hasKey: false, salt: null, encryptedKey: null, meta: null });
+                        resolve({ hasKey: false, keyStatus: 'NONE', meta: null });
                     }
                 })
                 .catch(function() {
@@ -597,7 +615,7 @@ var KEY_MANAGER = {
         });
     },
 
-    /* ═══ CREATE KEY + PASSWORD (v18 with stats + audit) ═══ */
+    /* ═══ CREATE KEY + PASSWORD ═══ */
     createKeyAndPassword: function(user, password) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -606,7 +624,7 @@ var KEY_MANAGER = {
             if (!self.validatePasswordFormat(password)) {
                 reject(new Error(
                     'Password must be ' + self._PASSWORD_MIN + '-' + self._PASSWORD_MAX +
-                    ' characters with at least 3 digits, 4 lowercase, 3 uppercase, and 3 symbols (strong password)'
+                    ' characters with at least 3 digits, 4 lowercase, 3 uppercase, and 3 symbols'
                 ));
                 return;
             }
@@ -646,7 +664,6 @@ var KEY_MANAGER = {
                             }
 
                             var keyData = {
-                                /* 🔐 Security (HASHED/ENCRYPTED) */
                                 passwordHash: passwordHash,
                                 salt: userSalt,
                                 encryptedKey: encryptedKey,
@@ -654,7 +671,6 @@ var KEY_MANAGER = {
                                 algorithm: 'aes-256-cbc-pbkdf2-sha256-600k-hmac',
                                 iterations: self._PBKDF2_ITER,
 
-                                /* 📊 Stats (ALAG SECTION) */
                                 stats: {
                                     totalGenerations: generationCount,
                                     totalEncryptions: existing && existing.stats 
@@ -669,7 +685,6 @@ var KEY_MANAGER = {
                                     history: history
                                 },
 
-                                /* 🚫 Rate limit reset on new key */
                                 rateLimit: {
                                     attempts: 0,
                                     lockedUntil: 0,
@@ -684,6 +699,12 @@ var KEY_MANAGER = {
                                 .ref('users/' + user.uid + '/keyData')
                                 .set(keyData);
                         });
+                })
+                .then(function() {
+                    /* Set keyStatus = ACTIVE */
+                    return firebase.database()
+                        .ref('users/' + user.uid + '/keyStatus')
+                        .set('ACTIVE');
                 })
                 .then(function() {
                     return self.ensureUserProfile(user);
@@ -711,13 +732,12 @@ var KEY_MANAGER = {
         });
     },
 
-    /* ═══ UNLOCK KEY (v18 with rate limiting + audit) ═══ */
+    /* ═══ UNLOCK KEY ═══ */
     unlockKey: function(user, password) {
         var self = this;
         return new Promise(function(resolve, reject) {
             if (!user || !user.uid) { reject(new Error('User required')); return; }
 
-            /* Step 1: Check rate limit */
             self._checkRateLimit(user.uid)
                 .then(function() {
                     return firebase.database()
@@ -837,17 +857,62 @@ var KEY_MANAGER = {
         return key.substring(0, 40) + '************';
     },
 
+    /* ═══════════════════════════════════════════════════════
+       DELETE KEY — UPGRADED
+       ═══════════════════════════════════════════════════════
+       Ab ye function:
+       1. Old key ko deactivated_keys mein backup karta hai
+       2. keyData completely remove karta hai
+       3. keyStatus = "DELETED" set karta hai
+       4. Regenerate support deta hai (naya key ban sakta hai)
+       ═══════════════════════════════════════════════════════ */
     deleteKey: function(user) {
+        var self = this;
         return new Promise(function(resolve, reject) {
             if (!user || !user.uid) { reject(new Error('User required')); return; }
-            firebase.database().ref('users/' + user.uid + '/keyData').remove()
-                .then(function() { resolve({ success: true }); })
-                .catch(function() { reject(new Error('Failed to delete key')); });
+
+            firebase.database().ref('users/' + user.uid + '/keyData').once('value')
+                .then(function(snap) {
+                    var data = snap.val() || {};
+                    var updates = {};
+
+                    /* Step 1: Backup old key for audit */
+                    if (data.encryptedKey) {
+                        updates['deactivated_keys/' + user.uid + '/' + Date.now()] = {
+                            encryptedKey: data.encryptedKey,
+                            salt: data.salt,
+                            passwordHash: data.passwordHash,
+                            keyVersion: data.keyVersion || 1,
+                            deactivatedAt: Date.now(),
+                            reason: 'USER_DELETE',
+                            status: 'DELETED'
+                        };
+                    }
+
+                    /* Step 2: Remove keyData completely */
+                    updates['users/' + user.uid + '/keyData'] = null;
+
+                    /* Step 3: Set status DELETED */
+                    updates['users/' + user.uid + '/keyStatus'] = 'DELETED';
+                    updates['users/' + user.uid + '/keyDeactivatedAt'] = Date.now();
+                    updates['users/' + user.uid + '/keyDeactivatedReason'] = 'USER_DELETE';
+
+                    /* Step 4: Commit */
+                    return firebase.database().ref().update(updates);
+                })
+                .then(function() {
+                    self.clear();
+                    resolve({ success: true });
+                })
+                .catch(function(err) {
+                    console.error('deleteKey error:', err);
+                    reject(new Error('Failed to delete key'));
+                });
         });
     },
 
     /* ═══════════════════════════════════════════════════════
-       UPDATE STATS (called from script.js after encryption)
+       UPDATE STATS
        ═══════════════════════════════════════════════════════ */
     updateEncryptionStats: function(userId, data) {
         if (!userId || !data) return Promise.resolve();
@@ -899,11 +964,15 @@ var KEY_MANAGER = {
 
 window.KEY_MANAGER = KEY_MANAGER;
 
-console.log('%c🔐 Key Manager v18 STRONG loaded',
+console.log('%c🔐 Key Manager v20 ULTRA HEAVY loaded',
     'color:#00ff64;font-weight:bold;font-size:14px;');
 console.log('%c⚡ AES-256-CBC + HMAC-SHA256 | PBKDF2-SHA256 600K | Rate Limiting',
     'color:#ffd700;font-size:11px;');
 console.log('%c📊 Audit Logging | Device Fingerprint | File Size Tracking',
     'color:#00f0ff;font-size:11px;');
+console.log('%c✅ zxcvbn check FIXED — dictionary passwords allowed',
+    'color:#ff2d95;font-size:11px;');
+console.log('%c🗑️ deleteKey() UPGRADED — regenerate support',
+    'color:#ff2d95;font-size:11px;');
 
 })();
