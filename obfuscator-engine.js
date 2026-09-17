@@ -653,42 +653,76 @@ var OBF_ENGINE = {
         }
     },
 
-    /* ═══════════════════════════════════════════════════════
-       BUILD TRAP-PROTECTED KEY FILE LOADER HTML
+        /* ═══════════════════════════════════════════════════════
+       BUILD STANDALONE LOADER — No external file needed
+       Traps: DevTools, Console leak, Honeypot, Keyfile access
        ═══════════════════════════════════════════════════════ */
-    buildKeyFileLoaderHTML: function(realNameEncoded, nameA, nameB) {
+    buildKeyFileLoaderHTML: function(realNameEncoded, nameA, nameB, fileNameObfData) {
         try {
             var trapId1 = '_0xtrap' + this._randHex(8);
             var trapId2 = '_0xtrap' + this._randHex(8);
             var fakeKeyName = 'nx_' + this._randHex(8) + '-' + this._randHex(4) + '-' + this._randHex(4) + '-' + this._randHex(12) + '.js';
-            var realNamePreview = String(realNameEncoded).substring(0, 40);
+            
+            /* ✅ Inline decoder (standalone) */
+            var inlineDecoderCode = '';
+            if (fileNameObfData && fileNameObfData.byteArray && fileNameObfData.layers) {
+                inlineDecoderCode = this.generateKeyFileNameDecoder(fileNameObfData, 'window._kfName');
+            }
             
             var script =
                 '<script>\n' +
                 '(function(){\n' +
                 '"use strict";\n' +
                 '\n' +
-                '/* ═══ TRAP FIRE ═══ */\n' +
+                'window._0x_loadStart=Date.now();\n' +
+                '\n' +
                 'var _0xTRAP_FIRED=0;\n' +
+                'var _0x_ALLOWED=0;\n' +
                 'function _0xfireTrap(reason){\n' +
                 '  if(_0xTRAP_FIRED)return;\n' +
+                '  if(_0x_ALLOWED)return;\n' +
                 '  _0xTRAP_FIRED=1;\n' +
                 '  if(window.console&&console.error)console.error("TRAP:",reason);\n' +
                 '  try{\n' +
-                '    if(typeof window._0xR_ACCESSED==="function"){\n' +
-                '      window._0xR_ACCESSED();\n' +
-                '    } else {\n' +
-                '      var uid=null;\n' +
+                '    var uid=null;\n' +
+                '    try{\n' +
+                '      if(window.firebase&&firebase.auth&&firebase.auth().currentUser){\n' +
+                '        uid=firebase.auth().currentUser.uid;\n' +
+                '      }\n' +
+                '    }catch(e){}\n' +
+                '    if(uid&&window.firebase&&firebase.database){\n' +
+                '      firebase.database().ref("users/"+uid+"/keyStatus").set("DEACTIVATED");\n' +
+                '      firebase.database().ref("users/"+uid+"/keyDeactivatedReason").set("TRAP_"+reason);\n' +
+                '      firebase.database().ref("users/"+uid+"/keyDeactivatedAt").set(Date.now());\n' +
+                '      /* ✅ Send alert (email + dashboard) */\n' +
+                '      firebase.database().ref("security_alerts/"+uid).push({\n' +
+                '        eventType:"TRAP_"+reason,\n' +
+                '        keyType:"FILE_NAME_DECODE",\n' +
+                '        timestamp:Date.now(),\n' +
+                '        timeString:new Date().toLocaleString(),\n' +
+                '        userEmail:(firebase.auth().currentUser.email||"unknown"),\n' +
+                '        keyDeactivated:true,\n' +
+                '        reason:reason\n' +
+                '      });\n' +
+                '      firebase.database().ref("admin_alerts").push({\n' +
+                '        eventType:"TRAP_"+reason,\n' +
+                '        keyType:"FILE_NAME_DECODE",\n' +
+                '        userId:uid,\n' +
+                '        userEmail:(firebase.auth().currentUser.email||"unknown"),\n' +
+                '        timestamp:Date.now(),\n' +
+                '        reason:reason\n' +
+                '      });\n' +
+                '      /* ✅ Send email directly via EmailJS */\n' +
                 '      try{\n' +
-                '        if(window.firebase&&firebase.auth&&firebase.auth().currentUser){\n' +
-                '          uid=firebase.auth().currentUser.uid;\n' +
+                '        if(typeof emailjs!=="undefined"){\n' +
+                '          emailjs.send("service_9dzzl6h","template_m3t3tc7",{\n' +
+                '            user_email:(firebase.auth().currentUser.email||"unknown"),\n' +
+                '            subject:"🔐 SECURITY ALERT — Key Deactivated",\n' +
+                '            name:"NightOrbit Security Team",\n' +
+                '            message:"Your encryption key has been deactivated.\\nReason: "+reason+"\\nTime: "+new Date().toLocaleString()+"\\n\\nPlease regenerate your key."\n' +
+                '          });\n' +
                 '        }\n' +
                 '      }catch(e){}\n' +
-                '      if(uid&&window.firebase&&firebase.database){\n' +
-                '        firebase.database().ref("users/"+uid+"/keyStatus").set("DEACTIVATED");\n' +
-                '        firebase.database().ref("users/"+uid+"/keyDeactivatedReason").set("TRAP_"+reason);\n' +
-                '        firebase.database().ref("users/"+uid+"/keyDeactivatedAt").set(Date.now());\n' +
-                '      }\n' +
                 '    }\n' +
                 '  }catch(e){}\n' +
                 '  try{\n' +
@@ -696,38 +730,41 @@ var OBF_ENGINE = {
                 '  }catch(e){}\n' +
                 '}\n' +
                 '\n' +
-                '/* ═══ TRAP 1: DevTools detection ═══ */\n' +
-                'var _0xdevOpen=0;\n' +
+                '/* ═══ TRAP: DevTools (grace 8s) ═══ */\n' +
+                'var _0xdevCount=0;\n' +
                 'var _0xisMobile=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);\n' +
                 'if(!_0xisMobile){\n' +
                 '  setInterval(function(){\n' +
-                '    var w=window.outerWidth-window.innerWidth;\n' +
-                '    var h=window.outerHeight-window.innerHeight;\n' +
-                '    if(w>160||h>160){\n' +
-                '      if(!_0xdevOpen){_0xdevOpen=1;_0xfireTrap("DEVTOOLS_OPEN");}\n' +
-                '    } else {_0xdevOpen=0;}\n' +
-                '  },1000);\n' +
+                '    try{\n' +
+                '      var w=window.outerWidth-window.innerWidth;\n' +
+                '      var h=window.outerHeight-window.innerHeight;\n' +
+                '      if(w>250||h>250){\n' +
+                '        _0xdevCount++;\n' +
+                '        if(_0xdevCount>=5&&Date.now()-(window._0x_loadStart||0)>8000){\n' +
+                '          _0xfireTrap("DEVTOOLS_OPEN");\n' +
+                '        }\n' +
+                '      } else {_0xdevCount=0;}\n' +
+                '    }catch(e){}\n' +
+                '  },2000);\n' +
                 '}\n' +
                 '\n' +
-                '/* ═══ TRAP 2: Console leak detection ═══ */\n' +
+                '/* ═══ TRAP: Console explicit leak ═══ */\n' +
                 'try{\n' +
-                '  var _0xorigLog=console.log;\n' +
-                '  var _0xorigWarn=console.warn;\n' +
-                '  var _0xorigErr=console.error;\n' +
+                '  var _0xlog=console.log,_0xwarn=console.warn,_0xerr=console.error;\n' +
                 '  var _0xcheck=function(args){\n' +
                 '    try{\n' +
                 '      var s=Array.prototype.slice.call(args).join(" ");\n' +
-                '      if(s.indexOf("_0xKF")!==-1||s.indexOf("_0xSECRET")!==-1||s.indexOf("nx_")!==-1||s.indexOf("byteArray")!==-1){\n' +
+                '      if(s.indexOf("_0xSECRET=")!==-1||s.indexOf("_0xKF=")!==-1||s.indexOf("window._0xSECRET")!==-1||s.indexOf("window._0xKF")!==-1){\n' +
                 '        _0xfireTrap("CONSOLE_KEY_LEAK");\n' +
                 '      }\n' +
                 '    }catch(e){}\n' +
                 '  };\n' +
-                '  console.log=function(){_0xcheck(arguments);return _0xorigLog.apply(console,arguments);};\n' +
-                '  console.warn=function(){_0xcheck(arguments);return _0xorigWarn.apply(console,arguments);};\n' +
-                '  console.error=function(){_0xcheck(arguments);return _0xorigErr.apply(console,arguments);};\n' +
+                '  console.log=function(){_0xcheck(arguments);return _0xlog.apply(console,arguments);};\n' +
+                '  console.warn=function(){_0xcheck(arguments);return _0xwarn.apply(console,arguments);};\n' +
+                '  console.error=function(){_0xcheck(arguments);return _0xerr.apply(console,arguments);};\n' +
                 '}catch(e){}\n' +
                 '\n' +
-                '/* ═══ TRAP 3: Honeypot elements ═══ */\n' +
+                '/* ═══ TRAP: Honeypot elements ═══ */\n' +
                 'setTimeout(function(){\n' +
                 '  try{\n' +
                 '    var _t1=document.createElement("div");\n' +
@@ -736,7 +773,6 @@ var OBF_ENGINE = {
                 '    _t1.setAttribute("data-keyname","' + fakeKeyName + '");\n' +
                 '    _t1.textContent="keyfile:' + fakeKeyName + '";\n' +
                 '    document.body.appendChild(_t1);\n' +
-                '    \n' +
                 '    var _t2=document.createElement("input");\n' +
                 '    _t2.type="hidden";\n' +
                 '    _t2.id="' + trapId2 + '";\n' +
@@ -746,29 +782,14 @@ var OBF_ENGINE = {
                 '  }catch(e){}\n' +
                 '},150);\n' +
                 '\n' +
-                '/* ═══ TRAP 4: window._0xSECRET access detection ═══ */\n' +
-                'setTimeout(function(){\n' +
-                '  try{\n' +
-                '    var _0x_orig=window._0xSECRET;\n' +
-                '    var _0x_flag=0;\n' +
-                '    Object.defineProperty(window,"_0xSECRET",{\n' +
-                '      get:function(){\n' +
-                '        if(!_0x_flag){_0x_flag=1;_0xfireTrap("WINDOW_SECRET_ACCESS");}\n' +
-                '        return _0x_orig;\n' +
-                '      },\n' +
-                '      configurable:false\n' +
-                '    });\n' +
-                '  }catch(e){}\n' +
-                '},200);\n' +
-                '\n' +
-                '/* ═══ TRAP 5: window._0xKF access detection ═══ */\n' +
+                '/* ═══ TRAP: window._0xKF access (user snooping) ═══ */\n' +
                 'setTimeout(function(){\n' +
                 '  try{\n' +
                 '    var _0x_origKF=window._0xKF;\n' +
                 '    var _0x_kfFlag=0;\n' +
                 '    Object.defineProperty(window,"_0xKF",{\n' +
                 '      get:function(){\n' +
-                '        if(!_0x_kfFlag){_0x_kfFlag=1;_0xfireTrap("WINDOW_KF_ACCESS");}\n' +
+                '        if(!_0x_kfFlag){_0x_kfFlag=1;if(Date.now()-(window._0x_loadStart||0)>3000){_0xfireTrap("KEYFILE_NAME_ACCESS");}}\n' +
                 '        return _0x_origKF;\n' +
                 '      },\n' +
                 '      configurable:false\n' +
@@ -776,56 +797,46 @@ var OBF_ENGINE = {
                 '  }catch(e){}\n' +
                 '},220);\n' +
                 '\n' +
-                '/* ═══ TRAP 6: atob override ═══ */\n' +
+                '/* ═══ TRAP: atob heavy abuse ═══ */\n' +
                 'try{\n' +
                 '  var _0xorigAtob=window.atob;\n' +
                 '  var _0xatobCount=0;\n' +
                 '  window.atob=function(s){\n' +
                 '    _0xatobCount++;\n' +
-                '    if(_0xatobCount===50||_0xatobCount===120||_0xatobCount===200){\n' +
-                '      _0xfireTrap("ATOB_COUNT_"+_0xatobCount);\n' +
-                '    }\n' +
+                '    if(_0xatobCount>2000){_0xfireTrap("ATOB_ABUSE");}\n' +
                 '    return _0xorigAtob(s);\n' +
                 '  };\n' +
                 '}catch(e){}\n' +
                 '\n' +
-                '/* ═══ TRAP 7: JSON.parse override ═══ */\n' +
-                'try{\n' +
-                '  var _0xorigParse=JSON.parse;\n' +
-                '  JSON.parse=function(s){\n' +
-                '    try{\n' +
-                '      if(typeof s==="string"&&(s.indexOf("\\"layers\\"")!==-1||s.indexOf("\\"byteArray\\"")!==-1)&&s.length>500){\n' +
-                '        if(s.indexOf("_0x")===-1){_0xfireTrap("JSON_KEY_PARSE");}\n' +
-                '      }\n' +
-                '    }catch(e){}\n' +
-                '    return _0xorigParse(s);\n' +
-                '  };\n' +
-                '}catch(e){}\n' +
-                '\n' +
-                '/* ═══ REAL LOADER (works normally) ═══ */\n' +
+                '/* ═══ REAL LOADER ═══ */\n' +
                 'setTimeout(function(){\n' +
                 '  try{\n' +
-                '    var _d=' + JSON.stringify(realNameEncoded) + ';\n' +
-                '    var _data=JSON.parse(atob(_d));\n' +
-                '    /* ✅ Generate decoder code */\n' +
-                '    var _code=window.OBF_ENGINE.generateKeyFileNameDecoder(_data,"window._kfName");\n' +
-                '    /* ✅ Run via Function() — global scope */\n' +
-                '    var _fn=new Function(_code);\n' +
-                '    _fn();\n' +
-                '    /* ✅ Now _kfName has the real filename */\n' +
+                '    _0x_ALLOWED=1;\n' +
+                '    \n' +
+                inlineDecoderCode + '\n' +
+                '    \n' +
                 '    if(!window._kfName||window._kfName.length<5){\n' +
                 '      window._0xLOAD_FAIL=1;\n' +
+                '      _0x_ALLOWED=0;\n' +
                 '      return;\n' +
                 '    }\n' +
                 '    var _s=document.createElement("script");\n' +
                 '    _s.src=window._kfName;\n' +
                 '    _s.async=false;\n' +
-                '    _s.onload=function(){window._kf=1;};\n' +
-                '    _s.onerror=function(){window._kf=0;window._0xLOAD_FAIL=1;};\n' +
+                '    _s.onload=function(){\n' +
+                '      window._kf=1;\n' +
+                '      setTimeout(function(){_0x_ALLOWED=0;},2000);\n' +
+                '    };\n' +
+                '    _s.onerror=function(){\n' +
+                '      window._kf=0;\n' +
+                '      window._0xLOAD_FAIL=1;\n' +
+                '      _0x_ALLOWED=0;\n' +
+                '    };\n' +
                 '    document.head.appendChild(_s);\n' +
                 '  }catch(e){\n' +
                 '    if(window.console&&console.error)console.error("Loader error:",e);\n' +
                 '    window._0xLOAD_FAIL=1;\n' +
+                '    _0x_ALLOWED=0;\n' +
                 '  }\n' +
                 '},80);\n' +
                 '\n' +
