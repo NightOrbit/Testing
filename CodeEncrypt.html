@@ -1339,6 +1339,11 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
    NIGHTORBIT — UNIVERSAL ENCRYPT PRO v20 ULTRA
    Enterprise-Grade Protection · Auto Key-Deactivation
    ═══════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════
+   NIGHTORBIT — UNIVERSAL ENCRYPT PRO v22 HEAVY
+   Enterprise-Grade Protection · Auto Key-Deactivation
+   Dashboard + Email + Database Alerts · Full Fix
+   ═══════════════════════════════════════════════════════════════════ */
 (function() {
 'use strict';
 
@@ -1371,7 +1376,8 @@ var state = {
     atobCount: 0,
     alertsListener: null,
     alertsShown: {},
-    keyAutoDeactivated: false
+    keyAutoDeactivated: false,
+    keyStatus: 'NONE'
 };
 
 var SESSION_TIMEOUT = 5 * 60 * 1000;
@@ -1400,12 +1406,14 @@ function rv(len) {
 
 function showStatus(type, msg) {
     var el = document.getElementById('status');
+    if (!el) return;
     el.className = 'status ' + type;
     el.textContent = msg;
 }
 function toast(msg, type) {
     type = type || 'info';
     var c = document.getElementById('toastContainer');
+    if (!c) return;
     var icons = { success:'fa-circle-check', error:'fa-circle-xmark', warn:'fa-triangle-exclamation', info:'fa-circle-info' };
     var el = document.createElement('div');
     el.className = 'toast ' + type;
@@ -1446,93 +1454,56 @@ function universalCopy(text, btn, originalText) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   MAXIMUM-LAYER KEY OBFUSCATION
+   KEY OBFUSCATION — 30 LAYERS (SIMPLE + RELIABLE)
    ═══════════════════════════════════════════════════════════════════ */
 function obfuscateKey30Layers(key) {
     var r = key;
-    
-    var l1 = ''; for (var i = 0; i < r.length; i++) l1 += String.fromCharCode(r.charCodeAt(i) ^ 0x5A);
-    var l2 = ''; for (var i = 0; i < l1.length; i++) l2 += String.fromCharCode((l1.charCodeAt(i) + 7) % 256);
-    var l3 = ''; for (var i = 0; i < l2.length; i++) l3 += String.fromCharCode(l2.charCodeAt(i) ^ 0x3C);
-    var l4 = ''; for (var i = 0; i < l3.length; i++) l4 += String.fromCharCode((l3.charCodeAt(i) + 13) % 256);
-    var l5 = ''; for (var i = 0; i < l4.length; i++) l5 += String.fromCharCode(l4.charCodeAt(i) ^ 0x7E);
-    
-    var even = '', odd = '';
-    for (var i = 0; i < l5.length; i++) { if (i % 2 === 0) even += l5[i]; else odd += l5[i]; }
-    var l6 = even + odd;
-    var l7 = l6.split('').reverse().join('');
-    var mid = Math.floor(l7.length / 2);
-    var l8 = l7.slice(mid) + l7.slice(0, mid);
-    var third = Math.floor(l8.length / 3);
-    var l9 = l8.slice(third * 2) + l8.slice(0, third) + l8.slice(third, third * 2);
-    var l10 = l9.split('').reverse().join('');
-    
-    var l11 = btoa(l10);
-    var padLen = Math.floor(Math.random() * 15) + 5;
-    var padding = '';
-    for (var i = 0; i < padLen; i++) padding += String.fromCharCode(Math.floor(Math.random() * 256));
-    var l12 = padding + l11;
-    var l13 = l12.split('').reverse().join('');
-    var l14 = btoa(l13);
-    var l15 = l14.replace(/A/g, 'X').replace(/B/g, 'Y').replace(/C/g, 'Z');
-    
-    var l16 = ''; for (var i = 0; i < l15.length; i++) l16 += String.fromCharCode(l15.charCodeAt(i) ^ 0x2B);
-    var l17 = ''; for (var i = 0; i < l16.length; i++) l17 += String.fromCharCode((l16.charCodeAt(i) + 17) % 256);
-    var l18 = ''; for (var i = 0; i < l17.length; i++) l18 += String.fromCharCode(l17.charCodeAt(i) ^ 0x9F);
-    var l19 = ''; for (var i = 0; i < l18.length; i++) l19 += String.fromCharCode((l18.charCodeAt(i) + 23) % 256);
-    var l20 = ''; for (var i = 0; i < l19.length; i++) l20 += String.fromCharCode(l19.charCodeAt(i) ^ 0x4D);
-    
-    var chunks = l20.match(/.{1,4}/g) || [];
-    var l21 = chunks.reverse().join('');
-    var l22 = btoa(l21);
-    var l23 = l22.split('').reverse().join('');
-    var quarter = Math.floor(l23.length / 4);
-    var l24 = l23.slice(quarter) + l23.slice(0, quarter);
-    var l25 = btoa(l24);
-    
-    var l26 = ''; for (var i = 0; i < l25.length; i++) l26 += String.fromCharCode(l25.charCodeAt(i) ^ 0x6E);
-    var l27 = ''; for (var i = 0; i < l26.length; i++) l27 += String.fromCharCode((l26.charCodeAt(i) + 31) % 256);
-    var l28 = l27.split('').reverse().join('');
-    var l29 = btoa(l28);
-    var l30 = ''; for (var i = 0; i < l29.length; i++) l30 += String.fromCharCode(l29.charCodeAt(i) ^ 0x1A);
-    
-    return btoa(l30);
+    for (var i = 0; i < 30; i++) {
+        r = btoa(unescape(encodeURIComponent(r)));
+    }
+    return r;
 }
 
-function obfuscate15Layers(input) {
-    var r = input;
-    
-    var l1 = ''; for (var i = 0; i < r.length; i++) l1 += String.fromCharCode(r.charCodeAt(i) ^ 0x5A);
-    var l2 = ''; for (var i = 0; i < l1.length; i++) l2 += String.fromCharCode((l1.charCodeAt(i) + 11) % 256);
-    var l3 = ''; for (var i = 0; i < l2.length; i++) l3 += String.fromCharCode(l2.charCodeAt(i) ^ 0x3C);
-    var l4 = ''; for (var i = 0; i < l3.length; i++) l4 += String.fromCharCode((l3.charCodeAt(i) + 19) % 256);
-    var l5 = ''; for (var i = 0; i < l4.length; i++) l5 += String.fromCharCode(l4.charCodeAt(i) ^ 0x7E);
-    
-    var even = '', odd = '';
-    for (var i = 0; i < l5.length; i++) { if (i % 2 === 0) even += l5[i]; else odd += l5[i]; }
-    var l6 = odd + even;
-    var l7 = l6.split('').reverse().join('');
-    var mid = Math.floor(l7.length / 2);
-    var l8 = l7.slice(mid) + l7.slice(0, mid);
-    var l9 = btoa(l8);
-    var l10 = l9.replace(/A/g, 'Q').replace(/B/g, 'R').replace(/C/g, 'S');
-    
-    var l11 = ''; for (var i = 0; i < l10.length; i++) l11 += String.fromCharCode(l10.charCodeAt(i) ^ 0x2B);
-    var l12 = ''; for (var i = 0; i < l11.length; i++) l12 += String.fromCharCode((l11.charCodeAt(i) + 29) % 256);
-    var l13 = btoa(l12);
-    var l14 = l13.split('').reverse().join('');
-    var l15 = btoa(l14);
-    
-    return l15;
+function deobfuscateKey30Layers(encoded) {
+    var r = encoded;
+    for (var i = 0; i < 30; i++) {
+        r = decodeURIComponent(escape(atob(r)));
+    }
+    return r;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   AUTO-DEACTIVATE KEY — SYSTEM TRIGGERED (ALL ATTEMPTS)
+   DECRYPTOR JS OBFUSCATION — 15 LAYERS
+   ═══════════════════════════════════════════════════════════════════ */
+function obfuscate15Layers(input) {
+    var r = input;
+    for (var i = 0; i < 15; i++) {
+        r = btoa(unescape(encodeURIComponent(r)));
+    }
+    return r;
+}
+
+function deobfuscate15Layers(encoded) {
+    var r = encoded;
+    for (var i = 0; i < 15; i++) {
+        r = decodeURIComponent(escape(atob(r)));
+    }
+    return r;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   AUTO-DEACTIVATE KEY — FULL SYSTEM
+   Ye function key ko deactivate karta hai aur:
+   1. deactivated_keys mein backup rakhta hai
+   2. keyData ko null karta hai
+   3. keyStatus = DEACTIVATED set karta hai
+   4. Original key ko invalid bana deta hai
    ═══════════════════════════════════════════════════════════════════ */
 function autoDeactivateKey(reason) {
     if (!state.user || !state.user.uid) return;
     if (typeof firebase === 'undefined' || !firebase.database) return;
     if (state.keyAutoDeactivated) return;
+    if (state.keyStatus === 'DEACTIVATED' || state.keyStatus === 'DELETED') return;
     
     state.keyAutoDeactivated = true;
     console.log('🔒 Auto-deactivating key. Reason:', reason);
@@ -1540,21 +1511,26 @@ function autoDeactivateKey(reason) {
     firebase.database().ref('users/' + state.user.uid).once('value')
         .then(function(snapshot) {
             var data = snapshot.val() || {};
+            var keyData = data.keyData || {};
             
-            if (data.keyStatus === 'DEACTIVATED') {
+            if (data.keyStatus === 'DEACTIVATED' || data.keyStatus === 'DELETED') {
                 console.log('ℹ️ Key already deactivated');
+                state.keyStatus = data.keyStatus;
                 return;
             }
             
-            var oldKey = data.encryptedKey;
-            var oldVersion = data.keyVersion || 1;
+            var oldKey = keyData.encryptedKey;
+            var oldVersion = keyData.keyVersion || 1;
             var newVersion = oldVersion + 1;
             
             var updates = {};
             
+            /* Step 1: Backup old key to deactivated_keys */
             if (oldKey) {
                 updates['deactivated_keys/' + state.user.uid + '/' + Date.now()] = {
                     encryptedKey: oldKey,
+                    salt: keyData.salt,
+                    passwordHash: keyData.passwordHash,
                     keyVersion: oldVersion,
                     deactivatedAt: Date.now(),
                     reason: reason || 'SECURITY_ALERT',
@@ -1562,16 +1538,19 @@ function autoDeactivateKey(reason) {
                 };
             }
             
-            updates['users/' + state.user.uid + '/encryptedKey'] = null;
+            /* Step 2: Remove keyData completely — original key invalid */
+            updates['users/' + state.user.uid + '/keyData'] = null;
+            
+            /* Step 3: Set keyStatus = DEACTIVATED */
             updates['users/' + state.user.uid + '/keyStatus'] = 'DEACTIVATED';
             updates['users/' + state.user.uid + '/keyDeactivatedAt'] = Date.now();
             updates['users/' + state.user.uid + '/keyDeactivatedReason'] = reason;
             updates['users/' + state.user.uid + '/keyVersion'] = newVersion;
-            updates['users/' + state.user.uid + '/hasKey'] = false;
             
             firebase.database().ref().update(updates)
                 .then(function() {
-                    console.log('✅ Key auto-deactivated');
+                    console.log('✅ Key auto-deactivated — original key ab invalid hai');
+                    state.keyStatus = 'DEACTIVATED';
                     if (typeof KEY_MANAGER !== 'undefined') KEY_MANAGER.clear();
                     updateKeyUI();
                     showAutoDeactivateModal();
@@ -1583,6 +1562,9 @@ function autoDeactivateKey(reason) {
         });
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   AUTO-DEACTIVATE MODAL
+   ═══════════════════════════════════════════════════════════════════ */
 function showAutoDeactivateModal() {
     var existing = document.getElementById('autoDeactivateOverlay');
     if (existing) existing.remove();
@@ -1605,7 +1587,8 @@ function showAutoDeactivateModal() {
         '<h2 style="font-family:Orbitron,sans-serif;font-size:20px;letter-spacing:3px;text-transform:uppercase;color:#ff0064;margin-bottom:12px;">Key Deactivated</h2>' +
         '<p style="color:#b0d0d0;font-size:13px;line-height:1.8;margin-bottom:20px;">' +
         'Your encryption key has been <b style="color:#ffd700;">automatically deactivated</b> due to a security alert.<br><br>' +
-        'Your <b style="color:#00ff64;">original code is safe</b>. Please regenerate a new key and re-encrypt your code.' +
+        'Your <b style="color:#00ff64;">original code is safe</b>. Please regenerate a new key and re-encrypt your code.<br><br>' +
+        '<span style="color:#ff0064;font-weight:bold;">⚠️ Original key ab invalid hai — purani encrypted files decrypt nahi hongi.</span>' +
         '</p>' +
         '<button onclick="closeAutoDeactivateModal(); createKey();" style="width:100%;background:linear-gradient(135deg,#00f0ff,#b400ff);color:#000;border:none;padding:16px 24px;border-radius:12px;font-weight:900;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">🔐 REGENERATE KEY NOW</button>' +
         '<button onclick="closeAutoDeactivateModal()" style="width:100%;margin-top:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid #333;padding:12px 24px;border-radius:12px;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">LATER</button>';
@@ -1665,11 +1648,11 @@ function sendSecurityAlert(eventType, keyType) {
         location: 'unknown'
     };
     
-    // ✅ TURANT AUTO-DEACTIVATE (har attempt pe)
+    /* Step 1: TURANT AUTO-DEACTIVATE */
     console.log('🔒 Auto-deactivating key due to:', eventType);
     autoDeactivateKey('HACKER_ATTEMPT_' + eventType);
     
-    // ✅ IP + Location fetch
+    /* Step 2: Fetch IP + Location */
     fetch('https://ipapi.co/json/')
         .then(function(res) { return res.json(); })
         .then(function(data) {
@@ -1695,6 +1678,9 @@ function sendSecurityAlert(eventType, keyType) {
         });
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   SAVE TO DATABASE
+   ═══════════════════════════════════════════════════════════════════ */
 function saveToDatabase(alertData) {
     if (typeof firebase === 'undefined' || !firebase.database) {
         console.warn('❌ Firebase not loaded');
@@ -1715,7 +1701,7 @@ function saveToDatabase(alertData) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   USER EMAIL — WITH KEY DEACTIVATION NOTICE
+   USER EMAIL — SECURITY ALERT
    ═══════════════════════════════════════════════════════════════════ */
 function sendUserEmail() {
     if (!state.user || !state.user.email) {
@@ -1874,7 +1860,7 @@ window._0xR_ACCESSED = function() {
     sendSecurityAlert('REAL_ATTEMPT', 'REAL_KEY');
 };
 
-// ✅ DevTools detection
+/* DevTools detection */
 setInterval(function() {
     var threshold = 160;
     if (window.outerWidth - window.innerWidth > threshold ||
@@ -1889,7 +1875,7 @@ setInterval(function() {
     }
 }, 1000);
 
-// ✅ atob decode attempt
+/* atob decode attempt */
 var originalAtob = window.atob;
 window.atob = function(str) {
     state.atobCount++;
@@ -1973,6 +1959,27 @@ function updateKeyUI() {
     var eyeBtn = document.getElementById('keyEyeBtn');
     var infoText = document.getElementById('keyInfoText');
 
+    /* Check key status first */
+    if (state.keyStatus === 'DEACTIVATED') {
+        keyText.textContent = 'DEACTIVATED — REGENERATE REQUIRED';
+        createBtn.style.display = 'inline-flex';
+        deleteBtn.style.display = 'none';
+        eyeBtn.disabled = true;
+        infoText.innerHTML = '⚠️ Your key was <span class="red">DEACTIVATED</span> due to a security alert. Click <b>CREATE KEY & PASSWORD</b> to generate a new one.';
+        updateProgress();
+        return;
+    }
+    
+    if (state.keyStatus === 'DELETED') {
+        keyText.textContent = 'DELETED — CREATE NEW KEY';
+        createBtn.style.display = 'inline-flex';
+        deleteBtn.style.display = 'none';
+        eyeBtn.disabled = true;
+        infoText.innerHTML = '🗑️ Your key was <span class="red">DELETED</span>. Click <b>CREATE KEY & PASSWORD</b> to generate a new one.';
+        updateProgress();
+        return;
+    }
+
     if (KEY_MANAGER.hasPassword()) {
         var masked = KEY_MANAGER.getDisplayKey();
         keyText.textContent = masked;
@@ -1999,6 +2006,7 @@ window.createKey = function() {
         return;
     }
     state.keyAutoDeactivated = false;
+    state.keyStatus = 'NONE';
     openPwdModal('create');
 };
 
@@ -2021,15 +2029,16 @@ window.deleteKey = function() {
     }
 
     showStatus('loading', '⏳ Deleting old key...');
-    deactivateOldKey(state.user)
+    KEY_MANAGER.deleteKey(state.user)
         .then(function() {
             KEY_MANAGER.clear();
+            state.keyStatus = 'DELETED';
             hideReveal();
             document.getElementById('secretKey').value = '';
             document.getElementById('outputEnc').value = '';
             updateKeyUI();
-            showStatus('success', '✅ Old key deactivated. Create a new one.');
-            toast('🗑️ Old key deactivated permanently', 'success');
+            showStatus('success', '✅ Old key deleted. Create a new one.');
+            toast('🗑️ Old key deleted permanently', 'success');
             setTimeout(function() {
                 openPwdModal('create');
             }, 800);
@@ -2038,41 +2047,6 @@ window.deleteKey = function() {
             showStatus('error', '❌ ' + err.message);
         });
 };
-
-function deactivateOldKey(user) {
-    return new Promise(function(resolve, reject) {
-        firebase.database().ref('users/' + user.uid).once('value')
-            .then(function(snapshot) {
-                var data = snapshot.val() || {};
-                var oldKey = data.encryptedKey;
-                var oldVersion = data.keyVersion || 1;
-                var newVersion = oldVersion + 1;
-                
-                var updates = {};
-                
-                if (oldKey) {
-                    updates['deactivated_keys/' + user.uid + '/' + Date.now()] = {
-                        encryptedKey: oldKey,
-                        keyVersion: oldVersion,
-                        deactivatedAt: Date.now(),
-                        reason: 'SECURITY_ALERT',
-                        status: 'DEACTIVATED'
-                    };
-                }
-                
-                updates['users/' + user.uid + '/encryptedKey'] = null;
-                updates['users/' + user.uid + '/keyStatus'] = 'DEACTIVATED';
-                updates['users/' + user.uid + '/keyDeactivatedAt'] = Date.now();
-                updates['users/' + user.uid + '/keyVersion'] = newVersion;
-                updates['users/' + user.uid + '/hasKey'] = false;
-                
-                firebase.database().ref().update(updates)
-                    .then(function() { resolve(newVersion); })
-                    .catch(reject);
-            })
-            .catch(reject);
-    });
-}
 
 /* ═══════════════════════════════════════════════════════════════════
    PASSWORD MODAL
@@ -2141,10 +2115,10 @@ pwdInput.addEventListener('input', function() {
     var rDig = digits >= 3;
     var rLet = lower >= 4 && upper >= 3;
     var rSym = symbols >= 3;
-    var rStrength = false;
-    if (rLen && rDig && rLet && rSym && typeof zxcvbn !== 'undefined') {
-        try { rStrength = zxcvbn(v).score >= 3; } catch(e) { rStrength = false; }
-    }
+    
+    /* zxcvbn check REMOVED — sirf format check */
+    var rStrength = (rLen && rDig && rLet && rSym);
+    
     updateReq('req-length', rLen);
     updateReq('req-digits', rDig);
     updateReq('req-letters', rLet);
@@ -2192,6 +2166,8 @@ pwdSubmitBtn.addEventListener('click', function() {
         KEY_MANAGER.createKeyAndPassword(state.user, password)
             .then(function(result) {
                 setPwdStatus('success', '✅ Key created! Password saved.');
+                state.keyStatus = 'ACTIVE';
+                state.keyAutoDeactivated = false;
                 document.getElementById('secretKey').value = result.key;
                 updateKeyUI();
                 setTimeout(closePwdModal, 1200);
@@ -2341,6 +2317,12 @@ window.removeFile = function(name) { delete state.uploadedFiles[name]; renderFil
    ═══════════════════════════════════════════════════════════════════ */
 window.encryptNow = function() {
     try {
+        if (state.keyStatus === 'DEACTIVATED' || state.keyStatus === 'DELETED') {
+            showStatus('error', '❌ Key is ' + state.keyStatus + '. Please create a new one.');
+            toast('Key ' + state.keyStatus + ' — create new key', 'error');
+            return;
+        }
+        
         if (!KEY_MANAGER.hasPassword()) {
             showStatus('error', '❌ Create your key first');
             toast('Create key first', 'error');
@@ -2376,7 +2358,7 @@ function performEncrypt(secretKey) {
     if (fileNames.length > 0) {
         var bundle = {
             __type: 'multi-file-bundle',
-            __version: '20.0',
+            __version: '22.0',
             __created: new Date().toISOString(),
             __fileCount: fileNames.length,
             files: {}
@@ -2451,9 +2433,22 @@ window.downloadOutput = function() {
     toast('Downloaded!', 'success');
 };
 
+/* ═══════════════════════════════════════════════════════════════════
+   DOWNLOAD DECRYPTOR + KEY FILE
+   - 1 real key file (30 layers)
+   - 2 fake file names (CSS mein, no alert)
+   - Decryptor JS (15 layers)
+   - Key file name (10 layers)
+   - Original key PE ALERT
+   ═══════════════════════════════════════════════════════════════════ */
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Encrypt first!', 'error'); return; }
+
+    if (state.keyStatus === 'DEACTIVATED' || state.keyStatus === 'DELETED') {
+        toast('Key is ' + state.keyStatus + '. Create new key first.', 'error');
+        return;
+    }
 
     if (!KEY_MANAGER.isReady() || !KEY_MANAGER.getKey()) {
         state._pendingAction = 'downloadDecryptor';
@@ -2467,95 +2462,155 @@ window.downloadDecryptor = function() {
         return;
     }
 
-    var keyFileName = 'nx_' + rndHex(8) + '-' + rndHex(4) + '-' + rndHex(4) + '-' + rndHex(12) + '.js';
-    var encData = out;
+    /* ═══ 1. REAL KEY FILE NAME ═══ */
+    var realKeyFileName = 'nx_' + rndHex(8) + '-' + rndHex(4) + '-' + rndHex(4) + '-' + rndHex(12) + '.js';
+    
+    /* ═══ 2. 2 FAKE FILE NAMES (decoy — no alert) ═══ */
+    var fakeKeyFileName1 = 'nx_' + rndHex(8) + '-' + rndHex(4) + '-' + rndHex(4) + '-' + rndHex(12) + '.js';
+    var fakeKeyFileName2 = 'nx_' + rndHex(8) + '-' + rndHex(4) + '-' + rndHex(4) + '-' + rndHex(12) + '.js';
 
+    var encData = out;
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
     if (suffix.length < 60) { while (suffix.length < 60) suffix += '0'; }
     suffix = suffix.substring(0, 60);
     var fullKeyString = PREFIX + suffix;
 
+    /* ═══ 3. REAL KEY — 30 LAYERS ═══ */
     var obfuscatedKey30 = obfuscateKey30Layers(fullKeyString);
 
-    var fakePart1 = 'fake_' + rndHex(12) + '.js';
-    var fakePart2 = 'fake_' + rndHex(12) + '.js';
-    var fakePart1_15L = obfuscate15Layers(fakePart1);
-    var fakePart2_15L = obfuscate15Layers(fakePart2);
+    /* ═══ 4. DECRYPTOR JS — 15 LAYERS ═══ */
+    var decryptorJS = 
+        'function showError(msg){' +
+        'document.title="Error";' +
+        'document.body.innerHTML="";' +
+        'document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;margin:0;";' +
+        'var err="<div class=\\"err\\">";' +
+        'err+="<div class=\\"err-icon\\">❌<\\/div>";' +
+        'err+="<h2>Decryption Failed<\\/h2>";' +
+        'err+="<p>"+msg+"<\\/p>";' +
+        'err+="<\\/div>";' +
+        'document.body.innerHTML=err;' +
+        '}' +
+        'function showKeyMissingError(){' +
+        'document.body.innerHTML="<div style=\\"text-align:center;padding:60px 20px;\\"><div style=\\"font-size:80px;\\">🔐<\\/div><h2 style=\\"color:#ff0064;margin:20px 0;\\">Key File Missing<\\/h2><p style=\\"color:#b0b0d0;\\">Place decryptor.html and key file in SAME folder.<\\/p><\\/div>";' +
+        '}' +
+        'function checkKeyStatus(callback){' +
+        'if (typeof firebase === "undefined" || !firebase.auth) { callback(true); return; }' +
+        'firebase.auth().onAuthStateChanged(function(user){' +
+        'if (!user) { callback(true); return; }' +
+        'firebase.database().ref("users/" + user.uid).once("value")' +
+        '.then(function(snap){' +
+        'var data = snap.val();' +
+        'if (!data) { callback(true); return; }' +
+        'var status = data.keyStatus;' +
+        'if (status === "DEACTIVATED" || status === "DELETED") {' +
+        'showError("Your key is " + status + ". Please generate a new one.");' +
+        'return;' +
+        '}' +
+        'if (data.keyVersion && data.keyVersion !== KEY_VERSION) {' +
+        'showError("This code was encrypted with OLD key. Please re-encrypt.");' +
+        'return;' +
+        '}' +
+        'callback(true);' +
+        '})' +
+        '.catch(function(){ callback(true); });' +
+        '});' +
+        '}' +
+        'function decryptData(){' +
+        'if (!window._0xSECRET || window._0xSECRET.length < 30) { showKeyMissingError(); return; }' +
+        'try {' +
+        'var dec;' +
+        'var parts = ENCRYPTED_DATA.split(":");' +
+        'if (parts[0] === "v3" && parts.length === 5) {' +
+        'var iv = CryptoJS.enc.Hex.parse(parts[2]);' +
+        'var ciphertext = parts[3];' +
+        'var storedHmac = parts[4];' +
+        'var computedHmac = CryptoJS.HmacSHA256(parts[2] + ":" + ciphertext, window._0xSECRET).toString();' +
+        'if (computedHmac !== storedHmac) throw new Error("Integrity check failed");' +
+        'dec = CryptoJS.AES.decrypt(ciphertext, window._0xSECRET, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }).toString(CryptoJS.enc.Utf8);' +
+        '} else if (parts[0] === "v2" && parts.length === 4) {' +
+        'var iv2 = CryptoJS.enc.Hex.parse(parts[1]);' +
+        'var ct2 = parts[2];' +
+        'var hmac2 = parts[3];' +
+        'var ch2 = CryptoJS.HmacSHA256(parts[1] + ":" + ct2, window._0xSECRET).toString();' +
+        'if (ch2 !== hmac2) throw new Error("Integrity failed");' +
+        'dec = CryptoJS.AES.decrypt(ct2, window._0xSECRET, { iv: iv2, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }).toString(CryptoJS.enc.Utf8);' +
+        '} else {' +
+        'dec = CryptoJS.AES.decrypt(ENCRYPTED_DATA, window._0xSECRET).toString(CryptoJS.enc.Utf8);' +
+        '}' +
+        'if (!dec || dec.length === 0) throw new Error("Decryption failed");' +
+        'var trimmed = dec.trim();' +
+        'var isHTML = /^\\s*<!DOCTYPE\\s+html/i.test(trimmed) || /<html[\\s>]/i.test(trimmed) || /<body[\\s>]/i.test(trimmed);' +
+        'var loader = document.getElementById("loader");' +
+        'if (loader) loader.style.display = "none";' +
+        'if (isHTML) {' +
+        'var iframe = document.createElement("iframe");' +
+        'iframe.id = "renderFrame";' +
+        'iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-top-navigation-by-user-activation");' +
+        'document.body.appendChild(iframe);' +
+        'try { iframe.srcdoc = dec; } catch(e) {' +
+        'var blob = new Blob([dec], {type:"text/html;charset=utf-8"});' +
+        'iframe.src = URL.createObjectURL(blob);' +
+        '}' +
+        '} else {' +
+        'document.body.innerHTML = "";' +
+        'document.body.style.cssText = "background:#000;color:#00ff64;padding:20px;margin:0;font-family:monospace;font-size:13px;";' +
+        'var pre = document.createElement("pre");' +
+        'pre.style.cssText = "margin:0;white-space:pre-wrap;word-break:break-word;";' +
+        'pre.textContent = dec;' +
+        'document.body.appendChild(pre);' +
+        '}' +
+        '} catch(e) { showError(e.message); }' +
+        '}' +
+        'function startDecryption(){' +
+        'checkKeyStatus(function(ok){ if (ok) decryptData(); });' +
+        '}' +
+        'if (document.readyState === "loading") {' +
+        'document.addEventListener("DOMContentLoaded", function(){ setTimeout(startDecryption, 800); });' +
+        '} else {' +
+        'setTimeout(startDecryption, 800);' +
+        '}';
 
-    function rv2(len) {
-        var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        var s = '';
-        for (var i = 0; i < (len || 6); i++) s += c.charAt(Math.floor(Math.random() * c.length));
-        return s;
+    /* 15 layers obfuscation */
+    var decryptorJS_15L = obfuscate15Layers(decryptorJS);
+
+    /* ═══ 5. REAL KEY FILE NAME — 10 LAYERS ═══ */
+    var realKeyFileName_10L = realKeyFileName;
+    for (var _i = 0; _i < 10; _i++) {
+        realKeyFileName_10L = btoa(unescape(encodeURIComponent(realKeyFileName_10L)));
     }
-    var qA = rv2(6), qB = rv2(7), qC = rv2(5), qD = rv2(6), qE = rv2(8);
 
-    var keyFileContent =
+    /* ═══ 6. FAKE FILE NAMES — CSS mein (no alert) ═══ */
+    var fakeCSS = 
+        '.decoy-' + rndHex(6) + '{--k:"' + fakeKeyFileName1 + '";}' +
+        '.decoy-' + rndHex(6) + '{--k:"' + fakeKeyFileName2 + '";}';
+
+    /* ═══ 7. KEY FILE CONTENT — sirf REAL key (30 layers) + alert functions ═══ */
+    var keyFileContent = 
         '(function(){\n' +
         '"use strict";\n' +
         'try{\n' +
-        '  // FAKE Part 1 (15 layers)\n' +
-        '  var _f1 = "' + fakePart1_15L + '";\n' +
-        '  window._0xFAKE1 = _f1;\n' +
-        '  \n' +
-        '  // FAKE Part 2 (15 layers)\n' +
-        '  var _f2 = "' + fakePart2_15L + '";\n' +
-        '  window._0xFAKE2 = _f2;\n' +
-        '  \n' +
-        '  // REAL Key (30 layers)\n' +
         '  var _r = "' + obfuscatedKey30 + '";\n' +
-        '  \n' +
         '  function deobfuscate30Layers(encoded){\n' +
-        '    var r = atob(encoded);\n' +
-        '    var l29 = ""; for (var i = 0; i < r.length; i++) l29 += String.fromCharCode(r.charCodeAt(i) ^ 0x1A);\n' +
-        '    var l28 = atob(l29);\n' +
-        '    var l27 = l28.split("").reverse().join("");\n' +
-        '    var l26 = ""; for (var i = 0; i < l27.length; i++) l26 += String.fromCharCode((l27.charCodeAt(i) - 31 + 256) % 256);\n' +
-        '    var l25 = ""; for (var i = 0; i < l26.length; i++) l25 += String.fromCharCode(l26.charCodeAt(i) ^ 0x6E);\n' +
-        '    var l24 = atob(l25);\n' +
-        '    var quarter = Math.floor(l24.length / 4);\n' +
-        '    var l23 = l24.slice(-quarter) + l24.slice(0, -quarter);\n' +
-        '    var l22 = l23.split("").reverse().join("");\n' +
-        '    var l21 = atob(l22);\n' +
-        '    var chunks = l21.match(/.{1,4}/g) || [];\n' +
-        '    var l20 = chunks.reverse().join("");\n' +
-        '    var l19 = ""; for (var i = 0; i < l20.length; i++) l19 += String.fromCharCode(l20.charCodeAt(i) ^ 0x4D);\n' +
-        '    var l18 = ""; for (var i = 0; i < l19.length; i++) l18 += String.fromCharCode((l19.charCodeAt(i) - 23 + 256) % 256);\n' +
-        '    var l17 = ""; for (var i = 0; i < l18.length; i++) l17 += String.fromCharCode(l18.charCodeAt(i) ^ 0x9F);\n' +
-        '    var l16 = ""; for (var i = 0; i < l17.length; i++) l16 += String.fromCharCode((l17.charCodeAt(i) - 17 + 256) % 256);\n' +
-        '    var l15 = ""; for (var i = 0; i < l16.length; i++) l15 += String.fromCharCode(l16.charCodeAt(i) ^ 0x2B);\n' +
-        '    var l14 = l15.replace(/Z/g, "C").replace(/Y/g, "B").replace(/X/g, "A");\n' +
-        '    var l13 = atob(l14);\n' +
-        '    var l12 = l13.split("").reverse().join("");\n' +
-        '    var l11 = atob(l12);\n' +
-        '    var l10 = l11.slice(10);\n' +
-        '    var l9 = atob(l10);\n' +
-        '    var l8 = l9.slice(0, l9.length / 2) + l9.slice(l9.length / 2);\n' +
-        '    var l7 = l8.split("").reverse().join("");\n' +
-        '    var l6 = l7.slice(l7.length / 2) + l7.slice(0, l7.length / 2);\n' +
-        '    var l5 = ""; for (var i = 0; i < l6.length; i++) l5 += String.fromCharCode(l6.charCodeAt(i) ^ 0x7E);\n' +
-        '    var l4 = ""; for (var i = 0; i < l5.length; i++) l4 += String.fromCharCode((l5.charCodeAt(i) - 13 + 256) % 256);\n' +
-        '    var l3 = ""; for (var i = 0; i < l4.length; i++) l3 += String.fromCharCode(l4.charCodeAt(i) ^ 0x3C);\n' +
-        '    var l2 = ""; for (var i = 0; i < l3.length; i++) l2 += String.fromCharCode((l3.charCodeAt(i) - 7 + 256) % 256);\n' +
-        '    var l1 = ""; for (var i = 0; i < l2.length; i++) l1 += String.fromCharCode(l2.charCodeAt(i) ^ 0x5A);\n' +
-        '    return l1;\n' +
+        '    var r = encoded;\n' +
+        '    for (var i = 0; i < 30; i++) {\n' +
+        '      r = decodeURIComponent(escape(atob(r)));\n' +
+        '    }\n' +
+        '    return r;\n' +
         '  }\n' +
-        '  \n' +
-        '  window._0xSECRET = deobfuscate30Layers(_r);\n' +
-        '  \n' +
-        '  window._0xF1_ACCESSED = function() {\n' +
-        '    if (window._0xREPORT_ALERT) window._0xREPORT_ALERT("FAKE_ATTEMPT", "FAKE_PART1");\n' +
-        '  };\n' +
-        '  window._0xF2_ACCESSED = function() {\n' +
-        '    if (window._0xREPORT_ALERT) window._0xREPORT_ALERT("FAKE_ATTEMPT", "FAKE_PART2");\n' +
-        '  };\n' +
-        '  window._0xR_ACCESSED = function() {\n' +
-        '    if (window._0xREPORT_ALERT) window._0xREPORT_ALERT("REAL_ATTEMPT", "REAL_KEY");\n' +
-        '  };\n' +
+        '  var _secret = deobfuscate30Layers(_r);\n' +
+        '  Object.defineProperty(window, "_0xSECRET", {\n' +
+        '    get: function() {\n' +
+        '      if (window._0xR_ACCESSED) window._0xR_ACCESSED();\n' +
+        '      return _secret;\n' +
+        '    },\n' +
+        '    configurable: false\n' +
+        '  });\n' +
         '}catch(e){window._0xSECRET="";}\n' +
         ')();\n';
 
+    /* ═══ 8. BUILD DECRYPTOR HTML ═══ */
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -2567,8 +2622,8 @@ window.downloadDecryptor = function() {
         '<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"><' + '/script>',
         '<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"><' + '/script>',
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
-        '<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"><' + '/script>',
-        '<script>(function(){var _a="' + btoa(btoa(keyFileName)) + '";var _b=atob(atob(_a));var _s=document.createElement("script");_s.src=_b;_s.async=false;_s.onload=function(){window._kf=1;};_s.onerror=function(){window._kf=0;};document.head.appendChild(_s);})();<' + '/script>',
+        /* Real key file name — 10 layers obfuscated */
+        '<script>(function(){var _a="' + realKeyFileName_10L + '";var _b=_a;for(var i=0;i<10;i++){_b=decodeURIComponent(escape(atob(_b)));}var _s=document.createElement("script");_s.src=_b;_s.async=false;_s.onload=function(){window._kf=1;};_s.onerror=function(){window._kf=0;};document.head.appendChild(_s);})();<' + '/script>',
         '<style>',
         '*{margin:0;padding:0;box-sizing:border-box;}',
         'html,body{width:100%;min-height:100vh;}',
@@ -2583,6 +2638,7 @@ window.downloadDecryptor = function() {
         '.err h2{color:#ff0064;font-size:24px;letter-spacing:3px;text-transform:uppercase;}',
         '.err p{color:#b0b0d0;font-size:13px;line-height:1.7;max-width:500px;}',
         '#renderFrame{width:100%;height:100vh;border:0;display:block;position:fixed;inset:0;z-index:10;}',
+        fakeCSS,
         '<' + '/style>',
         '<' + '/head>',
         '<body>',
@@ -2590,113 +2646,10 @@ window.downloadDecryptor = function() {
         '<script>',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
         'var KEY_VERSION=' + state.keyVersion + ';',
-        '',
-        'function showError(msg){',
-        '  document.title="Error";',
-        '  document.body.innerHTML="";',
-        '  document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;margin:0;";',
-        '  var err="<div class=\\"err\\">";',
-        '  err+="<div class=\\"err-icon\\">❌<\\/div>";',
-        '  err+="<h2>Decryption Failed<\\/h2>";',
-        '  err+="<p>"+msg+"<\\/p>";',
-        '  err+="<\\/div>";',
-        '  document.body.innerHTML=err;',
-        '}',
-        '',
-        'function showKeyMissingError(){',
-        '  document.body.innerHTML="<div style=\\"text-align:center;padding:60px 20px;\\"><div style=\\"font-size:80px;\\">🔐<\\/div><h2 style=\\"color:#ff0064;margin:20px 0;\\">Key File Missing<\\/h2><p style=\\"color:#b0b0d0;\\">Place decryptor.html and key file in SAME folder.<\\/p><\\/div>";',
-        '}',
-        '',
-        'function checkKeyStatus(callback){',
-        '  if (typeof firebase === "undefined" || !firebase.auth) {',
-        '    callback(true);',
-        '    return;',
-        '  }',
-        '  firebase.auth().onAuthStateChanged(function(user){',
-        '    if (!user) { callback(true); return; }',
-        '    firebase.database().ref("users/" + user.uid).once("value")',
-        '      .then(function(snap){',
-        '        var data = snap.val();',
-        '        if (!data || data.keyStatus === "DEACTIVATED") {',
-        '          showError("Your key is DEACTIVATED. Please generate a new one.");',
-        '          return;',
-        '        }',
-        '        if (data.keyVersion && data.keyVersion !== KEY_VERSION) {',
-        '          showError("This code was encrypted with OLD key. Please re-encrypt.");',
-        '          return;',
-        '        }',
-        '        callback(true);',
-        '      })',
-        '      .catch(function(){ callback(true); });',
-        '  });',
-        '}',
-        '',
-        'function decryptData(){',
-        '  if (!window._0xSECRET || window._0xSECRET.length < 30) {',
-        '    showKeyMissingError();',
-        '    return;',
-        '  }',
-        '  try {',
-        '    var dec;',
-        '    var parts = ENCRYPTED_DATA.split(":");',
-        '    if (parts[0] === "v3" && parts.length === 5) {',
-        '      var iv = CryptoJS.enc.Hex.parse(parts[2]);',
-        '      var ciphertext = parts[3];',
-        '      var storedHmac = parts[4];',
-        '      var computedHmac = CryptoJS.HmacSHA256(parts[2] + ":" + ciphertext, window._0xSECRET).toString();',
-        '      if (computedHmac !== storedHmac) throw new Error("Integrity check failed");',
-        '      dec = CryptoJS.AES.decrypt(ciphertext, window._0xSECRET, {',
-        '        iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7',
-        '      }).toString(CryptoJS.enc.Utf8);',
-        '    } else if (parts[0] === "v2" && parts.length === 4) {',
-        '      var iv2 = CryptoJS.enc.Hex.parse(parts[1]);',
-        '      var ct2 = parts[2];',
-        '      var hmac2 = parts[3];',
-        '      var ch2 = CryptoJS.HmacSHA256(parts[1] + ":" + ct2, window._0xSECRET).toString();',
-        '      if (ch2 !== hmac2) throw new Error("Integrity failed");',
-        '      dec = CryptoJS.AES.decrypt(ct2, window._0xSECRET, {',
-        '        iv: iv2, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7',
-        '      }).toString(CryptoJS.enc.Utf8);',
-        '    } else {',
-        '      dec = CryptoJS.AES.decrypt(ENCRYPTED_DATA, window._0xSECRET).toString(CryptoJS.enc.Utf8);',
-        '    }',
-        '    if (!dec || dec.length === 0) throw new Error("Decryption failed");',
-        '    ',
-        '    var trimmed = dec.trim();',
-        '    var isHTML = /^\\s*<!DOCTYPE\\s+html/i.test(trimmed) || /<html[\\s>]/i.test(trimmed) || /<body[\\s>]/i.test(trimmed);',
-        '    ',
-        '    var loader = document.getElementById("loader");',
-        '    if (loader) loader.style.display = "none";',
-        '    ',
-        '    if (isHTML) {',
-        '      var iframe = document.createElement("iframe");',
-        '      iframe.id = "renderFrame";',
-        '      iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-top-navigation-by-user-activation");',
-        '      document.body.appendChild(iframe);',
-        '      try { iframe.srcdoc = dec; } catch(e) {',
-        '        var blob = new Blob([dec], {type:"text/html;charset=utf-8"});',
-        '        iframe.src = URL.createObjectURL(blob);',
-        '      }',
-        '    } else {',
-        '      document.body.innerHTML = "";',
-        '      document.body.style.cssText = "background:#000;color:#00ff64;padding:20px;margin:0;font-family:monospace;font-size:13px;";',
-        '      var pre = document.createElement("pre");',
-        '      pre.style.cssText = "margin:0;white-space:pre-wrap;word-break:break-word;";',
-        '      pre.textContent = dec;',
-        '      document.body.appendChild(pre);',
-        '    }',
-        '  } catch(e) { showError(e.message); }',
-        '}',
-        '',
-        'function startDecryption(){',
-        '  checkKeyStatus(function(ok){ if (ok) decryptData(); });',
-        '}',
-        '',
-        'if (document.readyState === "loading") {',
-        '  document.addEventListener("DOMContentLoaded", function(){ setTimeout(startDecryption, 800); });',
-        '} else {',
-        '  setTimeout(startDecryption, 800);',
-        '}',
+        'var _d="' + decryptorJS_15L + '";',
+        'var _code=_d;',
+        'for(var i=0;i<15;i++){_code=decodeURIComponent(escape(atob(_code)));}',
+        'eval(_code);',
         '<' + '/script>',
         '<' + '/body>',
         '<' + '/html>'
@@ -2704,6 +2657,7 @@ window.downloadDecryptor = function() {
 
     var html = parts.join('\n');
 
+    /* ═══ 9. DOWNLOAD FILES ═══ */
     var htmlBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
     var htmlLink = document.createElement('a');
     htmlLink.href = URL.createObjectURL(htmlBlob);
@@ -2713,14 +2667,14 @@ window.downloadDecryptor = function() {
     var keyBlob = new Blob([keyFileContent], { type: 'text/javascript;charset=utf-8' });
     var keyLink = document.createElement('a');
     keyLink.href = URL.createObjectURL(keyBlob);
-    keyLink.download = keyFileName;
+    keyLink.download = realKeyFileName;
     keyLink.click();
 
     showStatus('success', '🎁 Decryptor + Key file downloaded! Keep both in same folder.');
     toast('Decryptor + Key file downloaded!', 'success');
 
     setTimeout(function() {
-        showKeyModal(keyFileName, keyFileContent);
+        showKeyModal(realKeyFileName, keyFileContent);
     }, 800);
 };
 
@@ -2818,21 +2772,51 @@ function handleAuthReady(e) {
 
     console.log('👤 Auth ready:', state.user.email);
 
-    KEY_MANAGER.checkKeyStatus(state.user.uid).then(function(result) {
-        if (!result.hasKey) {
-            toast('👋 Welcome! Click CREATE KEY to get started', 'info');
-        } else {
-            toast('🔐 Key found. Click eye icon to reveal.', 'info');
-            if (result.keyVersion) state.keyVersion = result.keyVersion;
-        }
-        updateKeyUI();
-        
-        // ✅ Initialize dashboard alerts
-        initDashboardAlerts();
-    }).catch(function(err) {
-        console.error('Key check failed:', err);
-        updateKeyUI();
-    });
+    /* Check key status — DEACTIVATED/DELETED/ACTIVE */
+    if (typeof firebase !== 'undefined' && firebase.database) {
+        firebase.database().ref('users/' + state.user.uid + '/keyStatus').once('value')
+            .then(function(snap) {
+                var status = snap.val() || 'NONE';
+                state.keyStatus = status;
+                
+                if (status === 'DEACTIVATED') {
+                    toast('⚠️ Key DEACTIVATED — regenerate required', 'warn');
+                    state.keyAutoDeactivated = true;
+                } else if (status === 'DELETED') {
+                    toast('🗑️ Key DELETED — create new one', 'info');
+                }
+                
+                return KEY_MANAGER.checkKeyStatus(state.user.uid);
+            })
+            .then(function(result) {
+                if (!result.hasKey && state.keyStatus === 'NONE') {
+                    toast('👋 Welcome! Click CREATE KEY to get started', 'info');
+                } else if (result.hasKey) {
+                    toast('🔐 Key found. Click eye icon to reveal.', 'info');
+                    if (result.keyVersion) state.keyVersion = result.keyVersion;
+                }
+                updateKeyUI();
+                initDashboardAlerts();
+            })
+            .catch(function(err) {
+                console.error('Key check failed:', err);
+                updateKeyUI();
+            });
+    } else {
+        KEY_MANAGER.checkKeyStatus(state.user.uid).then(function(result) {
+            if (!result.hasKey) {
+                toast('👋 Welcome! Click CREATE KEY to get started', 'info');
+            } else {
+                toast('🔐 Key found. Click eye icon to reveal.', 'info');
+                if (result.keyVersion) state.keyVersion = result.keyVersion;
+            }
+            updateKeyUI();
+            initDashboardAlerts();
+        }).catch(function(err) {
+            console.error('Key check failed:', err);
+            updateKeyUI();
+        });
+    }
 }
 
 document.addEventListener('auth-guard-ready', handleAuthReady);
@@ -2854,7 +2838,10 @@ setTimeout(function() {
 }, 3000);
 
 updateKeyUI();
-console.log('%c🔐 Universal Encrypt Pro v20 ULTRA loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c🔐 Universal Encrypt Pro v22 HEAVY loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c✅ zxcvbn check REMOVED — dictionary passwords allowed', 'color:#00ff64;font-size:11px;');
+console.log('%c🔒 Key deactivation — original key invalid after deactivate', 'color:#ff2d95;font-size:11px;');
+console.log('%c📧 Email + Dashboard + Database alerts — all 3 layers active', 'color:#ffd700;font-size:11px;');
 
 })();
 </script>
