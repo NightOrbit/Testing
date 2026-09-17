@@ -1339,10 +1339,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════
-   NIGHTORBIT — UNIVERSAL ENCRYPT PRO v23 ULTRA HEAVY
-   Enterprise-Grade Protection · Auto Key-Deactivation
-   Dashboard + Email + Database Alerts · Full Fix
-   OBF Engine Integration (26 + 24 + 16 layers)
+   NIGHTORBIT — UNIVERSAL ENCRYPT PRO v24 ULTRA HEAVY FULL FIXED
+   OBF Engine (26 + 24 + 16 layers) · Trap Protected
    ═══════════════════════════════════════════════════════════════════ */
 (function() {
 'use strict';
@@ -1460,7 +1458,11 @@ function universalCopy(text, btn, originalText) {
 function checkObfEngine() {
     state.obfEngineReady = (typeof window.OBF_ENGINE !== 'undefined');
     if (state.obfEngineReady) {
-        console.log('✅ OBF Engine ready:', window.OBF_ENGINE.info());
+        try {
+            console.log('✅ OBF Engine ready:', window.OBF_ENGINE.info());
+        } catch(e) {
+            console.log('✅ OBF Engine ready');
+        }
     } else {
         console.warn('⚠️ OBF Engine not loaded — using fallback');
     }
@@ -1468,37 +1470,16 @@ function checkObfEngine() {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   KEY OBFUSCATION — 30 LAYERS FALLBACK
+   FALLBACK KEY OBFUSCATION
    ═══════════════════════════════════════════════════════════════════ */
 function obfuscateKey30Layers(key) {
     var r = key;
-    for (var i = 0; i < 30; i++) {
-        r = btoa(unescape(encodeURIComponent(r)));
-    }
+    for (var i = 0; i < 30; i++) r = btoa(unescape(encodeURIComponent(r)));
     return r;
 }
-
-function deobfuscateKey30Layers(encoded) {
-    var r = encoded;
-    for (var i = 0; i < 30; i++) {
-        r = decodeURIComponent(escape(atob(r)));
-    }
-    return r;
-}
-
 function obfuscate15Layers(input) {
     var r = input;
-    for (var i = 0; i < 15; i++) {
-        r = btoa(unescape(encodeURIComponent(r)));
-    }
-    return r;
-}
-
-function deobfuscate15Layers(encoded) {
-    var r = encoded;
-    for (var i = 0; i < 15; i++) {
-        r = decodeURIComponent(escape(atob(r)));
-    }
+    for (var i = 0; i < 15; i++) r = btoa(unescape(encodeURIComponent(r)));
     return r;
 }
 
@@ -1605,7 +1586,7 @@ window.closeAutoDeactivateModal = function() {
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   ALERT SYSTEM — DATABASE + EMAIL + DASHBOARD
+   ALERT SYSTEM
    ═══════════════════════════════════════════════════════════════════ */
 function sendSecurityAlert(eventType, keyType) {
     if (!state.user || !state.user.uid) {
@@ -1634,12 +1615,7 @@ function sendSecurityAlert(eventType, keyType) {
             cores: navigator.hardwareConcurrency || 'unknown',
             memory: navigator.deviceMemory || 'unknown',
             touchSupport: 'ontouchstart' in window,
-            cookiesEnabled: navigator.cookieEnabled,
-            connection: navigator.connection ? {
-                effectiveType: navigator.connection.effectiveType,
-                downlink: navigator.connection.downlink,
-                rtt: navigator.connection.rtt
-            } : 'unknown'
+            cookiesEnabled: navigator.cookieEnabled
         },
         page: {
             url: window.location.href,
@@ -1678,15 +1654,8 @@ function sendSecurityAlert(eventType, keyType) {
         });
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   SAVE TO DATABASE
-   ═══════════════════════════════════════════════════════════════════ */
 function saveToDatabase(alertData) {
-    if (typeof firebase === 'undefined' || !firebase.database) {
-        console.warn('❌ Firebase not loaded');
-        return;
-    }
-    
+    if (typeof firebase === 'undefined' || !firebase.database) return;
     try {
         firebase.database().ref('admin_alerts').push(alertData)
             .then(function() { console.log('✅ Saved to admin_alerts'); })
@@ -1700,18 +1669,9 @@ function saveToDatabase(alertData) {
     }
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   USER EMAIL
-   ═══════════════════════════════════════════════════════════════════ */
 function sendUserEmail() {
-    if (!state.user || !state.user.email) {
-        console.warn('❌ No user email');
-        return;
-    }
-    if (typeof emailjs === 'undefined') {
-        console.warn('❌ EmailJS not loaded');
-        return;
-    }
+    if (!state.user || !state.user.email) return;
+    if (typeof emailjs === 'undefined') return;
     
     console.log('📧 Sending security email to:', state.user.email);
     
@@ -1722,14 +1682,13 @@ function sendUserEmail() {
         message: 
             'Dear User,\n\n' +
             '⚠️ IMPORTANT: YOUR ENCRYPTION KEY HAS BEEN AUTOMATICALLY DEACTIVATED.\n\n' +
-            'We detected an unauthorized attempt to access your encrypted data on your NightOrbit account. ' +
-            'In response, your encryption key has been permanently deactivated to protect your work.\n\n' +
+            'We detected an unauthorized attempt to access your encrypted data.\n\n' +
             'WHAT THIS MEANS:\n' +
             '• Your old key is now permanently inactive\n' +
             '• Your old encrypted code cannot be decrypted — even with the old key\n' +
             '• Your original code remains safe with you\n' +
             '• No data has been lost\n\n' +
-            'REQUIRED ACTION:\n\n' +
+            'REQUIRED ACTION:\n' +
             '1. Regenerate your key\n' +
             '2. Re-encrypt your code\n' +
             '3. Replace old files\n\n' +
@@ -1739,13 +1698,7 @@ function sendUserEmail() {
             'ROMAN URDU:\n' +
             '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
             'Mohtaram User,\n\n' +
-            '⚠️ AHEM: AAP KI ENCRYPTION KEY DEACTIVATE KAR DI GAYI HAI.\n\n' +
-            'Hum ne aap ke account par ghair-mujaz rasai detect ki hai. ' +
-            'Is liye aap ki key deactivate kar di gayi hai.\n\n' +
-            'IS KA MATLAB:\n' +
-            '• Purani key ab inactive hai\n' +
-            '• Purana encrypted code decrypt nahi hoga\n' +
-            '• Aap ka asal code safe hai\n\n' +
+            '⚠️ AAP KI ENCRYPTION KEY DEACTIVATE KAR DI GAYI HAI.\n\n' +
             'ZAROORI:\n' +
             '1. Nayi key banayein\n' +
             '2. Code dobara encrypt karein\n' +
@@ -1754,12 +1707,8 @@ function sendUserEmail() {
     };
     
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-        .then(function(response) {
-            console.log('✅ Security email sent:', response);
-        })
-        .catch(function(err) {
-            console.error('❌ Email failed:', err);
-        });
+        .then(function(response) { console.log('✅ Email sent'); })
+        .catch(function(err) { console.error('❌ Email failed:', err); });
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -1779,14 +1728,12 @@ function initDashboardAlerts() {
     });
     
     state.alertsListener = alertsRef;
-    console.log('✅ Dashboard alert listener initialized');
 }
 
 function showDashboardAlert(alert) {
     var alertKey = alert.timestamp + '_' + alert.eventType;
     if (state.alertsShown[alertKey]) return;
     state.alertsShown[alertKey] = true;
-    
     if (document.getElementById('dashboardAlert_' + alertKey)) return;
     
     var alertBox = document.createElement('div');
@@ -1798,39 +1745,24 @@ function showDashboardAlert(alert) {
         'border:2px solid #fff;box-shadow:0 0 60px rgba(255,0,100,0.8);' +
         'max-width:420px;font-family:Inter,sans-serif;';
     
-    var eventLabel = {
-        'FAKE_ATTEMPT': '⚠️ Unauthorized Access Attempt',
-        'REAL_ATTEMPT': '🚨 Key Access Attempt Detected',
-        'DEVTOOLS_OPENED': '🔍 Developer Tools Detected',
-        'DECODE_ATTEMPT': '🔓 Decode Attempt Detected',
-        'WRONG_PASSWORD': '❌ Wrong Password Attempt'
-    }[alert.eventType] || '⚠️ Security Alert';
-    
     alertBox.innerHTML = 
         '<div style="font-family:Orbitron,sans-serif;font-size:14px;font-weight:900;letter-spacing:2px;margin-bottom:10px;">🔒 KEY DEACTIVATED</div>' +
         '<div style="font-size:12px;line-height:1.8;">' +
-        '<b>' + eventLabel + '</b><br>' +
+        '<b>' + (alert.eventType || 'Security Alert') + '</b><br>' +
         '<b>Time:</b> ' + (alert.timeString || new Date(alert.timestamp).toLocaleString()) + '<br>' +
-        '<b>Key Affected:</b> ' + (alert.keyType || 'N/A') + '<br>' +
         '<b>IP:</b> ' + (alert.ip || 'unknown') + '<br>' +
         '<b>Location:</b> ' + (alert.location && alert.location.city ? alert.location.city + ', ' + alert.location.country : 'unknown') +
-        '</div>' +
-        '<div style="margin-top:12px;padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;font-size:11px;line-height:1.6;">' +
-        '<b style="color:#ffd700;">⚠️ ACTION REQUIRED:</b><br>' +
-        'Your encryption key has been <b>automatically deactivated</b>.<br>' +
-        'Please regenerate a new key and re-encrypt your code.' +
         '</div>' +
         '<button onclick="this.parentElement.remove()" style="margin-top:12px;background:#fff;color:#ff0064;border:none;padding:8px 18px;border-radius:8px;font-weight:bold;cursor:pointer;font-family:Orbitron,sans-serif;font-size:11px;letter-spacing:1px;">DISMISS</button>';
     
     document.body.appendChild(alertBox);
-    
     setTimeout(function() {
         if (alertBox.parentNode) alertBox.parentNode.removeChild(alertBox);
     }, 30000);
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   ATTEMPT DETECTION
+   ATTEMPT DETECTION HOOKS
    ═══════════════════════════════════════════════════════════════════ */
 window._0xF1_ACCESSED = function() {
     console.log('🚨 FAKE Part 1 accessed!');
@@ -1970,13 +1902,13 @@ function updateKeyUI() {
         createBtn.style.display = 'none';
         deleteBtn.style.display = 'inline-flex';
         eyeBtn.disabled = false;
-        infoText.innerHTML = '🔐 Your key is <span class="gold">password-protected</span>. Click the <span class="gold">eye icon</span> to reveal your full key. Or click <span class="red">DELETE KEY & REGENERATE</span> to create a new one.';
+        infoText.innerHTML = '🔐 Your key is <span class="gold">password-protected</span>. Click the <span class="gold">eye icon</span> to reveal your full key.';
     } else {
         keyText.textContent = 'NightOrbitGyidi_houperSecret_************';
         createBtn.style.display = 'inline-flex';
         deleteBtn.style.display = 'none';
         eyeBtn.disabled = true;
-        infoText.innerHTML = '🔑 Click <b>CREATE KEY & PASSWORD</b> to generate your unique encryption key. This key is encrypted with your password and stored in Firebase.';
+        infoText.innerHTML = '🔑 Click <b>CREATE KEY & PASSWORD</b> to generate your unique encryption key.';
     }
     updateProgress();
 }
@@ -2000,8 +1932,7 @@ window.deleteKey = function() {
     var c1 = confirm(
         '⚠️ WARNING #1 of 2\n\n' +
         'This will PERMANENTLY DELETE your key from Firebase.\n\n' +
-        'ALL code encrypted with the old key will be LOCKED FOREVER.\n' +
-        'You will NOT be able to decrypt old files ever again.\n\n' +
+        'ALL code encrypted with the old key will be LOCKED FOREVER.\n\n' +
         'Continue?'
     );
     if (!c1) return;
@@ -2023,9 +1954,7 @@ window.deleteKey = function() {
             updateKeyUI();
             showStatus('success', '✅ Old key deleted. Create a new one.');
             toast('🗑️ Old key deleted permanently', 'success');
-            setTimeout(function() {
-                openPwdModal('create');
-            }, 800);
+            setTimeout(function() { openPwdModal('create'); }, 800);
         })
         .catch(function(err) {
             showStatus('error', '❌ ' + err.message);
@@ -2141,7 +2070,7 @@ pwdSubmitBtn.addEventListener('click', function() {
     var isCreate = state._pwdMode === 'create';
 
     if (isCreate) {
-        if (!confirm('⚠️ FINAL WARNING:\n\nYour password CANNOT be changed.\nIf you forget it, your key will be LOCKED FOREVER.\n\nYou can later DELETE & REGENERATE.\n\nPassword: 16-64 chars with digits, upper, lower, symbols.\n\nCreate this password?')) return;
+        if (!confirm('⚠️ FINAL WARNING:\n\nYour password CANNOT be changed.\nIf you forget it, your key will be LOCKED FOREVER.\n\nCreate this password?')) return;
         setPwdStatus('loading', '⏳ Generating your unique key...');
         pwdSubmitBtn.disabled = true;
 
@@ -2340,7 +2269,7 @@ function performEncrypt(secretKey) {
     if (fileNames.length > 0) {
         var bundle = {
             __type: 'multi-file-bundle',
-            __version: '23.0',
+            __version: '24.0',
             __created: new Date().toISOString(),
             __fileCount: fileNames.length,
             files: {}
@@ -2416,10 +2345,10 @@ window.downloadOutput = function() {
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   DOWNLOAD DECRYPTOR + KEY FILE — v23 ULTRA
-   - Key file name: 26 layers (OBF_ENGINE) ya 10 layers (fallback)
-   - Key value: 24 layers (OBF_ENGINE) ya 30 layers (fallback)
-   - Decryptor JS: 16 layers (OBF_ENGINE) ya 15 layers (fallback)
+   DOWNLOAD DECRYPTOR + KEY FILE — v24 ULTRA FULL FIXED
+   ✅ decryptoWasObfEngine declared
+   ✅ Function() instead of eval()
+   ✅ Trap-protected loader
    ═══════════════════════════════════════════════════════════════════ */
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
@@ -2443,7 +2372,7 @@ window.downloadDecryptor = function() {
         return;
     }
 
-    /* 3 filenames — sab nx_ style */
+    /* 3 filenames */
     var nameA = 'nx_' + rndHex(8) + '-' + rndHex(4) + '-' + rndHex(4) + '-' + rndHex(12) + '.js';
     var nameB = 'nx_' + rndHex(8) + '-' + rndHex(4) + '-' + rndHex(4) + '-' + rndHex(12) + '.js';
     var realKeyFileName = 'nx_' + rndHex(8) + '-' + rndHex(4) + '-' + rndHex(4) + '-' + rndHex(12) + '.js';
@@ -2461,20 +2390,17 @@ window.downloadDecryptor = function() {
         return r;
     }
 
-    /* ═══ OBF ENGINE INTEGRATION (if available) ═══ */
+    /* ═══ OBF ENGINE INTEGRATION ═══ */
     var useObfEngine = checkObfEngine();
     
     var keyFileContent, realName, decryptorJS_15L, decoyCSS;
+    var decryptorWasObfEngine = false;
     
     if (useObfEngine) {
         try {
-            /* Build key file with OBF_ENGINE (26 + 24 layers) */
             keyFileContent = window.OBF_ENGINE.buildKeyFile(fullKeyString, realKeyFileName);
-            
-            /* Obfuscate real file name with 26 layers */
             var fnObf = window.OBF_ENGINE.obfuscateKeyFileName(realKeyFileName);
             realName = btoa(JSON.stringify(fnObf));
-            
             console.log('✅ OBF Engine: Key file built (26 + 24 layers)');
         } catch (e) {
             console.error('OBF Engine failed, using fallback:', e);
@@ -2482,7 +2408,7 @@ window.downloadDecryptor = function() {
         }
     }
     
-    /* ═══ FALLBACK — 30 layers key + 10 layers name ═══ */
+    /* ═══ FALLBACK ═══ */
     if (!useObfEngine) {
         var key30 = obf(fullKeyString, 30);
         var realNameB64 = obf(realKeyFileName, 10);
@@ -2496,9 +2422,7 @@ window.downloadDecryptor = function() {
             'var _0xN=' + JSON.stringify(realNameB64) + ';\n' +
             'try{\n' +
             '  function _0xD(e,n){var r=e;for(var i=0;i<n;i++){r=decodeURIComponent(escape(atob(r)));}return r;}\n' +
-            '  function _0xLA(){try{var s=document.createElement("script");s.src=_0xA;s.onerror=function(){};document.head.appendChild(s);}catch(e){}}\n' +
             '  var _secret=_0xD(_0xR,30);\n' +
-            '  function _0xLB(){try{var s=document.createElement("script");s.src=_0xB;document.head.appendChild(s);}catch(e){}}\n' +
             '  Object.defineProperty(window,"_0xSECRET",{\n' +
             '    get:function(){if(window._0xR_ACCESSED)window._0xR_ACCESSED();return _secret;},\n' +
             '    configurable:false\n' +
@@ -2512,10 +2436,10 @@ window.downloadDecryptor = function() {
             '})();';
         
         realName = realNameB64;
-        console.log('⚠️ Using fallback obfuscation (30 + 10 layers)');
+        console.log('⚠️ Using fallback (30 + 10 layers)');
     }
 
-    /* ═══ DECRYPTOR CORE JS — saare functions ═══ */
+    /* ═══ DECRYPTOR CORE JS ═══ */
     var decryptorJS =
         '(function(){\n' +
         '"use strict";\n' +
@@ -2628,54 +2552,77 @@ window.downloadDecryptor = function() {
     if (useObfEngine) {
         try {
             decryptorJS_15L = window.OBF_ENGINE.buildDecryptorScript(decryptorJS);
-            /* buildDecryptorScript returns full IIFE, so mark it as already-decoded */
+            decryptorWasObfEngine = true;
             console.log('✅ OBF Engine: Decryptor JS obfuscated (16 layers)');
         } catch (e) {
             console.error('Decryptor obf failed, using fallback:', e);
             decryptorJS_15L = obf(decryptorJS, 15);
+            decryptorWasObfEngine = false;
         }
     } else {
         decryptorJS_15L = obf(decryptorJS, 15);
+        decryptorWasObfEngine = false;
     }
 
-    /* ═══ CSS mein dono decoy names chhupao ═══ */
+    /* ═══ DECOY CSS ═══ */
     decoyCSS =
         ':root{--a:"' + nameA + '";}' +
         '.x-' + rndHex(6) + '{--b:"' + nameB + '";}';
 
-    /* ═══ DECRYPTOR HTML ═══ */
+    /* ═══ DECRYPTOR HTML — Loader Script ═══ */
     var loaderScript;
-    if (useObfEngine) {
-        /* For OBF Engine, realName is JSON-encoded obf data. Need special loader */
+    if (useObfEngine && typeof window.OBF_ENGINE.buildKeyFileLoaderHTML === 'function') {
+        /* ✅ Use TRAP-protected loader */
+        loaderScript = window.OBF_ENGINE.buildKeyFileLoaderHTML(realName, nameA, nameB);
+        console.log('✅ Using TRAP-protected loader');
+    } else if (useObfEngine) {
+        /* OBF Engine but no trap function */
         loaderScript = 
             '<script>(function(){' +
+            '"use strict";' +
             'try{' +
             'var _d=' + JSON.stringify(realName) + ';' +
             'var _data=JSON.parse(atob(_d));' +
             'var _code=window.OBF_ENGINE.generateKeyFileNameDecoder(_data,"window._kfName");' +
-            'eval(_code);' +
+            'var _fn=new Function(_code);_fn();' +
             'var _s=document.createElement("script");' +
-            '_s.src=window._kfName;' +
-            '_s.async=false;' +
+            '_s.src=window._kfName;_s.async=false;' +
             '_s.onload=function(){window._kf=1;};' +
             '_s.onerror=function(){window._kf=0;window._0xLOAD_FAIL=1;};' +
             'document.head.appendChild(_s);' +
             '}catch(e){window._0xLOAD_FAIL=1;}' +
             '})();<' + '/script>';
     } else {
-        /* Fallback: simple base64 10-layer decode */
+        /* Fallback: 10-layer base64 */
         loaderScript = 
             '<script>(function(){' +
-            'var _a="' + realName + '";' +
-            'var _b=_a;' +
+            'try{' +
+            'var _a="' + realName + '";var _b=_a;' +
             'for(var i=0;i<10;i++){_b=decodeURIComponent(escape(atob(_b)));}' +
-            'var _s=document.createElement("script");' +
-            '_s.src=_b;' +
-            '_s.async=false;' +
+            'var _s=document.createElement("script");_s.src=_b;_s.async=false;' +
             '_s.onload=function(){window._kf=1;};' +
             '_s.onerror=function(){window._kf=0;window._0xLOAD_FAIL=1;};' +
             'document.head.appendChild(_s);' +
+            '}catch(e){window._0xLOAD_FAIL=1;}' +
             '})();<' + '/script>';
+    }
+
+    /* ═══ DECRYPTOR HTML PARTS ═══ */
+    var decryptorLoaderCode;
+    if (decryptorWasObfEngine) {
+        /* OBF Engine output is already an IIFE that runs itself */
+        decryptorLoaderCode = 
+            'var _d=' + JSON.stringify(decryptorJS_15L) + ';' +
+            'try{var _fn=new Function(_d);_fn();}catch(e){if(window.console)console.error("OBF decryptor failed:",e);}';
+    } else {
+        /* Fallback: base64 15-layer decode then Function() */
+        decryptorLoaderCode = 
+            'var _d=' + JSON.stringify(decryptorJS_15L) + ';' +
+            'try{' +
+            'var _code=_d;' +
+            'for(var i=0;i<15;i++){_code=decodeURIComponent(escape(atob(_code)));}' +
+            'var _fn=new Function(_code);_fn();' +
+            '}catch(e){if(window.console)console.error("Fallback decryptor failed:",e);}';
     }
 
     var parts = [
@@ -2709,11 +2656,9 @@ window.downloadDecryptor = function() {
         '<script>',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
         'var KEY_VERSION=' + state.keyVersion + ';',
-        'var _d="' + decryptorJS_15L + '";',
-        'var _code=_d;',
-        useObfEngine 
-            ? 'try{eval(_d);}catch(e){}'  /* OBF Engine output is already IIFE */
-            : 'for(var i=0;i<15;i++){_code=decodeURIComponent(escape(atob(_code)));}eval(_code);',
+        '<' + '/script>',
+        '<script>',
+        decryptorLoaderCode,
         '<' + '/script>',
         '<' + '/body>',
         '<' + '/html>'
@@ -2902,10 +2847,11 @@ setTimeout(function() {
 }, 3000);
 
 updateKeyUI();
-console.log('%c🔐 Universal Encrypt Pro v23 ULTRA HEAVY loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c🔐 Universal Encrypt Pro v24 ULTRA FULL FIXED loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
 console.log('%c✅ OBF Engine: 26 + 24 + 16 layers (fallback: 30 + 10 + 15)', 'color:#00ff64;font-size:11px;');
-console.log('%c🔒 Key auto-deactivation — original key invalid after deactivate', 'color:#ff2d95;font-size:11px;');
-console.log('%c📧 Email + Dashboard + Database alerts — all 3 layers active', 'color:#ffd700;font-size:11px;');
+console.log('%c✅ decryptorWasObfEngine variable FIXED', 'color:#00ff64;font-size:11px;');
+console.log('%c✅ Function() constructor used — no eval scope issues', 'color:#00ff64;font-size:11px;');
+console.log('%c🔒 Trap-protected loader active', 'color:#ff2d95;font-size:11px;');
 
 })();
 </script>
