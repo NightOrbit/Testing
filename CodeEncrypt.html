@@ -21,6 +21,9 @@
     <!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
+ <!-- OBF Engine (26 + 24 + 16 layers) -->
+<script src="obfuscator-engine.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/zxcvbn@4.4.2/dist/zxcvbn.js"></script>    
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -1336,13 +1339,10 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════
-   NIGHTORBIT — UNIVERSAL ENCRYPT PRO v20 ULTRA
-   Enterprise-Grade Protection · Auto Key-Deactivation
-   ═══════════════════════════════════════════════════════════════════ */
-/* ═══════════════════════════════════════════════════════════════════
-   NIGHTORBIT — UNIVERSAL ENCRYPT PRO v22 HEAVY
+   NIGHTORBIT — UNIVERSAL ENCRYPT PRO v23 ULTRA HEAVY
    Enterprise-Grade Protection · Auto Key-Deactivation
    Dashboard + Email + Database Alerts · Full Fix
+   OBF Engine Integration (26 + 24 + 16 layers)
    ═══════════════════════════════════════════════════════════════════ */
 (function() {
 'use strict';
@@ -1377,7 +1377,8 @@ var state = {
     alertsListener: null,
     alertsShown: {},
     keyAutoDeactivated: false,
-    keyStatus: 'NONE'
+    keyStatus: 'NONE',
+    obfEngineReady: false
 };
 
 var SESSION_TIMEOUT = 5 * 60 * 1000;
@@ -1454,7 +1455,20 @@ function universalCopy(text, btn, originalText) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   KEY OBFUSCATION — 30 LAYERS (SIMPLE + RELIABLE)
+   OBF ENGINE CHECK
+   ═══════════════════════════════════════════════════════════════════ */
+function checkObfEngine() {
+    state.obfEngineReady = (typeof window.OBF_ENGINE !== 'undefined');
+    if (state.obfEngineReady) {
+        console.log('✅ OBF Engine ready:', window.OBF_ENGINE.info());
+    } else {
+        console.warn('⚠️ OBF Engine not loaded — using fallback');
+    }
+    return state.obfEngineReady;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   KEY OBFUSCATION — 30 LAYERS FALLBACK
    ═══════════════════════════════════════════════════════════════════ */
 function obfuscateKey30Layers(key) {
     var r = key;
@@ -1472,9 +1486,6 @@ function deobfuscateKey30Layers(encoded) {
     return r;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   DECRYPTOR JS OBFUSCATION — 15 LAYERS
-   ═══════════════════════════════════════════════════════════════════ */
 function obfuscate15Layers(input) {
     var r = input;
     for (var i = 0; i < 15; i++) {
@@ -1492,12 +1503,7 @@ function deobfuscate15Layers(encoded) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   AUTO-DEACTIVATE KEY — FULL SYSTEM
-   Ye function key ko deactivate karta hai aur:
-   1. deactivated_keys mein backup rakhta hai
-   2. keyData ko null karta hai
-   3. keyStatus = DEACTIVATED set karta hai
-   4. Original key ko invalid bana deta hai
+   AUTO-DEACTIVATE KEY
    ═══════════════════════════════════════════════════════════════════ */
 function autoDeactivateKey(reason) {
     if (!state.user || !state.user.uid) return;
@@ -1525,7 +1531,6 @@ function autoDeactivateKey(reason) {
             
             var updates = {};
             
-            /* Step 1: Backup old key to deactivated_keys */
             if (oldKey) {
                 updates['deactivated_keys/' + state.user.uid + '/' + Date.now()] = {
                     encryptedKey: oldKey,
@@ -1538,10 +1543,7 @@ function autoDeactivateKey(reason) {
                 };
             }
             
-            /* Step 2: Remove keyData completely — original key invalid */
             updates['users/' + state.user.uid + '/keyData'] = null;
-            
-            /* Step 3: Set keyStatus = DEACTIVATED */
             updates['users/' + state.user.uid + '/keyStatus'] = 'DEACTIVATED';
             updates['users/' + state.user.uid + '/keyDeactivatedAt'] = Date.now();
             updates['users/' + state.user.uid + '/keyDeactivatedReason'] = reason;
@@ -1549,7 +1551,7 @@ function autoDeactivateKey(reason) {
             
             firebase.database().ref().update(updates)
                 .then(function() {
-                    console.log('✅ Key auto-deactivated — original key ab invalid hai');
+                    console.log('✅ Key auto-deactivated');
                     state.keyStatus = 'DEACTIVATED';
                     if (typeof KEY_MANAGER !== 'undefined') KEY_MANAGER.clear();
                     updateKeyUI();
@@ -1648,11 +1650,9 @@ function sendSecurityAlert(eventType, keyType) {
         location: 'unknown'
     };
     
-    /* Step 1: TURANT AUTO-DEACTIVATE */
     console.log('🔒 Auto-deactivating key due to:', eventType);
     autoDeactivateKey('HACKER_ATTEMPT_' + eventType);
     
-    /* Step 2: Fetch IP + Location */
     fetch('https://ipapi.co/json/')
         .then(function(res) { return res.json(); })
         .then(function(data) {
@@ -1701,7 +1701,7 @@ function saveToDatabase(alertData) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   USER EMAIL — SECURITY ALERT
+   USER EMAIL
    ═══════════════════════════════════════════════════════════════════ */
 function sendUserEmail() {
     if (!state.user || !state.user.email) {
@@ -1729,42 +1729,27 @@ function sendUserEmail() {
             '• Your old encrypted code cannot be decrypted — even with the old key\n' +
             '• Your original code remains safe with you\n' +
             '• No data has been lost\n\n' +
-            'REQUIRED ACTION — PLEASE FOLLOW THESE STEPS:\n\n' +
-            '1. Regenerate your key — Go to Dashboard → Click "REGENERATE KEY"\n' +
-            '2. Re-encrypt your code — Paste your original code, enter your password, and re-encrypt with the new key\n' +
-            '3. Replace old files — Delete old code, old key file, and old decryptor. Use new files only.\n\n' +
-            'Our Security Guarantee:\n' +
-            'Once your old key is deactivated, it becomes permanently inactive. ' +
-            'Your old encrypted code becomes completely unreadable — even with the old key. ' +
-            'Even if an unauthorized party copied your old files, they cannot open them anymore. ' +
-            'Your new key works only with your newly encrypted code. ' +
-            'This ensures that your original work remains fully protected and that no one — not even us — can access your old encrypted data.\n\n' +
-            'Your original code is still safe with you. No data loss. Only renewed protection.\n\n' +
+            'REQUIRED ACTION:\n\n' +
+            '1. Regenerate your key\n' +
+            '2. Re-encrypt your code\n' +
+            '3. Replace old files\n\n' +
             'Stay secure,\n' +
             'NightOrbit Security Team 🔐\n\n' +
             '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
             'ROMAN URDU:\n' +
             '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
             'Mohtaram User,\n\n' +
-            '⚠️ AHEM: AAP KI ENCRYPTION KEY KHUD-BAKHUD DEACTIVATE KAR DI GAYI HAI.\n\n' +
-            'Hum ne aap ke NightOrbit account par aap ke encrypted data tak ghair-mujaz rasai ki koshish detect ki hai. ' +
-            'Is ke jawab mein, aap ka kaam mehfooz rakhne ke liye aap ki encryption key mustaqil tor par deactivate kar di gayi hai.\n\n' +
-            'IS KA MATLAB KYA HAI:\n' +
-            '• Aap ki purani key ab mustaqil tor par inactive hai\n' +
-            '• Aap ka purana encrypted code decrypt nahi ho sakta — purani key ke sath bhi\n' +
-            '• Aap ka asal code aap ke pass mehfooz hai\n' +
-            '• Koi data zaya nahi hua\n\n' +
-            'ZAROORI IQDAAM — BARAH-E-KARAM YEH STEPS KAREIN:\n\n' +
-            '1. Apni key dobara banayein — Dashboard par jayein → "REGENERATE KEY" par click karein\n' +
-            '2. Apne code ko dobara encrypt karein — Asal code paste karein, password darj karein, aur nayi key se dobara encrypt karein\n' +
-            '3. Purani files tabdeel karein — Purana code, purani key file, aur purana decryptor delete karein. Sirf nayi files istemal karein.\n\n' +
-            'Hamari Security Guarantee:\n' +
-            'Ek baar jab aap ki purani key deactivate ho jati hai, to woh mustaqil tor par inactive ho jati hai. ' +
-            'Aap ka purana encrypted code mukammal tor par naqabil-e-mutalia ho jata hai — purani key ke sath bhi. ' +
-            'Agar kisi ghair-mujaz fariq ne aap ki purani files copy bhi kar li hon, to woh ab unhe khol nahi sakta. ' +
-            'Nayi key sirf naye encrypted code ke sath kaam karti hai.\n\n' +
-            'Aap ka asal code ab bhi aap ke pass mehfooz hai. Koi data zaya nahi hua. Sirf nayi hifazat.\n\n' +
-            'Mehfooz rahein,\n' +
+            '⚠️ AHEM: AAP KI ENCRYPTION KEY DEACTIVATE KAR DI GAYI HAI.\n\n' +
+            'Hum ne aap ke account par ghair-mujaz rasai detect ki hai. ' +
+            'Is liye aap ki key deactivate kar di gayi hai.\n\n' +
+            'IS KA MATLAB:\n' +
+            '• Purani key ab inactive hai\n' +
+            '• Purana encrypted code decrypt nahi hoga\n' +
+            '• Aap ka asal code safe hai\n\n' +
+            'ZAROORI:\n' +
+            '1. Nayi key banayein\n' +
+            '2. Code dobara encrypt karein\n' +
+            '3. Purani files delete karein\n\n' +
             'NightOrbit Security Team 🔐'
     };
     
@@ -1778,7 +1763,7 @@ function sendUserEmail() {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   DASHBOARD ALERT — Real-time Listener
+   DASHBOARD ALERT
    ═══════════════════════════════════════════════════════════════════ */
 function initDashboardAlerts() {
     if (!state.user || !state.user.uid) return;
@@ -1832,7 +1817,7 @@ function showDashboardAlert(alert) {
         '</div>' +
         '<div style="margin-top:12px;padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;font-size:11px;line-height:1.6;">' +
         '<b style="color:#ffd700;">⚠️ ACTION REQUIRED:</b><br>' +
-        'Your encryption key has been <b>automatically deactivated</b> due to unauthorized access.<br>' +
+        'Your encryption key has been <b>automatically deactivated</b>.<br>' +
         'Please regenerate a new key and re-encrypt your code.' +
         '</div>' +
         '<button onclick="this.parentElement.remove()" style="margin-top:12px;background:#fff;color:#ff0064;border:none;padding:8px 18px;border-radius:8px;font-weight:bold;cursor:pointer;font-family:Orbitron,sans-serif;font-size:11px;letter-spacing:1px;">DISMISS</button>';
@@ -1959,7 +1944,6 @@ function updateKeyUI() {
     var eyeBtn = document.getElementById('keyEyeBtn');
     var infoText = document.getElementById('keyInfoText');
 
-    /* Check key status first */
     if (state.keyStatus === 'DEACTIVATED') {
         keyText.textContent = 'DEACTIVATED — REGENERATE REQUIRED';
         createBtn.style.display = 'inline-flex';
@@ -2115,8 +2099,6 @@ pwdInput.addEventListener('input', function() {
     var rDig = digits >= 3;
     var rLet = lower >= 4 && upper >= 3;
     var rSym = symbols >= 3;
-    
-    /* zxcvbn check REMOVED — sirf format check */
     var rStrength = (rLen && rDig && rLet && rSym);
     
     updateReq('req-length', rLen);
@@ -2358,7 +2340,7 @@ function performEncrypt(secretKey) {
     if (fileNames.length > 0) {
         var bundle = {
             __type: 'multi-file-bundle',
-            __version: '22.0',
+            __version: '23.0',
             __created: new Date().toISOString(),
             __fileCount: fileNames.length,
             files: {}
@@ -2434,12 +2416,10 @@ window.downloadOutput = function() {
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   DOWNLOAD DECRYPTOR + KEY FILE
-   - 1 real key file (30 layers)
-   - 2 fake file names (CSS mein, no alert)
-   - Decryptor JS (15 layers)
-   - Key file name (10 layers)
-   - Original key PE ALERT
+   DOWNLOAD DECRYPTOR + KEY FILE — v23 ULTRA
+   - Key file name: 26 layers (OBF_ENGINE) ya 10 layers (fallback)
+   - Key value: 24 layers (OBF_ENGINE) ya 30 layers (fallback)
+   - Decryptor JS: 16 layers (OBF_ENGINE) ya 15 layers (fallback)
    ═══════════════════════════════════════════════════════════════════ */
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
@@ -2463,7 +2443,7 @@ window.downloadDecryptor = function() {
         return;
     }
 
-    /* 3 filenames — sab nx_ style, koi "fake" word nahi */
+    /* 3 filenames — sab nx_ style */
     var nameA = 'nx_' + rndHex(8) + '-' + rndHex(4) + '-' + rndHex(4) + '-' + rndHex(12) + '.js';
     var nameB = 'nx_' + rndHex(8) + '-' + rndHex(4) + '-' + rndHex(4) + '-' + rndHex(12) + '.js';
     var realKeyFileName = 'nx_' + rndHex(8) + '-' + rndHex(4) + '-' + rndHex(4) + '-' + rndHex(12) + '.js';
@@ -2481,35 +2461,61 @@ window.downloadDecryptor = function() {
         return r;
     }
 
-    var key30    = obf(fullKeyString, 30);
-    var realName = obf(realKeyFileName, 10);
+    /* ═══ OBF ENGINE INTEGRATION (if available) ═══ */
+    var useObfEngine = checkObfEngine();
+    
+    var keyFileContent, realName, decryptorJS_15L, decoyCSS;
+    
+    if (useObfEngine) {
+        try {
+            /* Build key file with OBF_ENGINE (26 + 24 layers) */
+            keyFileContent = window.OBF_ENGINE.buildKeyFile(fullKeyString, realKeyFileName);
+            
+            /* Obfuscate real file name with 26 layers */
+            var fnObf = window.OBF_ENGINE.obfuscateKeyFileName(realKeyFileName);
+            realName = btoa(JSON.stringify(fnObf));
+            
+            console.log('✅ OBF Engine: Key file built (26 + 24 layers)');
+        } catch (e) {
+            console.error('OBF Engine failed, using fallback:', e);
+            useObfEngine = false;
+        }
+    }
+    
+    /* ═══ FALLBACK — 30 layers key + 10 layers name ═══ */
+    if (!useObfEngine) {
+        var key30 = obf(fullKeyString, 30);
+        var realNameB64 = obf(realKeyFileName, 10);
+        
+        keyFileContent =
+            '(function(){\n' +
+            '"use strict";\n' +
+            'var _0xA=' + JSON.stringify(nameA) + ';\n' +
+            'var _0xB=' + JSON.stringify(nameB) + ';\n' +
+            'var _0xR=' + JSON.stringify(key30) + ';\n' +
+            'var _0xN=' + JSON.stringify(realNameB64) + ';\n' +
+            'try{\n' +
+            '  function _0xD(e,n){var r=e;for(var i=0;i<n;i++){r=decodeURIComponent(escape(atob(r)));}return r;}\n' +
+            '  function _0xLA(){try{var s=document.createElement("script");s.src=_0xA;s.onerror=function(){};document.head.appendChild(s);}catch(e){}}\n' +
+            '  var _secret=_0xD(_0xR,30);\n' +
+            '  function _0xLB(){try{var s=document.createElement("script");s.src=_0xB;document.head.appendChild(s);}catch(e){}}\n' +
+            '  Object.defineProperty(window,"_0xSECRET",{\n' +
+            '    get:function(){if(window._0xR_ACCESSED)window._0xR_ACCESSED();return _secret;},\n' +
+            '    configurable:false\n' +
+            '  });\n' +
+            '  var _realName=_0xD(_0xN,10);\n' +
+            '  Object.defineProperty(window,"_0xKEYNAME",{\n' +
+            '    get:function(){return _realName;},\n' +
+            '    configurable:false\n' +
+            '  });\n' +
+            '}catch(e){window._0xSECRET="";window._0xKEYNAME="";window._0xLOAD_FAIL=1;}\n' +
+            '})();';
+        
+        realName = realNameB64;
+        console.log('⚠️ Using fallback obfuscation (30 + 10 layers)');
+    }
 
-    /* ═══ KEY FILE CONTENT — 3 names, sab nx_ ═══ */
-    var keyFileContent =
-        '(function(){\n' +
-        '"use strict";\n' +
-        'var _0xA=' + JSON.stringify(nameA) + ';\n' +
-        'var _0xB=' + JSON.stringify(nameB) + ';\n' +
-        'var _0xR=' + JSON.stringify(key30) + ';\n' +
-        'var _0xN=' + JSON.stringify(realName) + ';\n' +
-        'try{\n' +
-        '  function _0xD(e,n){var r=e;for(var i=0;i<n;i++){r=decodeURIComponent(escape(atob(r)));}return r;}\n' +
-        '  function _0xLA(){try{var s=document.createElement("script");s.src=_0xA;s.onerror=function(){};document.head.appendChild(s);}catch(e){}}\n' +
-        '  var _secret=_0xD(_0xR,30);\n' +
-        '  function _0xLB(){try{var s=document.createElement("script");s.src=_0xB;document.head.appendChild(s);}catch(e){}}\n' +
-        '  Object.defineProperty(window,"_0xSECRET",{\n' +
-        '    get:function(){if(window._0xR_ACCESSED)window._0xR_ACCESSED();return _secret;},\n' +
-        '    configurable:false\n' +
-        '  });\n' +
-        '  var _realName=_0xD(_0xN,10);\n' +
-        '  Object.defineProperty(window,"_0xKEYNAME",{\n' +
-        '    get:function(){return _realName;},\n' +
-        '    configurable:false\n' +
-        '  });\n' +
-        '}catch(e){window._0xSECRET="";window._0xKEYNAME="";window._0xLOAD_FAIL=1;}\n' +
-        '})();';
-
-    /* ═══ DECRYPTOR CORE JS — saare functions wapas ═══ */
+    /* ═══ DECRYPTOR CORE JS — saare functions ═══ */
     var decryptorJS =
         '(function(){\n' +
         '"use strict";\n' +
@@ -2544,7 +2550,6 @@ window.downloadDecryptor = function() {
         '        if(!data){cb(true);return;}\n' +
         '        var status=data.keyStatus;\n' +
         '        if(status==="DEACTIVATED"||status==="DELETED"){showCrash();return;}\n' +
-        '        if(data.keyVersion&&data.keyVersion!==KEY_VERSION){showError("Old key detected.");return;}\n' +
         '        cb(true);\n' +
         '      })\n' +
         '      .catch(function(){cb(true);});\n' +
@@ -2619,14 +2624,60 @@ window.downloadDecryptor = function() {
         '}\n' +
         '})();';
 
-    var decryptorJS_15L = obf(decryptorJS, 15);
+    /* ═══ OBFUSCATE DECRYPTOR JS ═══ */
+    if (useObfEngine) {
+        try {
+            decryptorJS_15L = window.OBF_ENGINE.buildDecryptorScript(decryptorJS);
+            /* buildDecryptorScript returns full IIFE, so mark it as already-decoded */
+            console.log('✅ OBF Engine: Decryptor JS obfuscated (16 layers)');
+        } catch (e) {
+            console.error('Decryptor obf failed, using fallback:', e);
+            decryptorJS_15L = obf(decryptorJS, 15);
+        }
+    } else {
+        decryptorJS_15L = obf(decryptorJS, 15);
+    }
 
     /* ═══ CSS mein dono decoy names chhupao ═══ */
-    var decoyCSS =
+    decoyCSS =
         ':root{--a:"' + nameA + '";}' +
         '.x-' + rndHex(6) + '{--b:"' + nameB + '";}';
 
     /* ═══ DECRYPTOR HTML ═══ */
+    var loaderScript;
+    if (useObfEngine) {
+        /* For OBF Engine, realName is JSON-encoded obf data. Need special loader */
+        loaderScript = 
+            '<script>(function(){' +
+            'try{' +
+            'var _d=' + JSON.stringify(realName) + ';' +
+            'var _data=JSON.parse(atob(_d));' +
+            'var _code=window.OBF_ENGINE.generateKeyFileNameDecoder(_data,"window._kfName");' +
+            'eval(_code);' +
+            'var _s=document.createElement("script");' +
+            '_s.src=window._kfName;' +
+            '_s.async=false;' +
+            '_s.onload=function(){window._kf=1;};' +
+            '_s.onerror=function(){window._kf=0;window._0xLOAD_FAIL=1;};' +
+            'document.head.appendChild(_s);' +
+            '}catch(e){window._0xLOAD_FAIL=1;}' +
+            '})();<' + '/script>';
+    } else {
+        /* Fallback: simple base64 10-layer decode */
+        loaderScript = 
+            '<script>(function(){' +
+            'var _a="' + realName + '";' +
+            'var _b=_a;' +
+            'for(var i=0;i<10;i++){_b=decodeURIComponent(escape(atob(_b)));}' +
+            'var _s=document.createElement("script");' +
+            '_s.src=_b;' +
+            '_s.async=false;' +
+            '_s.onload=function(){window._kf=1;};' +
+            '_s.onerror=function(){window._kf=0;window._0xLOAD_FAIL=1;};' +
+            'document.head.appendChild(_s);' +
+            '})();<' + '/script>';
+    }
+
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -2638,8 +2689,8 @@ window.downloadDecryptor = function() {
         '<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"><' + '/script>',
         '<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"><' + '/script>',
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
-        /* Key file loader — real filename 10 layers obfuscated */
-        '<script>(function(){var _a="' + realName + '";var _b=_a;for(var i=0;i<10;i++){_b=decodeURIComponent(escape(atob(_b)));}var _s=document.createElement("script");_s.src=_b;_s.async=false;_s.onload=function(){window._kf=1;};_s.onerror=function(){window._kf=0;window._0xLOAD_FAIL=1;};document.head.appendChild(_s);})();<' + '/script>',
+        '<script src="obfuscator-engine.js"><' + '/script>',
+        loaderScript,
         '<style>',
         '*{margin:0;padding:0;box-sizing:border-box;}',
         'html,body{width:100%;min-height:100vh;}',
@@ -2660,8 +2711,9 @@ window.downloadDecryptor = function() {
         'var KEY_VERSION=' + state.keyVersion + ';',
         'var _d="' + decryptorJS_15L + '";',
         'var _code=_d;',
-        'for(var i=0;i<15;i++){_code=decodeURIComponent(escape(atob(_code)));}',
-        'eval(_code);',
+        useObfEngine 
+            ? 'try{eval(_d);}catch(e){}'  /* OBF Engine output is already IIFE */
+            : 'for(var i=0;i<15;i++){_code=decodeURIComponent(escape(atob(_code)));}eval(_code);',
         '<' + '/script>',
         '<' + '/body>',
         '<' + '/html>'
@@ -2682,13 +2734,15 @@ window.downloadDecryptor = function() {
     keyLink.download = realKeyFileName;
     keyLink.click();
 
-    showStatus('success', '🎁 Decryptor + Key file downloaded!');
+    var modeMsg = useObfEngine ? '26 + 24 + 16 layers' : '30 + 10 + 15 layers (fallback)';
+    showStatus('success', '🎁 Decryptor + Key file downloaded! [' + modeMsg + ']');
     toast('Decryptor + Key file downloaded!', 'success');
 
     setTimeout(function() {
         showKeyModal(realKeyFileName, keyFileContent);
     }, 800);
 };
+
 /* ═══════════════════════════════════════════════════════════════════
    KEY MODAL
    ═══════════════════════════════════════════════════════════════════ */
@@ -2783,7 +2837,6 @@ function handleAuthReady(e) {
 
     console.log('👤 Auth ready:', state.user.email);
 
-    /* Check key status — DEACTIVATED/DELETED/ACTIVE */
     if (typeof firebase !== 'undefined' && firebase.database) {
         firebase.database().ref('users/' + state.user.uid + '/keyStatus').once('value')
             .then(function(snap) {
@@ -2849,9 +2902,9 @@ setTimeout(function() {
 }, 3000);
 
 updateKeyUI();
-console.log('%c🔐 Universal Encrypt Pro v22 HEAVY loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
-console.log('%c✅ zxcvbn check REMOVED — dictionary passwords allowed', 'color:#00ff64;font-size:11px;');
-console.log('%c🔒 Key deactivation — original key invalid after deactivate', 'color:#ff2d95;font-size:11px;');
+console.log('%c🔐 Universal Encrypt Pro v23 ULTRA HEAVY loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c✅ OBF Engine: 26 + 24 + 16 layers (fallback: 30 + 10 + 15)', 'color:#00ff64;font-size:11px;');
+console.log('%c🔒 Key auto-deactivation — original key invalid after deactivate', 'color:#ff2d95;font-size:11px;');
 console.log('%c📧 Email + Dashboard + Database alerts — all 3 layers active', 'color:#ffd700;font-size:11px;');
 
 })();
