@@ -18,6 +18,9 @@
 <!-- Key Manager -->
 <script src="key-manager.js"></script>
 
+    <!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/zxcvbn@4.4.2/dist/zxcvbn.js"></script>    
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -1332,9 +1335,27 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 
 <script>
+/* ═══════════════════════════════════════════════════════════════════
+   NIGHTORBIT — UNIVERSAL ENCRYPT PRO v20 ULTRA
+   Enterprise-Grade Protection · Auto Key-Deactivation
+   ═══════════════════════════════════════════════════════════════════ */
 (function() {
 'use strict';
 
+/* ═══════════════════════════════════════════════════════════════════
+   EMAILJS CONFIG
+   ═══════════════════════════════════════════════════════════════════ */
+var EMAILJS_SERVICE_ID = 'service_9dzzl6h';
+var EMAILJS_TEMPLATE_ID = 'template_m3t3tc7';
+var EMAILJS_PUBLIC_KEY = 'gelsLSSfRZD67v0I_';
+
+if (typeof emailjs !== 'undefined') {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════════════════════════════ */
 var state = {
     uploadedFiles: {},
     currentLang: 'auto',
@@ -1344,17 +1365,39 @@ var state = {
     sessionDeadline: null,
     _pwdMode: null,
     _pendingAction: null,
-    authHandled: false
+    authHandled: false,
+    keyVersion: 1,
+    devtoolsDetected: false,
+    atobCount: 0,
+    alertsListener: null,
+    alertsShown: {},
+    keyAutoDeactivated: false
 };
 
-var SESSION_TIMEOUT = 5 * 60 * 1000; /* 5 minutes */
+var SESSION_TIMEOUT = 5 * 60 * 1000;
 
+/* ═══════════════════════════════════════════════════════════════════
+   UTILITY FUNCTIONS
+   ═══════════════════════════════════════════════════════════════════ */
 function bytes(n) {
     if (n < 1024) return n + ' B';
     if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
     return (n / 1024 / 1024).toFixed(2) + ' MB';
 }
 function num(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function rndHex(len) {
+    var c = 'abcdef0123456789';
+    var s = '';
+    for (var i = 0; i < (len || 16); i++) s += c.charAt(Math.floor(Math.random() * c.length));
+    return s;
+}
+function rv(len) {
+    var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var s = '';
+    for (var i = 0; i < (len || 6); i++) s += c.charAt(Math.floor(Math.random() * c.length));
+    return s;
+}
+
 function showStatus(type, msg) {
     var el = document.getElementById('status');
     el.className = 'status ' + type;
@@ -1402,6 +1445,464 @@ function universalCopy(text, btn, originalText) {
     }
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   MAXIMUM-LAYER KEY OBFUSCATION
+   ═══════════════════════════════════════════════════════════════════ */
+function obfuscateKey30Layers(key) {
+    var r = key;
+    
+    var l1 = ''; for (var i = 0; i < r.length; i++) l1 += String.fromCharCode(r.charCodeAt(i) ^ 0x5A);
+    var l2 = ''; for (var i = 0; i < l1.length; i++) l2 += String.fromCharCode((l1.charCodeAt(i) + 7) % 256);
+    var l3 = ''; for (var i = 0; i < l2.length; i++) l3 += String.fromCharCode(l2.charCodeAt(i) ^ 0x3C);
+    var l4 = ''; for (var i = 0; i < l3.length; i++) l4 += String.fromCharCode((l3.charCodeAt(i) + 13) % 256);
+    var l5 = ''; for (var i = 0; i < l4.length; i++) l5 += String.fromCharCode(l4.charCodeAt(i) ^ 0x7E);
+    
+    var even = '', odd = '';
+    for (var i = 0; i < l5.length; i++) { if (i % 2 === 0) even += l5[i]; else odd += l5[i]; }
+    var l6 = even + odd;
+    var l7 = l6.split('').reverse().join('');
+    var mid = Math.floor(l7.length / 2);
+    var l8 = l7.slice(mid) + l7.slice(0, mid);
+    var third = Math.floor(l8.length / 3);
+    var l9 = l8.slice(third * 2) + l8.slice(0, third) + l8.slice(third, third * 2);
+    var l10 = l9.split('').reverse().join('');
+    
+    var l11 = btoa(l10);
+    var padLen = Math.floor(Math.random() * 15) + 5;
+    var padding = '';
+    for (var i = 0; i < padLen; i++) padding += String.fromCharCode(Math.floor(Math.random() * 256));
+    var l12 = padding + l11;
+    var l13 = l12.split('').reverse().join('');
+    var l14 = btoa(l13);
+    var l15 = l14.replace(/A/g, 'X').replace(/B/g, 'Y').replace(/C/g, 'Z');
+    
+    var l16 = ''; for (var i = 0; i < l15.length; i++) l16 += String.fromCharCode(l15.charCodeAt(i) ^ 0x2B);
+    var l17 = ''; for (var i = 0; i < l16.length; i++) l17 += String.fromCharCode((l16.charCodeAt(i) + 17) % 256);
+    var l18 = ''; for (var i = 0; i < l17.length; i++) l18 += String.fromCharCode(l17.charCodeAt(i) ^ 0x9F);
+    var l19 = ''; for (var i = 0; i < l18.length; i++) l19 += String.fromCharCode((l18.charCodeAt(i) + 23) % 256);
+    var l20 = ''; for (var i = 0; i < l19.length; i++) l20 += String.fromCharCode(l19.charCodeAt(i) ^ 0x4D);
+    
+    var chunks = l20.match(/.{1,4}/g) || [];
+    var l21 = chunks.reverse().join('');
+    var l22 = btoa(l21);
+    var l23 = l22.split('').reverse().join('');
+    var quarter = Math.floor(l23.length / 4);
+    var l24 = l23.slice(quarter) + l23.slice(0, quarter);
+    var l25 = btoa(l24);
+    
+    var l26 = ''; for (var i = 0; i < l25.length; i++) l26 += String.fromCharCode(l25.charCodeAt(i) ^ 0x6E);
+    var l27 = ''; for (var i = 0; i < l26.length; i++) l27 += String.fromCharCode((l26.charCodeAt(i) + 31) % 256);
+    var l28 = l27.split('').reverse().join('');
+    var l29 = btoa(l28);
+    var l30 = ''; for (var i = 0; i < l29.length; i++) l30 += String.fromCharCode(l29.charCodeAt(i) ^ 0x1A);
+    
+    return btoa(l30);
+}
+
+function obfuscate15Layers(input) {
+    var r = input;
+    
+    var l1 = ''; for (var i = 0; i < r.length; i++) l1 += String.fromCharCode(r.charCodeAt(i) ^ 0x5A);
+    var l2 = ''; for (var i = 0; i < l1.length; i++) l2 += String.fromCharCode((l1.charCodeAt(i) + 11) % 256);
+    var l3 = ''; for (var i = 0; i < l2.length; i++) l3 += String.fromCharCode(l2.charCodeAt(i) ^ 0x3C);
+    var l4 = ''; for (var i = 0; i < l3.length; i++) l4 += String.fromCharCode((l3.charCodeAt(i) + 19) % 256);
+    var l5 = ''; for (var i = 0; i < l4.length; i++) l5 += String.fromCharCode(l4.charCodeAt(i) ^ 0x7E);
+    
+    var even = '', odd = '';
+    for (var i = 0; i < l5.length; i++) { if (i % 2 === 0) even += l5[i]; else odd += l5[i]; }
+    var l6 = odd + even;
+    var l7 = l6.split('').reverse().join('');
+    var mid = Math.floor(l7.length / 2);
+    var l8 = l7.slice(mid) + l7.slice(0, mid);
+    var l9 = btoa(l8);
+    var l10 = l9.replace(/A/g, 'Q').replace(/B/g, 'R').replace(/C/g, 'S');
+    
+    var l11 = ''; for (var i = 0; i < l10.length; i++) l11 += String.fromCharCode(l10.charCodeAt(i) ^ 0x2B);
+    var l12 = ''; for (var i = 0; i < l11.length; i++) l12 += String.fromCharCode((l11.charCodeAt(i) + 29) % 256);
+    var l13 = btoa(l12);
+    var l14 = l13.split('').reverse().join('');
+    var l15 = btoa(l14);
+    
+    return l15;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   AUTO-DEACTIVATE KEY — SYSTEM TRIGGERED (ALL ATTEMPTS)
+   ═══════════════════════════════════════════════════════════════════ */
+function autoDeactivateKey(reason) {
+    if (!state.user || !state.user.uid) return;
+    if (typeof firebase === 'undefined' || !firebase.database) return;
+    if (state.keyAutoDeactivated) return;
+    
+    state.keyAutoDeactivated = true;
+    console.log('🔒 Auto-deactivating key. Reason:', reason);
+    
+    firebase.database().ref('users/' + state.user.uid).once('value')
+        .then(function(snapshot) {
+            var data = snapshot.val() || {};
+            
+            if (data.keyStatus === 'DEACTIVATED') {
+                console.log('ℹ️ Key already deactivated');
+                return;
+            }
+            
+            var oldKey = data.encryptedKey;
+            var oldVersion = data.keyVersion || 1;
+            var newVersion = oldVersion + 1;
+            
+            var updates = {};
+            
+            if (oldKey) {
+                updates['deactivated_keys/' + state.user.uid + '/' + Date.now()] = {
+                    encryptedKey: oldKey,
+                    keyVersion: oldVersion,
+                    deactivatedAt: Date.now(),
+                    reason: reason || 'SECURITY_ALERT',
+                    status: 'DEACTIVATED'
+                };
+            }
+            
+            updates['users/' + state.user.uid + '/encryptedKey'] = null;
+            updates['users/' + state.user.uid + '/keyStatus'] = 'DEACTIVATED';
+            updates['users/' + state.user.uid + '/keyDeactivatedAt'] = Date.now();
+            updates['users/' + state.user.uid + '/keyDeactivatedReason'] = reason;
+            updates['users/' + state.user.uid + '/keyVersion'] = newVersion;
+            updates['users/' + state.user.uid + '/hasKey'] = false;
+            
+            firebase.database().ref().update(updates)
+                .then(function() {
+                    console.log('✅ Key auto-deactivated');
+                    if (typeof KEY_MANAGER !== 'undefined') KEY_MANAGER.clear();
+                    updateKeyUI();
+                    showAutoDeactivateModal();
+                })
+                .catch(function(err) {
+                    console.error('❌ Auto-deactivate failed:', err);
+                    state.keyAutoDeactivated = false;
+                });
+        });
+}
+
+function showAutoDeactivateModal() {
+    var existing = document.getElementById('autoDeactivateOverlay');
+    if (existing) existing.remove();
+    
+    var overlay = document.createElement('div');
+    overlay.id = 'autoDeactivateOverlay';
+    overlay.style.cssText = 
+        'position:fixed;inset:0;background:rgba(0,0,0,0.95);' +
+        'backdrop-filter:blur(12px);z-index:999999;' +
+        'display:flex;align-items:center;justify-content:center;padding:20px;';
+    
+    var modal = document.createElement('div');
+    modal.style.cssText = 
+        'background:rgba(11,11,26,0.98);border:2px solid #ff0064;' +
+        'border-radius:22px;padding:32px 26px;max-width:520px;width:100%;' +
+        'box-shadow:0 0 100px rgba(255,0,100,0.4);text-align:center;';
+    
+    modal.innerHTML = 
+        '<div style="font-size:72px;margin-bottom:20px;">🔒</div>' +
+        '<h2 style="font-family:Orbitron,sans-serif;font-size:20px;letter-spacing:3px;text-transform:uppercase;color:#ff0064;margin-bottom:12px;">Key Deactivated</h2>' +
+        '<p style="color:#b0d0d0;font-size:13px;line-height:1.8;margin-bottom:20px;">' +
+        'Your encryption key has been <b style="color:#ffd700;">automatically deactivated</b> due to a security alert.<br><br>' +
+        'Your <b style="color:#00ff64;">original code is safe</b>. Please regenerate a new key and re-encrypt your code.' +
+        '</p>' +
+        '<button onclick="closeAutoDeactivateModal(); createKey();" style="width:100%;background:linear-gradient(135deg,#00f0ff,#b400ff);color:#000;border:none;padding:16px 24px;border-radius:12px;font-weight:900;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">🔐 REGENERATE KEY NOW</button>' +
+        '<button onclick="closeAutoDeactivateModal()" style="width:100%;margin-top:10px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid #333;padding:12px 24px;border-radius:12px;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">LATER</button>';
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+}
+
+window.closeAutoDeactivateModal = function() {
+    var overlay = document.getElementById('autoDeactivateOverlay');
+    if (overlay) overlay.remove();
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   ALERT SYSTEM — DATABASE + EMAIL + DASHBOARD
+   ═══════════════════════════════════════════════════════════════════ */
+function sendSecurityAlert(eventType, keyType) {
+    if (!state.user || !state.user.uid) {
+        console.warn('⚠️ Alert skipped: No user logged in');
+        return;
+    }
+    
+    console.log('🚨 Security Alert triggered:', eventType, keyType);
+    
+    var alertData = {
+        eventType: eventType,
+        keyType: keyType,
+        timestamp: Date.now(),
+        timeString: new Date().toLocaleString(),
+        userId: state.user.uid,
+        userEmail: state.user.email,
+        userName: state.user.displayName || 'Unknown',
+        keyDeactivated: true,
+        device: {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language,
+            screen: screen.width + 'x' + screen.height,
+            pixelRatio: window.devicePixelRatio,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            cores: navigator.hardwareConcurrency || 'unknown',
+            memory: navigator.deviceMemory || 'unknown',
+            touchSupport: 'ontouchstart' in window,
+            cookiesEnabled: navigator.cookieEnabled,
+            connection: navigator.connection ? {
+                effectiveType: navigator.connection.effectiveType,
+                downlink: navigator.connection.downlink,
+                rtt: navigator.connection.rtt
+            } : 'unknown'
+        },
+        page: {
+            url: window.location.href,
+            referrer: document.referrer,
+            title: document.title
+        },
+        ip: 'unknown',
+        location: 'unknown'
+    };
+    
+    // ✅ TURANT AUTO-DEACTIVATE (har attempt pe)
+    console.log('🔒 Auto-deactivating key due to:', eventType);
+    autoDeactivateKey('HACKER_ATTEMPT_' + eventType);
+    
+    // ✅ IP + Location fetch
+    fetch('https://ipapi.co/json/')
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            alertData.ip = data.ip || 'unknown';
+            alertData.location = {
+                city: data.city || 'unknown',
+                region: data.region || 'unknown',
+                country: data.country_name || 'unknown',
+                countryCode: data.country_code || 'unknown',
+                latitude: data.latitude || 'unknown',
+                longitude: data.longitude || 'unknown',
+                timezone: data.timezone || 'unknown',
+                isp: data.org || 'unknown'
+            };
+            saveToDatabase(alertData);
+            sendUserEmail();
+        })
+        .catch(function() {
+            alertData.ip = 'unknown';
+            alertData.location = 'unknown';
+            saveToDatabase(alertData);
+            sendUserEmail();
+        });
+}
+
+function saveToDatabase(alertData) {
+    if (typeof firebase === 'undefined' || !firebase.database) {
+        console.warn('❌ Firebase not loaded');
+        return;
+    }
+    
+    try {
+        firebase.database().ref('admin_alerts').push(alertData)
+            .then(function() { console.log('✅ Saved to admin_alerts'); })
+            .catch(function(err) { console.error('❌ admin_alerts failed:', err); });
+        
+        firebase.database().ref('security_alerts/' + state.user.uid).push(alertData)
+            .then(function() { console.log('✅ Saved to user security_alerts'); })
+            .catch(function(err) { console.error('❌ user alerts failed:', err); });
+    } catch (e) {
+        console.error('❌ Database save error:', e);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   USER EMAIL — WITH KEY DEACTIVATION NOTICE
+   ═══════════════════════════════════════════════════════════════════ */
+function sendUserEmail() {
+    if (!state.user || !state.user.email) {
+        console.warn('❌ No user email');
+        return;
+    }
+    if (typeof emailjs === 'undefined') {
+        console.warn('❌ EmailJS not loaded');
+        return;
+    }
+    
+    console.log('📧 Sending security email to:', state.user.email);
+    
+    var templateParams = {
+        user_email: state.user.email,
+        subject: '🔐 SECURITY ALERT — Your Key Has Been Deactivated',
+        name: 'NightOrbit Security Team',
+        message: 
+            'Dear User,\n\n' +
+            '⚠️ IMPORTANT: YOUR ENCRYPTION KEY HAS BEEN AUTOMATICALLY DEACTIVATED.\n\n' +
+            'We detected an unauthorized attempt to access your encrypted data on your NightOrbit account. ' +
+            'In response, your encryption key has been permanently deactivated to protect your work.\n\n' +
+            'WHAT THIS MEANS:\n' +
+            '• Your old key is now permanently inactive\n' +
+            '• Your old encrypted code cannot be decrypted — even with the old key\n' +
+            '• Your original code remains safe with you\n' +
+            '• No data has been lost\n\n' +
+            'REQUIRED ACTION — PLEASE FOLLOW THESE STEPS:\n\n' +
+            '1. Regenerate your key — Go to Dashboard → Click "REGENERATE KEY"\n' +
+            '2. Re-encrypt your code — Paste your original code, enter your password, and re-encrypt with the new key\n' +
+            '3. Replace old files — Delete old code, old key file, and old decryptor. Use new files only.\n\n' +
+            'Our Security Guarantee:\n' +
+            'Once your old key is deactivated, it becomes permanently inactive. ' +
+            'Your old encrypted code becomes completely unreadable — even with the old key. ' +
+            'Even if an unauthorized party copied your old files, they cannot open them anymore. ' +
+            'Your new key works only with your newly encrypted code. ' +
+            'This ensures that your original work remains fully protected and that no one — not even us — can access your old encrypted data.\n\n' +
+            'Your original code is still safe with you. No data loss. Only renewed protection.\n\n' +
+            'Stay secure,\n' +
+            'NightOrbit Security Team 🔐\n\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            'ROMAN URDU:\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
+            'Mohtaram User,\n\n' +
+            '⚠️ AHEM: AAP KI ENCRYPTION KEY KHUD-BAKHUD DEACTIVATE KAR DI GAYI HAI.\n\n' +
+            'Hum ne aap ke NightOrbit account par aap ke encrypted data tak ghair-mujaz rasai ki koshish detect ki hai. ' +
+            'Is ke jawab mein, aap ka kaam mehfooz rakhne ke liye aap ki encryption key mustaqil tor par deactivate kar di gayi hai.\n\n' +
+            'IS KA MATLAB KYA HAI:\n' +
+            '• Aap ki purani key ab mustaqil tor par inactive hai\n' +
+            '• Aap ka purana encrypted code decrypt nahi ho sakta — purani key ke sath bhi\n' +
+            '• Aap ka asal code aap ke pass mehfooz hai\n' +
+            '• Koi data zaya nahi hua\n\n' +
+            'ZAROORI IQDAAM — BARAH-E-KARAM YEH STEPS KAREIN:\n\n' +
+            '1. Apni key dobara banayein — Dashboard par jayein → "REGENERATE KEY" par click karein\n' +
+            '2. Apne code ko dobara encrypt karein — Asal code paste karein, password darj karein, aur nayi key se dobara encrypt karein\n' +
+            '3. Purani files tabdeel karein — Purana code, purani key file, aur purana decryptor delete karein. Sirf nayi files istemal karein.\n\n' +
+            'Hamari Security Guarantee:\n' +
+            'Ek baar jab aap ki purani key deactivate ho jati hai, to woh mustaqil tor par inactive ho jati hai. ' +
+            'Aap ka purana encrypted code mukammal tor par naqabil-e-mutalia ho jata hai — purani key ke sath bhi. ' +
+            'Agar kisi ghair-mujaz fariq ne aap ki purani files copy bhi kar li hon, to woh ab unhe khol nahi sakta. ' +
+            'Nayi key sirf naye encrypted code ke sath kaam karti hai.\n\n' +
+            'Aap ka asal code ab bhi aap ke pass mehfooz hai. Koi data zaya nahi hua. Sirf nayi hifazat.\n\n' +
+            'Mehfooz rahein,\n' +
+            'NightOrbit Security Team 🔐'
+    };
+    
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+        .then(function(response) {
+            console.log('✅ Security email sent:', response);
+        })
+        .catch(function(err) {
+            console.error('❌ Email failed:', err);
+        });
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DASHBOARD ALERT — Real-time Listener
+   ═══════════════════════════════════════════════════════════════════ */
+function initDashboardAlerts() {
+    if (!state.user || !state.user.uid) return;
+    if (typeof firebase === 'undefined' || !firebase.database) return;
+    
+    var alertsRef = firebase.database().ref('security_alerts/' + state.user.uid).limitToLast(5);
+    
+    alertsRef.on('child_added', function(snapshot) {
+        var alert = snapshot.val();
+        if (alert && alert.timestamp > Date.now() - 60000) {
+            showDashboardAlert(alert);
+        }
+    });
+    
+    state.alertsListener = alertsRef;
+    console.log('✅ Dashboard alert listener initialized');
+}
+
+function showDashboardAlert(alert) {
+    var alertKey = alert.timestamp + '_' + alert.eventType;
+    if (state.alertsShown[alertKey]) return;
+    state.alertsShown[alertKey] = true;
+    
+    if (document.getElementById('dashboardAlert_' + alertKey)) return;
+    
+    var alertBox = document.createElement('div');
+    alertBox.id = 'dashboardAlert_' + alertKey;
+    alertBox.style.cssText = 
+        'position:fixed;top:80px;right:20px;z-index:999998;' +
+        'background:linear-gradient(135deg,rgba(255,0,100,0.98),rgba(180,0,255,0.98));' +
+        'color:#fff;padding:18px 22px;border-radius:14px;' +
+        'border:2px solid #fff;box-shadow:0 0 60px rgba(255,0,100,0.8);' +
+        'max-width:420px;font-family:Inter,sans-serif;';
+    
+    var eventLabel = {
+        'FAKE_ATTEMPT': '⚠️ Unauthorized Access Attempt',
+        'REAL_ATTEMPT': '🚨 Key Access Attempt Detected',
+        'DEVTOOLS_OPENED': '🔍 Developer Tools Detected',
+        'DECODE_ATTEMPT': '🔓 Decode Attempt Detected',
+        'WRONG_PASSWORD': '❌ Wrong Password Attempt'
+    }[alert.eventType] || '⚠️ Security Alert';
+    
+    alertBox.innerHTML = 
+        '<div style="font-family:Orbitron,sans-serif;font-size:14px;font-weight:900;letter-spacing:2px;margin-bottom:10px;">🔒 KEY DEACTIVATED</div>' +
+        '<div style="font-size:12px;line-height:1.8;">' +
+        '<b>' + eventLabel + '</b><br>' +
+        '<b>Time:</b> ' + (alert.timeString || new Date(alert.timestamp).toLocaleString()) + '<br>' +
+        '<b>Key Affected:</b> ' + (alert.keyType || 'N/A') + '<br>' +
+        '<b>IP:</b> ' + (alert.ip || 'unknown') + '<br>' +
+        '<b>Location:</b> ' + (alert.location && alert.location.city ? alert.location.city + ', ' + alert.location.country : 'unknown') +
+        '</div>' +
+        '<div style="margin-top:12px;padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;font-size:11px;line-height:1.6;">' +
+        '<b style="color:#ffd700;">⚠️ ACTION REQUIRED:</b><br>' +
+        'Your encryption key has been <b>automatically deactivated</b> due to unauthorized access.<br>' +
+        'Please regenerate a new key and re-encrypt your code.' +
+        '</div>' +
+        '<button onclick="this.parentElement.remove()" style="margin-top:12px;background:#fff;color:#ff0064;border:none;padding:8px 18px;border-radius:8px;font-weight:bold;cursor:pointer;font-family:Orbitron,sans-serif;font-size:11px;letter-spacing:1px;">DISMISS</button>';
+    
+    document.body.appendChild(alertBox);
+    
+    setTimeout(function() {
+        if (alertBox.parentNode) alertBox.parentNode.removeChild(alertBox);
+    }, 30000);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ATTEMPT DETECTION
+   ═══════════════════════════════════════════════════════════════════ */
+window._0xF1_ACCESSED = function() {
+    console.log('🚨 FAKE Part 1 accessed!');
+    sendSecurityAlert('FAKE_ATTEMPT', 'FAKE_PART1');
+};
+window._0xF2_ACCESSED = function() {
+    console.log('🚨 FAKE Part 2 accessed!');
+    sendSecurityAlert('FAKE_ATTEMPT', 'FAKE_PART2');
+};
+window._0xR_ACCESSED = function() {
+    console.log('🚨 REAL Key accessed!');
+    sendSecurityAlert('REAL_ATTEMPT', 'REAL_KEY');
+};
+
+// ✅ DevTools detection
+setInterval(function() {
+    var threshold = 160;
+    if (window.outerWidth - window.innerWidth > threshold ||
+        window.outerHeight - window.innerHeight > threshold) {
+        if (!state.devtoolsDetected) {
+            state.devtoolsDetected = true;
+            console.log('🚨 DevTools opened!');
+            sendSecurityAlert('DEVTOOLS_OPENED', 'NONE');
+        }
+    } else {
+        state.devtoolsDetected = false;
+    }
+}, 1000);
+
+// ✅ atob decode attempt
+var originalAtob = window.atob;
+window.atob = function(str) {
+    state.atobCount++;
+    if (state.atobCount === 50) {
+        console.log('🚨 Decode attempt detected!');
+        sendSecurityAlert('DECODE_ATTEMPT', 'UNKNOWN');
+    }
+    return originalAtob(str);
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   UI FUNCTIONS
+   ═══════════════════════════════════════════════════════════════════ */
 window.toggleDrawer = function() {
     document.getElementById('drawer').classList.toggle('open');
     document.getElementById('drawerOverlay').classList.toggle('open');
@@ -1489,11 +1990,15 @@ function updateKeyUI() {
     updateProgress();
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   KEY MANAGEMENT
+   ═══════════════════════════════════════════════════════════════════ */
 window.createKey = function() {
     if (!state.user) {
         toast('Please wait, loading user...', 'warn');
         return;
     }
+    state.keyAutoDeactivated = false;
     openPwdModal('create');
 };
 
@@ -1516,15 +2021,15 @@ window.deleteKey = function() {
     }
 
     showStatus('loading', '⏳ Deleting old key...');
-    KEY_MANAGER.deleteKey(state.user)
+    deactivateOldKey(state.user)
         .then(function() {
             KEY_MANAGER.clear();
             hideReveal();
             document.getElementById('secretKey').value = '';
             document.getElementById('outputEnc').value = '';
             updateKeyUI();
-            showStatus('success', '✅ Old key deleted. Create a new one.');
-            toast('🗑️ Old key deleted permanently', 'success');
+            showStatus('success', '✅ Old key deactivated. Create a new one.');
+            toast('🗑️ Old key deactivated permanently', 'success');
             setTimeout(function() {
                 openPwdModal('create');
             }, 800);
@@ -1534,6 +2039,44 @@ window.deleteKey = function() {
         });
 };
 
+function deactivateOldKey(user) {
+    return new Promise(function(resolve, reject) {
+        firebase.database().ref('users/' + user.uid).once('value')
+            .then(function(snapshot) {
+                var data = snapshot.val() || {};
+                var oldKey = data.encryptedKey;
+                var oldVersion = data.keyVersion || 1;
+                var newVersion = oldVersion + 1;
+                
+                var updates = {};
+                
+                if (oldKey) {
+                    updates['deactivated_keys/' + user.uid + '/' + Date.now()] = {
+                        encryptedKey: oldKey,
+                        keyVersion: oldVersion,
+                        deactivatedAt: Date.now(),
+                        reason: 'SECURITY_ALERT',
+                        status: 'DEACTIVATED'
+                    };
+                }
+                
+                updates['users/' + user.uid + '/encryptedKey'] = null;
+                updates['users/' + user.uid + '/keyStatus'] = 'DEACTIVATED';
+                updates['users/' + user.uid + '/keyDeactivatedAt'] = Date.now();
+                updates['users/' + user.uid + '/keyVersion'] = newVersion;
+                updates['users/' + user.uid + '/hasKey'] = false;
+                
+                firebase.database().ref().update(updates)
+                    .then(function() { resolve(newVersion); })
+                    .catch(reject);
+            })
+            .catch(reject);
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PASSWORD MODAL
+   ═══════════════════════════════════════════════════════════════════ */
 var pwdOverlay = document.getElementById('pwdOverlay');
 var pwdInput = document.getElementById('pwdInput');
 var pwdSubmitBtn = document.getElementById('pwdSubmitBtn');
@@ -1590,24 +2133,18 @@ pwdEyeBtn.addEventListener('click', function() {
 
 pwdInput.addEventListener('input', function() {
     var v = this.value;
-
     var digits = (v.match(/\d/g) || []).length;
     var lower = (v.match(/[a-z]/g) || []).length;
     var upper = (v.match(/[A-Z]/g) || []).length;
     var symbols = (v.match(/[^a-zA-Z0-9]/g) || []).length;
-
     var rLen = v.length >= 16 && v.length <= 64;
     var rDig = digits >= 3;
     var rLet = lower >= 4 && upper >= 3;
     var rSym = symbols >= 3;
-
     var rStrength = false;
     if (rLen && rDig && rLet && rSym && typeof zxcvbn !== 'undefined') {
-        try {
-            rStrength = zxcvbn(v).score >= 3;
-        } catch(e) { rStrength = false; }
+        try { rStrength = zxcvbn(v).score >= 3; } catch(e) { rStrength = false; }
     }
-
     updateReq('req-length', rLen);
     updateReq('req-digits', rDig);
     updateReq('req-letters', rLet);
@@ -1637,9 +2174,7 @@ function updateReq(id, valid) {
 }
 
 pwdInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter' && !pwdSubmitBtn.disabled) {
-        pwdSubmitBtn.click();
-    }
+    if (e.key === 'Enter' && !pwdSubmitBtn.disabled) pwdSubmitBtn.click();
 });
 
 pwdCancelBtn.addEventListener('click', closePwdModal);
@@ -1680,13 +2215,9 @@ pwdSubmitBtn.addEventListener('click', function() {
                 state._pendingAction = null;
 
                 if (action === 'encrypt') {
-                    setTimeout(function() {
-                        performEncrypt(result.key);
-                    }, 500);
+                    setTimeout(function() { performEncrypt(result.key); }, 500);
                 } else if (action === 'downloadDecryptor') {
-                    setTimeout(function() {
-                        downloadDecryptor();
-                    }, 500);
+                    setTimeout(function() { downloadDecryptor(); }, 500);
                 }
 
                 setTimeout(closePwdModal, 1000);
@@ -1696,6 +2227,7 @@ pwdSubmitBtn.addEventListener('click', function() {
                 pwdSubmitBtn.disabled = false;
                 pwdInput.value = '';
                 pwdInput.focus();
+                sendSecurityAlert('WRONG_PASSWORD', 'NONE');
             });
     }
 });
@@ -1706,6 +2238,9 @@ function setPwdStatus(type, msg) {
     pwdStatus.style.display = 'block';
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   KEY REVEAL
+   ═══════════════════════════════════════════════════════════════════ */
 window.toggleKeyReveal = function() {
     if (!KEY_MANAGER.hasPassword()) { toast('Create key first', 'warn'); return; }
     openPwdModal('reveal');
@@ -1757,6 +2292,9 @@ function stopSessionTimer() {
     if (bar) bar.classList.remove('active');
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   FILE HANDLING
+   ═══════════════════════════════════════════════════════════════════ */
 var fileDrop = document.getElementById('fileDrop');
 var fileInput = document.getElementById('fileInput');
 fileDrop.addEventListener('click', function() { window.openFilePicker(); });
@@ -1773,23 +2311,18 @@ function handleFiles(files) {
             toast('File too large (max 5MB): ' + file.name, 'error');
             return;
         }
-        
         var reader = new FileReader();
         reader.onload = function(ev) {
             var content = ev.target.result;
             var ext = (file.name.split('.').pop() || '').toLowerCase();
-            state.uploadedFiles[file.name] = { 
-                content: content, 
-                lang: ext,
-                size: file.size
-            };
+            state.uploadedFiles[file.name] = { content: content, lang: ext, size: file.size };
             renderFileList();
             updateProgress();
         };
         reader.readAsText(file);
     });
 }
-    
+
 function renderFileList() {
     var list = document.getElementById('fileList');
     var names = Object.keys(state.uploadedFiles);
@@ -1803,6 +2336,9 @@ function renderFileList() {
 }
 window.removeFile = function(name) { delete state.uploadedFiles[name]; renderFileList(); updateProgress(); };
 
+/* ═══════════════════════════════════════════════════════════════════
+   ENCRYPTION
+   ═══════════════════════════════════════════════════════════════════ */
 window.encryptNow = function() {
     try {
         if (!KEY_MANAGER.hasPassword()) {
@@ -1810,15 +2346,12 @@ window.encryptNow = function() {
             toast('Create key first', 'error');
             return;
         }
-
         var pasted = inputCodeEl.value;
         var fileNames = Object.keys(state.uploadedFiles);
-
         if (!pasted.trim() && fileNames.length === 0) {
             showStatus('error', '❌ Paste code or upload files');
             return;
         }
-
         if (KEY_MANAGER.isReady() && KEY_MANAGER.getKey()) {
             performEncrypt(KEY_MANAGER.getKey());
         } else {
@@ -1831,9 +2364,6 @@ window.encryptNow = function() {
     }
 };
 
-/* ═══════════════════════════════════════════════════════
-   performEncrypt — AES-256-CBC + HMAC-SHA256
-   ═══════════════════════════════════════════════════════ */
 function performEncrypt(secretKey) {
     var pasted = inputCodeEl.value;
     var fileNames = Object.keys(state.uploadedFiles);
@@ -1846,7 +2376,7 @@ function performEncrypt(secretKey) {
     if (fileNames.length > 0) {
         var bundle = {
             __type: 'multi-file-bundle',
-            __version: '18.0',
+            __version: '20.0',
             __created: new Date().toISOString(),
             __fileCount: fileNames.length,
             files: {}
@@ -1854,13 +2384,11 @@ function performEncrypt(secretKey) {
         fileNames.forEach(function(name) {
             var content = state.uploadedFiles[name].content;
             var sizeBytes = new Blob([content]).size;
-            
-            bundle.files[name] = { 
+            bundle.files[name] = {
                 content: content,
                 size: sizeBytes,
                 sizeFormatted: bytes(sizeBytes)
             };
-            
             totalSize += sizeBytes;
             fileCount++;
         });
@@ -1873,7 +2401,6 @@ function performEncrypt(secretKey) {
         mode = 'Single ' + detectLanguage(pasted).toUpperCase() + ' (' + bytes(totalSize) + ')';
     }
 
-    /* ✅ AES-256-CBC with random IV */
     var iv = CryptoJS.lib.WordArray.random(16);
     var encrypted = CryptoJS.AES.encrypt(payload, secretKey, {
         iv: iv,
@@ -1881,32 +2408,30 @@ function performEncrypt(secretKey) {
         padding: CryptoJS.pad.Pkcs7
     });
 
-    /* ✅ HMAC-SHA256 for integrity */
     var hmac = CryptoJS.HmacSHA256(
         iv.toString() + ':' + encrypted.toString(),
         secretKey
     ).toString();
 
-    /* ✅ Combined format: v2:iv:ciphertext:hmac */
-    var finalOutput = 'v2:' + iv.toString() + ':' + encrypted.toString() + ':' + hmac;
+    var finalOutput = 'v3:' + state.keyVersion + ':' + iv.toString() + ':' + encrypted.toString() + ':' + hmac;
     document.getElementById('outputEnc').value = finalOutput;
     showStatus('success', '✅ Encrypted ' + bytes(totalSize) + ' → ' + bytes(new Blob([finalOutput]).size));
     toast('Encrypted successfully!', 'success');
     updateProgress();
 
-    /* ✅ Track stats in Firebase */
     if (state.user && state.user.uid && typeof KEY_MANAGER !== 'undefined' && KEY_MANAGER.updateEncryptionStats) {
         KEY_MANAGER.updateEncryptionStats(state.user.uid, {
             size: totalSize,
             sizeFormatted: bytes(totalSize),
             fileCount: fileCount,
             duration: 0
-        }).catch(function(err) {
-            console.warn('Stats tracking failed:', err);
-        });
+        }).catch(function(err) { console.warn('Stats tracking failed:', err); });
     }
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   OUTPUT ACTIONS
+   ═══════════════════════════════════════════════════════════════════ */
 window.copyOutput = function() {
     var out = document.getElementById('outputEnc');
     if (!out.value) { toast('Nothing to copy', 'error'); return; }
@@ -1942,14 +2467,7 @@ window.downloadDecryptor = function() {
         return;
     }
 
-    function rndHex(len) {
-        var c = 'abcdef0123456789';
-        var s = '';
-        for (var i = 0; i < (len || 16); i++) s += c.charAt(Math.floor(Math.random() * c.length));
-        return s;
-    }
     var keyFileName = 'nx_' + rndHex(8) + '-' + rndHex(4) + '-' + rndHex(4) + '-' + rndHex(12) + '.js';
-
     var encData = out;
 
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
@@ -1958,135 +2476,85 @@ window.downloadDecryptor = function() {
     suffix = suffix.substring(0, 60);
     var fullKeyString = PREFIX + suffix;
 
-    var s1 = (Date.now() % 251) + 1;
-    var s2 = (Math.floor(Math.random() * 251)) + 1;
-    var s3 = (Math.floor(Math.random() * 251)) + 1;
-    var s4 = (Math.floor(Math.random() * 251)) + 1;
+    var obfuscatedKey30 = obfuscateKey30Layers(fullKeyString);
 
-    var L1 = [];
-    for (var i = 0; i < fullKeyString.length; i++) {
-        L1.push((fullKeyString.charCodeAt(i) ^ 0x5A) ^ s1);
-    }
-    var L2 = [];
-    for (var j = 0; j < L1.length; j++) {
-        L2.push((L1[j] + s2) % 256);
-    }
-    var L3 = [];
-    for (var k = 0; k < L2.length; k++) {
-        L3.push(L2[k] ^ s3);
-    }
-    var even = [], odd = [];
-    for (var m = 0; m < L3.length; m++) {
-        if (m % 2 === 0) even.push(L3[m]);
-        else odd.push(L3[m]);
-    }
-    var L4 = even.concat(odd);
-    var padding = [];
-    var padCount = (Math.floor(Math.random() * 10) + 5);
-    for (var p = 0; p < padCount; p++) {
-        padding.push(Math.floor(Math.random() * 256));
-    }
-    var L5 = padding.concat(L4);
-    var bin = '';
-    for (var b = 0; b < L5.length; b++) {
-        bin += String.fromCharCode(L5[b]);
-    }
-    var L6 = btoa(bin);
-    var L7 = L6.split('').reverse().join('');
-    var obf = [];
-    for (var bi = 0; bi < L7.length; bi++) {
-        obf.push((L7.charCodeAt(bi) ^ 0x5A) ^ s4);
-    }
-    var byteArrayString = '[' + obf.join(',') + ']';
+    var fakePart1 = 'fake_' + rndHex(12) + '.js';
+    var fakePart2 = 'fake_' + rndHex(12) + '.js';
+    var fakePart1_15L = obfuscate15Layers(fakePart1);
+    var fakePart2_15L = obfuscate15Layers(fakePart2);
 
-    function rv(len) {
+    function rv2(len) {
         var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         var s = '';
         for (var i = 0; i < (len || 6); i++) s += c.charAt(Math.floor(Math.random() * c.length));
         return s;
     }
-    var qA = rv(6), qB = rv(7), qC = rv(5), qD = rv(6), qE = rv(8);
-    var qF = rv(6), qG = rv(5), qH = rv(4), qI = rv(4), qJ = rv(5);
-    var qK = rv(5), qL = rv(5), qM = rv(5), qN = rv(4), qO = rv(5);
+    var qA = rv2(6), qB = rv2(7), qC = rv2(5), qD = rv2(6), qE = rv2(8);
 
     var keyFileContent =
         '(function(){\n' +
         '"use strict";\n' +
         'try{\n' +
-        'var S1=' + s1 + ',S2=' + s2 + ',S3=' + s3 + ',S4=' + s4 + ';\n' +
-        'var ' + qN + '=' + padCount + ';\n' +
-        'var ' + qA + '=' + byteArrayString + ';\n' +
-        'var ' + qB + '="";\n' +
-        'for(var ' + qC + '=0;' + qC + '<' + qA + '.length;' + qC + '++){\n' +
-        qB + '+=String.fromCharCode((' + qA + '[' + qC + ']^0x5A)^S4);\n' +
-        '}\n' +
-        'var ' + qD + '=' + qB + ';\n' +
-        'function ' + qE + '(s){\n' +
-        'var ' + qF + '=s.split("").reverse().join("");\n' +
-        'var ' + qG + '=atob(' + qF + ');\n' +
-        'var ' + qH + '=[];\n' +
-        'for(var ' + qI + '=0;' + qI + '<' + qG + '.length;' + qI + '++){\n' +
-        qH + '.push(' + qG + '.charCodeAt(' + qI + '));\n' +
-        '}\n' +
-        'var ' + qK + '=' + qH + '.slice(' + qN + ');\n' +
-        'var ' + qL + '=' + qK + '.slice(0,Math.ceil(' + qK + '.length/2));\n' +
-        'var ' + qM + '=' + qK + '.slice(Math.ceil(' + qK + '.length/2));\n' +
-        'var ' + qJ + '=[];\n' +
-        'for(var i=0;i<' + qK + '.length;i++){\n' +
-        'if(i%2===0)' + qJ + '.push(' + qL + '[Math.floor(i/2)]);\n' +
-        'else ' + qJ + '.push(' + qM + '[Math.floor(i/2)]);\n' +
-        '}\n' +
-        'var ' + qH + '=[];\n' +
-        'for(var q=0;q<' + qJ + '.length;q++){\n' +
-        qH + '.push(' + qJ + '[q]^S3);\n' +
-        '}\n' +
-        'var ' + qO + '=[];\n' +
-        'for(var r=0;r<' + qH + '.length;r++){\n' +
-        'var sh=(' + qH + '[r]-S2+256)%256;\n' +
-        qO + '.push(sh^S1);\n' +
-        '}\n' +
-        'var res="";\n' +
-        'for(var f=0;f<' + qO + '.length;f++){\n' +
-        'res+=String.fromCharCode(' + qO + '[f]^0x5A);\n' +
-        '}\n' +
-        'return res;\n' +
-        '}\n' +
-        'window._0xSECRET=' + qE + '(' + qD + ');\n' +
-        '}catch(e){window._0xSECRET="";}\n' +
-        '})();\n';
-
-    var encodedKeyFileName = btoa(btoa(keyFileName));
-
-    var d1 = rv(8), d2 = rv(8), d3 = rv(8);
-    var d4 = rv(8), d5 = rv(8), d6 = rv(8);
-
-    var decoyFunctions =
-        '<script>\n' +
-        '(function(){\n' +
-        '  var ' + d1 + ' = [];\n' +
-        '  var ' + d2 + ' = {};\n' +
-        '  var ' + d3 + ' = function(x){ return x; };\n' +
-        '  window.__init = ' + d3 + ';\n' +
-        '  try { ' + d1 + '.push(Date.now()); } catch(e) {}\n' +
-        '  try { ' + d2 + '.start = 1; } catch(e) {}\n' +
-        '})();\n' +
-        '<' + '/script>\n';
-
-    var antiDebug =
-        '<script>\n' +
-        '(function(){\n' +
-        '  var ' + d4 + ' = 0;\n' +
-        '  var ' + d5 + ' = function(){\n' +
-        '    var ' + d6 + ' = new Date();\n' +
-        '    debugger;\n' +
-        '    if(new Date() - ' + d6 + ' > 100){\n' +
-        '      ' + d4 + '++;\n' +
-        '      if(' + d4 + ' > 3){ document.body.innerHTML = ""; }\n' +
-        '    }\n' +
+        '  // FAKE Part 1 (15 layers)\n' +
+        '  var _f1 = "' + fakePart1_15L + '";\n' +
+        '  window._0xFAKE1 = _f1;\n' +
+        '  \n' +
+        '  // FAKE Part 2 (15 layers)\n' +
+        '  var _f2 = "' + fakePart2_15L + '";\n' +
+        '  window._0xFAKE2 = _f2;\n' +
+        '  \n' +
+        '  // REAL Key (30 layers)\n' +
+        '  var _r = "' + obfuscatedKey30 + '";\n' +
+        '  \n' +
+        '  function deobfuscate30Layers(encoded){\n' +
+        '    var r = atob(encoded);\n' +
+        '    var l29 = ""; for (var i = 0; i < r.length; i++) l29 += String.fromCharCode(r.charCodeAt(i) ^ 0x1A);\n' +
+        '    var l28 = atob(l29);\n' +
+        '    var l27 = l28.split("").reverse().join("");\n' +
+        '    var l26 = ""; for (var i = 0; i < l27.length; i++) l26 += String.fromCharCode((l27.charCodeAt(i) - 31 + 256) % 256);\n' +
+        '    var l25 = ""; for (var i = 0; i < l26.length; i++) l25 += String.fromCharCode(l26.charCodeAt(i) ^ 0x6E);\n' +
+        '    var l24 = atob(l25);\n' +
+        '    var quarter = Math.floor(l24.length / 4);\n' +
+        '    var l23 = l24.slice(-quarter) + l24.slice(0, -quarter);\n' +
+        '    var l22 = l23.split("").reverse().join("");\n' +
+        '    var l21 = atob(l22);\n' +
+        '    var chunks = l21.match(/.{1,4}/g) || [];\n' +
+        '    var l20 = chunks.reverse().join("");\n' +
+        '    var l19 = ""; for (var i = 0; i < l20.length; i++) l19 += String.fromCharCode(l20.charCodeAt(i) ^ 0x4D);\n' +
+        '    var l18 = ""; for (var i = 0; i < l19.length; i++) l18 += String.fromCharCode((l19.charCodeAt(i) - 23 + 256) % 256);\n' +
+        '    var l17 = ""; for (var i = 0; i < l18.length; i++) l17 += String.fromCharCode(l18.charCodeAt(i) ^ 0x9F);\n' +
+        '    var l16 = ""; for (var i = 0; i < l17.length; i++) l16 += String.fromCharCode((l17.charCodeAt(i) - 17 + 256) % 256);\n' +
+        '    var l15 = ""; for (var i = 0; i < l16.length; i++) l15 += String.fromCharCode(l16.charCodeAt(i) ^ 0x2B);\n' +
+        '    var l14 = l15.replace(/Z/g, "C").replace(/Y/g, "B").replace(/X/g, "A");\n' +
+        '    var l13 = atob(l14);\n' +
+        '    var l12 = l13.split("").reverse().join("");\n' +
+        '    var l11 = atob(l12);\n' +
+        '    var l10 = l11.slice(10);\n' +
+        '    var l9 = atob(l10);\n' +
+        '    var l8 = l9.slice(0, l9.length / 2) + l9.slice(l9.length / 2);\n' +
+        '    var l7 = l8.split("").reverse().join("");\n' +
+        '    var l6 = l7.slice(l7.length / 2) + l7.slice(0, l7.length / 2);\n' +
+        '    var l5 = ""; for (var i = 0; i < l6.length; i++) l5 += String.fromCharCode(l6.charCodeAt(i) ^ 0x7E);\n' +
+        '    var l4 = ""; for (var i = 0; i < l5.length; i++) l4 += String.fromCharCode((l5.charCodeAt(i) - 13 + 256) % 256);\n' +
+        '    var l3 = ""; for (var i = 0; i < l4.length; i++) l3 += String.fromCharCode(l4.charCodeAt(i) ^ 0x3C);\n' +
+        '    var l2 = ""; for (var i = 0; i < l3.length; i++) l2 += String.fromCharCode((l3.charCodeAt(i) - 7 + 256) % 256);\n' +
+        '    var l1 = ""; for (var i = 0; i < l2.length; i++) l1 += String.fromCharCode(l2.charCodeAt(i) ^ 0x5A);\n' +
+        '    return l1;\n' +
+        '  }\n' +
+        '  \n' +
+        '  window._0xSECRET = deobfuscate30Layers(_r);\n' +
+        '  \n' +
+        '  window._0xF1_ACCESSED = function() {\n' +
+        '    if (window._0xREPORT_ALERT) window._0xREPORT_ALERT("FAKE_ATTEMPT", "FAKE_PART1");\n' +
         '  };\n' +
-        '  setInterval(' + d5 + ', 1000);\n' +
-        '})();\n' +
-        '<' + '/script>\n';
+        '  window._0xF2_ACCESSED = function() {\n' +
+        '    if (window._0xREPORT_ALERT) window._0xREPORT_ALERT("FAKE_ATTEMPT", "FAKE_PART2");\n' +
+        '  };\n' +
+        '  window._0xR_ACCESSED = function() {\n' +
+        '    if (window._0xREPORT_ALERT) window._0xREPORT_ALERT("REAL_ATTEMPT", "REAL_KEY");\n' +
+        '  };\n' +
+        '}catch(e){window._0xSECRET="";}\n' +
+        ')();\n';
 
     var parts = [
         '<!DOCTYPE html>',
@@ -2095,8 +2563,12 @@ window.downloadDecryptor = function() {
         '<meta charset="UTF-8">',
         '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">',
         '<title id="pageTitle">Loading...</title>',
+        '<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"><' + '/script>',
+        '<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"><' + '/script>',
+        '<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"><' + '/script>',
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
-        '<script>(function(){var _a="' + encodedKeyFileName + '";var _b=atob(atob(_a));var _s=document.createElement("script");_s.src=_b;_s.async=false;_s.onload=function(){window._kf=1;};_s.onerror=function(){window._kf=0;};document.head.appendChild(_s);})();<' + '/script>',
+        '<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"><' + '/script>',
+        '<script>(function(){var _a="' + btoa(btoa(keyFileName)) + '";var _b=atob(atob(_a));var _s=document.createElement("script");_s.src=_b;_s.async=false;_s.onload=function(){window._kf=1;};_s.onerror=function(){window._kf=0;};document.head.appendChild(_s);})();<' + '/script>',
         '<style>',
         '*{margin:0;padding:0;box-sizing:border-box;}',
         'html,body{width:100%;min-height:100vh;}',
@@ -2110,26 +2582,14 @@ window.downloadDecryptor = function() {
         '.err-icon{font-size:72px;}',
         '.err h2{color:#ff0064;font-size:24px;letter-spacing:3px;text-transform:uppercase;}',
         '.err p{color:#b0b0d0;font-size:13px;line-height:1.7;max-width:500px;}',
-        '.bundle-wrap{max-width:1100px;margin:0 auto;padding:30px 20px;}',
-        '.bundle-title{color:#00f0ff;text-align:center;font-size:22px;letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;font-family:"Orbitron",sans-serif;}',
-        '.file-card{background:rgba(0,240,255,0.04);border-left:4px solid #00f0ff;border-radius:10px;padding:18px;margin-bottom:16px;}',
-        '.file-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;}',
-        '.file-name{color:#ffd700;font-weight:bold;font-size:14px;}',
-        '.file-lang{background:#00f0ff;color:#000;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:bold;text-transform:uppercase;}',
-        '.file-content{background:#000;color:#00ff64;padding:14px;border-radius:8px;font-family:"Courier New",monospace;font-size:12px;line-height:1.5;max-height:400px;overflow:auto;white-space:pre-wrap;word-break:break-word;}',
-        '.dl-btn{background:linear-gradient(135deg,#00f0ff,#b400ff);border:none;padding:10px 20px;border-radius:8px;color:#000;font-weight:bold;cursor:pointer;margin-top:12px;font-family:inherit;letter-spacing:1px;text-transform:uppercase;font-size:11px;}',
-        '.dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,240,255,0.3);}',
         '#renderFrame{width:100%;height:100vh;border:0;display:block;position:fixed;inset:0;z-index:10;}',
         '<' + '/style>',
         '<' + '/head>',
         '<body>',
         '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
-        decoyFunctions,
-        antiDebug,
         '<script>',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
-        '',
-        'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
+        'var KEY_VERSION=' + state.keyVersion + ';',
         '',
         'function showError(msg){',
         '  document.title="Error";',
@@ -2139,204 +2599,104 @@ window.downloadDecryptor = function() {
         '  err+="<div class=\\"err-icon\\">❌<\\/div>";',
         '  err+="<h2>Decryption Failed<\\/h2>";',
         '  err+="<p>"+msg+"<\\/p>";',
-        '  err+="<p style=\\"font-size:11px;color:#6a6a8a;margin-top:20px;\\">Check: key file present, encrypted data, internet connection<\\/p>";',
         '  err+="<\\/div>";',
         '  document.body.innerHTML=err;',
         '}',
         '',
         'function showKeyMissingError(){',
-        '  document.title="Key File Missing";',
-        '  document.body.innerHTML="";',
-        '  document.body.style.cssText="background:#0b0b1a;color:#fff;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:monospace;";',
-        '  var h="<div style=\\"text-align:center;padding:40px 20px;max-width:600px;\\">";',
-        '  h+="<div style=\\"font-size:80px;margin-bottom:24px;\\">🔐<\\/div>";',
-        '  h+="<div style=\\"font-size:24px;letter-spacing:4px;text-transform:uppercase;color:#ff0064;margin-bottom:20px;font-weight:bold;\\">Key File Missing<\\/div>";',
-        '  h+="<div style=\\"color:#b0b0d0;font-size:14px;line-height:2;margin-bottom:24px;\\">";',
-        '  h+="Required files not found in this folder.<br><br>";',
-        '  h+="Make sure <b style=\\"color:#ffd700;\\">BOTH</b> files are in the <b style=\\"color:#ffd700;\\">SAME folder</b>:<br><br>";',
-        '  h+="<div style=\\"background:rgba(0,240,255,0.08);border-left:3px solid #00f0ff;padding:12px 16px;border-radius:8px;text-align:left;margin:16px 0;\\">";',
-        '  h+="<div style=\\"color:#00f0ff;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;\\">Required Files<\\/div>";',
-        '  h+="<div style=\\"color:#fff;font-size:13px;line-height:1.9;\\">1. <b style=\\"color:#ffd700;\\">decryptor.html<\\/b><br>2. <b style=\\"color:#00f0ff;\\">The key file (.js)<\\/b><\\/div>";',
-        '  h+="<\\/div>";',
-        '  h+="<div style=\\"color:#ffb3c9;font-size:12px;margin-top:20px;\\">⚠️ Do NOT rename the key file.<\\/div>";',
-        '  h+="<\\/div><\\/div>";',
-        '  document.body.innerHTML=h;',
+        '  document.body.innerHTML="<div style=\\"text-align:center;padding:60px 20px;\\"><div style=\\"font-size:80px;\\">🔐<\\/div><h2 style=\\"color:#ff0064;margin:20px 0;\\">Key File Missing<\\/h2><p style=\\"color:#b0b0d0;\\">Place decryptor.html and key file in SAME folder.<\\/p><\\/div>";',
         '}',
         '',
-        'function extractTitle(html){',
-        '  var m=html.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);',
-        '  return m?m[1].trim():"Original Web";',
-        '}',
-        '',
-        'function extractFavicon(html){',
-        '  var m=html.match(/<link[^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\'][^>]*href=["\']([^"\']+)["\']/i);',
-        '  if(m)return m[1];',
-        '  m=html.match(/<link[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\']/i);',
-        '  return m?m[1]:null;',
-        '}',
-        '',
-        'function applyOriginalBranding(html){',
-        '  var title=extractTitle(html);',
-        '  document.title=title;',
-        '  var fav=extractFavicon(html);',
-        '  if(fav){',
-        '    var link=document.querySelector("link[rel*=\'icon\']")||document.createElement("link");',
-        '    link.rel="icon";',
-        '    link.href=fav;',
-        '    document.head.appendChild(link);',
-        '  }',
-        '}',
-        '',
-        'function injectBlocker(html){',
-        '  html = html.replace(/<noscript[\\s\\S]*?<\\/noscript>/gi, "");',
-        '  html = html.replace(/<meta[^>]*http-equiv=["\']refresh["\'][^>]*>/gi, "");',
-        '  var css = "<style>" +',
-        '    "*{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;}" +',
-        '    "input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text;}" +',
-        '    "<\\/style>";',
-        '  var js = "<scr"+"ipt>" +',
-        '    "(function(){" +',
-        '      "function isEd(el){if(!el||!el.tagName)return false;var t=el.tagName.toLowerCase();return t===\'input\'||t===\'textarea\'||t===\'select\'||el.isContentEditable;}" +',
-        '      "document.addEventListener(\'contextmenu\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
-        '      "document.addEventListener(\'selectstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
-        '      "document.addEventListener(\'copy\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
-        '      "document.addEventListener(\'cut\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
-        '      "document.addEventListener(\'dragstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
-        '      "document.addEventListener(\'keydown\',function(e){" +',
-        '        "var t=e.target;var tag=t&&t.tagName?t.tagName.toLowerCase():\'\';" +',
-        '        "var ed=(tag===\'input\'||tag===\'textarea\'||tag===\'select\'||(t&&t.isContentEditable));" +',
-        '        "if(e.key===\'F12\'||e.keyCode===123){e.preventDefault();return false;}" +',
-        '        "if(e.ctrlKey&&e.shiftKey&&(e.key===\'I\'||e.key===\'J\'||e.key===\'C\'||e.keyCode===73||e.keyCode===74||e.keyCode===67)){e.preventDefault();return false;}" +',
-        '        "if(e.ctrlKey&&(e.key===\'U\'||e.keyCode===85)){e.preventDefault();return false;}" +',
-        '        "if(e.ctrlKey&&!ed&&(e.key===\'C\'||e.key===\'A\'||e.key===\'S\'||e.keyCode===67||e.keyCode===65||e.keyCode===83)){e.preventDefault();return false;}" +',
-        '        "if(!ed&&(e.key===\'Backspace\'||e.key===\'Tab\')){e.preventDefault();return false;}" +',
-        '      "},{capture:true});" +',
-        '    "})();" +',
-        '  "<\\/scr"+"ipt>";',
-        '  if(html.indexOf("</head>")!==-1){html=html.replace("</head>",css+"</head>");}else{html=css+html;}',
-        '  if(html.indexOf("</body>")!==-1){html=html.replace("</body>",js+"</body>");}else{html=html+js;}',
-        '  return html;',
-        '}',
-        '',
-        'function renderHTML(htmlContent){',
-        '  var loader=document.getElementById("loader");',
-        '  if(loader)loader.style.display="none";',
-        '  applyOriginalBranding(htmlContent);',
-        '  var finalHTML=injectBlocker(htmlContent);',
-        '  var iframe=document.createElement("iframe");',
-        '  iframe.id="renderFrame";',
-        '  iframe.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-top-navigation-by-user-activation");',
-        '  document.body.appendChild(iframe);',
-        '  try{',
-        '    iframe.srcdoc=finalHTML;',
-        '  }catch(e){',
-        '    try{',
-        '      var blob=new Blob([finalHTML],{type:"text/html;charset=utf-8"});',
-        '      var url=URL.createObjectURL(blob);',
-        '      iframe.removeAttribute("srcdoc");',
-        '      iframe.src=url;',
-        '    }catch(e2){',
-        '      showError("Render failed: "+e2.message);',
-        '    }',
-        '  }',
-        '  setTimeout(function(){try{iframe.focus();}catch(e){}},100);',
-        '}',
-        '',
-        'function renderText(textContent){',
-        '  document.title="Decrypted Text";',
-        '  document.body.innerHTML="";',
-        '  document.body.style.cssText="background:#000;color:#00ff64;font-family:\\"Courier New\\",monospace;padding:20px;margin:0;font-size:13px;line-height:1.6;";',
-        '  var pre=document.createElement("pre");',
-        '  pre.style.cssText="margin:0;white-space:pre-wrap;word-break:break-word;";',
-        '  pre.textContent=textContent;',
-        '  document.body.appendChild(pre);',
-        '}',
-        '',
-        'function renderBundle(bundle){',
-        '  document.title="Bundle ("+bundle.__fileCount+" Files)";',
-        '  document.body.innerHTML="";',
-        '  document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;padding:20px;margin:0;min-height:100vh;";',
-        '  var h="<div class=\\"bundle-wrap\\">";',
-        '  h+="<div class=\\"bundle-title\\">📦 Multi-File Bundle ("+bundle.__fileCount+" files)<\\/div>";',
-        '  Object.keys(bundle.files).forEach(function(name){',
-        '    var f=bundle.files[name];',
-        '    h+="<div class=\\"file-card\\">";',
-        '    h+="<div class=\\"file-head\\"><span class=\\"file-name\\">📄 "+name+"<\\/span><span class=\\"file-lang\\">"+(f.lang||"?").toUpperCase()+"<\\/span><\\/div>";',
-        '    h+="<pre class=\\"file-content\\">"+f.content.replace(/</g,"&lt;")+"<\\/pre>";',
-        '    h+="<button class=\\"dl-btn\\" data-name=\\""+name+"\\">⬇ Download "+name+"<\\/button>";',
-        '    h+="<\\/div>";',
-        '  });',
-        '  h+="<\\/div>";',
-        '  document.body.innerHTML=h;',
-        '  document.body.querySelectorAll(".dl-btn").forEach(function(b){',
-        '    b.addEventListener("click",function(){',
-        '      var name=this.getAttribute("data-name");',
-        '      var f=bundle.files[name];',
-        '      var blob=new Blob([f.content],{type:"text/plain;charset=utf-8"});',
-        '      var a=document.createElement("a");',
-        '      a.href=URL.createObjectURL(blob);',
-        '      a.download=name;',
-        '      a.click();',
-        '    });',
-        '  });',
-        '}',
-        '',
-        'ready(function(){',
-        '  if(typeof CryptoJS==="undefined"){',
-        '    showError("CryptoJS library failed to load. Check your internet connection.");',
+        'function checkKeyStatus(callback){',
+        '  if (typeof firebase === "undefined" || !firebase.auth) {',
+        '    callback(true);',
         '    return;',
         '  }',
-        '  setTimeout(function(){',
-        '    if(!window._0xSECRET || window._0xSECRET.length < 30){',
-        '      showKeyMissingError();',
-        '      return;',
-        '    }',
-        '    try{',
-        '      var dec;',
-        '      var parts=ENCRYPTED_DATA.split(":");',
-        '      if(parts[0]==="v2" && parts.length===4){',
-        '        /* ✅ v2 format with HMAC */',
-        '        var iv=CryptoJS.enc.Hex.parse(parts[1]);',
-        '        var ciphertext=parts[2];',
-        '        var storedHmac=parts[3];',
-        '        /* ✅ Verify HMAC */',
-        '        var computedHmac=CryptoJS.HmacSHA256(parts[1]+":"+ciphertext,window._0xSECRET).toString();',
-        '        if(computedHmac!==storedHmac){',
-        '          throw new Error("Integrity check failed - data tampered!");',
+        '  firebase.auth().onAuthStateChanged(function(user){',
+        '    if (!user) { callback(true); return; }',
+        '    firebase.database().ref("users/" + user.uid).once("value")',
+        '      .then(function(snap){',
+        '        var data = snap.val();',
+        '        if (!data || data.keyStatus === "DEACTIVATED") {',
+        '          showError("Your key is DEACTIVATED. Please generate a new one.");',
+        '          return;',
         '        }',
-        '        dec=CryptoJS.AES.decrypt(ciphertext,window._0xSECRET,{',
-        '          iv:iv,',
-        '          mode:CryptoJS.mode.CBC,',
-        '          padding:CryptoJS.pad.Pkcs7',
-        '        }).toString(CryptoJS.enc.Utf8);',
-        '      } else {',
-        '        /* ✅ v1 legacy format */',
-        '        dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,window._0xSECRET).toString(CryptoJS.enc.Utf8);',
-        '      }',
-        '      if(!dec||dec.length===0){throw new Error("Decryption failed - wrong key or corrupted data.");}',
-        '',
-        '      var isBundle=false,bundle=null;',
-        '      try{',
-        '        var p=JSON.parse(dec);',
-        '        if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}',
-        '      }catch(e){}',
-        '',
-        '      if(isBundle){',
-        '        renderBundle(bundle);',
-        '      } else {',
-        '        var trimmed=dec.trim();',
-        '        var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);',
-        '        if(isHTML){',
-        '          renderHTML(dec);',
-        '        } else {',
-        '          renderText(dec);',
+        '        if (data.keyVersion && data.keyVersion !== KEY_VERSION) {',
+        '          showError("This code was encrypted with OLD key. Please re-encrypt.");',
+        '          return;',
         '        }',
-        '      }',
-        '    }catch(e){',
-        '      showError(e.message);',
+        '        callback(true);',
+        '      })',
+        '      .catch(function(){ callback(true); });',
+        '  });',
+        '}',
+        '',
+        'function decryptData(){',
+        '  if (!window._0xSECRET || window._0xSECRET.length < 30) {',
+        '    showKeyMissingError();',
+        '    return;',
+        '  }',
+        '  try {',
+        '    var dec;',
+        '    var parts = ENCRYPTED_DATA.split(":");',
+        '    if (parts[0] === "v3" && parts.length === 5) {',
+        '      var iv = CryptoJS.enc.Hex.parse(parts[2]);',
+        '      var ciphertext = parts[3];',
+        '      var storedHmac = parts[4];',
+        '      var computedHmac = CryptoJS.HmacSHA256(parts[2] + ":" + ciphertext, window._0xSECRET).toString();',
+        '      if (computedHmac !== storedHmac) throw new Error("Integrity check failed");',
+        '      dec = CryptoJS.AES.decrypt(ciphertext, window._0xSECRET, {',
+        '        iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7',
+        '      }).toString(CryptoJS.enc.Utf8);',
+        '    } else if (parts[0] === "v2" && parts.length === 4) {',
+        '      var iv2 = CryptoJS.enc.Hex.parse(parts[1]);',
+        '      var ct2 = parts[2];',
+        '      var hmac2 = parts[3];',
+        '      var ch2 = CryptoJS.HmacSHA256(parts[1] + ":" + ct2, window._0xSECRET).toString();',
+        '      if (ch2 !== hmac2) throw new Error("Integrity failed");',
+        '      dec = CryptoJS.AES.decrypt(ct2, window._0xSECRET, {',
+        '        iv: iv2, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7',
+        '      }).toString(CryptoJS.enc.Utf8);',
+        '    } else {',
+        '      dec = CryptoJS.AES.decrypt(ENCRYPTED_DATA, window._0xSECRET).toString(CryptoJS.enc.Utf8);',
         '    }',
-        '  }, 500);',
-        '});',
+        '    if (!dec || dec.length === 0) throw new Error("Decryption failed");',
+        '    ',
+        '    var trimmed = dec.trim();',
+        '    var isHTML = /^\\s*<!DOCTYPE\\s+html/i.test(trimmed) || /<html[\\s>]/i.test(trimmed) || /<body[\\s>]/i.test(trimmed);',
+        '    ',
+        '    var loader = document.getElementById("loader");',
+        '    if (loader) loader.style.display = "none";',
+        '    ',
+        '    if (isHTML) {',
+        '      var iframe = document.createElement("iframe");',
+        '      iframe.id = "renderFrame";',
+        '      iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-top-navigation-by-user-activation");',
+        '      document.body.appendChild(iframe);',
+        '      try { iframe.srcdoc = dec; } catch(e) {',
+        '        var blob = new Blob([dec], {type:"text/html;charset=utf-8"});',
+        '        iframe.src = URL.createObjectURL(blob);',
+        '      }',
+        '    } else {',
+        '      document.body.innerHTML = "";',
+        '      document.body.style.cssText = "background:#000;color:#00ff64;padding:20px;margin:0;font-family:monospace;font-size:13px;";',
+        '      var pre = document.createElement("pre");',
+        '      pre.style.cssText = "margin:0;white-space:pre-wrap;word-break:break-word;";',
+        '      pre.textContent = dec;',
+        '      document.body.appendChild(pre);',
+        '    }',
+        '  } catch(e) { showError(e.message); }',
+        '}',
+        '',
+        'function startDecryption(){',
+        '  checkKeyStatus(function(ok){ if (ok) decryptData(); });',
+        '}',
+        '',
+        'if (document.readyState === "loading") {',
+        '  document.addEventListener("DOMContentLoaded", function(){ setTimeout(startDecryption, 800); });',
+        '} else {',
+        '  setTimeout(startDecryption, 800);',
+        '}',
         '<' + '/script>',
         '<' + '/body>',
         '<' + '/html>'
@@ -2363,7 +2723,10 @@ window.downloadDecryptor = function() {
         showKeyModal(keyFileName, keyFileContent);
     }, 800);
 };
-    
+
+/* ═══════════════════════════════════════════════════════════════════
+   KEY MODAL
+   ═══════════════════════════════════════════════════════════════════ */
 window.showKeyModal = function(fileName, keyCode) {
     var existing = document.getElementById('keyModalOverlay');
     if (existing) existing.remove();
@@ -2378,29 +2741,24 @@ window.showKeyModal = function(fileName, keyCode) {
     modal.innerHTML =
         '<h2 style="font-family:Orbitron,sans-serif;font-size:16px;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:8px;background:linear-gradient(135deg,#00f0ff,#ff2d95);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">KEY FILE BACKUP</h2>' +
         '<p style="color:#6a6a8a;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:20px;">Files auto-downloaded. Backup below.</p>' +
-
         '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
         '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">✅ AUTO-DOWNLOADED</div>' +
         '<div style="color:#b0d0ff;font-size:12px;line-height:1.7;">Two files have been downloaded:<br>1. <b style="color:#ffd700;">decryptor.html</b><br>2. <b style="color:#00f0ff;">' + fileName + '</b></div>' +
         '</div>' +
-
         '<div style="background:rgba(255,215,0,0.08);border-left:3px solid #ffd700;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
-        '<div style="color:#ffd700;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📁 BACKUP — KEY FILE NAME</div>' +
+        '<div style="color:#ffd700;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📁 KEY FILE NAME</div>' +
         '<div style="color:#fff;font-size:13px;font-family:JetBrains Mono,monospace;word-break:break-all;background:#000;padding:10px;border-radius:6px;border:1px solid #333;">' + fileName + '</div>' +
         '<button onclick="copyToClipboard(\'' + fileName + '\', this)" style="margin-top:8px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">COPY FILE NAME</button>' +
         '</div>' +
-
         '<div style="background:rgba(0,240,255,0.08);border-left:3px solid #00f0ff;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
-        '<div style="color:#00f0ff;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📝 BACKUP — KEY FILE CODE</div>' +
+        '<div style="color:#00f0ff;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📝 KEY FILE CODE</div>' +
         '<div id="keyCodeBox" style="color:#00ff64;font-size:10px;font-family:JetBrains Mono,monospace;word-break:break-all;background:#000;padding:10px;border-radius:6px;border:1px solid #333;max-height:180px;overflow-y:auto;white-space:pre-wrap;">' + keyCode.replace(/</g, '&lt;') + '</div>' +
         '<button onclick="copyKeyCode(this)" style="margin-top:8px;background:linear-gradient(135deg,#00f0ff,#b400ff);color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">COPY KEY CODE</button>' +
         '</div>' +
-
         '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:12px 14px;border-radius:8px;margin-bottom:20px;">' +
         '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">⚠️ IMPORTANT — SAME FOLDER</div>' +
         '<div style="color:#b0d0ff;font-size:12px;line-height:1.7;">Place <b>decryptor.html</b> and <b>' + fileName + '</b> in the SAME folder. Do NOT rename the key file.</div>' +
         '</div>' +
-
         '<button onclick="closeKeyModal()" style="width:100%;background:linear-gradient(135deg,#00ff64,#00aa44);color:#000;border:none;padding:15px 22px;border-radius:12px;font-weight:900;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">OK, I UNDERSTAND</button>';
 
     overlay.appendChild(modal);
@@ -2438,12 +2796,16 @@ window.clearAll = function() {
 window.doLogout = function() {
     try {
         KEY_MANAGER.clear();
+        if (state.alertsListener) state.alertsListener.off();
         if (window.AuthGuard && AuthGuard.logout) AuthGuard.logout();
         else if (window.firebase && firebase.auth) firebase.auth().signOut().then(function(){ window.location.href='index.html'; });
         else window.location.href = 'index.html';
     } catch(e) { window.location.href = 'index.html'; }
 };
 
+/* ═══════════════════════════════════════════════════════════════════
+   AUTH HANDLER
+   ═══════════════════════════════════════════════════════════════════ */
 function handleAuthReady(e) {
     if (!e.detail || !e.detail.user) return;
     if (state.authHandled) return;
@@ -2461,8 +2823,12 @@ function handleAuthReady(e) {
             toast('👋 Welcome! Click CREATE KEY to get started', 'info');
         } else {
             toast('🔐 Key found. Click eye icon to reveal.', 'info');
+            if (result.keyVersion) state.keyVersion = result.keyVersion;
         }
         updateKeyUI();
+        
+        // ✅ Initialize dashboard alerts
+        initDashboardAlerts();
     }).catch(function(err) {
         console.error('Key check failed:', err);
         updateKeyUI();
@@ -2488,7 +2854,7 @@ setTimeout(function() {
 }, 3000);
 
 updateKeyUI();
-console.log('%c🔐 Universal Encrypt Pro v18 STRONG loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c🔐 Universal Encrypt Pro v20 ULTRA loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
 
 })();
 </script>
