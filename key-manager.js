@@ -416,7 +416,7 @@ var KEY_MANAGER = {
        - 3+ uppercase
        - 3+ symbols
        ═══════════════════════════════════════════════════════ */
-    validatePasswordFormat: function(pwd) {
+        validatePasswordFormat: function(pwd) {
         if (!pwd) return false;
         if (pwd.length < this._PASSWORD_MIN) return false;
         if (pwd.length > this._PASSWORD_MAX) return false;
@@ -426,12 +426,9 @@ var KEY_MANAGER = {
         var upper = (pwd.match(/[A-Z]/g) || []).length;
         var symbols = (pwd.match(/[^a-zA-Z0-9]/g) || []).length;
 
-        if (digits < 3) return false;
-        if (lower < 4) return false;
-        if (upper < 3) return false;
-        if (symbols < 3) return false;
+        if (digits < 3 || lower < 4 || upper < 3 || symbols < 3) return false;
 
-        /* ✅ zxcvbn check REMOVED — sirf format check */
+        /* zxcvbn check REMOVED — dictionary words allowed */
         return true;
     },
 
