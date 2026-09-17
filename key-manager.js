@@ -660,37 +660,39 @@ var KEY_MANAGER = {
                                 history = history.slice(-self._MAX_HISTORY);
                             }
 
-                            var keyData = {
-                                passwordHash: passwordHash,
-                                salt: userSalt,
-                                encryptedKey: encryptedKey,
-                                keyVersion: self._KEY_VERSION,
-                                algorithm: 'aes-256-cbc-pbkdf2-sha256-600k-hmac',
-                                iterations: self._PBKDF2_ITER,
+                            /* ═══ SAFE DATA EXTRACTION — koi undefined Firebase mein nahi jayega ═══ */
+var existingStats = (existing && existing.stats) ? existing.stats : {};
 
-                                stats: {
-                                    totalGenerations: generationCount,
-                                    totalEncryptions: existing && existing.stats 
-                                        ? (existing.stats.totalEncryptions || 0) : 0,
-                                    totalBytesEncrypted: existing && existing.stats 
-                                        ? (existing.stats.totalBytesEncrypted || 0) : 0,
-                                    totalFilesEncrypted: existing && existing.stats 
-                                        ? (existing.stats.totalFilesEncrypted || 0) : 0,
-                                    firstGeneratedAt: existing && existing.stats 
-                                        ? existing.stats.firstGeneratedAt : now,
-                                    lastGeneratedAt: now,
-                                    history: history
-                                },
+var keyData = {
+    /* 🔐 Security (HASHED/ENCRYPTED) */
+    passwordHash: passwordHash,
+    salt: userSalt,
+    encryptedKey: encryptedKey,
+    keyVersion: self._KEY_VERSION,
+    algorithm: 'aes-256-cbc-pbkdf2-sha256-600k-hmac',
+    iterations: self._PBKDF2_ITER,
 
-                                rateLimit: {
-                                    attempts: 0,
-                                    lockedUntil: 0,
-                                    lastSuccess: Date.now()
-                                },
+    /* 📊 Stats (SAFE — koi undefined nahi) */
+    stats: {
+        totalGenerations: (typeof generationCount === 'number' && generationCount > 0) ? generationCount : 1,
+        totalEncryptions: (typeof existingStats.totalEncryptions === 'number') ? existingStats.totalEncryptions : 0,
+        totalBytesEncrypted: (typeof existingStats.totalBytesEncrypted === 'number') ? existingStats.totalBytesEncrypted : 0,
+        totalFilesEncrypted: (typeof existingStats.totalFilesEncrypted === 'number') ? existingStats.totalFilesEncrypted : 0,
+        firstGeneratedAt: existingStats.firstGeneratedAt || now,
+        lastGeneratedAt: now,
+        history: (Array.isArray(history)) ? history : []
+    },
 
-                                createdAt: now,
-                                updatedAt: now
-                            };
+    /* 🚫 Rate limit reset on new key */
+    rateLimit: {
+        attempts: 0,
+        lockedUntil: 0,
+        lastSuccess: Date.now()
+    },
+
+    createdAt: now,
+    updatedAt: now
+};
 
                             return firebase.database()
                                 .ref('users/' + user.uid + '/keyData')
