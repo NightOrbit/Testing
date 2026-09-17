@@ -2255,8 +2255,13 @@ window.downloadOutput = function() {
 };
 
 /* ═══════════════════════════════════════════════════════════════════
-   DOWNLOAD DECRYPTOR + KEY FILE
-   Self-contained — NO obfuscator-engine.js needed
+   DOWNLOAD DECRYPTOR + KEY FILE — v28 SIMPLE & WORKING
+   ✅ 2-layer base64 (jaise decryptor.html me hai)
+   ✅ Natural filenames (Windows won't flag)
+   ✅ Trap system for _0xKF access + console leak
+   ✅ Email + Dashboard alerts on trap fire
+   ✅ NO obfuscator-engine.js needed
+   ✅ Full key value passed to modal
    ═══════════════════════════════════════════════════════════════════ */
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
@@ -2273,7 +2278,45 @@ window.downloadDecryptor = function() {
     var fullKey = KEY_MANAGER.getKey();
     if (!fullKey || fullKey.length < 30) { toast('Key not found', 'error'); return; }
 
-    /* ✅ NATURAL filenames */
+    /* ═══════════════════════════════════════════════════════
+       NATURAL filenames — Windows SmartScreen won't flag
+       ═══════════════════════════════════════════════════════ */
+    var WORDS_KEY  = ['key', 'lock', 'safe', 'vault', 'guard', 'shield', 'secure'];
+    var WORDS_FILE = ['file', 'data', 'code', 'asset', 'item', 'node'];
+    var WORDS_USER = ['user', 'client', 'account', 'member', 'profile'];
+    
+    function pickWord(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function randDigits(len) {
+        var s = '';
+        for (var i = 0; i < len; i++) s += Math.floor(Math.random() * 10);
+        return s;
+    }
+    function randShort(len) {
+        var chars = 'abcdefghijklmnopqrstuvwxyz';
+        var s = '';
+        for (var i = 0; i < len; i++) s += chars.charAt(Math.floor(Math.random() * chars.length));
+        return s;
+    }
+    
+    function generateNaturalFileName() {
+        var pattern = Math.floor(Math.random() * 4);
+        var prefix = (Math.random() > 0.5 ? 'nx' : 'px');
+        
+        if (pattern === 0) {
+            return prefix + '_' + pickWord(WORDS_KEY) + '-' + pickWord(WORDS_FILE) + '-' + 
+                   randDigits(8) + '-' + randShort(10) + '.js';
+        } else if (pattern === 1) {
+            return prefix + '_' + pickWord(WORDS_FILE) + '-' + randDigits(4) + '-' + 
+                   pickWord(WORDS_KEY) + '-' + randShort(18) + '.js';
+        } else if (pattern === 2) {
+            return pickWord(WORDS_USER) + '_' + pickWord(WORDS_KEY) + '-' + randDigits(4) + '-' + 
+                   pickWord(WORDS_KEY) + '-' + randShort(8) + '.js';
+        } else {
+            return prefix + '_' + pickWord(WORDS_KEY) + '-' + pickWord(WORDS_FILE) + '-' + 
+                   randDigits(5) + '-' + pickWord(WORDS_KEY) + '-' + randShort(8) + '.js';
+        }
+    }
+    
     var nameA = generateNaturalFileName();
     var nameB = generateNaturalFileName();
     var realKeyFileName = generateNaturalFileName();
@@ -2282,6 +2325,8 @@ window.downloadDecryptor = function() {
     while (realKeyFileName === nameA || realKeyFileName === nameB) {
         realKeyFileName = generateNaturalFileName();
     }
+    
+    console.log('📁 Filenames:', { nameA: nameA, nameB: nameB, realKey: realKeyFileName });
 
     var encData = out;
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
@@ -2291,269 +2336,69 @@ window.downloadDecryptor = function() {
     var fullKeyString = PREFIX + suffix;
 
     /* ═══════════════════════════════════════════════════════
-       KEY VALUE OBFUSCATION — 24 LAYERS (INLINE)
+       ✅ 2-LAYER BASE64 OBFUSCATION
+       Simple, reliable, works with decryptor.html
        ═══════════════════════════════════════════════════════ */
-    function obfLayers(input, layers) {
-        var result = input;
-        var keys = [];
-        for (var i = 0; i < 24; i++) {
-            keys.push(rv(16));
+    
+    /* Encode helper — 2 layers of base64 */
+    function obf2Layer(str) {
+        try {
+            var layer1 = btoa(unescape(encodeURIComponent(str)));
+            var layer2 = btoa(unescape(encodeURIComponent(layer1)));
+            return layer2;
+        } catch(e) {
+            try { return btoa(btoa(str)); } catch(e2) { return str; }
         }
-        
-        var layerData = [];
-        
-        /* L1-L5: XOR + Base64 */
-        for (i = 0; i < 5; i++) {
-            result = xorB64(result, keys[i]);
-            layerData.push({ type: 'xor', key: keys[i] });
-        }
-        /* L6-L9: Reverse */
-        for (i = 5; i < 9; i++) {
-            result = result.split('').reverse().join('');
-            layerData.push({ type: 'reverse' });
-        }
-        /* L10-L13: Shift */
-        for (i = 9; i < 13; i++) {
-            var shift = Math.floor(Math.random() * 90) + 10;
-            var tmp = '';
-            for (var j = 0; j < result.length; j++) {
-                tmp += String.fromCharCode((result.charCodeAt(j) + shift) % 65536);
-            }
-            result = tmp;
-            layerData.push({ type: 'shift', amount: shift });
-        }
-        /* L14-L17: XOR */
-        for (i = 13; i < 17; i++) {
-            result = xorB64(result, keys[i]);
-            layerData.push({ type: 'xor', key: keys[i] });
-        }
-        /* L18-L20: Reverse */
-        for (i = 17; i < 20; i++) {
-            result = result.split('').reverse().join('');
-            layerData.push({ type: 'reverse' });
-        }
-        /* L21-L22: Shift */
-        for (i = 20; i < 22; i++) {
-            var shift2 = Math.floor(Math.random() * 90) + 10;
-            var tmp2 = '';
-            for (var k = 0; k < result.length; k++) {
-                tmp2 += String.fromCharCode((result.charCodeAt(k) + shift2) % 65536);
-            }
-            result = tmp2;
-            layerData.push({ type: 'shift', amount: shift2 });
-        }
-        /* L23: Hex */
-        var hexStr = '';
-        for (i = 0; i < result.length; i++) {
-            hexStr += ('0000' + result.charCodeAt(i).toString(16)).slice(-4);
-        }
-        result = hexStr;
-        layerData.push({ type: 'hex' });
-        
-        /* L24: Byte Array */
-        var byteArr = [];
-        for (i = 0; i < result.length; i++) {
-            byteArr.push(result.charCodeAt(i));
-        }
-        layerData.push({ type: 'bytearray' });
-        
-        return { layers: layerData, byteArray: byteArr };
     }
     
-    function xorB64(str, key) {
-        var r = '';
-        for (var i = 0; i < str.length; i++) {
-            r += String.fromCharCode(str.charCodeAt(i) ^ key.charCodeAt(i % key.length));
-        }
-        try { return btoa(unescape(encodeURIComponent(r))); } catch(e) { return btoa(r); }
-    }
+    /* Encode key value (2 layers) */
+    var keyValueEncoded = obf2Layer(fullKeyString);
     
-    function rv(len) {
-        var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        var s = '';
-        for (var i = 0; i < len; i++) s += c.charAt(Math.floor(Math.random() * c.length));
-        return s;
-    }
+    /* Encode key file name (2 layers) */
+    var keyFileNameEncoded = obf2Layer(realKeyFileName);
     
-    /* Obfuscate key value (24 layers) */
-    var keyValueObf = obfLayers(fullKeyString);
-    
+    console.log('📦 Key value encoded (2 layers):', keyValueEncoded.substring(0, 40) + '...');
+    console.log('📦 Key file name encoded (2 layers):', keyFileNameEncoded.substring(0, 40) + '...');
+
     /* ═══════════════════════════════════════════════════════
-       KEY FILE NAME OBFUSCATION — 26 LAYERS (INLINE)
+       BUILD KEY FILE — Simple & Working
        ═══════════════════════════════════════════════════════ */
-    function obfKeyName(fileName) {
-        var layers = [];
-        var current = fileName;
-        var keys = [];
-        
-        for (var i = 0; i < 26; i++) keys.push(rv(16));
-        
-        /* L1-L6: XOR */
-        for (i = 0; i < 6; i++) {
-            current = xorB64(current, keys[i]);
-            layers.push({ type: 'xor', key: keys[i] });
-        }
-        /* L7-L10: Reverse */
-        for (i = 6; i < 10; i++) {
-            current = current.split('').reverse().join('');
-            layers.push({ type: 'reverse' });
-        }
-        /* L11-L14: Shift */
-        for (i = 10; i < 14; i++) {
-            var shift = Math.floor(Math.random() * 90) + 10;
-            var tmp = '';
-            for (var j = 0; j < current.length; j++) {
-                tmp += String.fromCharCode((current.charCodeAt(j) + shift) % 65536);
-            }
-            current = tmp;
-            layers.push({ type: 'shift', amount: shift });
-        }
-        /* L15-L19: XOR */
-        for (i = 14; i < 19; i++) {
-            current = xorB64(current, keys[i]);
-            layers.push({ type: 'xor', key: keys[i] });
-        }
-        /* L20-L22: Reverse */
-        for (i = 19; i < 22; i++) {
-            current = current.split('').reverse().join('');
-            layers.push({ type: 'reverse' });
-        }
-        /* L23-L24: Shift */
-        for (i = 22; i < 24; i++) {
-            var shift2 = Math.floor(Math.random() * 90) + 10;
-            var tmp2 = '';
-            for (var k = 0; k < current.length; k++) {
-                tmp2 += String.fromCharCode((current.charCodeAt(k) + shift2) % 65536);
-            }
-            current = tmp2;
-            layers.push({ type: 'shift', amount: shift2 });
-        }
-        /* L25: Hex */
-        var hexStr = '';
-        for (i = 0; i < current.length; i++) {
-            hexStr += ('0000' + current.charCodeAt(i).toString(16)).slice(-4);
-        }
-        current = hexStr;
-        layers.push({ type: 'hex' });
-        
-        /* L26: Byte Array */
-        var byteArr = [];
-        for (i = 0; i < current.length; i++) byteArr.push(current.charCodeAt(i));
-        layers.push({ type: 'bytearray' });
-        
-        return { layers: layers, byteArray: byteArr };
-    }
-    
-    /* Generate decoder code for key file name */
-    function genKeyNameDecoder(obfData, outVar) {
-        var byteArray = obfData.byteArray;
-        var layers = obfData.layers;
-        
-        var vArr = rv(6), vStr = rv(6), vI = rv(5), vTmp = rv(6), vRes = rv(6), vB64 = rv(5);
-        
-        var code = '';
-        code += 'var ' + vArr + '=[' + byteArray.join(',') + '];';
-        code += 'var ' + vStr + '="";';
-        code += 'for(var ' + vI + '=0;' + vI + '<' + vArr + '.length;' + vI + '++){';
-        code += vStr + '+=String.fromCharCode(' + vArr + '[' + vI + ']);}';
-        
-        for (var i = layers.length - 1; i >= 0; i--) {
-            var layer = layers[i];
-            if (layer.type === 'hex') {
-                code += 'var ' + vTmp + '="";';
-                code += 'for(var ' + vI + '=0;' + vI + '<' + vStr + '.length;' + vI + '+=4){';
-                code += vTmp + '+=String.fromCharCode(parseInt(' + vStr + '.substr(' + vI + ',4),16));}';
-                code += vStr + '=' + vTmp + ';';
-            } else if (layer.type === 'shift') {
-                code += 'var ' + vTmp + '="";';
-                code += 'for(var ' + vI + '=0;' + vI + '<' + vStr + '.length;' + vI + '++){';
-                code += vTmp + '+=String.fromCharCode((' + vStr + '.charCodeAt(' + vI + ')-' + layer.amount + '+65536)%65536);}';
-                code += vStr + '=' + vTmp + ';';
-            } else if (layer.type === 'reverse') {
-                code += vStr + '=' + vStr + '.split("").reverse().join("");';
-            } else if (layer.type === 'xor') {
-                code += 'var ' + vTmp + '="";';
-                code += 'try{' + vTmp + '=atob(' + vStr + ');}catch(e){' + vTmp + '=' + vStr + ';}';
-                code += 'var ' + vRes + '="";';
-                code += 'var ' + vB64 + '="' + layer.key + '";';
-                code += 'for(var ' + vI + '=0;' + vI + '<' + vTmp + '.length;' + vI + '++){';
-                code += vRes + '+=String.fromCharCode(' + vTmp + '.charCodeAt(' + vI + ')^' + vB64 + '.charCodeAt(' + vI + '%' + vB64 + '.length));}';
-                code += vStr + '=' + vRes + ';';
-            }
-        }
-        code += outVar + '=' + vStr + ';';
-        return code;
-    }
-    
-    /* Generate decoder code for key value */
-    function genKeyValueDecoder(obfData, outVar) {
-        var byteArray = obfData.byteArray;
-        var layers = obfData.layers;
-        
-        var vArr = rv(6), vStr = rv(6), vI = rv(5), vTmp = rv(6), vRes = rv(6), vB64 = rv(5);
-        
-        var code = '';
-        code += 'var ' + vArr + '=[' + byteArray.join(',') + '];';
-        code += 'var ' + vStr + '="";';
-        code += 'for(var ' + vI + '=0;' + vI + '<' + vArr + '.length;' + vI + '++){';
-        code += vStr + '+=String.fromCharCode(' + vArr + '[' + vI + ']);}';
-        
-        for (var i = layers.length - 1; i >= 0; i--) {
-            var layer = layers[i];
-            if (layer.type === 'hex') {
-                code += 'var ' + vTmp + '="";';
-                code += 'for(var ' + vI + '=0;' + vI + '<' + vStr + '.length;' + vI + '+=4){';
-                code += vTmp + '+=String.fromCharCode(parseInt(' + vStr + '.substr(' + vI + ',4),16));}';
-                code += vStr + '=' + vTmp + ';';
-            } else if (layer.type === 'shift') {
-                code += 'var ' + vTmp + '="";';
-                code += 'for(var ' + vI + '=0;' + vI + '<' + vStr + '.length;' + vI + '++){';
-                code += vTmp + '+=String.fromCharCode((' + vStr + '.charCodeAt(' + vI + ')-' + layer.amount + '+65536)%65536);}';
-                code += vStr + '=' + vTmp + ';';
-            } else if (layer.type === 'reverse') {
-                code += vStr + '=' + vStr + '.split("").reverse().join("");';
-            } else if (layer.type === 'xor') {
-                code += 'var ' + vTmp + '="";';
-                code += 'try{' + vTmp + '=atob(' + vStr + ');}catch(e){' + vTmp + '=' + vStr + ';}';
-                code += 'var ' + vRes + '="";';
-                code += 'var ' + vB64 + '="' + layer.key + '";';
-                code += 'for(var ' + vI + '=0;' + vI + '<' + vTmp + '.length;' + vI + '++){';
-                code += vRes + '+=String.fromCharCode(' + vTmp + '.charCodeAt(' + vI + ')^' + vB64 + '.charCodeAt(' + vI + '%' + vB64 + '.length));}';
-                code += vStr + '=' + vRes + ';';
-            }
-        }
-        code += outVar + '=' + vStr + ';';
-        return code;
-    }
-    
-    var keyNameObf = obfKeyName(realKeyFileName);
-    
-    /* ═══ BUILD KEY FILE ═══ */
-    var keyNameDecoder = genKeyNameDecoder(keyNameObf, 'window._0xKF');
-    var keyValueDecoder = genKeyValueDecoder(keyValueObf, 'window._0xSECRET');
-    
     var keyFileContent =
-        '/* NightOrbit Protected Key File v27 */\n' +
+        '/* NightOrbit Protected Key File v28 */\n' +
         '(function(){\n' +
         '"use strict";\n' +
         'try{\n' +
-        '/* Anti-debug */\n' +
-        'var _0xdbg=0;setInterval(function(){try{debugger;}catch(e){}},2500);\n' +
-        '\n' +
-        '/* Section A: Key file name decoder (26 layers) */\n' +
-        keyNameDecoder + '\n' +
-        '\n' +
-        '/* Section B: Key value decoder (24 layers) */\n' +
-        keyValueDecoder + '\n' +
-        '\n' +
-        '}catch(_0xerr){\n' +
+        '  /* Decode key value (2-layer base64) */\n' +
+        '  var _enc="' + keyValueEncoded + '";\n' +
+        '  var _s=_enc;\n' +
+        '  for(var i=0;i<2;i++){\n' +
+        '    _s=decodeURIComponent(escape(atob(_s)));\n' +
+        '  }\n' +
+        '  Object.defineProperty(window,"_0xSECRET",{\n' +
+        '    get:function(){return _s;},\n' +
+        '    configurable:false\n' +
+        '  });\n' +
+        '  \n' +
+        '  /* Decode key file name (2-layer base64) */\n' +
+        '  var _kfEnc="' + keyFileNameEncoded + '";\n' +
+        '  var _k=_kfEnc;\n' +
+        '  for(var j=0;j<2;j++){\n' +
+        '    _k=decodeURIComponent(escape(atob(_k)));\n' +
+        '  }\n' +
+        '  Object.defineProperty(window,"_0xKF",{\n' +
+        '    get:function(){return _k;},\n' +
+        '    configurable:false\n' +
+        '  });\n' +
+        '}catch(e){\n' +
         '  window._0xSECRET="";\n' +
         '  window._0xKF="";\n' +
         '  window._0xLOAD_FAIL=1;\n' +
         '}\n' +
         '})();';
 
-    /* ═══ BUILD DECRYPTOR JS ═══ */
+    /* ═══════════════════════════════════════════════════════
+       BUILD DECRYPTOR JS — Simple & Working
+       ═══════════════════════════════════════════════════════ */
     var decryptorJS =
         '(function(){\n' +
         '"use strict";\n' +
@@ -2639,15 +2484,15 @@ window.downloadDecryptor = function() {
         '} else {setTimeout(startDecryption,300);}\n' +
         '})();';
 
-    /* ═══ TRAP-PROTECTED LOADER ═══ */
-    var nameDecoderCode = genKeyNameDecoder(keyNameObf, 'window._kfName');
-    
+    /* ═══════════════════════════════════════════════════════
+       TRAP-PROTECTED LOADER — Simple version
+       ═══════════════════════════════════════════════════════ */
     var trapLoader =
         '<script>\n' +
         '(function(){\n' +
         '"use strict";\n' +
         'window._0x_loadStart=Date.now();\n' +
-        'var _0xTRAP=0, _0xALLOW=0;\n' +
+        'var _0xTRAP=0,_0xALLOW=0;\n' +
         'function _0xfire(reason){\n' +
         '  if(_0xTRAP||_0xALLOW)return;\n' +
         '  _0xTRAP=1;\n' +
@@ -2665,7 +2510,16 @@ window.downloadDecryptor = function() {
         '        timeString:new Date().toLocaleString(),\n' +
         '        userEmail:(firebase.auth().currentUser.email||"unknown")\n' +
         '      });\n' +
-        '      try{if(typeof emailjs!=="undefined"){emailjs.send("service_9dzzl6h","template_m3t3tc7",{user_email:(firebase.auth().currentUser.email||""),subject:"🔐 SECURITY ALERT",name:"NightOrbit",message:"Key deactivated. Reason: "+reason});}}catch(e){}\n' +
+        '      try{\n' +
+        '        if(typeof emailjs!=="undefined"){\n' +
+        '          emailjs.send("service_9dzzl6h","template_m3t3tc7",{\n' +
+        '            user_email:(firebase.auth().currentUser.email||""),\n' +
+        '            subject:"🔐 SECURITY ALERT — Key Deactivated",\n' +
+        '            name:"NightOrbit Security Team",\n' +
+        '            message:"Your key was deactivated. Reason: "+reason+"\\nTime: "+new Date().toLocaleString()\n' +
+        '          });\n' +
+        '        }\n' +
+        '      }catch(e){}\n' +
         '    }\n' +
         '  }catch(e){}\n' +
         '  document.body.innerHTML="<div style=\\"position:fixed;inset:0;background:#000;color:#ff0064;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:monospace;text-align:center;padding:40px;z-index:999999;\\"><div style=\\"font-size:80px;\\">🚨</div><div style=\\"letter-spacing:3px;margin:20px 0;font-size:24px;\\">SECURITY VIOLATION</div><div style=\\"color:#ffd700;font-size:14px;\\">Key deactivated: "+reason+"</div></div>";\n' +
@@ -2677,7 +2531,7 @@ window.downloadDecryptor = function() {
         '    var _orig=window._0xKF;var _flag=0;\n' +
         '    Object.defineProperty(window,"_0xKF",{\n' +
         '      get:function(){\n' +
-        '        if(!_flag){_flag=1;if(Date.now()-(window._0xloadStart||0)>3000)_0xfire("KF_ACCESS");}\n' +
+        '        if(!_flag){_flag=1;if(Date.now()-(window._0x_loadStart||0)>3000)_0xfire("KF_ACCESS");}\n' +
         '        return _orig;\n' +
         '      },\n' +
         '      configurable:false\n' +
@@ -2698,26 +2552,31 @@ window.downloadDecryptor = function() {
         '  console.error=function(){_ck(arguments);return _oe.apply(console,arguments);};\n' +
         '}catch(e){}\n' +
         '\n' +
-        '/* ✅ REAL LOADER — inline decoder (NO obfuscator-engine.js needed) */\n' +
+        '/* ✅ REAL LOADER — 2-layer base64 key file name */\n' +
         'setTimeout(function(){\n' +
         '  try{\n' +
         '    _0xALLOW=1;\n' +
-        nameDecoderCode + '\n' +
+        '    var _a="' + keyFileNameEncoded + '";\n' +
+        '    var _b=_a;\n' +
+        '    for(var i=0;i<2;i++){\n' +
+        '      _b=decodeURIComponent(escape(atob(_b)));\n' +
+        '    }\n' +
         '    _0xALLOW=0;\n' +
-        '    if(!window._kfName||window._kfName.length<5){window._0xLOAD_FAIL=1;return;}\n' +
-        '    var s=document.createElement("script");\n' +
-        '    s.src=window._kfName;\n' +
-        '    s.async=false;\n' +
-        '    s.onload=function(){window._kf=1;};\n' +
-        '    s.onerror=function(){window._kf=0;window._0xLOAD_FAIL=1;};\n' +
-        '    document.head.appendChild(s);\n' +
+        '    var _s=document.createElement("script");\n' +
+        '    _s.src=_b;\n' +
+        '    _s.async=false;\n' +
+        '    _s.onload=function(){window._kf=1;};\n' +
+        '    _s.onerror=function(){window._kf=0;window._0xLOAD_FAIL=1;};\n' +
+        '    document.head.appendChild(_s);\n' +
         '  }catch(e){window._0xLOAD_FAIL=1;}\n' +
         '},80);\n' +
         '\n' +
         '})();\n' +
         '<' + '/script>';
 
-    /* ═══ DECRYPTOR HTML ═══ */
+    /* ═══════════════════════════════════════════════════════
+       DECRYPTOR HTML — Full assembly
+       ═══════════════════════════════════════════════════════ */
     var decryptorLoaderCode = 
         'try{' +
         'var _code=' + JSON.stringify(decryptorJS) + ';' +
@@ -2780,56 +2639,127 @@ window.downloadDecryptor = function() {
     showStatus('success', '🎁 Downloaded! (2 files)');
     toast('Downloaded! 2 files only', 'success');
 
-    setTimeout(function() { showKeyModal(realKeyFileName, keyFileContent); }, 800);
+    setTimeout(function() { 
+        showKeyModal(realKeyFileName, keyFileContent, fullKeyString); 
+    }, 800);
 };
 
+
 /* ═══════════════════════════════════════════════════════════════════
-   KEY MODAL
+   KEY MODAL — 2 BOXES (Key File Name + Key Value)
    ═══════════════════════════════════════════════════════════════════ */
-window.showKeyModal = function(fileName, keyCode) {
+window.showKeyModal = function(fileName, keyCode, keyValue) {
     var existing = document.getElementById('keyModalOverlay');
     if (existing) existing.remove();
     
+    /* Store for buttons */
     window._0x_currentKeyFileName = fileName;
     window._0x_currentKeyFileContent = keyCode;
+    window._0x_currentKeyValue = keyValue || '';
 
     var overlay = document.createElement('div');
     overlay.id = 'keyModalOverlay';
-    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);backdrop-filter:blur(12px);z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
+    overlay.style.cssText = 
+        'position:fixed;inset:0;background:rgba(0,0,0,0.9);' +
+        'backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);' +
+        'z-index:999999;display:flex;align-items:center;justify-content:center;' +
+        'padding:20px;overflow-y:auto;';
 
     var modal = document.createElement('div');
-    modal.style.cssText = 'background:rgba(11,11,26,0.98);border:2px solid #00f0ff;border-radius:22px;padding:28px 24px;max-width:620px;width:100%;box-shadow:0 0 100px rgba(0,240,255,0.4);';
+    modal.style.cssText = 
+        'background:rgba(11,11,26,0.98);border:2px solid #00f0ff;' +
+        'border-radius:22px;padding:28px 24px;max-width:620px;width:100%;' +
+        'box-shadow:0 0 100px rgba(0,240,255,0.4);';
 
-    modal.innerHTML =
+    var modalHTML =
         '<h2 style="font-family:Orbitron,sans-serif;font-size:18px;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:8px;background:linear-gradient(135deg,#00f0ff,#ff2d95);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">📦 KEY FILE BACKUP</h2>' +
         '<p style="color:#6a6a8a;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:20px;">2 files downloaded. Save this name!</p>' +
         
+        /* Auto-downloaded info */
         '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:14px 16px;border-radius:8px;margin-bottom:16px;">' +
         '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">✅ AUTO-DOWNLOADED (2 FILES)</div>' +
-        '<div style="color:#b0d0ff;font-size:13px;line-height:1.9;">1. <b style="color:#ffd700;">decryptor.html</b><br>2. <b style="color:#00f0ff;">' + fileName + '</b></div>' +
+        '<div style="color:#b0d0ff;font-size:13px;line-height:1.9;">' +
+        '1. <b style="color:#ffd700;">decryptor.html</b><br>' +
+        '2. <b style="color:#00f0ff;">' + fileName + '</b>' +
+        '</div>' +
         '</div>' +
         
+        /* ═══ BOX 1: KEY FILE NAME ═══ */
         '<div style="background:rgba(255,215,0,0.08);border-left:3px solid #ffd700;padding:16px 18px;border-radius:10px;margin-bottom:16px;">' +
         '<div style="color:#ffd700;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">📁 KEY FILE NAME (CLICK TO SELECT ALL)</div>' +
-        '<div id="keyFileNameBox" onclick="selectAllKeyName(this)" ' +
-        'style="color:#fff;font-size:15px;font-family:JetBrains Mono,monospace;font-weight:700;word-break:break-all;background:#000;padding:16px;border-radius:10px;border:2px solid #ffd700;cursor:pointer;user-select:all;text-align:center;letter-spacing:1px;line-height:1.6;">' + 
-        fileName + '</div>' +
-        '<div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">' +
-        '<button onclick="copyFileNameBtn(this)" style="flex:1;min-width:140px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;border:none;padding:14px 20px;border-radius:10px;font-weight:900;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">📋 COPY FILE NAME</button>' +
-        '<button onclick="downloadKeyFileBtn(this)" style="flex:1;min-width:140px;background:linear-gradient(135deg,#00f0ff,#b400ff);color:#000;border:none;padding:14px 20px;border-radius:10px;font-weight:900;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">⬇️ DOWNLOAD AGAIN</button>' +
-        '</div></div>' +
         
-        '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:14px 16px;border-radius:8px;margin-bottom:20px;">' +
-        '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">⚠️ SAME FOLDER REQUIRED</div>' +
-        '<div style="color:#b0d0ff;font-size:12px;line-height:1.8;">Place <b>decryptor.html</b> and <b>' + fileName + '</b> in the SAME folder. Do NOT rename.</div>' +
+        '<div id="keyFileNameBox" onclick="selectAllKeyName(this)" ' +
+        'style="color:#fff;font-size:15px;font-family:JetBrains Mono,monospace;font-weight:700;' +
+        'word-break:break-all;background:#000;padding:16px;border-radius:10px;' +
+        'border:2px solid #ffd700;cursor:pointer;user-select:all;text-align:center;' +
+        'letter-spacing:1px;line-height:1.6;box-shadow:inset 0 0 20px rgba(255,215,0,0.1);">' + 
+        fileName + 
         '</div>' +
         
-        '<button onclick="closeKeyModal()" style="width:100%;background:linear-gradient(135deg,#00ff64,#00aa44);color:#000;border:none;padding:16px 24px;border-radius:12px;font-weight:900;font-size:14px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">✅ OK, I UNDERSTAND</button>';
+        '<div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">' +
+        '<button onclick="copyFileNameBtn(this)" ' +
+        'style="flex:1;min-width:140px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;' +
+        'border:none;padding:14px 20px;border-radius:10px;font-weight:900;font-size:12px;' +
+        'letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;' +
+        'font-family:Orbitron,sans-serif;">📋 COPY FILE NAME</button>' +
+        '<button onclick="downloadKeyFileBtn(this)" ' +
+        'style="flex:1;min-width:140px;background:linear-gradient(135deg,#00f0ff,#b400ff);color:#000;' +
+        'border:none;padding:14px 20px;border-radius:10px;font-weight:900;font-size:12px;' +
+        'letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;' +
+        'font-family:Orbitron,sans-serif;">⬇️ DOWNLOAD AGAIN</button>' +
+        '</div>' +
+        '</div>' +
+        
+        /* ═══ BOX 2: KEY VALUE (NEW) ═══ */
+        (keyValue && keyValue.length > 0 ? 
+        '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:16px 18px;border-radius:10px;margin-bottom:16px;">' +
+        '<div style="color:#00ff64;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">🔑 YOUR FULL ENCRYPTION KEY (CLICK TO SELECT ALL)</div>' +
+        
+        '<div id="keyValueBox" onclick="selectAllKeyValue(this)" ' +
+        'style="color:#00ff64;font-size:12px;font-family:JetBrains Mono,monospace;font-weight:700;' +
+        'word-break:break-all;background:#000;padding:16px;border-radius:10px;' +
+        'border:2px solid #00ff64;cursor:pointer;user-select:all;text-align:left;' +
+        'letter-spacing:0.5px;line-height:1.6;max-height:180px;overflow-y:auto;' +
+        'box-shadow:inset 0 0 20px rgba(0,255,100,0.1);">' + 
+        keyValue + 
+        '</div>' +
+        
+        '<div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">' +
+        '<button onclick="copyKeyValueBtn(this)" ' +
+        'style="flex:1;min-width:140px;background:linear-gradient(135deg,#00ff64,#00aa44);color:#000;' +
+        'border:none;padding:14px 20px;border-radius:10px;font-weight:900;font-size:12px;' +
+        'letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;' +
+        'font-family:Orbitron,sans-serif;">📋 COPY KEY</button>' +
+        '<button onclick="hideKeyValueBtn(this)" ' +
+        'style="flex:1;min-width:140px;background:rgba(255,255,255,0.1);color:#fff;' +
+        'border:1px solid #333;padding:14px 20px;border-radius:10px;font-weight:900;font-size:12px;' +
+        'letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;' +
+        'font-family:Orbitron,sans-serif;">🙈 HIDE KEY</button>' +
+        '</div>' +
+        '</div>' 
+        : '') +
+        
+        /* Same folder warning */
+        '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:14px 16px;border-radius:8px;margin-bottom:20px;">' +
+        '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">⚠️ IMPORTANT — SAME FOLDER</div>' +
+        '<div style="color:#b0d0ff;font-size:12px;line-height:1.8;">' +
+        'Place <b>decryptor.html</b> and <b>' + fileName + '</b> in the <b style="color:#ffd700;">SAME folder</b>.<br>' +
+        'Do <b style="color:#ff0064;">NOT rename</b> the key file.' +
+        '</div>' +
+        '</div>' +
+        
+        '<button onclick="closeKeyModal()" ' +
+        'style="width:100%;background:linear-gradient(135deg,#00ff64,#00aa44);color:#000;' +
+        'border:none;padding:16px 24px;border-radius:12px;font-weight:900;font-size:14px;' +
+        'letter-spacing:2px;text-transform:uppercase;cursor:pointer;' +
+        'font-family:Orbitron,sans-serif;">✅ OK, I UNDERSTAND</button>';
 
+    modal.innerHTML = modalHTML;
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 };
 
+/* ✅ Select all key file name on click */
 window.selectAllKeyName = function(el) {
     try {
         var range = document.createRange();
@@ -2840,6 +2770,18 @@ window.selectAllKeyName = function(el) {
     } catch(e) {}
 };
 
+/* ✅ Select all key value on click */
+window.selectAllKeyValue = function(el) {
+    try {
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } catch(e) {}
+};
+
+/* ✅ Copy file name button */
 window.copyFileNameBtn = function(btn) {
     var fileName = window._0x_currentKeyFileName;
     if (!fileName) return;
@@ -2847,25 +2789,36 @@ window.copyFileNameBtn = function(btn) {
         btn.innerHTML = '✅ COPIED!';
         setTimeout(function() { btn.innerHTML = '📋 COPY FILE NAME'; }, 1500);
     }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(fileName).then(done).catch(function() {
-            var ta = document.createElement('textarea');
-            ta.value = fileName;
-            ta.style.position='fixed';ta.style.left='-9999px';
-            document.body.appendChild(ta);ta.select();
-            try{document.execCommand('copy');}catch(e){}
-            document.body.removeChild(ta);done();
-        });
+    copyWithFallback(fileName, done);
+};
+
+/* ✅ Copy key value button */
+window.copyKeyValueBtn = function(btn) {
+    var keyVal = window._0x_currentKeyValue;
+    if (!keyVal) return;
+    function done() {
+        btn.innerHTML = '✅ COPIED!';
+        setTimeout(function() { btn.innerHTML = '📋 COPY KEY'; }, 1500);
+    }
+    copyWithFallback(keyVal, done);
+};
+
+/* ✅ Hide/show key value */
+window.hideKeyValueBtn = function(btn) {
+    var box = document.getElementById('keyValueBox');
+    if (!box) return;
+    if (box.dataset.hidden === '1') {
+        box.textContent = window._0x_currentKeyValue;
+        box.dataset.hidden = '0';
+        btn.innerHTML = '🙈 HIDE KEY';
     } else {
-        var ta = document.createElement('textarea');
-        ta.value = fileName;
-        ta.style.position='fixed';ta.style.left='-9999px';
-        document.body.appendChild(ta);ta.select();
-        try{document.execCommand('copy');}catch(e){}
-        document.body.removeChild(ta);done();
+        box.textContent = '••••••••••••••••••••••••••••••••••••••••';
+        box.dataset.hidden = '1';
+        btn.innerHTML = '👁️ SHOW KEY';
     }
 };
 
+/* ✅ Download key file again */
 window.downloadKeyFileBtn = function(btn) {
     var fileName = window._0x_currentKeyFileName;
     var keyContent = window._0x_currentKeyFileContent;
@@ -2886,11 +2839,31 @@ window.downloadKeyFileBtn = function(btn) {
     }, 500);
 };
 
+/* ✅ Universal copy with fallback */
+function copyWithFallback(text, done) {
+    function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch(e) {}
+        document.body.removeChild(ta);
+        done();
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else {
+        fallback();
+    }
+}
+
 window.closeKeyModal = function() {
     var overlay = document.getElementById('keyModalOverlay');
     if (overlay) overlay.remove();
 };
-
+    
 window.clearAll = function() {
     inputCodeEl.value = '';
     document.getElementById('outputEnc').value = '';
