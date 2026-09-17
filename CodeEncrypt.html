@@ -2066,8 +2066,18 @@ window.downloadDecryptor = function() {
         '/* ✅ NEW: Auto-load Firebase + EmailJS if this is a standalone open */\n' +
         'setTimeout(function(){\n' +
         '  try{\n' +
-        '    if(window._0x_isDecryptor)return; /* decrypted via decryptor, safe */\n' +
-        '    /* Key file opened directly (double-clicked) */\n' +
+        '    if(window._0x_isDecryptor)return;\n' +
+        '    /* ✅ FORAN mark in localStorage — next decryptor open pe alert */\n' +
+        '    try{localStorage.setItem("_0x_ATTACK_DETECTED",JSON.stringify({\n' +
+        '      reason:"KEY_FILE_OPENED_DIRECTLY",\n' +
+        '      ua:navigator.userAgent,\n' +
+        '      platform:navigator.platform,\n' +
+        '      url:location.href,\n' +
+        '      referrer:document.referrer||"direct",\n' +
+        '      time:new Date().toISOString(),\n' +
+        '      timestamp:Date.now()\n' +
+        '    }));}catch(e){}\n' +
+        '    /* ✅ Try Firebase if available */\n' +
         '    if(typeof firebase==="undefined"){\n' +
         '      var _s1=document.createElement("script");_s1.src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js";_s1.async=false;\n' +
         '      _s1.onload=function(){\n' +
@@ -2091,7 +2101,7 @@ window.downloadDecryptor = function() {
         '      _0xkeyFileTrap();\n' +
         '    }\n' +
         '  }catch(e){}\n' +
-        '},2500);\n' +
+        '},500);\n' +
         '\n' +
         '/* ✅ NEW: Trap function — sends alerts on key file direct open */\n' +
         'function _0xkeyFileTrap(){\n' +
@@ -2428,8 +2438,44 @@ window.downloadDecryptor = function() {
         '  });',
         '}',
         '',
-        'ready(function(){',
-        '  if(typeof CryptoJS==="undefined"){',
+        'ready(function(){\n' +
+        '  /* ✅ Check if key file was opened directly (attack marker) */\n' +
+        '  try{\n' +
+        '    var _0x_attack=localStorage.getItem("_0x_ATTACK_DETECTED");\n' +
+        '    if(_0x_attack){\n' +
+        '      var _0x_data=JSON.parse(_0x_attack);\n' +
+        '      /* Clear marker */\n' +
+        '      localStorage.removeItem("_0x_ATTACK_DETECTED");\n' +
+        '      /* Send alert */\n' +
+        '      if(typeof firebase!=="undefined"&&firebase.auth){\n' +
+        '        firebase.auth().onAuthStateChanged(function(u){\n' +
+        '          if(!u)return;\n' +
+        '          firebase.database().ref("users/"+u.uid+"/keyStatus").set("DEACTIVATED");\n' +
+        '          firebase.database().ref("users/"+u.uid+"/keyDeactivatedReason").set("KEY_FILE_OPENED_DIRECTLY");\n' +
+        '          firebase.database().ref("users/"+u.uid+"/keyDeactivatedAt").set(Date.now());\n' +
+        '          firebase.database().ref("admin_alerts").push(_0x_data);\n' +
+        '          firebase.database().ref("security_alerts/"+u.uid).push({\n' +
+        '            eventType:"KEY_FILE_OPENED_DIRECTLY",\n' +
+        '            timestamp:Date.now(),\n' +
+        '            timeString:new Date().toLocaleString(),\n' +
+        '            message:"Your key file was opened directly. Key has been deactivated."\n' +
+        '          });\n' +
+        '          try{\n' +
+        '            if(typeof emailjs!=="undefined"){\n' +
+        '              emailjs.send("service_9dzzl6h","template_m3t3tc7",{\n' +
+        '                user_email:(u.email||""),\n' +
+        '                subject:"🔐 SECURITY ALERT — Key Deactivated",\n' +
+        '                name:"NightOrbit Security Team",\n' +
+        '                message:"Dear User,\\n\\nYour key was deactivated because the key file was opened directly (not via decryptor.html).\\n\\nPlease regenerate a new key.\\n\\nNightOrbit Security Team"\n' +
+        '              });\n' +
+        '            }\n' +
+        '          }catch(e){}\n' +
+        '        });\n' +
+        '      }\n' +
+        '    }\n' +
+        '  }catch(e){}\n' +
+        '  \n' +
+        '  if(typeof CryptoJS==="undefined"){\n' +
         '    showError("CryptoJS library failed to load. Check your internet connection.");',
         '    return;',
         '  }',
