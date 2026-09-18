@@ -4,21 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b0b1a">
-<title>Universal Code Encryptor — NightOrbit</title>
+<title>Universal Code Encryptor — NightOrbit v19</title>
 
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-functions-compat.js"></script>
 <script src="auth-guard.js"></script>
 
 <!-- CryptoJS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
-<!-- Key Manager -->
+<!-- Key Manager v19 -->
 <script src="key-manager.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/zxcvbn@4.4.2/dist/zxcvbn.js"></script>    
 
@@ -643,20 +642,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     width: 100%; transition: width 1s linear;
     box-shadow: 0 0 10px rgba(0,240,255,0.6);
 }
-@media (max-width: 600px) {
-    body { font-size: 13px; }
-    .container { padding: 12px; }
-    .section { padding: 14px; }
-    textarea { min-height: 180px; font-size: 11px; }
-    .btn-row button { flex: 1 1 100%; }
-    h1 { font-size: 20px; letter-spacing: 2px; }
-    .key-display { font-size: 11px; padding: 12px; }
-    .key-eye-btn { width: 40px; height: 40px; font-size: 16px; }
-    .file-item .fname { max-width: 130px; }
-    .topbar-btn { padding: 7px 11px; font-size: 10px; }
-}
-
- .heavy-block {
+.heavy-block {
     border-radius: 16px;
     padding: 22px 26px;
     margin-bottom: 20px;
@@ -668,7 +654,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
 .heavy-block.critical {
     background: linear-gradient(135deg, rgba(255,0,100,0.12), rgba(180,0,255,0.08));
     border: 2px solid #ff0064;
@@ -689,7 +674,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     box-shadow: 0 0 40px rgba(255,215,0,0.20);
     margin-bottom: 14px;
 }
-
 .heavy-block-header {
     display: flex;
     align-items: center;
@@ -710,7 +694,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 .heavy-block.standards .heavy-block-title { color: #00f0ff; text-shadow: 0 0 20px rgba(0,240,255,0.6); }
 .heavy-block.checklist .heavy-block-title { color: #00f0ff; }
 .heavy-block.output-alert .heavy-block-title { color: #ffd700; text-shadow: 0 0 20px rgba(255,215,0,0.6); }
-
 .heavy-block-badge {
     background: #ff0064;
     color: #fff;
@@ -724,14 +707,12 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 }
 .heavy-block-badge.gold { background: #ffd700; color: #000; }
 .heavy-block-badge.red { background: #ff0064; color: #fff; }
-
 .heavy-block-lead {
     color: #b0d0ff;
     font-size: 13px;
     line-height: 1.8;
     margin-bottom: 14px;
 }
-
 .heavy-block-requirements {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -759,7 +740,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     color: #b0b0d0;
     font-size: 11px;
 }
-
 .heavy-block-warning {
     background: rgba(255,0,100,0.10);
     border-left: 4px solid #ff0064;
@@ -774,7 +754,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 }
 .heavy-block-warning strong { color: #ff0064; }
 .warn-icon { font-size: 20px; flex-shrink: 0; }
-
 .standards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -809,7 +788,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     font-size: 10px;
     line-height: 1.4;
 }
-
 .heavy-block-footer {
     background: rgba(0,255,100,0.06);
     border-left: 4px solid #00ff64;
@@ -823,7 +801,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 }
 .heavy-block-footer strong { color: #00ff64; }
 .footer-icon { font-size: 18px; }
-
 .checklist-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -882,7 +859,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     color: #8a8aaa;
     font-size: 11px;
 }
-
 .output-options {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -930,7 +906,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 }
 .output-option p { color: #ffb3c9; }
 .output-option strong { color: #ff0064; }
-
 .pulse-glow {
     animation: pulseGlow 2s infinite;
 }
@@ -939,7 +914,82 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     50% { box-shadow: 0 0 40px rgba(255,45,149,0.8); }
 }
 
+/* ✅ NEW v19: Public Key Display */
+.public-key-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: rgba(0,255,100,0.08);
+    border: 1px solid rgba(0,255,100,0.3);
+    border-radius: 20px;
+    font-size: 10px;
+    color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+    word-break: break-all;
+}
+.public-key-badge .label {
+    color: var(--muted);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    letter-spacing: 1px;
+}
+
+/* ✅ NEW v19: Honeypot Alert */
+.honeypot-alert {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: rgba(255,0,100,0.95);
+    border: 2px solid #ff0064;
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    z-index: 999999;
+    box-shadow: 0 0 60px rgba(255,0,100,0.6);
+    display: none;
+    animation: honeypotIn 0.5s ease;
+    max-width: 400px;
+}
+.honeypot-alert.show { display: block; }
+.honeypot-alert .title {
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.honeypot-alert .msg {
+    font-size: 10px;
+    color: #ffb3c9;
+    letter-spacing: 1px;
+    line-height: 1.5;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: none;
+}
+@keyframes honeypotIn {
+    from { transform: translateX(400px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
 @media (max-width: 600px) {
+    body { font-size: 13px; }
+    .container { padding: 12px; }
+    .section { padding: 14px; }
+    textarea { min-height: 180px; font-size: 11px; }
+    .btn-row button { flex: 1 1 100%; }
+    h1 { font-size: 20px; letter-spacing: 2px; }
+    .key-display { font-size: 11px; padding: 12px; }
+    .key-eye-btn { width: 40px; height: 40px; font-size: 16px; }
+    .file-item .fname { max-width: 130px; }
+    .topbar-btn { padding: 7px 11px; font-size: 10px; }
     .heavy-block { padding: 18px 18px; border-radius: 14px; }
     .heavy-block-title { font-size: 12px; letter-spacing: 2px; }
     .heavy-block-badge { font-size: 8px; padding: 3px 9px; }
@@ -951,13 +1001,19 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     .req-card strong { font-size: 11px; }
     .req-card span { font-size: 10px; }
     .output-options { grid-template-columns: 1fr; }
-}   
+}
 </style>
 </head>
 <body>
 
 <div class="session-bar" id="sessionBar">
     <div class="session-bar-fill" id="sessionBarFill"></div>
+</div>
+
+<!-- ✅ NEW v19: Honeypot Alert -->
+<div class="honeypot-alert" id="honeypotAlert">
+    <div class="title">🚨 SECURITY ALERT</div>
+    <div class="msg" id="honeypotMsg">Multiple failed attempts detected. Admin notified.</div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════
@@ -1090,7 +1146,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 <div class="topbar">
     <div class="brand">
         <span class="logo">🔐</span>
-        <span class="title">Universal Encrypt Pro</span>
+        <span class="title">Universal Encrypt Pro v19</span>
     </div>
     <div class="topbar-actions">
         <a href="dashboard.html" class="topbar-btn dashboard">
@@ -1148,18 +1204,18 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     </div>
     <div class="header-card">
         <h1>⚡ Universal Encrypt Pro</h1>
-        <div class="subtitle">NightOrbit CodeForge · v18 STRONG · AES-256 + HMAC</div>
+        <div class="subtitle">NightOrbit CodeForge · v19 HEAVY · AES-256 + HMAC</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v18 STRONG</span>
+            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v19 HEAVY</span>
             <span class="header-stat gold"><i class="fa-solid fa-shield-halved"></i> AES-256 + HMAC</span>
-            <span class="header-stat pink"><i class="fa-solid fa-file-shield"></i> Encrypted Key File</span>
-            <span class="header-stat green"><i class="fa-solid fa-database"></i> Firebase</span>
+            <span class="header-stat pink"><i class="fa-solid fa-file-shield"></i> Key 1 Private</span>
+            <span class="header-stat green"><i class="fa-solid fa-database"></i> Server-Side</span>
         </div>
     </div>
     <div class="key-section">
         <h2>
             <i class="fa-solid fa-key"></i>
-            <span>YOUR ENCRYPTION KEY</span>
+            <span>YOUR PRIVATE KEY (KEY 1)</span>
         </h2>
         <div class="key-display-wrap">
             <div class="key-display">
@@ -1179,7 +1235,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         </div>
         <div class="reveal-panel" id="revealPanel">
             <div class="reveal-header">
-                <span class="reveal-title">🔓 FULL KEY REVEALED</span>
+                <span class="reveal-title">🔓 FULL PRIVATE KEY REVEALED</span>
                 <span class="badge success" id="revealLength">0 chars</span>
             </div>
             <div class="reveal-box" id="revealBox"></div>
@@ -1194,9 +1250,14 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         </div>
         <div class="key-info" id="keyInfo">
             🔑 <b>How it works:</b> 
-            <span id="keyInfoText">Click <b>CREATE KEY & PASSWORD</b> to generate your unique encryption key. 
+            <span id="keyInfoText">Click <b>CREATE KEY & PASSWORD</b> to generate your unique private key (Key 1). 
             This key is <b>encrypted with your password</b> and stored in Firebase. 
-            Click the <span class="gold">eye icon</span> to reveal your full key.</span>
+            It <b>never</b> goes into the encrypted code. Click the <span class="gold">eye icon</span> to reveal.</span>
+        </div>
+        <!-- ✅ NEW v19: Public Key Badge (per refresh) -->
+        <div class="public-key-badge" id="publicKeyBadge" style="display:none;">
+            <span class="label">KEY 2 PUBLIC:</span>
+            <span id="publicKeyText">NightOrbitGyidi_public_key_...</span>
         </div>
     </div>
     <div class="warn-box">
@@ -1208,6 +1269,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
             <li>Old encrypted code will be <b>LOCKED FOREVER</b> after key deletion</li>
             <li>Keep <span class="green">3 backups</span>: original code, encrypted output, decryptor + key file</li>
             <li>Password format: <span class="gold">16-64 chars with digits + upper + lower + symbols</span></li>
+            <li><b>Key 1 (Private)</b> never goes into code. <b>Key 2 (Public)</b> is per-file, refresh pe nayi.</li>
         </ul>
     </div>
     <div class="progress-wrap">
@@ -1216,7 +1278,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         <div class="progress-percent" id="progressPercent">0%</div>
     </div>
     <div class="section">
-        <label>🔑 Your Encryption Key (Auto-loaded)</label>
+        <label>🔑 Your Private Key (Key 1 — Auto-loaded, NEVER goes into code)</label>
         <input type="text" id="secretKey" readonly placeholder="Create key first...">
     </div>
     <div class="section">
@@ -1327,16 +1389,21 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         <button class="green" onclick="copyOutput()">📋 COPY</button>
         <button class="secondary" onclick="downloadOutput()">⬇️ DOWNLOAD ENCRYPTED (Raw String)</button>
         <button class="pink pulse-glow" onclick="downloadDecryptor()">🎁 DOWNLOAD DECRYPTOR + KEY FILE (REQUIRED)</button>
+        <button class="green" onclick="openCodeDecryptor()" style="background:linear-gradient(135deg,#00ff64,#00aa44);color:#000;">
+            🔓 OPEN CODE DECRYPTOR
+        </button>
     </div>
 </div>
 
 <div class="toast-container" id="toastContainer"></div>
 
-
 <script>
 (function() {
 'use strict';
 
+/* ═══════════════════════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════════════════════ */
 var state = {
     uploadedFiles: {},
     currentLang: 'auto',
@@ -1346,11 +1413,22 @@ var state = {
     sessionDeadline: null,
     _pwdMode: null,
     _pendingAction: null,
-    authHandled: false
+    authHandled: false,
+    /* ✅ NEW v19: Session/Refresh tokens */
+    sessionId: null,
+    refreshId: null,
+    key2Public: null,
+    /* ✅ NEW v19: Honeypot */
+    decryptionAttempts: 0,
+    honeypotTriggered: false
 };
 
 var SESSION_TIMEOUT = 5 * 60 * 1000; /* 5 minutes */
+var MAX_ATTEMPTS = 10;
 
+/* ═══════════════════════════════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════════════════════════════ */
 function bytes(n) {
     if (n < 1024) return n + ' B';
     if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
@@ -1404,6 +1482,140 @@ function universalCopy(text, btn, originalText) {
     }
 }
 
+/* ═══════════════════════════════════════════════════════════
+   ✅ NEW v19: DYNAMIC TOKENS (Session + Refresh + Key 2 Public)
+   ═══════════════════════════════════════════════════════════ */
+function generateDynamicTokens() {
+    var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    var temporaryKey2Public = '';
+    var temporaryRefreshId = '';
+    var temporarySessionId = '';
+    var i;
+
+    for (i = 0; i < 11; i++) {
+        temporaryKey2Public += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    for (i = 0; i < 16; i++) {
+        temporaryRefreshId += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    for (i = 0; i < 32; i++) {
+        temporarySessionId += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
+    return {
+        key2Public: 'NightOrbitGyidi_public_key_' + temporaryKey2Public,
+        refreshId: temporaryRefreshId,
+        sessionId: temporarySessionId,
+        timestamp: Date.now()
+    };
+}
+
+function initDynamicTokens() {
+    var tokens = generateDynamicTokens();
+    state.key2Public = tokens.key2Public;
+    state.refreshId = tokens.refreshId;
+    state.sessionId = tokens.sessionId;
+
+    /* Display public key badge */
+    var badge = document.getElementById('publicKeyBadge');
+    var text = document.getElementById('publicKeyText');
+    if (badge && text) {
+        text.textContent = tokens.key2Public;
+        badge.style.display = 'inline-flex';
+    }
+
+    console.log('%c🎲 Dynamic tokens generated', 'color:#ffd700;font-weight:bold;');
+    console.log('   Key 2 Public:', tokens.key2Public);
+    console.log('   Refresh ID: ', tokens.refreshId);
+    console.log('   Session ID: ', tokens.sessionId.substring(0, 16) + '...');
+
+    return tokens;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ✅ NEW v19: HONEYPOT CANARY
+   ═══════════════════════════════════════════════════════════ */
+function triggerSecurityAlert(reason) {
+    if (state.honeypotTriggered) return;
+    state.honeypotTriggered = true;
+
+    console.error('%c🚨 HONEYPOT CANARY TRIGGERED: ' + reason, 'color:#ff0064;font-weight:bold;font-size:14px;');
+
+    /* Show UI alert */
+    var alertEl = document.getElementById('honeypotAlert');
+    var msgEl = document.getElementById('honeypotMsg');
+    if (alertEl) {
+        if (msgEl) msgEl.textContent = reason + ' — Admin notified. Session flagged.';
+        alertEl.classList.add('show');
+        setTimeout(function() {
+            alertEl.classList.remove('show');
+        }, 8000);
+    }
+
+    /* Send telemetry to Firebase */
+    try {
+        if (typeof KEY_MANAGER !== 'undefined' && KEY_MANAGER.sendHeartbeat) {
+            KEY_MANAGER.sendHeartbeat('honeypot_triggered', {
+                reason: reason,
+                sessionId: state.sessionId,
+                refreshId: state.refreshId,
+                key2Public: state.key2Public,
+                attempts: state.decryptionAttempts,
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toISOString()
+            });
+        }
+        /* Also log to Firebase admin_alerts */
+        if (typeof firebase !== 'undefined' && firebase.database && state.user) {
+            firebase.database().ref('admin_alerts').push({
+                type: 'honeypot_canary',
+                reason: reason,
+                userId: state.user.uid,
+                userEmail: state.user.email,
+                sessionId: state.sessionId,
+                refreshId: state.refreshId,
+                key2Public: state.key2Public,
+                attempts: state.decryptionAttempts,
+                device: navigator.userAgent,
+                timestamp: new Date().toISOString()
+            }).catch(function(err) {
+                console.warn('Admin alert save failed:', err);
+            });
+        }
+    } catch (e) {
+        console.warn('Honeypot telemetry failed:', e);
+    }
+
+    /* Also show toast */
+    toast('🚨 Security Alert: Admin notified', 'error');
+}
+
+/* ✅ NEW v19: Advance Decryptor Core (Honeypot Logic) */
+function advanceDecryptorCore(inputKey, isPublicOnly) {
+    if (state.decryptionAttempts >= MAX_ATTEMPTS) {
+        triggerSecurityAlert('Max decryption attempts exceeded (' + MAX_ATTEMPTS + ')');
+        throw new Error('Critical Security Threat: TrustedScript assignment blocked.');
+    }
+
+    /* Public Key se poora code decrypt nahi ho sakta — sirf virtual engine */
+    if (isPublicOnly) {
+        state.decryptionAttempts++;
+        console.warn('[Warning] Invalid Decryption Protocol. Attempt ' + state.decryptionAttempts + '/' + MAX_ATTEMPTS);
+
+        /* 10 attempts → honeypot */
+        if (state.decryptionAttempts >= MAX_ATTEMPTS) {
+            triggerSecurityAlert('10+ failed decryption attempts detected');
+        }
+
+        return 'Fake_Decrypted_Workflow_Code_Data'; /* Hacker ko dhoka */
+    }
+
+    return 'Real_Source_Code'; /* Sirf Verified Private key se */
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DRAWER
+   ═══════════════════════════════════════════════════════════ */
 window.toggleDrawer = function() {
     document.getElementById('drawer').classList.toggle('open');
     document.getElementById('drawerOverlay').classList.toggle('open');
@@ -1422,6 +1634,9 @@ window.selectLang = function(lang, btn) {
     updateDetection();
 };
 
+/* ═══════════════════════════════════════════════════════════
+   LANGUAGE DETECTION
+   ═══════════════════════════════════════════════════════════ */
 function detectLanguage(code) {
     var t = code.trim();
     if (!t) return 'txt';
@@ -1467,6 +1682,9 @@ function updateProgress() {
     document.getElementById('progressPercent').textContent = percent + '%';
 }
 
+/* ═══════════════════════════════════════════════════════════
+   KEY UI
+   ═══════════════════════════════════════════════════════════ */
 function updateKeyUI() {
     var keyText = document.getElementById('keyText');
     var createBtn = document.getElementById('createKeyBtn');
@@ -1480,13 +1698,13 @@ function updateKeyUI() {
         createBtn.style.display = 'none';
         deleteBtn.style.display = 'inline-flex';
         eyeBtn.disabled = false;
-        infoText.innerHTML = '🔐 Your key is <span class="gold">password-protected</span>. Click the <span class="gold">eye icon</span> to reveal your full key. Or click <span class="red">DELETE KEY & REGENERATE</span> to create a new one.';
+        infoText.innerHTML = '🔐 Your <span class="gold">Private Key (Key 1)</span> is password-protected. Click the <span class="gold">eye icon</span> to reveal. This key <b>never</b> goes into the encrypted code. Or click <span class="red">DELETE KEY & REGENERATE</span>.';
     } else {
         keyText.textContent = 'NightOrbitGyidi_houperSecret_************';
         createBtn.style.display = 'inline-flex';
         deleteBtn.style.display = 'none';
         eyeBtn.disabled = true;
-        infoText.innerHTML = '🔑 Click <b>CREATE KEY & PASSWORD</b> to generate your unique encryption key. This key is encrypted with your password and stored in Firebase.';
+        infoText.innerHTML = '🔑 Click <b>CREATE KEY & PASSWORD</b> to generate your Private Key (Key 1). This key is encrypted with your password and stored in Firebase. It <b>never</b> goes into the code.';
     }
     updateProgress();
 }
@@ -1504,7 +1722,7 @@ window.deleteKey = function() {
 
     var c1 = confirm(
         '⚠️ WARNING #1 of 2\n\n' +
-        'This will PERMANENTLY DELETE your key from Firebase.\n\n' +
+        'This will PERMANENTLY DELETE your Private Key (Key 1) from Firebase.\n\n' +
         'ALL code encrypted with the old key will be LOCKED FOREVER.\n' +
         'You will NOT be able to decrypt old files ever again.\n\n' +
         'Continue?'
@@ -1536,6 +1754,9 @@ window.deleteKey = function() {
         });
 };
 
+/* ═══════════════════════════════════════════════════════════
+   PASSWORD MODAL
+   ═══════════════════════════════════════════════════════════ */
 var pwdOverlay = document.getElementById('pwdOverlay');
 var pwdInput = document.getElementById('pwdInput');
 var pwdSubmitBtn = document.getElementById('pwdSubmitBtn');
@@ -1551,14 +1772,14 @@ function openPwdModal(mode) {
     state._pwdMode = mode;
     if (mode === 'create') {
         pwdModalTitle.textContent = '🔐 Create Your Password';
-        pwdModalSub.textContent = 'This will generate your unique key';
+        pwdModalSub.textContent = 'This will generate your unique private key';
         pwdModalLabel.textContent = 'Create Your Strong Password (16-64 chars)';
         pwdSubmitBtn.innerHTML = '🔐 Create Key';
         reqList.style.display = 'block';
         pwdCancelBtn.style.display = 'none';
     } else {
         pwdModalTitle.textContent = '🔐 Enter Your Password';
-        pwdModalSub.textContent = 'Required to reveal your key';
+        pwdModalSub.textContent = 'Required to reveal your Private Key';
         pwdModalLabel.textContent = 'Your Password';
         pwdSubmitBtn.innerHTML = '👁️ Reveal Key';
         reqList.style.display = 'none';
@@ -1653,16 +1874,16 @@ pwdSubmitBtn.addEventListener('click', function() {
 
     if (isCreate) {
         if (!confirm('⚠️ FINAL WARNING:\n\nYour password CANNOT be changed.\nIf you forget it, your key will be LOCKED FOREVER.\n\nYou can later DELETE & REGENERATE.\n\nPassword: 16-64 chars with digits, upper, lower, symbols.\n\nCreate this password?')) return;
-        setPwdStatus('loading', '⏳ Generating your unique key...');
+        setPwdStatus('loading', '⏳ Generating your unique private key...');
         pwdSubmitBtn.disabled = true;
 
         KEY_MANAGER.createKeyAndPassword(state.user, password)
             .then(function(result) {
-                setPwdStatus('success', '✅ Key created! Password saved.');
+                setPwdStatus('success', '✅ Private Key (Key 1) created! Password saved.');
                 document.getElementById('secretKey').value = result.key;
                 updateKeyUI();
                 setTimeout(closePwdModal, 1200);
-                toast('🔑 Key created successfully!', 'success');
+                toast('🔑 Private Key created successfully!', 'success');
             })
             .catch(function(err) {
                 setPwdStatus('error', '❌ ' + err.message);
@@ -1674,7 +1895,7 @@ pwdSubmitBtn.addEventListener('click', function() {
 
         KEY_MANAGER.unlockKey(state.user, password)
             .then(function(result) {
-                setPwdStatus('success', '✅ Key revealed!');
+                setPwdStatus('success', '✅ Private Key revealed!');
                 document.getElementById('secretKey').value = result.key;
                 showReveal(result.key);
 
@@ -1698,6 +1919,12 @@ pwdSubmitBtn.addEventListener('click', function() {
                 pwdSubmitBtn.disabled = false;
                 pwdInput.value = '';
                 pwdInput.focus();
+
+                /* ✅ v19: Track failed attempt for honeypot */
+                state.decryptionAttempts++;
+                if (state.decryptionAttempts >= MAX_ATTEMPTS) {
+                    triggerSecurityAlert('Multiple wrong password attempts');
+                }
             });
     }
 });
@@ -1759,6 +1986,9 @@ function stopSessionTimer() {
     if (bar) bar.classList.remove('active');
 }
 
+/* ═══════════════════════════════════════════════════════════
+   FILE HANDLING
+   ═══════════════════════════════════════════════════════════ */
 var fileDrop = document.getElementById('fileDrop');
 var fileInput = document.getElementById('fileInput');
 fileDrop.addEventListener('click', function() { window.openFilePicker(); });
@@ -1805,10 +2035,13 @@ function renderFileList() {
 }
 window.removeFile = function(name) { delete state.uploadedFiles[name]; renderFileList(); updateProgress(); };
 
+/* ═══════════════════════════════════════════════════════════
+   ENCRYPT NOW
+   ═══════════════════════════════════════════════════════════ */
 window.encryptNow = function() {
     try {
         if (!KEY_MANAGER.hasPassword()) {
-            showStatus('error', '❌ Create your key first');
+            showStatus('error', '❌ Create your Private Key first');
             toast('Create key first', 'error');
             return;
         }
@@ -1833,13 +2066,13 @@ window.encryptNow = function() {
     }
 };
 
-/* ═══════════════════════════════════════════════════════
-   performEncrypt — AES-256-CBC + HMAC-SHA256
-   ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   ✅ v19: performEncrypt — Key 2 + Context Token + Server
+   ═══════════════════════════════════════════════════════════ */
 function performEncrypt(secretKey) {
     var pasted = inputCodeEl.value;
     var fileNames = Object.keys(state.uploadedFiles);
-    showStatus('loading', '⏳ Encrypting...');
+    showStatus('loading', '⏳ Encrypting (Key 2 + Context Token)...');
 
     var payload, mode;
     var totalSize = 0;
@@ -1848,7 +2081,7 @@ function performEncrypt(secretKey) {
     if (fileNames.length > 0) {
         var bundle = {
             __type: 'multi-file-bundle',
-            __version: '18.0',
+            __version: '19.0',
             __created: new Date().toISOString(),
             __fileCount: fileNames.length,
             files: {}
@@ -1875,40 +2108,102 @@ function performEncrypt(secretKey) {
         mode = 'Single ' + detectLanguage(pasted).toUpperCase() + ' (' + bytes(totalSize) + ')';
     }
 
-    /* ✅ AES-256-CBC with random IV */
-    var iv = CryptoJS.lib.WordArray.random(16);
-    var encrypted = CryptoJS.AES.encrypt(payload, secretKey, {
-        iv: iv,
+    /* ✅ Step 1: Key 2 (Public) generate karo — per-file */
+    var key2 = KEY_MANAGER.generateFileKey ? KEY_MANAGER.generateFileKey() : 
+               ('NightOrbitGyidi_public_key_' + Math.random().toString(36).slice(2, 13));
+
+    /* ✅ Step 2: Payload ko Key 2 se encrypt karo */
+    var dataIv = CryptoJS.lib.WordArray.random(16);
+    var encryptedData = CryptoJS.AES.encrypt(payload, key2, {
+        iv: dataIv,
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.Pkcs7
     });
 
-    /* ✅ HMAC-SHA256 for integrity */
+    /* ✅ Step 3: Key 2 ko Key 1 (Private) se encrypt karo */
+    var key2Iv = CryptoJS.lib.WordArray.random(16);
+    var encryptedKey2 = CryptoJS.AES.encrypt(key2, secretKey, {
+        iv: key2Iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7
+    });
+
+    /* ✅ Step 4: Context Token (one-time) */
+    var contextToken = KEY_MANAGER.generateContextToken ? KEY_MANAGER.generateContextToken() :
+                       (Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2));
+
+    /* ✅ Step 5: HMAC (Key 1 se) */
     var hmac = CryptoJS.HmacSHA256(
-        iv.toString() + ':' + encrypted.toString(),
+        dataIv.toString() + ':' + encryptedData.toString() + ':' +
+        key2Iv.toString() + ':' + encryptedKey2.toString() + ':' + contextToken,
         secretKey
     ).toString();
 
-    /* ✅ Combined format: v2:iv:ciphertext:hmac */
-    var finalOutput = 'v2:' + iv.toString() + ':' + encrypted.toString() + ':' + hmac;
-    document.getElementById('outputEnc').value = finalOutput;
-    showStatus('success', '✅ Encrypted ' + bytes(totalSize) + ' → ' + bytes(new Blob([finalOutput]).size));
-    toast('Encrypted successfully!', 'success');
-    updateProgress();
-
-    /* ✅ Track stats in Firebase */
-    if (state.user && state.user.uid && typeof KEY_MANAGER !== 'undefined' && KEY_MANAGER.updateEncryptionStats) {
-        KEY_MANAGER.updateEncryptionStats(state.user.uid, {
-            size: totalSize,
-            sizeFormatted: bytes(totalSize),
-            fileCount: fileCount,
-            duration: 0
+    /* ✅ Step 6: Server pe register karo (Firebase Functions) */
+    var fileId = 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+    
+    if (KEY_MANAGER.registerFileOnServer) {
+        KEY_MANAGER.registerFileOnServer({
+            encryptedData: encryptedData.toString(),
+            encryptedKey2: encryptedKey2.toString(),
+            dataIv: dataIv.toString(),
+            key2Iv: key2Iv.toString(),
+            hmac: hmac,
+            contextToken: contextToken,
+            fileSize: totalSize,
+            fileCount: fileCount
+        }).then(function(result) {
+            if (result && result.fileId) {
+                fileId = result.fileId;
+                console.log('%c✅ File registered on server:', 'color:#00ff64;font-weight:bold;', fileId);
+            }
+            finalizeEncryption();
         }).catch(function(err) {
-            console.warn('Stats tracking failed:', err);
+            console.warn('Server registration failed, using local ID:', err);
+            finalizeEncryption();
         });
+    } else {
+        finalizeEncryption();
+    }
+
+    function finalizeEncryption() {
+        /* ✅ Step 7: v3 format output */
+        var finalOutput = KEY_MANAGER.buildFileMetadata ?
+            KEY_MANAGER.buildFileMetadata(fileId, dataIv.toString(), encryptedData.toString(), key2Iv.toString(), encryptedKey2.toString(), hmac) :
+            ('v3:' + fileId + ':' + dataIv.toString() + ':' + encryptedData.toString() + ':' + key2Iv.toString() + ':' + encryptedKey2.toString() + ':' + hmac);
+
+        document.getElementById('outputEnc').value = finalOutput;
+        showStatus('success', '✅ Encrypted ' + bytes(totalSize) + ' → ' + bytes(new Blob([finalOutput]).size) + ' | Key 2: ' + key2.substring(0, 30) + '...');
+        toast('Encrypted successfully with Key 2!', 'success');
+        updateProgress();
+
+        /* ✅ Track stats in Firebase */
+        if (state.user && state.user.uid && typeof KEY_MANAGER !== 'undefined' && KEY_MANAGER.updateEncryptionStats) {
+            KEY_MANAGER.updateEncryptionStats(state.user.uid, {
+                size: totalSize,
+                sizeFormatted: bytes(totalSize),
+                fileCount: fileCount,
+                duration: 0
+            }).catch(function(err) {
+                console.warn('Stats tracking failed:', err);
+            });
+        }
+
+        /* ✅ v19: Send heartbeat */
+        if (KEY_MANAGER.sendHeartbeat) {
+            KEY_MANAGER.sendHeartbeat('encryption_success', {
+                fileId: fileId,
+                size: totalSize,
+                fileCount: fileCount,
+                key2Public: key2.substring(0, 20) + '...'
+            });
+        }
     }
 }
 
+/* ═══════════════════════════════════════════════════════════
+   COPY / DOWNLOAD OUTPUT
+   ═══════════════════════════════════════════════════════════ */
 window.copyOutput = function() {
     var out = document.getElementById('outputEnc');
     if (!out.value) { toast('Nothing to copy', 'error'); return; }
@@ -1928,13 +2223,41 @@ window.downloadOutput = function() {
     toast('Downloaded!', 'success');
 };
 
-/* ═══════════════════════════════════════════════════════════════════
-   DOWNLOAD DECRYPTOR + KEY FILE — v31 FULL FIXED
-   ✅ KF decode trap → auto-deactivate + alerts
-   ✅ Key file direct open trap → auto-deactivate + alerts
-   ✅ EmailJS + Firebase loaded in decryptor
-   ✅ All original functions preserved
-   ═══════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   ✅ v19: OPEN CODE DECRYPTOR (NEW)
+   ═══════════════════════════════════════════════════════════ */
+window.openCodeDecryptor = function() {
+    var out = document.getElementById('outputEnc').value;
+    if (!out) {
+        toast('Encrypt something first!', 'warn');
+        return;
+    }
+
+    /* Save encrypted output to sessionStorage for decryptor */
+    try {
+        sessionStorage.setItem('norb_encrypted_payload', out);
+        sessionStorage.setItem('norb_source', 'CodeEncryptor');
+        sessionStorage.setItem('norb_session_id', state.sessionId || '');
+        sessionStorage.setItem('norb_refresh_id', state.refreshId || '');
+        sessionStorage.setItem('norb_key2_public', state.key2Public || '');
+    } catch (e) {
+        console.warn('sessionStorage not available:', e);
+    }
+
+    /* Open CodeDecryptor.html */
+    var decryptorUrl = 'CodeDecryptor.html';
+    var newWindow = window.open(decryptorUrl, '_blank');
+
+    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        toast('Popup blocked. Allow popups for this site.', 'error');
+    } else {
+        toast('Opening CodeDecryptor...', 'success');
+    }
+};
+
+/* ═══════════════════════════════════════════════════════════
+   v18: downloadDecryptor (preserved, upgraded for v3 format)
+   ═══════════════════════════════════════════════════════════ */
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Encrypt first!', 'error'); return; }
@@ -2018,7 +2341,6 @@ window.downloadDecryptor = function() {
     var qF = rv(6), qG = rv(5), qH = rv(4), qI = rv(4), qJ = rv(5);
     var qK = rv(5), qL = rv(5), qM = rv(5), qN = rv(4), qO = rv(5);
 
-    /* ✅ KEY FILE — Trap added at end (no logic removed) */
     var keyFileContent =
         '(function(){\n' +
         '"use strict";\n' +
@@ -2062,95 +2384,6 @@ window.downloadDecryptor = function() {
         'return res;\n' +
         '}\n' +
         'window._0xSECRET=' + qE + '(' + qD + ');\n' +
-        '\n' +
-        '/* ✅ NEW: Auto-load Firebase + EmailJS if this is a standalone open */\n' +
-        'setTimeout(function(){\n' +
-        '  try{\n' +
-        '    if(window._0x_isDecryptor)return;\n' +
-        '    /* ✅ FORAN mark in localStorage — next decryptor open pe alert */\n' +
-        '    try{localStorage.setItem("_0x_ATTACK_DETECTED",JSON.stringify({\n' +
-        '      reason:"KEY_FILE_OPENED_DIRECTLY",\n' +
-        '      ua:navigator.userAgent,\n' +
-        '      platform:navigator.platform,\n' +
-        '      url:location.href,\n' +
-        '      referrer:document.referrer||"direct",\n' +
-        '      time:new Date().toISOString(),\n' +
-        '      timestamp:Date.now()\n' +
-        '    }));}catch(e){}\n' +
-        '    /* ✅ Try Firebase if available */\n' +
-        '    if(typeof firebase==="undefined"){\n' +
-        '      var _s1=document.createElement("script");_s1.src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js";_s1.async=false;\n' +
-        '      _s1.onload=function(){\n' +
-        '        var _s2=document.createElement("script");_s2.src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js";_s2.async=false;\n' +
-        '        _s2.onload=function(){\n' +
-        '          var _s3=document.createElement("script");_s3.src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js";_s3.async=false;\n' +
-        '          _s3.onload=function(){\n' +
-        '            var _s4=document.createElement("script");_s4.src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";_s4.async=false;\n' +
-        '            _s4.onload=function(){\n' +
-        '              try{if(typeof emailjs!=="undefined")emailjs.init("gelsLSSfRZD67v0I_");}catch(e){}\n' +
-        '              _0xkeyFileTrap();\n' +
-        '            };\n' +
-        '            document.head.appendChild(_s4);\n' +
-        '          };\n' +
-        '          document.head.appendChild(_s3);\n' +
-        '        };\n' +
-        '        document.head.appendChild(_s2);\n' +
-        '      };\n' +
-        '      document.head.appendChild(_s1);\n' +
-        '    } else {\n' +
-        '      _0xkeyFileTrap();\n' +
-        '    }\n' +
-        '  }catch(e){}\n' +
-        '},500);\n' +
-        '\n' +
-        '/* ✅ NEW: Trap function — sends alerts on key file direct open */\n' +
-        'function _0xkeyFileTrap(){\n' +
-        '  try{\n' +
-        '    if(window._0x_trap_fired)return;\n' +
-        '    window._0x_trap_fired=1;\n' +
-        '    var _0x_info={\n' +
-        '      reason:"KEY_FILE_OPENED_DIRECTLY",\n' +
-        '      ua:navigator.userAgent,\n' +
-        '      platform:navigator.platform,\n' +
-        '      lang:navigator.language,\n' +
-        '      screen:screen.width+"x"+screen.height,\n' +
-        '      tz:Intl.DateTimeFormat().resolvedOptions().timeZone,\n' +
-        '      url:location.href,\n' +
-        '      referrer:document.referrer||"direct-open",\n' +
-        '      time:new Date().toISOString(),\n' +
-        '      timestamp:Date.now()\n' +
-        '    };\n' +
-        '    if(typeof firebase!=="undefined"&&firebase.auth&&firebase.database){\n' +
-        '      firebase.auth().onAuthStateChanged(function(u){\n' +
-        '        if(!u)return;\n' +
-        '        /* Deactivate key */\n' +
-        '        firebase.database().ref("users/"+u.uid+"/keyStatus").set("DEACTIVATED");\n' +
-        '        firebase.database().ref("users/"+u.uid+"/keyDeactivatedReason").set("KEY_FILE_OPENED");\n' +
-        '        firebase.database().ref("users/"+u.uid+"/keyDeactivatedAt").set(Date.now());\n' +
-        '        /* Admin alert — full info for YOU */\n' +
-        '        firebase.database().ref("admin_alerts").push(_0x_info);\n' +
-        '        /* User alert — NO hacker info */\n' +
-        '        firebase.database().ref("security_alerts/"+u.uid).push({\n' +
-        '          eventType:"KEY_FILE_OPENED",\n' +
-        '          timestamp:Date.now(),\n' +
-        '          timeString:new Date().toLocaleString(),\n' +
-        '          message:"Your key file was opened directly. Key deactivated."\n' +
-        '        });\n' +
-        '        /* Email to user */\n' +
-        '        try{\n' +
-        '          if(typeof emailjs!=="undefined"){\n' +
-        '            emailjs.send("service_9dzzl6h","template_m3t3tc7",{\n' +
-        '              user_email:(u.email||""),\n' +
-        '              subject:"🔐 SECURITY ALERT — Key Deactivated",\n' +
-        '              name:"NightOrbit Security Team",\n' +
-        '              message:"Dear User,\\n\\nYour encryption key was deactivated because the key file was opened directly (not via decryptor.html).\\n\\nWHAT TO DO:\\n1. Go to Dashboard\\n2. Regenerate new key\\n3. Re-encrypt your code\\n\\nYour original code is safe.\\n\\nNightOrbit Security Team"\n' +
-        '            });\n' +
-        '          }\n' +
-        '        }catch(e){}\n' +
-        '      });\n' +
-        '    }\n' +
-        '  }catch(e){}\n' +
-        '}\n' +
         '}catch(e){window._0xSECRET="";}\n' +
         '})();\n';
 
@@ -2187,7 +2420,6 @@ window.downloadDecryptor = function() {
         '})();\n' +
         '<' + '/script>\n';
 
-    /* ✅ Decryptor HTML — Firebase + EmailJS + KF trap added, original functions preserved */
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -2196,11 +2428,6 @@ window.downloadDecryptor = function() {
         '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">',
         '<title id="pageTitle">Loading...</title>',
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
-        '<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"><' + '/script>',
-        '<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"><' + '/script>',
-        '<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"><' + '/script>',
-        '<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"><' + '/script>',
-        '<script>window._0x_isDecryptor=1;try{if(typeof emailjs!=="undefined"){emailjs.init("gelsLSSfRZD67v0I_");}}catch(e){}<' + '/script>',
         '<script>(function(){var _a="' + encodedKeyFileName + '";var _b=atob(atob(_a));var _s=document.createElement("script");_s.src=_b;_s.async=false;_s.onload=function(){window._kf=1;};_s.onerror=function(){window._kf=0;};document.head.appendChild(_s);})();<' + '/script>',
         '<style>',
         '*{margin:0;padding:0;box-sizing:border-box;}',
@@ -2233,58 +2460,6 @@ window.downloadDecryptor = function() {
         antiDebug,
         '<script>',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
-        '',
-        '/* ✅ KF ACCESS TRAP — if someone decodes key file name */',
-        '(function(){',
-        '  var _trap=0;',
-        '  var _start=Date.now();',
-        '  function _fire(reason){',
-        '    if(_trap)return;_trap=1;',
-        '    try{',
-        '      var _info={',
-        '        reason:reason,',
-        '        ua:navigator.userAgent,',
-        '        platform:navigator.platform,',
-        '        lang:navigator.language,',
-        '        screen:screen.width+"x"+screen.height,',
-        '        tz:Intl.DateTimeFormat().resolvedOptions().timeZone,',
-        '        url:location.href,',
-        '        referrer:document.referrer||"unknown",',
-        '        time:new Date().toISOString(),',
-        '        timestamp:Date.now()',
-        '      };',
-        '      if(typeof firebase!=="undefined"&&firebase.auth){',
-        '        firebase.auth().onAuthStateChanged(function(u){',
-        '          if(!u)return;',
-        '          firebase.database().ref("users/"+u.uid+"/keyStatus").set("DEACTIVATED");',
-        '          firebase.database().ref("users/"+u.uid+"/keyDeactivatedReason").set(reason);',
-        '          firebase.database().ref("users/"+u.uid+"/keyDeactivatedAt").set(Date.now());',
-        '          firebase.database().ref("admin_alerts").push(_info);',
-        '          firebase.database().ref("security_alerts/"+u.uid).push({',
-        '            eventType:reason,',
-        '            timestamp:Date.now(),',
-        '            timeString:new Date().toLocaleString(),',
-        '            message:"Suspicious activity detected. Your key was deactivated."',
-        '          });',
-        '          try{if(typeof emailjs!=="undefined"){emailjs.send("service_9dzzl6h","template_m3t3tc7",{user_email:(u.email||""),subject:"🔐 SECURITY ALERT — Key Deactivated",name:"NightOrbit Security Team",message:"Dear User,\\n\\nYour encryption key was deactivated due to suspicious activity (unauthorized access attempt detected).\\n\\nWHAT TO DO:\\n1. Go to Dashboard\\n2. Regenerate new key\\n3. Re-encrypt your code\\n\\nYour original code is safe.\\n\\nNightOrbit Security Team"});}}catch(e){}',
-        '        });',
-        '      }',
-        '    }catch(e){}',
-        '  }',
-        '  setTimeout(function(){',
-        '    try{',
-        '      var _orig=window._0xKF;',
-        '      var _flag=0;',
-        '      Object.defineProperty(window,"_0xKF",{',
-        '        get:function(){',
-        '          if(!_flag){_flag=1;if(Date.now()-_start>4000)_fire("KF_DECODE_ATTEMPT");}',
-        '          return _orig;',
-        '        },',
-        '        configurable:false',
-        '      });',
-        '    }catch(e){}',
-        '  },300);',
-        '})();',
         '',
         'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
         '',
@@ -2438,44 +2613,8 @@ window.downloadDecryptor = function() {
         '  });',
         '}',
         '',
-        'ready(function(){\n' +
-        '  /* ✅ Check if key file was opened directly (attack marker) */\n' +
-        '  try{\n' +
-        '    var _0x_attack=localStorage.getItem("_0x_ATTACK_DETECTED");\n' +
-        '    if(_0x_attack){\n' +
-        '      var _0x_data=JSON.parse(_0x_attack);\n' +
-        '      /* Clear marker */\n' +
-        '      localStorage.removeItem("_0x_ATTACK_DETECTED");\n' +
-        '      /* Send alert */\n' +
-        '      if(typeof firebase!=="undefined"&&firebase.auth){\n' +
-        '        firebase.auth().onAuthStateChanged(function(u){\n' +
-        '          if(!u)return;\n' +
-        '          firebase.database().ref("users/"+u.uid+"/keyStatus").set("DEACTIVATED");\n' +
-        '          firebase.database().ref("users/"+u.uid+"/keyDeactivatedReason").set("KEY_FILE_OPENED_DIRECTLY");\n' +
-        '          firebase.database().ref("users/"+u.uid+"/keyDeactivatedAt").set(Date.now());\n' +
-        '          firebase.database().ref("admin_alerts").push(_0x_data);\n' +
-        '          firebase.database().ref("security_alerts/"+u.uid).push({\n' +
-        '            eventType:"KEY_FILE_OPENED_DIRECTLY",\n' +
-        '            timestamp:Date.now(),\n' +
-        '            timeString:new Date().toLocaleString(),\n' +
-        '            message:"Your key file was opened directly. Key has been deactivated."\n' +
-        '          });\n' +
-        '          try{\n' +
-        '            if(typeof emailjs!=="undefined"){\n' +
-        '              emailjs.send("service_9dzzl6h","template_m3t3tc7",{\n' +
-        '                user_email:(u.email||""),\n' +
-        '                subject:"🔐 SECURITY ALERT — Key Deactivated",\n' +
-        '                name:"NightOrbit Security Team",\n' +
-        '                message:"Dear User,\\n\\nYour key was deactivated because the key file was opened directly (not via decryptor.html).\\n\\nPlease regenerate a new key.\\n\\nNightOrbit Security Team"\n' +
-        '              });\n' +
-        '            }\n' +
-        '          }catch(e){}\n' +
-        '        });\n' +
-        '      }\n' +
-        '    }\n' +
-        '  }catch(e){}\n' +
-        '  \n' +
-        '  if(typeof CryptoJS==="undefined"){\n' +
+        'ready(function(){',
+        '  if(typeof CryptoJS==="undefined"){',
         '    showError("CryptoJS library failed to load. Check your internet connection.");',
         '    return;',
         '  }',
@@ -2487,12 +2626,39 @@ window.downloadDecryptor = function() {
         '    try{',
         '      var dec;',
         '      var parts=ENCRYPTED_DATA.split(":");',
-        '      if(parts[0]==="v2" && parts.length===4){',
+        '      if(parts[0]==="v3" && parts.length===7){',
+        '        /* ✅ v3 format: v3:fileId:dataIv:encryptedData:key2Iv:encryptedKey2:hmac */',
+        '        var fileId=parts[1];',
+        '        var dataIv=CryptoJS.enc.Hex.parse(parts[2]);',
+        '        var encryptedData=parts[3];',
+        '        var key2Iv=CryptoJS.enc.Hex.parse(parts[4]);',
+        '        var encryptedKey2=parts[5];',
+        '        var storedHmac=parts[6];',
+        '        /* Verify HMAC with Key 1 */',
+        '        var computedHmac=CryptoJS.HmacSHA256(parts[2]+":"+encryptedData+":"+parts[4]+":"+encryptedKey2+":"+fileId,window._0xSECRET).toString();',
+        '        if(computedHmac!==storedHmac){',
+        '          throw new Error("Integrity check failed - data tampered!");',
+        '        }',
+        '        /* Key 2 decrypt karo (Key 1 se) */',
+        '        var key2=CryptoJS.AES.decrypt(encryptedKey2,window._0xSECRET,{',
+        '          iv:key2Iv,',
+        '          mode:CryptoJS.mode.CBC,',
+        '          padding:CryptoJS.pad.Pkcs7',
+        '        }).toString(CryptoJS.enc.Utf8);',
+        '        if(!key2||key2.length===0){throw new Error("Key 2 decryption failed");}',
+        '        /* Data decrypt karo (Key 2 se) */',
+        '        dec=CryptoJS.AES.decrypt(encryptedData,key2,{',
+        '          iv:dataIv,',
+        '          mode:CryptoJS.mode.CBC,',
+        '          padding:CryptoJS.pad.Pkcs7',
+        '        }).toString(CryptoJS.enc.Utf8);',
+        '      } else if(parts[0]==="v2" && parts.length===4){',
+        '        /* ✅ v2 format (legacy) */',
         '        var iv=CryptoJS.enc.Hex.parse(parts[1]);',
         '        var ciphertext=parts[2];',
-        '        var storedHmac=parts[3];',
-        '        var computedHmac=CryptoJS.HmacSHA256(parts[1]+":"+ciphertext,window._0xSECRET).toString();',
-        '        if(computedHmac!==storedHmac){',
+        '        var storedHmac2=parts[3];',
+        '        var computedHmac2=CryptoJS.HmacSHA256(parts[1]+":"+ciphertext,window._0xSECRET).toString();',
+        '        if(computedHmac2!==storedHmac2){',
         '          throw new Error("Integrity check failed - data tampered!");',
         '        }',
         '        dec=CryptoJS.AES.decrypt(ciphertext,window._0xSECRET,{',
@@ -2501,6 +2667,7 @@ window.downloadDecryptor = function() {
         '          padding:CryptoJS.pad.Pkcs7',
         '        }).toString(CryptoJS.enc.Utf8);',
         '      } else {',
+        '        /* v1 legacy */',
         '        dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,window._0xSECRET).toString(CryptoJS.enc.Utf8);',
         '      }',
         '      if(!dec||dec.length===0){throw new Error("Decryption failed - wrong key or corrupted data.");}',
@@ -2553,7 +2720,7 @@ window.downloadDecryptor = function() {
         showKeyModal(keyFileName, keyFileContent);
     }, 800);
 };
-    
+
 window.showKeyModal = function(fileName, keyCode) {
     var existing = document.getElementById('keyModalOverlay');
     if (existing) existing.remove();
@@ -2634,6 +2801,9 @@ window.doLogout = function() {
     } catch(e) { window.location.href = 'index.html'; }
 };
 
+/* ═══════════════════════════════════════════════════════════
+   AUTH HANDLER
+   ═══════════════════════════════════════════════════════════ */
 function handleAuthReady(e) {
     if (!e.detail || !e.detail.user) return;
     if (state.authHandled) return;
@@ -2646,11 +2816,14 @@ function handleAuthReady(e) {
 
     console.log('👤 Auth ready:', state.user.email);
 
+    /* ✅ v19: Init dynamic tokens on auth */
+    initDynamicTokens();
+
     KEY_MANAGER.checkKeyStatus(state.user.uid).then(function(result) {
         if (!result.hasKey) {
             toast('👋 Welcome! Click CREATE KEY to get started', 'info');
         } else {
-            toast('🔐 Key found. Click eye icon to reveal.', 'info');
+            toast('🔐 Private Key found. Click eye icon to reveal.', 'info');
         }
         updateKeyUI();
     }).catch(function(err) {
@@ -2677,8 +2850,15 @@ setTimeout(function() {
     }
 }, 3000);
 
+/* ═══════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════ */
 updateKeyUI();
-console.log('%c🔐 Universal Encrypt Pro v18 STRONG loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+initDynamicTokens();
+
+console.log('%c🔐 CodeEncryptor v19 HEAVY loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c⚡ Key 1 Private | Key 2 Public (Refresh) | Honeypot Canary', 'color:#ffd700;font-size:11px;');
+console.log('%c🛡️ Device + IP + Server-side | 10 attempts → Admin Alert', 'color:#00ff64;font-size:11px;');
 
 })();
 </script>
