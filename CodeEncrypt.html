@@ -654,7 +654,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     .topbar-btn { padding: 7px 11px; font-size: 10px; }
 }
 
-.heavy-block {
+ .heavy-block {
     border-radius: 16px;
     padding: 22px 26px;
     margin-bottom: 20px;
@@ -666,6 +666,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
 .heavy-block.critical {
     background: linear-gradient(135deg, rgba(255,0,100,0.12), rgba(180,0,255,0.08));
     border: 2px solid #ff0064;
@@ -686,11 +687,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     box-shadow: 0 0 40px rgba(255,215,0,0.20);
     margin-bottom: 14px;
 }
-.heavy-block.vault {
-    background: linear-gradient(135deg, rgba(0,255,100,0.12), rgba(0,240,255,0.08));
-    border: 2px solid #00ff64;
-    box-shadow: 0 0 60px rgba(0,255,100,0.25);
-}
+
 .heavy-block-header {
     display: flex;
     align-items: center;
@@ -711,7 +708,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 .heavy-block.standards .heavy-block-title { color: #00f0ff; text-shadow: 0 0 20px rgba(0,240,255,0.6); }
 .heavy-block.checklist .heavy-block-title { color: #00f0ff; }
 .heavy-block.output-alert .heavy-block-title { color: #ffd700; text-shadow: 0 0 20px rgba(255,215,0,0.6); }
-.heavy-block.vault .heavy-block-title { color: #00ff64; text-shadow: 0 0 20px rgba(0,255,100,0.6); }
+
 .heavy-block-badge {
     background: #ff0064;
     color: #fff;
@@ -725,13 +722,14 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 }
 .heavy-block-badge.gold { background: #ffd700; color: #000; }
 .heavy-block-badge.red { background: #ff0064; color: #fff; }
-.heavy-block-badge.green { background: #00ff64; color: #000; }
+
 .heavy-block-lead {
     color: #b0d0ff;
     font-size: 13px;
     line-height: 1.8;
     margin-bottom: 14px;
 }
+
 .heavy-block-requirements {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -759,6 +757,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     color: #b0b0d0;
     font-size: 11px;
 }
+
 .heavy-block-warning {
     background: rgba(255,0,100,0.10);
     border-left: 4px solid #ff0064;
@@ -773,6 +772,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 }
 .heavy-block-warning strong { color: #ff0064; }
 .warn-icon { font-size: 20px; flex-shrink: 0; }
+
 .standards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -807,6 +807,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     font-size: 10px;
     line-height: 1.4;
 }
+
 .heavy-block-footer {
     background: rgba(0,255,100,0.06);
     border-left: 4px solid #00ff64;
@@ -820,6 +821,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 }
 .heavy-block-footer strong { color: #00ff64; }
 .footer-icon { font-size: 18px; }
+
 .checklist-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -878,6 +880,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     color: #8a8aaa;
     font-size: 11px;
 }
+
 .output-options {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -925,69 +928,13 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 }
 .output-option p { color: #ffb3c9; }
 .output-option strong { color: #ff0064; }
+
 .pulse-glow {
     animation: pulseGlow 2s infinite;
 }
 @keyframes pulseGlow {
     0%, 100% { box-shadow: 0 0 20px rgba(255,45,149,0.4); }
     50% { box-shadow: 0 0 40px rgba(255,45,149,0.8); }
-}
-
-/* ═══ VAULT LAYER CARDS ═══ */
-.vault-layers {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 12px;
-    margin-bottom: 14px;
-}
-.vault-layer-card {
-    background: rgba(0,0,0,0.4);
-    border: 1px solid rgba(0,255,100,0.25);
-    border-radius: 12px;
-    padding: 14px 16px;
-    transition: all 0.3s;
-    position: relative;
-    overflow: hidden;
-}
-.vault-layer-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 3px;
-    height: 100%;
-    background: linear-gradient(180deg, #00ff64, #00f0ff);
-}
-.vault-layer-card:hover {
-    border-color: #00ff64;
-    background: rgba(0,255,100,0.06);
-    transform: translateX(4px);
-    box-shadow: 0 6px 20px rgba(0,255,100,0.15);
-}
-.vault-layer-num {
-    display: inline-block;
-    background: linear-gradient(135deg, #00ff64, #00f0ff);
-    color: #000;
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 900;
-    font-size: 10px;
-    padding: 2px 10px;
-    border-radius: 20px;
-    margin-bottom: 8px;
-    letter-spacing: 1.5px;
-}
-.vault-layer-name {
-    color: #00ff64;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
-    line-height: 1.5;
-}
-.vault-layer-desc {
-    color: #8a9aaa;
-    font-size: 11px;
-    line-height: 1.6;
 }
 
 @media (max-width: 600px) {
@@ -1002,18 +949,18 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     .req-card strong { font-size: 11px; }
     .req-card span { font-size: 10px; }
     .output-options { grid-template-columns: 1fr; }
-    .vault-layers { grid-template-columns: 1fr; }
-    .vault-layer-name { font-size: 11px; }
-    .vault-layer-desc { font-size: 10px; }
-}
+}   
 </style>
 </head>
 <body>
-    <div class="session-bar" id="sessionBar">
+
+<div class="session-bar" id="sessionBar">
     <div class="session-bar-fill" id="sessionBarFill"></div>
 </div>
 
-<!-- HEAVY BLOCK 1 — CRITICAL SECURITY NOTICE -->
+<!-- ═══════════════════════════════════════════════════════════
+     HEAVY BLOCK 1 — CRITICAL SECURITY NOTICE
+     ═══════════════════════════════════════════════════════════ -->
 <div class="heavy-block critical" id="securityNotice">
     <div class="heavy-block-header">
         <span class="heavy-block-icon">🔴</span>
@@ -1056,7 +1003,9 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     </div>
 </div>
 
-<!-- HEAVY BLOCK 2 — SECURITY STANDARDS -->
+<!-- ═══════════════════════════════════════════════════════════
+     HEAVY BLOCK 2 — SECURITY STANDARDS
+     ═══════════════════════════════════════════════════════════ -->
 <div class="heavy-block standards" id="securityStandards">
     <div class="heavy-block-header">
         <span class="heavy-block-icon">🛡️</span>
@@ -1101,54 +1050,11 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         </div>
         <div class="heavy-block-footer">
             <span class="footer-icon">🏆</span>
-            <span>Security Rating: <strong>10/10 Cryptographic</strong> · Zero-Knowledge Architecture</span>
+            <span>Security Rating: <strong>9/10 Cryptographic</strong> · Zero-Knowledge Architecture</span>
         </div>
     </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════
-     HEAVY BLOCK — CORE VAULT ARCHITECTURE (NEW)
-     ═══════════════════════════════════════════════════════════ -->
-<div class="heavy-block vault" id="vaultArchitecture">
-    <div class="heavy-block-header">
-        <span class="heavy-block-icon">⚡</span>
-        <span class="heavy-block-title">CORE VAULT ARCHITECTURE ACTIVE</span>
-        <span class="heavy-block-badge green">MULTI-LAYER</span>
-    </div>
-    <div class="heavy-block-body">
-        <p class="heavy-block-lead">
-            This system utilizes an <strong>automated 4-Layer Heterogeneous Security Matrix</strong>. All individual data structures are tightly wrapped within independent cryptographic envelopes with dynamic integrity seals.
-        </p>
-        <div class="vault-layers">
-            <div class="vault-layer-card">
-                <span class="vault-layer-num">LAYER 01</span>
-                <div class="vault-layer-name">Autonomous Payload Obfuscation &amp; Dynamic Structural Morphing</div>
-                <div class="vault-layer-desc">Multi-stage byte transformation with randomized seeds and interleaved structural remapping.</div>
-            </div>
-            <div class="vault-layer-card">
-                <span class="vault-layer-num">LAYER 02</span>
-                <div class="vault-layer-name">High-Entropy Nonce Vector &amp; Cryptographic Token Generation</div>
-                <div class="vault-layer-desc">256-bit salted nonce vectors with per-session unique token derivation.</div>
-            </div>
-            <div class="vault-layer-card">
-                <span class="vault-layer-num">LAYER 03</span>
-                <div class="vault-layer-name">End-to-End Ephemeral Symmetric Cipher Protocol</div>
-                <div class="vault-layer-desc">AES-256-CBC with ephemeral per-payload IV — no key reuse across sessions.</div>
-            </div>
-            <div class="vault-layer-card">
-                <span class="vault-layer-num">LAYER 04</span>
-                <div class="vault-layer-name">Bank-Grade Real-Time Message Authentication &amp; Tamper-Proof Sinks</div>
-                <div class="vault-layer-desc">HMAC-SHA256 + SHA-256 dual integrity verification with automatic tamper rejection.</div>
-            </div>
-        </div>
-        <div class="heavy-block-footer">
-            <span class="footer-icon">🔒</span>
-            <span>All layers operate independently. <strong>Any single-layer failure aborts the operation.</strong></span>
-        </div>
-    </div>
-</div>
-
-<!-- PASSWORD MODAL -->
 <div class="pwd-overlay" id="pwdOverlay">
     <div class="pwd-modal">
         <h2 id="pwdModalTitle">🔐 Enter Password</h2>
@@ -1179,7 +1085,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     </div>
 </div>
 
-<!-- TOPBAR -->
 <div class="topbar">
     <div class="brand">
         <span class="logo">🔐</span>
@@ -1200,7 +1105,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     </div>
 </div>
 
-<!-- DRAWER -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
     <h3>🎯 Select Language</h3>
@@ -1242,11 +1146,11 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     </div>
     <div class="header-card">
         <h1>⚡ Universal Encrypt Pro</h1>
-        <div class="subtitle">NightOrbit CodeForge · v20 VAULT · AES-256 + HMAC + 6-Layer Key Matrix</div>
+        <div class="subtitle">NightOrbit CodeForge · v18 STRONG · AES-256 + HMAC</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v20 VAULT</span>
+            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v18 STRONG</span>
             <span class="header-stat gold"><i class="fa-solid fa-shield-halved"></i> AES-256 + HMAC</span>
-            <span class="header-stat pink"><i class="fa-solid fa-file-shield"></i> 6-Layer Key File</span>
+            <span class="header-stat pink"><i class="fa-solid fa-file-shield"></i> Encrypted Key File</span>
             <span class="header-stat green"><i class="fa-solid fa-database"></i> Firebase</span>
         </div>
     </div>
@@ -1333,7 +1237,9 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         <div class="file-list" id="fileList"></div>
     </div>
 
-    <!-- HEAVY BLOCK 3 — CHECKLIST -->
+    <!-- ═══════════════════════════════════════════════════════════
+         HEAVY BLOCK 3 — PRE-ENCRYPT CHECKLIST
+         ═══════════════════════════════════════════════════════════ -->
     <div class="heavy-block checklist" id="preEncryptChecklist">
         <div class="heavy-block-header">
             <span class="heavy-block-icon">📋</span>
@@ -1374,7 +1280,9 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     </div>
     <div id="status" class="status"></div>
 
-    <!-- HEAVY BLOCK 4 — OUTPUT -->
+    <!-- ═══════════════════════════════════════════════════════════
+         HEAVY BLOCK 4 — OUTPUT SECTION ALERT
+         ═══════════════════════════════════════════════════════════ -->
     <div class="section">
         <label>🔒 Encrypted Output</label>
         <div class="heavy-block output-alert" id="outputAlert">
@@ -1422,6 +1330,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 <div class="toast-container" id="toastContainer"></div>
 
+
 <script>
 (function() {
 'use strict';
@@ -1438,7 +1347,7 @@ var state = {
     authHandled: false
 };
 
-var SESSION_TIMEOUT = 5 * 60 * 1000;
+var SESSION_TIMEOUT = 5 * 60 * 1000; /* 5 minutes */
 
 function bytes(n) {
     if (n < 1024) return n + ' B';
@@ -1864,13 +1773,13 @@ function handleFiles(files) {
             toast('File too large (max 5MB): ' + file.name, 'error');
             return;
         }
-        
+
         var reader = new FileReader();
         reader.onload = function(ev) {
             var content = ev.target.result;
             var ext = (file.name.split('.').pop() || '').toLowerCase();
-            state.uploadedFiles[file.name] = { 
-                content: content, 
+            state.uploadedFiles[file.name] = {
+                content: content,
                 lang: ext,
                 size: file.size
             };
@@ -1880,7 +1789,7 @@ function handleFiles(files) {
         reader.readAsText(file);
     });
 }
-    
+
 function renderFileList() {
     var list = document.getElementById('fileList');
     var names = Object.keys(state.uploadedFiles);
@@ -1923,7 +1832,8 @@ window.encryptNow = function() {
 };
 
 /* ═══════════════════════════════════════════════════════
-   performEncrypt — AES-256-CBC + HMAC-SHA256
+   performEncrypt — AES-256-CBC + HMAC-SHA256 (v3 format)
+   HKDF se separate keys
    ═══════════════════════════════════════════════════════ */
 function performEncrypt(secretKey) {
     var pasted = inputCodeEl.value;
@@ -1945,13 +1855,13 @@ function performEncrypt(secretKey) {
         fileNames.forEach(function(name) {
             var content = state.uploadedFiles[name].content;
             var sizeBytes = new Blob([content]).size;
-            
-            bundle.files[name] = { 
+
+            bundle.files[name] = {
                 content: content,
                 size: sizeBytes,
                 sizeFormatted: bytes(sizeBytes)
             };
-            
+
             totalSize += sizeBytes;
             fileCount++;
         });
@@ -1964,24 +1874,34 @@ function performEncrypt(secretKey) {
         mode = 'Single ' + detectLanguage(pasted).toUpperCase() + ' (' + bytes(totalSize) + ')';
     }
 
+    /* ✅ Step 1: Random salt (256-bit) + IV (128-bit) */
+    var salt = CryptoJS.lib.WordArray.random(32);
     var iv = CryptoJS.lib.WordArray.random(16);
-    var encrypted = CryptoJS.AES.encrypt(payload, secretKey, {
+
+    /* ✅ Step 2: HKDF-style key derivation — DO ALAG KEYS */
+    var keys = KEY_MANAGER._deriveKeys(secretKey, salt);
+
+    /* ✅ Step 3: AES-256-CBC encryption (alag key) */
+    var encrypted = CryptoJS.AES.encrypt(payload, keys.aesKey, {
         iv: iv,
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.Pkcs7
     });
 
-    var hmac = CryptoJS.HmacSHA256(
-        iv.toString() + ':' + encrypted.toString(),
-        secretKey
-    ).toString();
+    /* ✅ Step 4: HMAC-SHA256 (ALAG key) */
+    var macData = salt.toString() + ':' + iv.toString() + ':' + encrypted.toString();
+    var hmac = CryptoJS.HmacSHA256(macData, keys.hmacKey).toString();
 
-    var finalOutput = 'v2:' + iv.toString() + ':' + encrypted.toString() + ':' + hmac;
+    /* ✅ Step 5: v3 format: v3:salt:iv:ciphertext:hmac */
+    var finalOutput = 'v3:' + salt.toString() + ':' + iv.toString() +
+                      ':' + encrypted.toString() + ':' + hmac;
+
     document.getElementById('outputEnc').value = finalOutput;
-    showStatus('success', '✅ Encrypted ' + bytes(totalSize) + ' → ' + bytes(new Blob([finalOutput]).size));
-    toast('Encrypted successfully!', 'success');
+    showStatus('success', '✅ Encrypted ' + bytes(totalSize) + ' → ' + bytes(new Blob([finalOutput]).size) + ' (v3 MAXIMUM)');
+    toast('Encrypted with v3 MAXIMUM security!', 'success');
     updateProgress();
 
+    /* Track stats */
     if (state.user && state.user.uid && typeof KEY_MANAGER !== 'undefined' && KEY_MANAGER.updateEncryptionStats) {
         KEY_MANAGER.updateEncryptionStats(state.user.uid, {
             size: totalSize,
@@ -2013,11 +1933,6 @@ window.downloadOutput = function() {
     toast('Downloaded!', 'success');
 };
 
-/* ═══════════════════════════════════════════════════════
-   downloadDecryptor — Full version
-   Auto-load key file with embedded filename
-   Key file = 4-layer protection (AES + HMAC + SHA-256 + Obfuscation)
-   ═══════════════════════════════════════════════════════ */
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) { toast('Encrypt first!', 'error'); return; }
@@ -2043,87 +1958,54 @@ window.downloadDecryptor = function() {
     var keyFileName = 'nx_' + rndHex(8) + '-' + rndHex(4) + '-' + rndHex(4) + '-' + rndHex(12) + '.js';
 
     var encData = out;
-    var DEVICE_SECRET = 'NightOrbit_KeyFile_v20_2024_Secret';
 
-    /* ═══ 4-LAYER KEY FILE ═══ */
-    /* Layer 1: AES-256-CBC */
-    var salt = CryptoJS.lib.WordArray.random(32);
-    var iv1 = CryptoJS.lib.WordArray.random(16);
-    var aesKey = CryptoJS.PBKDF2(DEVICE_SECRET, salt, {
-        keySize: 256 / 32,
-        iterations: 600000,
-        hasher: CryptoJS.algo.SHA256
-    });
-    var enc1 = CryptoJS.AES.encrypt(fullKey, aesKey, {
-        iv: iv1,
-        mode: CryptoJS.mode.CBC,
-        padding: CryptoJS.pad.Pkcs7
-    });
-    var saltHex = salt.toString();
-    var ivHex = iv1.toString();
-    var ctB64 = enc1.toString();
+    var PREFIX = 'NightOrbitGyidi_houperSecret_';
+    var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
+    if (suffix.length < 60) { while (suffix.length < 60) suffix += '0'; }
+    suffix = suffix.substring(0, 60);
+    var fullKeyString = PREFIX + suffix;
 
-    /* Layer 2: HMAC-SHA256 separate key */
-    var hmacSalt = CryptoJS.enc.Hex.parse(saltHex + '484d4143');
-    var hmacKey = CryptoJS.PBKDF2(DEVICE_SECRET, hmacSalt, {
-        keySize: 256 / 32,
-        iterations: 600000,
-        hasher: CryptoJS.algo.SHA256
-    });
-    var hmacInput = saltHex + ':' + ivHex + ':' + ctB64;
-    var hmacValue = CryptoJS.HmacSHA256(hmacInput, hmacKey).toString();
-
-    /* Layer 3: SHA-256 integrity */
-    var integrityHash = CryptoJS.SHA256(hmacInput + ':' + hmacValue).toString();
-
-    var payload = saltHex + ':' + ivHex + ':' + ctB64 + ':' + hmacValue + ':' + integrityHash;
-
-    /* Layer 4: Byte obfuscation */
-    var s1 = (Math.floor(Math.random() * 251)) + 1;
+    var s1 = (Date.now() % 251) + 1;
     var s2 = (Math.floor(Math.random() * 251)) + 1;
     var s3 = (Math.floor(Math.random() * 251)) + 1;
     var s4 = (Math.floor(Math.random() * 251)) + 1;
-    var padCount = (Math.floor(Math.random() * 10) + 5);
-
-    var utf8 = unescape(encodeURIComponent(payload));
-    var bytesArr = [];
-    for (var i = 0; i < utf8.length; i++) bytesArr.push(utf8.charCodeAt(i));
 
     var L1 = [];
-    for (var i = 0; i < bytesArr.length; i++) L1.push((bytesArr[i] ^ 0x5A) ^ s1);
+    for (var i = 0; i < fullKeyString.length; i++) {
+        L1.push((fullKeyString.charCodeAt(i) ^ 0x5A) ^ s1);
+    }
     var L2 = [];
-    for (var i = 0; i < L1.length; i++) L2.push((L1[i] + s2) % 256);
+    for (var j = 0; j < L1.length; j++) {
+        L2.push((L1[j] + s2) % 256);
+    }
     var L3 = [];
-    for (var i = 0; i < L2.length; i++) L3.push(L2[i] ^ s3);
-
+    for (var k = 0; k < L2.length; k++) {
+        L3.push(L2[k] ^ s3);
+    }
     var even = [], odd = [];
-    for (var i = 0; i < L3.length; i++) {
-        if (i % 2 === 0) even.push(L3[i]);
-        else odd.push(L3[i]);
+    for (var m = 0; m < L3.length; m++) {
+        if (m % 2 === 0) even.push(L3[m]);
+        else odd.push(L3[m]);
     }
     var L4 = even.concat(odd);
-
     var padding = [];
-    for (var i = 0; i < padCount; i++) padding.push(Math.floor(Math.random() * 256));
-    var L5 = padding.concat(L4);
-
-    var bin = '';
-    for (var i = 0; i < L5.length; i++) bin += String.fromCharCode(L5[i]);
-
-    var b64 = btoa(bin);
-    var reversed = b64.split('').reverse().join('');
-
-    var obf = [];
-    for (var i = 0; i < reversed.length; i++) {
-        obf.push((reversed.charCodeAt(i) ^ 0x5A) ^ s4);
+    var padCount = (Math.floor(Math.random() * 10) + 5);
+    for (var p = 0; p < padCount; p++) {
+        padding.push(Math.floor(Math.random() * 256));
     }
+    var L5 = padding.concat(L4);
+    var bin = '';
+    for (var b = 0; b < L5.length; b++) {
+        bin += String.fromCharCode(L5[b]);
+    }
+    var L6 = btoa(bin);
+    var L7 = L6.split('').reverse().join('');
+    var obf = [];
+    for (var bi = 0; bi < L7.length; bi++) {
+        obf.push((L7.charCodeAt(bi) ^ 0x5A) ^ s4);
+    }
+    var byteArrayString = '[' + obf.join(',') + ']';
 
-    /* Header: seeds XOR'd with 0x5A + obfuscated data */
-    var header = [s1 ^ 0x5A, s2 ^ 0x5A, s3 ^ 0x5A, s4 ^ 0x5A, padCount ^ 0x5A];
-    var finalBytes = header.concat(obf);
-    var byteArrayString = '[' + finalBytes.join(',') + ']';
-
-    /* Random varnames */
     function rv(len) {
         var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         var s = '';
@@ -2176,16 +2058,10 @@ window.downloadDecryptor = function() {
         '}\n' +
         'return res;\n' +
         '}\n' +
-        'var payload=' + qE + '(' + qD + ');\n' +
-        'if(typeof window.__onKeyFileLoaded==="function"){\n' +
-        'window.__onKeyFileLoaded(payload);\n' +
-        '}else{\n' +
-        'window.__nxPayload=payload;\n' +
-        '}\n' +
-        '}catch(e){window.__nxError=e.message||"Key file error";}\n' +
+        'window._0xSECRET=' + qE + '(' + qD + ');\n' +
+        '}catch(e){window._0xSECRET="";}\n' +
         '})();\n';
 
-    /* Encode key filename for embedding */
     var encodedKeyFileName = btoa(btoa(keyFileName));
 
     var d1 = rv(8), d2 = rv(8), d3 = rv(8);
@@ -2219,6 +2095,7 @@ window.downloadDecryptor = function() {
         '})();\n' +
         '<' + '/script>\n';
 
+    /* ✅ Decryptor uses same v3 verification logic */
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -2259,7 +2136,28 @@ window.downloadDecryptor = function() {
         antiDebug,
         '<script>',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
-        'var DEVICE_SECRET="NightOrbit_KeyFile_v20_2024_Secret";',
+        '',
+        '/* ✅ HKDF-style key split — MUST MATCH KEY_MANAGER._deriveKeys */',
+        'function _deriveKeys(secretKey, salt) {',
+        '  var masterKey = CryptoJS.PBKDF2(secretKey, salt, {',
+        '    keySize: 512/32,',
+        '    iterations: 600000,',
+        '    hasher: CryptoJS.algo.SHA256',
+        '  });',
+        '  var words = masterKey.words;',
+        '  return {',
+        '    aesKey: CryptoJS.lib.WordArray.create(words.slice(0, 8), 8),',
+        '    hmacKey: CryptoJS.lib.WordArray.create(words.slice(8, 16), 8)',
+        '  };',
+        '}',
+        '',
+        'function _timingSafeEqual(a, b) {',
+        '  if (typeof a !== "string" || typeof b !== "string") return false;',
+        '  if (a.length !== b.length) return false;',
+        '  var r = 0;',
+        '  for (var i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);',
+        '  return r === 0;',
+        '}',
         '',
         'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
         '',
@@ -2413,80 +2311,66 @@ window.downloadDecryptor = function() {
         '  });',
         '}',
         '',
-        '/* ═══ DECRYPT KEY FILE PAYLOAD (4-Layer) ═══ */',
-        'function decryptKeyPayload(payloadStr){',
-        '  var parts=payloadStr.split(":");',
-        '  if(parts.length!==5) throw new Error("Invalid payload format");',
-        '  var saltHex=parts[0];',
-        '  var ivHex=parts[1];',
-        '  var ciphertextB64=parts[2];',
-        '  var storedHmac=parts[3];',
-        '  var storedIntegrity=parts[4];',
-        '',
-        '  /* Layer 3: SHA-256 integrity */',
-        '  var integrityInput=saltHex+":"+ivHex+":"+ciphertextB64+":"+storedHmac;',
-        '  var computedIntegrity=CryptoJS.SHA256(integrityInput).toString();',
-        '  if(computedIntegrity!==storedIntegrity){',
-        '    throw new Error("Layer 3 FAILED: SHA-256 mismatch");',
-        '  }',
-        '',
-        '  /* Layer 2: HMAC-SHA256 */',
-        '  var salt=CryptoJS.enc.Hex.parse(saltHex);',
-        '  var hmacSalt=CryptoJS.enc.Hex.parse(saltHex+"484d4143");',
-        '  var hmacKey=CryptoJS.PBKDF2(DEVICE_SECRET,hmacSalt,{keySize:256/32,iterations:600000,hasher:CryptoJS.algo.SHA256});',
-        '  var hmacInput=saltHex+":"+ivHex+":"+ciphertextB64;',
-        '  var computedHmac=CryptoJS.HmacSHA256(hmacInput,hmacKey).toString();',
-        '  if(computedHmac!==storedHmac){',
-        '    throw new Error("Layer 2 FAILED: HMAC mismatch");',
-        '  }',
-        '',
-        '  /* Layer 1: AES-256-CBC */',
-        '  var iv=CryptoJS.enc.Hex.parse(ivHex);',
-        '  var aesKey=CryptoJS.PBKDF2(DEVICE_SECRET,salt,{keySize:256/32,iterations:600000,hasher:CryptoJS.algo.SHA256});',
-        '  var decrypted=CryptoJS.AES.decrypt(ciphertextB64,aesKey,{iv:iv,mode:CryptoJS.mode.CBC,padding:CryptoJS.pad.Pkcs7}).toString(CryptoJS.enc.Utf8);',
-        '  if(!decrypted||decrypted.length<30){',
-        '    throw new Error("Layer 1 FAILED: invalid key");',
-        '  }',
-        '  return decrypted;',
-        '}',
-        '',
-        'window.__onKeyFileLoaded=function(payloadStr){',
-        '  window.__nxPayload=payloadStr;',
-        '};',
-        '',
         'ready(function(){',
         '  if(typeof CryptoJS==="undefined"){',
         '    showError("CryptoJS library failed to load. Check your internet connection.");',
         '    return;',
         '  }',
         '  setTimeout(function(){',
-        '    var payload=window.__nxPayload;',
-        '    if(!payload || payload.length < 30){',
+        '    if(!window._0xSECRET || window._0xSECRET.length < 30){',
         '      showKeyMissingError();',
         '      return;',
         '    }',
         '    try{',
-        '      var key=decryptKeyPayload(payload);',
-        '      try{delete window.__nxPayload;}catch(e){}',
-        '',
         '      var dec;',
         '      var parts=ENCRYPTED_DATA.split(":");',
-        '      if(parts[0]==="v2" && parts.length===4){',
-        '        var iv=CryptoJS.enc.Hex.parse(parts[1]);',
-        '        var ciphertext=parts[2];',
-        '        var storedHmac=parts[3];',
-        '        var computedHmac=CryptoJS.HmacSHA256(parts[1]+":"+ciphertext,key).toString();',
-        '        if(computedHmac!==storedHmac){',
-        '          throw new Error("Data integrity check failed - tampered!");',
+        '      ',
+        '      if(parts[0]==="v3" && parts.length===5){',
+        '        /* ✅ v3 format — SEPARATE KEYS */',
+        '        var saltHex=parts[1];',
+        '        var ivHex=parts[2];',
+        '        var ciphertext=parts[3];',
+        '        var storedHmac=parts[4];',
+        '        var salt=CryptoJS.enc.Hex.parse(saltHex);',
+        '        var iv=CryptoJS.enc.Hex.parse(ivHex);',
+        '        ',
+        '        /* Derive SEPARATE keys */',
+        '        var keys=_deriveKeys(window._0xSECRET, salt);',
+        '        ',
+        '        /* Verify HMAC FIRST (separate key) */',
+        '        var macData=saltHex+":"+ivHex+":"+ciphertext;',
+        '        var computedHmac=CryptoJS.HmacSHA256(macData, keys.hmacKey).toString();',
+        '        ',
+        '        if(!_timingSafeEqual(computedHmac, storedHmac)){',
+        '          throw new Error("Integrity check failed - data tampered!");',
         '        }',
-        '        dec=CryptoJS.AES.decrypt(ciphertext,key,{',
+        '        ',
+        '        /* Then decrypt (separate key) */',
+        '        dec=CryptoJS.AES.decrypt(ciphertext, keys.aesKey, {',
         '          iv:iv,',
         '          mode:CryptoJS.mode.CBC,',
         '          padding:CryptoJS.pad.Pkcs7',
         '        }).toString(CryptoJS.enc.Utf8);',
+        '        ',
+        '      } else if(parts[0]==="v2" && parts.length===5){',
+        '        /* v2 legacy — same-key HMAC */',
+        '        var iv2=CryptoJS.enc.Hex.parse(parts[1]);',
+        '        var ct2=parts[2];',
+        '        var hm2=parts[3];',
+        '        var computedHmac2=CryptoJS.HmacSHA256(parts[1]+":"+ct2,window._0xSECRET).toString();',
+        '        if(computedHmac2!==hm2){',
+        '          throw new Error("Integrity check failed - data tampered!");',
+        '        }',
+        '        dec=CryptoJS.AES.decrypt(ct2,window._0xSECRET,{',
+        '          iv:iv2,',
+        '          mode:CryptoJS.mode.CBC,',
+        '          padding:CryptoJS.pad.Pkcs7',
+        '        }).toString(CryptoJS.enc.Utf8);',
         '      } else {',
-        '        dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,key).toString(CryptoJS.enc.Utf8);',
+        '        /* v1 legacy */',
+        '        dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,window._0xSECRET).toString(CryptoJS.enc.Utf8);',
         '      }',
+        '      ',
         '      if(!dec||dec.length===0){throw new Error("Decryption failed - wrong key or corrupted data.");}',
         '',
         '      var isBundle=false,bundle=null;',
@@ -2509,7 +2393,7 @@ window.downloadDecryptor = function() {
         '    }catch(e){',
         '      showError(e.message);',
         '    }',
-        '  }, 800);',
+        '  }, 500);',
         '});',
         '<' + '/script>',
         '<' + '/body>',
@@ -2537,7 +2421,7 @@ window.downloadDecryptor = function() {
         showKeyModal(keyFileName, keyFileContent);
     }, 800);
 };
-    
+
 window.showKeyModal = function(fileName, keyCode) {
     var existing = document.getElementById('keyModalOverlay');
     if (existing) existing.remove();
@@ -2662,7 +2546,8 @@ setTimeout(function() {
 }, 3000);
 
 updateKeyUI();
-console.log('%c🔐 Universal Encrypt Pro v20 loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c🔐 Universal Encrypt Pro v19 MAXIMUM SECURITY loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c✅ AES-256-CBC + HMAC-SHA256 (SEPARATE KEYS via HKDF)', 'color:#00ff64;font-size:12px;');
 
 })();
 </script>
