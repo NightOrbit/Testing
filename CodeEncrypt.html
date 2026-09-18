@@ -1943,36 +1943,18 @@ window.downloadDecryptor = function() {
         return;
     }
 
-    /* ═══ 1. SHA-256 HASHED FILE NAME (NEW) ═══ */
+    /* ═══ 1. RANDOM FILE NAME ═══ */
     function rndHex(len) {
         var c = 'abcdef0123456789';
         var s = '';
         for (var i = 0; i < (len || 16); i++) s += c.charAt(Math.floor(Math.random() * c.length));
         return s;
     }
-    
-    /* Generate SHA-256 hash-based file name */
-    var seed = Date.now().toString(36) + Math.random().toString(36).substring(2, 15) + rndHex(16);
-    var nameHash = CryptoJS.SHA256(seed).toString();
-    var keyFileName = 'nx_' + nameHash.substring(0, 32) + '.js';
+    var keyFileName = 'nx_' + rndHex(8) + rndHex(8) + rndHex(8) + rndHex(8) + '.js';
 
     var encData = out;
 
-    /* ═══ 2. AES-256-CBC ENCRYPTED KEY 1 (NEW) ═══ */
-    /* Master secret derived from Key 1 + file name hash */
-    var masterSecret = CryptoJS.SHA256(fullKey + '::AES::' + nameHash).toString();
-    var KEY1_IV = CryptoJS.lib.WordArray.random(16);
-    var key1Encrypted = CryptoJS.AES.encrypt(fullKey, masterSecret, {
-        iv: KEY1_IV,
-        mode: CryptoJS.mode.CBC,
-        padding: CryptoJS.pad.Pkcs7
-    });
-    var KEY1_HMAC = CryptoJS.HmacSHA256(
-        KEY1_IV.toString() + ':' + key1Encrypted.toString(),
-        masterSecret
-    ).toString();
-
-    /* ═══ 3. OLD Key 1 Obfuscation (PRESERVED — for backward compat) ═══ */
+    /* ═══ 2. OLD Key 1 Obfuscation (PRESERVED) ═══ */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
     if (suffix.length < 60) { while (suffix.length < 60) suffix += '0'; }
@@ -2020,9 +2002,9 @@ window.downloadDecryptor = function() {
     }
     var byteArrayString = '[' + obf.join(',') + ']';
 
-    /* ═══ 4. FILE NAME IN FUNCTION CHAIN (NEW) ═══ */
+    /* ═══ 3. HEAVY FILE NAME OBFUSCATION ═══ */
     var nameObf = KEY_MANAGER.obfuscateFileName(keyFileName);
-    
+
     /* Random variable names */
     function rv(len) {
         var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -2038,7 +2020,7 @@ window.downloadDecryptor = function() {
     var fA = rv(6), fB = rv(7), fC = rv(5), fD = rv(6), fE = rv(8);
     var fF = rv(6), fG = rv(5), fH = rv(4);
 
-    /* ═══ 5. DECOY + ANTI-DEBUG (PRESERVED) ═══ */
+    /* ═══ 4. Decoy + Anti-debug ═══ */
     var d1 = rv(8), d2 = rv(8), d3 = rv(8);
     var d4 = rv(8), d5 = rv(8), d6 = rv(8);
 
@@ -2070,12 +2052,11 @@ window.downloadDecryptor = function() {
         '})();\n' +
         '<' + '/script>\n';
 
-    /* ═══ 6. Key File Content (nx_xxx.js) ═══ */
+    /* ═══ 5. Key File Content ═══ */
     var keyFileContent =
         '(function(){\n' +
         '"use strict";\n' +
         'try{\n' +
-        /* OLD: Obfuscated Key 1 (backward compat) */
         'var S1=' + s1 + ',S2=' + s2 + ',S3=' + s3 + ',S4=' + s4 + ';\n' +
         'var ' + qN + '=' + padCount + ';\n' +
         'var ' + qA + '=' + byteArrayString + ';\n' +
@@ -2116,13 +2097,7 @@ window.downloadDecryptor = function() {
         '}\n' +
         'window._0xSECRET=' + qE + '(' + qD + ');\n' +
         
-        /* NEW: AES-256-CBC encrypted Key 1 */
-        'window._0xKEY1_IV="' + KEY1_IV.toString() + '";\n' +
-        'window._0xKEY1_ENC="' + key1Encrypted.toString() + '";\n' +
-        'window._0xKEY1_HMAC="' + KEY1_HMAC + '";\n' +
-        'window._0xKEY1_HASH="' + nameHash + '";\n' +
-        
-        /* NEW: File name in function chain */
+        /* File name obfuscated */
         'var ' + fA + '="' + nameObf.data + '";\n' +
         'var ' + fB + '=' + nameObf.salt1 + ';\n' +
         'var ' + fC + '=' + nameObf.salt2 + ';\n' +
@@ -2145,7 +2120,7 @@ window.downloadDecryptor = function() {
 
     var encodedKeyFileName = btoa(btoa(keyFileName));
 
-    /* ═══ 7. Decryptor HTML (FULL — Purane saare features) ═══ */
+    /* ═══ 6. Decryptor HTML (COMPLETE — Purane saare features) ═══ */
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -2155,6 +2130,8 @@ window.downloadDecryptor = function() {
         '<title id="pageTitle">Loading...</title>',
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
         '<script>(function(){var _a="' + encodedKeyFileName + '";var _b=atob(atob(_a));var _s=document.createElement("script");_s.src=_b;_s.async=false;_s.onload=function(){window._kf=1;};_s.onerror=function(){window._kf=0;};document.head.appendChild(_s);})();<' + '/script>',
+        decoyFunctions,
+        antiDebug,
         '<style>',
         '*{margin:0;padding:0;box-sizing:border-box;}',
         'html,body{width:100%;min-height:100vh;}',
@@ -2182,8 +2159,6 @@ window.downloadDecryptor = function() {
         '<' + '/head>',
         '<body>',
         '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
-        decoyFunctions,
-        antiDebug,
         '<script>',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
         '',
@@ -2351,62 +2326,30 @@ window.downloadDecryptor = function() {
         '    return;',
         '  }',
         '  setTimeout(function(){',
-        '    /* Verify Key 1 AES encrypted data */',
-        '    if(!window._0xKEY1_ENC || !window._0xKEY1_IV || !window._0xKEY1_HMAC){',
-        '      /* Fallback to old _0xSECRET */',
-        '      if(!window._0xSECRET || window._0xSECRET.length < 30){',
-        '        showKeyMissingError();',
-        '        return;',
-        '      }',
+        '    if(!window._0xSECRET || window._0xSECRET.length < 30){',
+        '      showKeyMissingError();',
+        '      return;',
         '    }',
         '    try{',
-        '      var key1;',
-        '      ',
-        '      /* Decrypt Key 1 with AES-256-CBC */',
-        '      if(window._0xKEY1_ENC && window._0xKEY1_IV && window._0xKEY1_HMAC){',
-        '        var masterSecret=CryptoJS.SHA256(window._0xFNAME + "::AES::" + window._0xKEY1_HASH).toString();',
-        '        var storedHmac=window._0xKEY1_HMAC;',
-        '        var computedHmac=CryptoJS.HmacSHA256(window._0xKEY1_IV+":"+window._0xKEY1_ENC,masterSecret).toString();',
+        '      var dec;',
+        '      var parts=ENCRYPTED_DATA.split(":");',
+        '      if(parts[0]==="v2" && parts.length===4){',
+        '        var iv=CryptoJS.enc.Hex.parse(parts[1]);',
+        '        var ciphertext=parts[2];',
+        '        var storedHmac=parts[3];',
+        '        var computedHmac=CryptoJS.HmacSHA256(parts[1]+":"+ciphertext,window._0xSECRET).toString();',
         '        if(computedHmac!==storedHmac){',
-        '          throw new Error("Key 1 integrity check failed");',
+        '          throw new Error("Integrity check failed - data tampered!");',
         '        }',
-        '        var iv=CryptoJS.enc.Hex.parse(window._0xKEY1_IV);',
-        '        key1=CryptoJS.AES.decrypt(window._0xKEY1_ENC,masterSecret,{',
+        '        dec=CryptoJS.AES.decrypt(ciphertext,window._0xSECRET,{',
         '          iv:iv,',
         '          mode:CryptoJS.mode.CBC,',
         '          padding:CryptoJS.pad.Pkcs7',
         '        }).toString(CryptoJS.enc.Utf8);',
-        '        if(!key1||key1.length<30){throw new Error("Key 1 AES decryption failed");}',
         '      } else {',
-        '        /* Fallback to old _0xSECRET */',
-        '        key1=window._0xSECRET;',
-        '      }',
-        '      ',
-        '      /* Decrypt payload */',
-        '      var dec;',
-        '      var parts=ENCRYPTED_DATA.split(":");',
-        '      if(parts[0]==="v2" && parts.length===4){',
-        '        var iv2=CryptoJS.enc.Hex.parse(parts[1]);',
-        '        var ciphertext=parts[2];',
-        '        var storedHmac2=parts[3];',
-        '        var computedHmac2=CryptoJS.HmacSHA256(parts[1]+":"+ciphertext,key1).toString();',
-        '        if(computedHmac2!==storedHmac2){',
-        '          throw new Error("Integrity check failed - data tampered!");',
-        '        }',
-        '        dec=CryptoJS.AES.decrypt(ciphertext,key1,{',
-        '          iv:iv2,',
-        '          mode:CryptoJS.mode.CBC,',
-        '          padding:CryptoJS.pad.Pkcs7',
-        '        }).toString(CryptoJS.enc.Utf8);',
-        '      } else {',
-        '        dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,key1).toString(CryptoJS.enc.Utf8);',
+        '        dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,window._0xSECRET).toString(CryptoJS.enc.Utf8);',
         '      }',
         '      if(!dec||dec.length===0){throw new Error("Decryption failed - wrong key or corrupted data.");}',
-        '',
-        '      /* Wipe sensitive data */',
-        '      key1=null;',
-        '      window._0xKEY1_ENC=null;',
-        '      window._0xSECRET=null;',
         '',
         '      var isBundle=false,bundle=null;',
         '      try{',
