@@ -228,6 +228,59 @@ var KEY_MANAGER = {
         }
     },
 
+   /* ═══════════════════════════════════════════════════════
+   MULTI-LAYER FILE NAME OBFUSCATION
+   ═══════════════════════════════════════════════════════ */
+obfuscateFileName: function(fileName) {
+    /* Layer 1: XOR with salt */
+    var salt1 = this._secureRandomInt(251) + 1;
+    var layer1 = '';
+    for (var i = 0; i < fileName.length; i++) {
+        layer1 += String.fromCharCode(fileName.charCodeAt(i) ^ salt1);
+    }
+    
+    /* Layer 2: Base64 */
+    var layer2 = btoa(layer1);
+    
+    /* Layer 3: Reverse */
+    var layer3 = layer2.split('').reverse().join('');
+    
+    /* Layer 4: XOR with salt2 */
+    var salt2 = this._secureRandomInt(251) + 1;
+    var layer4 = '';
+    for (var j = 0; j < layer3.length; j++) {
+        layer4 += String.fromCharCode((layer3.charCodeAt(j) ^ salt2) ^ (j % 251));
+    }
+    
+    /* Layer 5: Base64 */
+    var layer5 = btoa(layer4);
+    
+    return {
+        data: layer5,
+        salt1: salt1,
+        salt2: salt2
+    };
+},
+
+deobfuscateFileName: function(obf, salt1, salt2) {
+    try {
+        var layer4 = atob(obf);
+        var layer3 = '';
+        for (var j = 0; j < layer4.length; j++) {
+            layer3 += String.fromCharCode((layer4.charCodeAt(j) ^ salt2) ^ (j % 251));
+        }
+        var layer2 = layer3.split('').reverse().join('');
+        var layer1 = atob(layer2);
+        var fileName = '';
+        for (var i = 0; i < layer1.length; i++) {
+            fileName += String.fromCharCode(layer1.charCodeAt(i) ^ salt1);
+        }
+        return fileName;
+    } catch (e) {
+        return null;
+    }
+},
+
     /* ═══════════════════════════════════════════════════════
        DEVICE FINGERPRINT (v18 preserved)
        ═══════════════════════════════════════════════════════ */
