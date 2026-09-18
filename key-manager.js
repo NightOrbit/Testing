@@ -1,24 +1,23 @@
 /* ═══════════════════════════════════════════════════════════
-   key-manager.js — v19 HEAVY
+   key-manager.js — v20 POLYMORPHIC HEAVY
    NightOrbit CodeForge
 
-   UPGRADE FROM V18 → V19:
-   ✅ FIXED: HMAC format mismatch (v2 → v3, 4-part format)
-   ✅ FIXED: _logEvent KEY_MANAGER reference bug
-   ✅ FIXED: updateEncryptionStats null-safe transaction
-   ✅ FIXED: checkKeyStatus legacy migration trigger
-   ✅ FIXED: Rate limit clear race condition
-   ✅ FIXED: deviceFingerprint cache invalidation
-   ✅ ADDED: generateFileKey() — Key 2 (per-file)
-   ✅ ADDED: generateContextToken() — one-time token
-   ✅ ADDED: registerFileOnServer() — Firebase Functions call
-   ✅ ADDED: verifyServerSide() — server-side verification helper
-   ✅ ADDED: buildFileMetadata() — v3 format builder
-   ✅ ADDED: parseFileMetadata() — v3 format parser
-   ✅ ADDED: getAuthToken() — Firebase ID token
-   ✅ ADDED: sendHeartbeat() — anti-tamper telemetry
-   ✅ ADDED: _safeFirebase() — firebase availability guard
-   ✅ PRESERVED: All v18 functions (no removal)
+   UPGRADE FROM V19 → V20:
+   ✅ ADDED: Polymorphic Single-Use Handshake Engine
+   ✅ ADDED: _generateEphemeralSeed() — browser entropy + CSPRNG
+   ✅ ADDED: _initiateNewRoute() — naya tala + chaabi (RAM only)
+   ✅ ADDED: _verifyRoute() — timing-safe route verification
+   ✅ ADDED: _wipeRoute() — RAM se route delete
+   ✅ ADDED: generateEphemeralKey2() — function-based Key 2
+   ✅ ADDED: getEphemeralRoute() — current route getter
+   ✅ ADDED: buildFileMetadataV4() — v4 format (routeId + seedHash)
+   ✅ ADDED: parseFileMetadataV4() — v4 parser
+   ✅ ADDED: _installWipeHandlers() — auto-wipe on unload/hidden
+   ✅ ADDED: _rotateRoute() — 30s auto-rotation
+   ✅ ADDED: getRouteStatus() — debug helper
+   ✅ FIXED: Route lifecycle management
+   ✅ FIXED: TTL enforcement (30s)
+   ✅ PRESERVED: All v19 functions (no removal)
    ✅ PRESERVED: Zero-knowledge architecture
 
    DATA STORAGE (Firebase):
@@ -27,18 +26,15 @@
    ├── keyData/          → passwordHash, salt, encryptedKey (v3)
    │   ├── stats/        → generations, encryptions, history
    │   └── rateLimit/    → attempts, lockedUntil
-   └── files/{fileId}/   → encrypted code + Key 2 + context token
+   └── files/{fileId}/   → encrypted code + routeId + seedHash
 
-   SECURITY:
-   - Crypto-secure RNG (window.crypto)
-   - AES-256-CBC + HMAC-SHA256
-   - PBKDF2-SHA256 600K iterations
-   - Random 256-bit salt + 128-bit IV
-   - Timing-safe comparison
-   - Rate limiting (brute-force protection)
-   - Audit logging (last 50 events)
-   - Server-side verification ready
-   - Context token (one-time use)
+   SECURITY LAYERS:
+   - Layer 1: Key 1 (Private, fixed, Firebase-encrypted)
+   - Layer 2: Key 2 (Polymorphic, RAM-only, function-generated)
+   - Layer 3: Route ID (SHA256 of Key1 + seed)
+   - Layer 4: Seed Hash (one-way, public identifier)
+   - Layer 5: HMAC binding (Key1 + all parts)
+   - Layer 6: TTL + auto-wipe (30s + unload)
    ═══════════════════════════════════════════════════════════ */
 
 (function() {
@@ -52,11 +48,13 @@ var KEY_MANAGER = {
     _AES_KEY_ITER: 100000,
     _PASSWORD_MIN: 16,
     _PASSWORD_MAX: 64,
-    _KEY_VERSION: 19,
+    _KEY_VERSION: 20,
     _MAX_ATTEMPTS: 5,
     _LOCKOUT_DURATION: 15 * 60 * 1000,
     _MAX_HISTORY: 50,
     _FILE_KEY_LENGTH: 60,
+    _ROUTE_TTL: 30000,          /* 30 seconds */
+    _ROUTE_ROTATE_INTERVAL: 30000,
 
     /* ═══ STATE ═══ */
     _key: null,
@@ -70,6 +68,16 @@ var KEY_MANAGER = {
     _deviceFingerprint: null,
     _cachedAuthToken: null,
     _authTokenExpiry: 0,
+
+    /* ✅ v20: Ephemeral Route State (RAM only) */
+    _ephemeralRoute: null,
+    _routeRotationTimer: null,
+    _wipeHandlersInstalled: false,
+    _routeStats: {
+        totalRoutes: 0,
+        lastRouteAt: null,
+        wipeCount: 0
+    },
 
     /* ═══════════════════════════════════════════════════════
        SAFE FIREBASE GUARD
@@ -118,7 +126,204 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       DEVICE FINGERPRINT (v19 — cache-safe)
+       ✅ v20: POLYMORPHIC SINGLE-USE HANDSHAKE ENGINE
+       ═══════════════════════════════════════════════════════ */
+
+    /* Browser entropy + CSPRNG + high-res timestamp se ephemeral seed */
+    _generateEphemeralSeed: function() {
+        var components = [
+            Date.now().toString(36),
+            (typeof performance !== 'undefined' && performance.now)
+                ? performance.now().toString(36) : '',
+            window.screen.width + 'x' + window.screen.height + 'x' + (window.screen.colorDepth || 0),
+            window.innerWidth + 'x' + window.innerHeight,
+            navigator.hardwareConcurrency || '',
+            navigator.deviceMemory || '',
+            navigator.language || '',
+            this._bytesToHex(this._secureRandomBytes(16)),
+            Math.random().toString(36).substring(2, 15)
+        ];
+        return components.join('|');
+    },
+
+    /* Ephemeral seed se dynamic lock + Key 2 + routeId generate */
+    _initiateNewRoute: function(masterKey) {
+        if (!masterKey) {
+            throw new Error('Master key required for route initiation');
+        }
+
+        if (typeof CryptoJS === 'undefined' || !CryptoJS.SHA256) {
+            throw new Error('CryptoJS required for route engine');
+        }
+
+        var seed = this._generateEphemeralSeed();
+
+        var lock = CryptoJS.SHA256(masterKey + '::LOCK::' + seed).toString();
+        var key2 = CryptoJS.SHA256(masterKey + '::KEY2::' + seed).toString();
+        var routeId = CryptoJS.SHA256(masterKey + '::ROUTE::' + seed)
+            .toString().substring(0, 32);
+        var seedHash = CryptoJS.SHA256(seed).toString().substring(0, 16);
+
+        this._ephemeralRoute = {
+            seed: seed,
+            lock: lock,
+            key2: key2,
+            routeId: routeId,
+            seedHash: seedHash,
+            createdAt: Date.now(),
+            ttl: this._ROUTE_TTL
+        };
+
+        this._routeStats.totalRoutes++;
+        this._routeStats.lastRouteAt = new Date().toISOString();
+
+        return this._ephemeralRoute;
+    },
+
+    /* Route verify karo (timing-safe + TTL check) */
+    _verifyRoute: function(route, masterKey) {
+        if (!route || !route.seed || !route.lock) return false;
+
+        /* TTL check */
+        if (Date.now() - route.createdAt > route.ttl) {
+            return false;
+        }
+
+        var expectedLock = CryptoJS.SHA256(masterKey + '::LOCK::' + route.seed).toString();
+        return this._timingSafeEqual(route.lock, expectedLock);
+    },
+
+    /* Route wipe karo (RAM se permanent delete) */
+    _wipeRoute: function() {
+        if (this._ephemeralRoute) {
+            /* Overwrite before delete (best-effort) */
+            if (this._ephemeralRoute.seed) {
+                this._ephemeralRoute.seed = '0'.repeat(this._ephemeralRoute.seed.length);
+            }
+            if (this._ephemeralRoute.lock) {
+                this._ephemeralRoute.lock = '0'.repeat(64);
+            }
+            if (this._ephemeralRoute.key2) {
+                this._ephemeralRoute.key2 = '0'.repeat(64);
+            }
+            if (this._ephemeralRoute.routeId) {
+                this._ephemeralRoute.routeId = '0'.repeat(32);
+            }
+
+            this._ephemeralRoute.seed = null;
+            this._ephemeralRoute.lock = null;
+            this._ephemeralRoute.key2 = null;
+            this._ephemeralRoute.routeId = null;
+            this._ephemeralRoute.seedHash = null;
+            this._ephemeralRoute = null;
+
+            this._routeStats.wipeCount++;
+        }
+    },
+
+    /* Auto-wipe handlers install karo (unload + hidden) */
+    _installWipeHandlers: function() {
+        if (this._wipeHandlersInstalled) return;
+        this._wipeHandlersInstalled = true;
+
+        var self = this;
+
+        /* Page unload → wipe */
+        window.addEventListener('beforeunload', function() {
+            self._wipeRoute();
+            if (self._routeRotationTimer) {
+                clearInterval(self._routeRotationTimer);
+                self._routeRotationTimer = null;
+            }
+            console.log('%c🗑️ [v20] Route wiped on unload', 'color:#ff0064;font-weight:bold;');
+        });
+
+        /* Page hidden (mobile tab switch) → wipe */
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                self._wipeRoute();
+                console.log('%c🗑️ [v20] Route wiped on hidden', 'color:#ff0064;font-size:11px;');
+            }
+        });
+
+        /* Page freeze (mobile) → wipe */
+        window.addEventListener('pagehide', function() {
+            self._wipeRoute();
+        });
+    },
+
+    /* Route auto-rotation start karo (30s) */
+    _startRouteRotation: function() {
+        var self = this;
+
+        if (this._routeRotationTimer) {
+            clearInterval(this._routeRotationTimer);
+        }
+
+        this._routeRotationTimer = setInterval(function() {
+            if (document.hidden) return;
+            if (!self._key) return;
+
+            try {
+                self._wipeRoute();
+                self._initiateNewRoute(self._key);
+                console.log('%c🔄 [v20] Route rotated (30s)', 'color:#ffd700;font-size:11px;');
+            } catch (e) {
+                console.warn('[v20] Route rotation failed:', e.message);
+            }
+        }, this._ROUTE_ROTATE_INTERVAL);
+    },
+
+    /* ✅ Public: Ephemeral Key 2 generate karo */
+    generateEphemeralKey2: function(masterKey) {
+        if (!masterKey) {
+            masterKey = this._key;
+        }
+        if (!masterKey) {
+            throw new Error('Master key not available');
+        }
+
+        var route = this._initiateNewRoute(masterKey);
+        this._installWipeHandlers();
+        this._startRouteRotation();
+
+        return {
+            key2: route.key2,
+            routeId: route.routeId,
+            seedHash: route.seedHash,
+            ttl: route.ttl
+        };
+    },
+
+    /* ✅ Public: Current ephemeral route getter */
+    getEphemeralRoute: function() {
+        return this._ephemeralRoute;
+    },
+
+    /* ✅ Public: Route status (debug) */
+    getRouteStatus: function() {
+        if (!this._ephemeralRoute) {
+            return {
+                active: false,
+                totalRoutes: this._routeStats.totalRoutes,
+                wipeCount: this._routeStats.wipeCount
+            };
+        }
+
+        var age = Date.now() - this._ephemeralRoute.createdAt;
+        return {
+            active: true,
+            routeId: this._ephemeralRoute.routeId.substring(0, 12) + '...',
+            age: age + 'ms',
+            ttl: this._ephemeralRoute.ttl + 'ms',
+            expiresIn: Math.max(0, this._ephemeralRoute.ttl - age) + 'ms',
+            totalRoutes: this._routeStats.totalRoutes,
+            wipeCount: this._routeStats.wipeCount
+        };
+    },
+
+    /* ═══════════════════════════════════════════════════════
+       DEVICE FINGERPRINT (cache-safe)
        ═══════════════════════════════════════════════════════ */
     _getDeviceFingerprint: function(forceRefresh) {
         if (!forceRefresh && this._deviceFingerprint) return this._deviceFingerprint;
@@ -211,7 +416,7 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       FILE KEY (Key 2 — Public, per-file)
+       FILE KEY (Key 2 — Legacy, per-file random)
        ═══════════════════════════════════════════════════════ */
     generateFileKey: function() {
         var digits = '0123456789';
@@ -334,7 +539,7 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       AES-256 ENCRYPTION (v3 FORMAT — FIXED)
+       AES-256 ENCRYPTION (v3 FORMAT)
        ═══════════════════════════════════════════════════════ */
     _deriveAESKey: function(password, salt) {
         return CryptoJS.PBKDF2(password, salt, {
@@ -344,7 +549,6 @@ var KEY_MANAGER = {
         });
     },
 
-    /* ✅ v19 FIX: v3 format — v3:iv:ciphertext:hmac (4 parts) */
     encryptKey: function(originalKey, password) {
         try {
             var iv = CryptoJS.lib.WordArray.random(16);
@@ -356,25 +560,22 @@ var KEY_MANAGER = {
                 padding: CryptoJS.pad.Pkcs7
             });
 
-            /* ✅ HMAC key = originalKey itself (matches CodeEncryptor.html) */
             var hmac = CryptoJS.HmacSHA256(
                 iv.toString() + ':' + encrypted.toString(),
                 originalKey
             ).toString();
 
-            /* ✅ v3 format: v3:iv:ciphertext:hmac (4 parts) */
             return 'v3:' + iv.toString() + ':' + encrypted.toString() + ':' + hmac;
         } catch (e) {
             throw new Error('Encryption failed');
         }
     },
 
-    /* ✅ v19 FIX: Decrypt v3 (4-part) + v2 (5-part) + v1 (legacy) */
     decryptKey: function(encryptedKey, password) {
         try {
             var parts = encryptedKey.split(':');
 
-            /* ✅ v3 format: v3:iv:ciphertext:hmac (4 parts) — RECOMMENDED */
+            /* v3 format: v3:iv:ciphertext:hmac (4 parts) */
             if (parts[0] === 'v3' && parts.length === 4) {
                 var iv = CryptoJS.enc.Hex.parse(parts[1]);
                 var ciphertext = parts[2];
@@ -391,7 +592,6 @@ var KEY_MANAGER = {
                     throw new Error('Decryption failed');
                 }
 
-                /* ✅ Verify HMAC with decrypted originalKey */
                 var computedHmac = CryptoJS.HmacSHA256(
                     parts[1] + ':' + ciphertext,
                     decrypted
@@ -404,7 +604,7 @@ var KEY_MANAGER = {
                 return decrypted;
             }
 
-            /* v2 format: v2:salt:iv:ciphertext:hmac (5 parts) — legacy */
+            /* v2 format: v2:salt:iv:ciphertext:hmac (5 parts) */
             if (parts[0] === 'v2' && parts.length === 5) {
                 var aesSalt = CryptoJS.enc.Hex.parse(parts[1]);
                 var iv2 = CryptoJS.enc.Hex.parse(parts[2]);
@@ -559,7 +759,7 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       AUDIT LOGGING (v19 FIXED — this._MAX_HISTORY)
+       AUDIT LOGGING
        ═══════════════════════════════════════════════════════ */
     _logEvent: function(userId, action) {
         var self = this;
@@ -578,7 +778,6 @@ var KEY_MANAGER = {
                 fingerprint: deviceInfo.fingerprint
             });
 
-            /* ✅ v19 FIX: self._MAX_HISTORY (not KEY_MANAGER._MAX_HISTORY) */
             if (history.length > self._MAX_HISTORY) {
                 history = history.slice(-self._MAX_HISTORY);
             }
@@ -621,7 +820,6 @@ var KEY_MANAGER = {
         });
     },
 
-    /* ═══ CHECK KEY STATUS (v19 FIXED — legacy migration trigger) ═══ */
     checkKeyStatus: function(userId) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -631,7 +829,6 @@ var KEY_MANAGER = {
                 .then(function(snap) {
                     var data = snap.val();
 
-                    /* ✅ v19 FIX: keyVersion optional — legacy migration trigger */
                     if (data && data.passwordHash && data.salt && data.encryptedKey) {
                         self._hasPassword = true;
                         self._userId = userId;
@@ -667,7 +864,6 @@ var KEY_MANAGER = {
         });
     },
 
-    /* ═══ CREATE KEY + PASSWORD (v19 — with stats + audit) ═══ */
     createKeyAndPassword: function(user, password) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -722,7 +918,7 @@ var KEY_MANAGER = {
                                 salt: userSalt,
                                 encryptedKey: encryptedKey,
                                 keyVersion: self._KEY_VERSION,
-                                algorithm: 'aes-256-cbc-pbkdf2-sha256-600k-hmac',
+                                algorithm: 'aes-256-cbc-pbkdf2-sha256-600k-hmac-polymorphic',
                                 iterations: self._PBKDF2_ITER,
 
                                 stats: {
@@ -766,6 +962,11 @@ var KEY_MANAGER = {
                     self._initialized = true;
                     self._displayKey = self._makeMaskedKey(originalKey);
 
+                    /* ✅ v20: Route engine start */
+                    self._installWipeHandlers();
+                    self._initiateNewRoute(originalKey);
+                    self._startRouteRotation();
+
                     resolve({
                         success: true,
                         key: originalKey,
@@ -779,7 +980,6 @@ var KEY_MANAGER = {
         });
     },
 
-    /* ═══ UNLOCK KEY (v19 — rate limiting + audit) ═══ */
     unlockKey: function(user, password) {
         var self = this;
         return new Promise(function(resolve, reject) {
@@ -798,7 +998,6 @@ var KEY_MANAGER = {
                         return;
                     }
 
-                    /* ✅ v19 FIX: Set userSalt before decrypt */
                     self._userSalt = data.salt;
 
                     var isLegacy = !data.keyVersion || data.keyVersion < 17;
@@ -811,7 +1010,6 @@ var KEY_MANAGER = {
                 })
                 .then(function(result) {
                     if (result) {
-                        /* ✅ v19 FIX: Await clear before resolve */
                         self._clearRateLimit(user.uid)
                             .then(function() { resolve(result); })
                             .catch(function() { resolve(result); });
@@ -841,6 +1039,11 @@ var KEY_MANAGER = {
                 self._hasPassword = true;
                 self._initialized = true;
                 self._displayKey = self._makeMaskedKey(originalKey);
+
+                /* ✅ v20: Route engine start on unlock */
+                self._installWipeHandlers();
+                self._initiateNewRoute(originalKey);
+                self._startRouteRotation();
 
                 self._logEvent(user.uid, 'unlock_success').catch(function() {});
 
@@ -875,7 +1078,7 @@ var KEY_MANAGER = {
                             passwordHash: newHash,
                             encryptedKey: newEncryptedKey,
                             keyVersion: self._KEY_VERSION,
-                            algorithm: 'aes-256-cbc-pbkdf2-sha256-600k-hmac',
+                            algorithm: 'aes-256-cbc-pbkdf2-sha256-600k-hmac-polymorphic',
                             iterations: self._PBKDF2_ITER,
                             migratedAt: new Date().toISOString()
                         })
@@ -887,6 +1090,11 @@ var KEY_MANAGER = {
                             self._hasPassword = true;
                             self._initialized = true;
                             self._displayKey = self._makeMaskedKey(originalKey);
+
+                            /* ✅ v20: Route engine start on legacy unlock */
+                            self._installWipeHandlers();
+                            self._initiateNewRoute(originalKey);
+                            self._startRouteRotation();
 
                             self._logEvent(user.uid, 'unlock_migrated').catch(function() {});
 
@@ -913,6 +1121,14 @@ var KEY_MANAGER = {
         var self = this;
         return new Promise(function(resolve, reject) {
             if (!user || !user.uid) { reject(new Error('User required')); return; }
+
+            /* ✅ v20: Wipe route before delete */
+            self._wipeRoute();
+            if (self._routeRotationTimer) {
+                clearInterval(self._routeRotationTimer);
+                self._routeRotationTimer = null;
+            }
+
             self._safeFirebase().ref('users/' + user.uid + '/keyData').remove()
                 .then(function() { resolve({ success: true }); })
                 .catch(function() { reject(new Error('Failed to delete key')); });
@@ -920,7 +1136,7 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       UPDATE STATS (v19 FIXED — null-safe transaction)
+       UPDATE STATS
        ═══════════════════════════════════════════════════════ */
     updateEncryptionStats: function(userId, data) {
         if (!userId || !data) return Promise.resolve();
@@ -930,7 +1146,6 @@ var KEY_MANAGER = {
             .ref('users/' + userId + '/keyData/stats');
 
         return ref.transaction(function(current) {
-            /* ✅ v19 FIX: null-safe — create if missing */
             current = current || {};
 
             current.totalEncryptions = (current.totalEncryptions || 0) + 1;
@@ -946,7 +1161,7 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       FIREBASE AUTH TOKEN (v19 NEW)
+       FIREBASE AUTH TOKEN
        ═══════════════════════════════════════════════════════ */
     getAuthToken: function(forceRefresh) {
         var self = this;
@@ -969,7 +1184,7 @@ var KEY_MANAGER = {
 
             user.getIdToken(forceRefresh).then(function(token) {
                 self._cachedAuthToken = token;
-                self._authTokenExpiry = Date.now() + (50 * 60 * 1000); /* 50 min */
+                self._authTokenExpiry = Date.now() + (50 * 60 * 1000);
                 resolve(token);
             }).catch(function(err) {
                 reject(new Error('Failed to get auth token: ' + err.message));
@@ -978,13 +1193,12 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       SERVER-SIDE REGISTRATION (v19 NEW)
+       SERVER-SIDE REGISTRATION (v20 — routeId + seedHash)
        ═══════════════════════════════════════════════════════ */
     registerFileOnServer: function(payload) {
         var self = this;
         return new Promise(function(resolve, reject) {
             if (typeof firebase === 'undefined' || !firebase.functions) {
-                /* Functions not available — return local fallback */
                 resolve({
                     fileId: 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10),
                     serverRegistered: false
@@ -1001,7 +1215,8 @@ var KEY_MANAGER = {
                     dataIv: payload.dataIv,
                     key2Iv: payload.key2Iv,
                     hmac: payload.hmac,
-                    contextToken: payload.contextToken,
+                    routeId: payload.routeId || '',
+                    seedHash: payload.seedHash || '',
                     fileSize: payload.fileSize || 0,
                     fileCount: payload.fileCount || 1,
                     authToken: token
@@ -1015,7 +1230,6 @@ var KEY_MANAGER = {
             })
             .catch(function(err) {
                 console.warn('Server registration failed:', err);
-                /* Fallback to local fileId */
                 resolve({
                     fileId: 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10),
                     serverRegistered: false,
@@ -1026,9 +1240,9 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       SERVER-SIDE VERIFICATION (v19 NEW)
+       SERVER-SIDE VERIFICATION
        ═══════════════════════════════════════════════════════ */
-    verifyServerSide: function(fileId, contextToken, userPassword) {
+    verifyServerSide: function(fileId, routeId, userPassword) {
         var self = this;
         return new Promise(function(resolve, reject) {
             if (typeof firebase === 'undefined' || !firebase.functions) {
@@ -1041,7 +1255,7 @@ var KEY_MANAGER = {
             self.getAuthToken().then(function(token) {
                 return decryptFn({
                     fileId: fileId,
-                    contextToken: contextToken,
+                    routeId: routeId,
                     userPassword: userPassword,
                     authToken: token
                 });
@@ -1056,7 +1270,7 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       HEARTBEAT (v19 NEW — anti-tamper telemetry)
+       HEARTBEAT
        ═══════════════════════════════════════════════════════ */
     sendHeartbeat: function(event, data) {
         var self = this;
@@ -1072,6 +1286,9 @@ var KEY_MANAGER = {
             fingerprint: deviceInfo.fingerprint,
             timezone: deviceInfo.timezone,
             screen: deviceInfo.screen,
+            routeActive: !!self._ephemeralRoute,
+            routeAge: self._ephemeralRoute
+                ? (Date.now() - self._ephemeralRoute.createdAt) : null,
             data: data || {}
         };
 
@@ -1082,8 +1299,10 @@ var KEY_MANAGER = {
     },
 
     /* ═══════════════════════════════════════════════════════
-       BUILD / PARSE FILE METADATA (v19 NEW)
+       BUILD / PARSE FILE METADATA
        ═══════════════════════════════════════════════════════ */
+
+    /* v3 format (legacy) */
     buildFileMetadata: function(fileId, dataIv, encryptedData, key2Iv, encryptedKey2, hmac) {
         return 'v3:' + fileId + ':' +
                dataIv + ':' + encryptedData + ':' +
@@ -1106,6 +1325,59 @@ var KEY_MANAGER = {
         };
     },
 
+    /* ✅ v20: v4 format — routeId + seedHash (polymorphic) */
+    buildFileMetadataV4: function(fileId, dataIv, encryptedData, key2Iv, encryptedKey2, hmac, routeId, seedHash) {
+        return 'v4:' + fileId + ':' +
+               dataIv + ':' + encryptedData + ':' +
+               key2Iv + ':' + encryptedKey2 + ':' +
+               hmac + ':' + routeId + ':' + seedHash;
+    },
+
+    parseFileMetadataV4: function(metadata) {
+        var parts = metadata.split(':');
+        if (parts[0] !== 'v4' || parts.length < 9) {
+            return null;
+        }
+        return {
+            version: parts[0],
+            fileId: parts[1],
+            dataIv: parts[2],
+            encryptedData: parts[3],
+            key2Iv: parts[4],
+            encryptedKey2: parts[5],
+            hmac: parts[6],
+            routeId: parts[7],
+            seedHash: parts[8]
+        };
+    },
+
+    /* Unified parser — v4 → v3 → v2 → v1 */
+    parseAnyMetadata: function(metadata) {
+        if (!metadata) return null;
+        var parts = metadata.split(':');
+
+        if (parts[0] === 'v4') return this.parseFileMetadataV4(metadata);
+        if (parts[0] === 'v3') return this.parseFileMetadata(metadata);
+        if (parts[0] === 'v2') {
+            return {
+                version: 'v2',
+                salt: parts[1],
+                iv: parts[2],
+                ciphertext: parts[3],
+                hmac: parts[4]
+            };
+        }
+        if (parts.length === 3) {
+            return {
+                version: 'v1',
+                salt: parts[0],
+                iv: parts[1],
+                ciphertext: parts[2]
+            };
+        }
+        return null;
+    },
+
     /* ═══════════════════════════════════════════════════════
        GETTERS
        ═══════════════════════════════════════════════════════ */
@@ -1123,8 +1395,26 @@ var KEY_MANAGER = {
     hasPassword: function() { return this._hasPassword; },
     getDeviceFingerprint: function() { return this._getDeviceFingerprint(); },
     getFilePrefix: function() { return this._FILE_PREFIX; },
+    getKeyVersion: function() { return this._KEY_VERSION; },
 
+    /* ✅ v20: Route getters */
+    hasActiveRoute: function() {
+        if (!this._ephemeralRoute) return false;
+        return (Date.now() - this._ephemeralRoute.createdAt) <= this._ephemeralRoute.ttl;
+    },
+
+    /* ═══════════════════════════════════════════════════════
+       CLEAR (FULL WIPE)
+       ═══════════════════════════════════════════════════════ */
     clear: function() {
+        /* Wipe route first */
+        this._wipeRoute();
+
+        if (this._routeRotationTimer) {
+            clearInterval(this._routeRotationTimer);
+            this._routeRotationTimer = null;
+        }
+
         this._key = null;
         this._encryptedKey = null;
         this._displayKey = null;
@@ -1135,16 +1425,20 @@ var KEY_MANAGER = {
         this._hasPassword = false;
         this._cachedAuthToken = null;
         this._authTokenExpiry = 0;
+
+        console.log('%c🧹 [v20] KEY_MANAGER cleared (route + key wiped)', 'color:#ff0064;font-weight:bold;');
     }
 };
 
 window.KEY_MANAGER = KEY_MANAGER;
 
-console.log('%c🔐 Key Manager v19 HEAVY loaded',
+console.log('%c🔐 Key Manager v20 POLYMORPHIC HEAVY loaded',
     'color:#00ff64;font-weight:bold;font-size:14px;');
-console.log('%c⚡ AES-256-CBC + HMAC-SHA256 (v3 format) | PBKDF2-SHA256 600K',
+console.log('%c⚡ AES-256-CBC + HMAC-SHA256 (v3/v4 format) | PBKDF2-SHA256 600K',
     'color:#ffd700;font-size:11px;');
-console.log('%c📊 Audit Logging | Device Fingerprint | Server-Side Ready',
+console.log('%c🎲 Polymorphic Single-Use Handshake Engine | TTL 30s',
     'color:#00f0ff;font-size:11px;');
+console.log('%c🗑️ Auto-wipe: unload + hidden + pagehide | Route rotation',
+    'color:#ff0064;font-size:11px;');
 
 })();
