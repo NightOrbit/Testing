@@ -1511,12 +1511,18 @@ function generateDynamicTokens() {
 }
 
 function initDynamicTokens() {
+    /* Purani tokens delete karo (refresh simulation) */
+    try {
+        sessionStorage.removeItem('norb_session_id');
+        sessionStorage.removeItem('norb_refresh_id');
+        sessionStorage.removeItem('norb_key2_public');
+    } catch(e) {}
+
     var tokens = generateDynamicTokens();
     state.key2Public = tokens.key2Public;
     state.refreshId = tokens.refreshId;
     state.sessionId = tokens.sessionId;
 
-    /* Display public key badge */
     var badge = document.getElementById('publicKeyBadge');
     var text = document.getElementById('publicKeyText');
     if (badge && text) {
@@ -1529,9 +1535,47 @@ function initDynamicTokens() {
     console.log('   Refresh ID: ', tokens.refreshId);
     console.log('   Session ID: ', tokens.sessionId.substring(0, 16) + '...');
 
+    /* ✅ Server pe session register karo (Firebase Functions) */
+    if (typeof KEY_MANAGER !== 'undefined' && KEY_MANAGER.registerFileOnServer === undefined) {
+        /* Functions SDK nahi hai to skip */
+    }
+    if (typeof firebase !== 'undefined' && firebase.functions && firebase.auth().currentUser) {
+        try {
+            var createSession = firebase.functions().httpsCallable('createSession');
+            createSession({
+                sessionId: tokens.sessionId,
+                key2Public: tokens.key2Public,
+                refreshId: tokens.refreshId
+            }).then(function(result) {
+                if (result && result.data && result.data.success) {
+                    console.log('%c✅ Session registered on server', 'color:#00ff64;font-weight:bold;');
+                    /* Server ka sessionId use karo */
+                    if (result.data.sessionId) {
+                        state.sessionId = result.data.sessionId;
+                    }
+                }
+            }).catch(function(err) {
+                console.warn('Session registration failed:', err.message);
+            });
+        } catch(e) {
+            console.warn('Firebase Functions not available:', e);
+        }
+    }
+
+    /* ✅ Har 30 second pe naya token (session expire simulation) */
+    if (window._tokenRefreshInterval) clearInterval(window._tokenRefreshInterval);
+    window._tokenRefreshInterval = setInterval(function() {
+        if (document.hidden) return;
+        console.log('%c🔄 Token refresh (30s)', 'color:#ffd700;font-size:11px;');
+        var newTokens = generateDynamicTokens();
+        state.key2Public = newTokens.key2Public;
+        state.refreshId = newTokens.refreshId;
+        /* sessionId ko change MAT karo — warna context token invalid ho jaayega */
+    }, 30000);
+
     return tokens;
 }
-
+    
 /* ═══════════════════════════════════════════════════════════
    ✅ NEW v19: HONEYPOT CANARY
    ═══════════════════════════════════════════════════════════ */
@@ -2167,11 +2211,12 @@ function performEncrypt(secretKey) {
     }
 
     function finalizeEncryption() {
-        /* ✅ Step 7: v3 format output */
-        var finalOutput = KEY_MANAGER.buildFileMetadata ?
-            KEY_MANAGER.buildFileMetadata(fileId, dataIv.toString(), encryptedData.toString(), key2Iv.toString(), encryptedKey2.toString(), hmac) :
-            ('v3:' + fileId + ':' + dataIv.toString() + ':' + encryptedData.toString() + ':' + key2Iv.toString() + ':' + encryptedKey2.toString() + ':' + hmac);
-
+    /* ✅ Step 7: v3 format output (Key 2 Public bhi embed karo) */
+    var finalOutput = 'v3:' + fileId + ':' + 
+                      dataIv.toString() + ':' + encryptedData.toString() + ':' +
+                      key2Iv.toString() + ':' + encryptedKey2.toString() + ':' + 
+                      hmac + ':' + contextToken + ':' + state.key2Public;
+    
         document.getElementById('outputEnc').value = finalOutput;
         showStatus('success', '✅ Encrypted ' + bytes(totalSize) + ' → ' + bytes(new Blob([finalOutput]).size) + ' | Key 2: ' + key2.substring(0, 30) + '...');
         toast('Encrypted successfully with Key 2!', 'success');
@@ -2256,7 +2301,12 @@ window.openCodeDecryptor = function() {
 };
 
 /* ═══════════════════════════════════════════════════════════
-   v18: downloadDecryptor (preserved, upgraded for v3 format)
+   v19 HEAVY: downloadDecryptor
+   - Naya Key 2 function (refresh pe nayi)
+   - Context Token support
+   - Key 2 Public embed
+   - v3 format full read
+   - Server-side verification ready
    ═══════════════════════════════════════════════════════════ */
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
@@ -2274,6 +2324,23 @@ window.downloadDecryptor = function() {
         return;
     }
 
+    /* ═══ 1. v3 FORMAT PARSE (Key 2 Public + Context Token) ═══ */
+    var contextToken = '';
+    var key2Public = state.key2Public || '';
+    var parsedV3 = KEY_MANAGER.parseFileMetadata ? KEY_MANAGER.parseFileMetadata(out) : null;
+    if (parsedV3) {
+        contextToken = parsedV3.contextToken || '';
+        key2Public = parsedV3.key2Public || key2Public;
+    } else {
+        /* Manual parse agar KEY_MANAGER mein function na ho */
+        var v3parts = out.split(':');
+        if (v3parts[0] === 'v3' && v3parts.length >= 8) {
+            contextToken = v3parts[7] || '';
+            key2Public = v3parts[8] || key2Public;
+        }
+    }
+
+    /* ═══ 2. KEY FILE NAME GENERATE ═══ */
     function rndHex(len) {
         var c = 'abcdef0123456789';
         var s = '';
@@ -2284,6 +2351,7 @@ window.downloadDecryptor = function() {
 
     var encData = out;
 
+    /* ═══ 3. KEY 1 OBFUSCATION (sirf Key 1) ═══ */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
     if (suffix.length < 60) { while (suffix.length < 60) suffix += '0'; }
@@ -2341,6 +2409,7 @@ window.downloadDecryptor = function() {
     var qF = rv(6), qG = rv(5), qH = rv(4), qI = rv(4), qJ = rv(5);
     var qK = rv(5), qL = rv(5), qM = rv(5), qN = rv(4), qO = rv(5);
 
+    /* ═══ 4. KEY FILE CONTENT (Key 1 obfuscated) ═══ */
     var keyFileContent =
         '(function(){\n' +
         '"use strict";\n' +
@@ -2420,6 +2489,52 @@ window.downloadDecryptor = function() {
         '})();\n' +
         '<' + '/script>\n';
 
+    /* ═══ 5. NAYA KEY 2 FUNCTION (refresh pe nayi) ═══ */
+    var newKey2FunctionScript =
+        '<script>\n' +
+        '/* ✅ NAYA: Key 2 function — har refresh pe nayi (temporary) */\n' +
+        '(function(){\n' +
+        '  var KEY2_PREFIX = "NightOrbitGyidi_public_key_";\n' +
+        '  var REFRESH_KEY = "norb_key2_refresh_id";\n' +
+        '  \n' +
+        '  function generateRefreshId() {\n' +
+        '    var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";\n' +
+        '    var id = "";\n' +
+        '    for (var i = 0; i < 16; i++) id += chars.charAt(Math.floor(Math.random() * chars.length));\n' +
+        '    return id;\n' +
+        '  }\n' +
+        '  \n' +
+        '  function generateKey2Public() {\n' +
+        '    var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";\n' +
+        '    var k = "";\n' +
+        '    for (var i = 0; i < 11; i++) k += chars.charAt(Math.floor(Math.random() * chars.length));\n' +
+        '    return KEY2_PREFIX + k;\n' +
+        '  }\n' +
+        '  \n' +
+        '  /* Refresh detect — session storage */\n' +
+        '  var lastRefresh = sessionStorage.getItem(REFRESH_KEY);\n' +
+        '  var currentRefresh = generateRefreshId();\n' +
+        '  if (lastRefresh) {\n' +
+        '    console.log("[Key 2] Old refresh ID expired:", lastRefresh.substring(0,8) + "...");\n' +
+        '  }\n' +
+        '  sessionStorage.setItem(REFRESH_KEY, currentRefresh);\n' +
+        '  console.log("[Key 2] New refresh ID:", currentRefresh.substring(0,8) + "...");\n' +
+        '  \n' +
+        '  /* ✅ Har 30 second pe nayi Key 2 Public (session alive) */\n' +
+        '  window._0xK2 = generateKey2Public();\n' +
+        '  console.log("[Key 2] Active:", window._0xK2);\n' +
+        '  \n' +
+        '  setInterval(function(){\n' +
+        '    if (document.hidden) return;\n' +
+        '    var old = window._0xK2;\n' +
+        '    window._0xK2 = generateKey2Public();\n' +
+        '    console.log("[Key 2] Rotated. Old:", old.substring(0,20) + "...");\n' +
+        '    console.log("[Key 2] New:", window._0xK2);\n' +
+        '  }, 30000);\n' +
+        '})();\n' +
+        '<' + '/script>\n';
+
+    /* ═══ 6. DECRYPTOR HTML BUILD ═══ */
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -2429,6 +2544,10 @@ window.downloadDecryptor = function() {
         '<title id="pageTitle">Loading...</title>',
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
         '<script>(function(){var _a="' + encodedKeyFileName + '";var _b=atob(atob(_a));var _s=document.createElement("script");_s.src=_b;_s.async=false;_s.onload=function(){window._kf=1;};_s.onerror=function(){window._kf=0;};document.head.appendChild(_s);})();<' + '/script>',
+
+        /* ✅ NAYA: Key 2 function inject */
+        newKey2FunctionScript,
+
         '<style>',
         '*{margin:0;padding:0;box-sizing:border-box;}',
         'html,body{width:100%;min-height:100vh;}',
@@ -2460,6 +2579,9 @@ window.downloadDecryptor = function() {
         antiDebug,
         '<script>',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
+        'var CONTEXT_TOKEN=' + JSON.stringify(contextToken) + ';',
+        'var KEY2_PUBLIC=' + JSON.stringify(key2Public) + ';',
+
         '',
         'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
         '',
@@ -2626,14 +2748,20 @@ window.downloadDecryptor = function() {
         '    try{',
         '      var dec;',
         '      var parts=ENCRYPTED_DATA.split(":");',
-        '      if(parts[0]==="v3" && parts.length===7){',
-        '        /* ✅ v3 format: v3:fileId:dataIv:encryptedData:key2Iv:encryptedKey2:hmac */',
+        '      if(parts[0]==="v3" && parts.length>=7){',
+        '        /* ✅ v3 format: v3:fileId:dataIv:encryptedData:key2Iv:encryptedKey2:hmac[:contextToken[:key2Public]] */',
         '        var fileId=parts[1];',
         '        var dataIv=CryptoJS.enc.Hex.parse(parts[2]);',
         '        var encryptedData=parts[3];',
         '        var key2Iv=CryptoJS.enc.Hex.parse(parts[4]);',
         '        var encryptedKey2=parts[5];',
         '        var storedHmac=parts[6];',
+        '        var contextToken=parts[7]||"";',
+        '        var key2Public=parts[8]||"";',
+        '        console.log("[Decryptor] v3 format detected");',
+        '        console.log("[Decryptor] File ID:", fileId);',
+        '        console.log("[Decryptor] Context Token:", contextToken.substring(0,16)+"...");',
+        '        console.log("[Decryptor] Key 2 Public:", key2Public);',
         '        /* Verify HMAC with Key 1 */',
         '        var computedHmac=CryptoJS.HmacSHA256(parts[2]+":"+encryptedData+":"+parts[4]+":"+encryptedKey2+":"+fileId,window._0xSECRET).toString();',
         '        if(computedHmac!==storedHmac){',
@@ -2646,6 +2774,7 @@ window.downloadDecryptor = function() {
         '          padding:CryptoJS.pad.Pkcs7',
         '        }).toString(CryptoJS.enc.Utf8);',
         '        if(!key2||key2.length===0){throw new Error("Key 2 decryption failed");}',
+        '        console.log("[Decryptor] Key 2 decrypted successfully");',
         '        /* Data decrypt karo (Key 2 se) */',
         '        dec=CryptoJS.AES.decrypt(encryptedData,key2,{',
         '          iv:dataIv,',
@@ -2701,6 +2830,7 @@ window.downloadDecryptor = function() {
 
     var html = parts.join('\n');
 
+    /* ═══ 7. DOWNLOAD FILES ═══ */
     var htmlBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
     var htmlLink = document.createElement('a');
     htmlLink.href = URL.createObjectURL(htmlBlob);
@@ -2713,7 +2843,7 @@ window.downloadDecryptor = function() {
     keyLink.download = keyFileName;
     keyLink.click();
 
-    showStatus('success', '🎁 Decryptor + Key file downloaded! Keep both in same folder.');
+    showStatus('success', '🎁 Decryptor + Key file downloaded! (v19 + Key 2 Function)');
     toast('Decryptor + Key file downloaded!', 'success');
 
     setTimeout(function() {
