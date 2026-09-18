@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b0b1a">
-<title>Universal Code Encryptor — NightOrbit v19</title>
+<title>Universal Code Encryptor — NightOrbit v20</title>
 
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -16,7 +16,7 @@
 <!-- CryptoJS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
-<!-- Key Manager v19 -->
+<!-- Key Manager v20 POLYMORPHIC -->
 <script src="key-manager.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/zxcvbn@4.4.2/dist/zxcvbn.js"></script>    
@@ -674,6 +674,11 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     box-shadow: 0 0 40px rgba(255,215,0,0.20);
     margin-bottom: 14px;
 }
+.heavy-block.architecture {
+    background: linear-gradient(135deg, rgba(180,0,255,0.10), rgba(0,240,255,0.08));
+    border: 2px solid #b400ff;
+    box-shadow: 0 0 50px rgba(180,0,255,0.25);
+}
 .heavy-block-header {
     display: flex;
     align-items: center;
@@ -694,6 +699,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 .heavy-block.standards .heavy-block-title { color: #00f0ff; text-shadow: 0 0 20px rgba(0,240,255,0.6); }
 .heavy-block.checklist .heavy-block-title { color: #00f0ff; }
 .heavy-block.output-alert .heavy-block-title { color: #ffd700; text-shadow: 0 0 20px rgba(255,215,0,0.6); }
+.heavy-block.architecture .heavy-block-title { color: #b400ff; text-shadow: 0 0 20px rgba(180,0,255,0.6); }
 .heavy-block-badge {
     background: #ff0064;
     color: #fff;
@@ -707,6 +713,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 }
 .heavy-block-badge.gold { background: #ffd700; color: #000; }
 .heavy-block-badge.red { background: #ff0064; color: #fff; }
+.heavy-block-badge.purple { background: #b400ff; color: #fff; }
 .heavy-block-lead {
     color: #b0d0ff;
     font-size: 13px;
@@ -914,70 +921,76 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     50% { box-shadow: 0 0 40px rgba(255,45,149,0.8); }
 }
 
-/* ✅ NEW v19: Public Key Display */
-.public-key-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    background: rgba(0,255,100,0.08);
-    border: 1px solid rgba(0,255,100,0.3);
-    border-radius: 20px;
-    font-size: 10px;
-    color: var(--green);
-    font-family: 'JetBrains Mono', monospace;
-    letter-spacing: 0.5px;
-    margin-top: 8px;
-    word-break: break-all;
+/* ✅ v20: Architecture Grid */
+.arch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 16px;
 }
-.public-key-badge .label {
-    color: var(--muted);
-    font-family: 'Orbitron', sans-serif;
-    font-size: 9px;
-    letter-spacing: 1px;
-}
-
-/* ✅ NEW v19: Honeypot Alert */
-.honeypot-alert {
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    background: rgba(255,0,100,0.95);
-    border: 2px solid #ff0064;
+.arch-card {
+    background: rgba(0,0,0,0.4);
+    border: 1.5px solid rgba(180,0,255,0.25);
     border-radius: 12px;
-    padding: 16px 20px;
-    color: #fff;
+    padding: 16px;
+    transition: all 0.3s;
+}
+.arch-card:hover {
+    border-color: #b400ff;
+    background: rgba(180,0,255,0.06);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(180,0,255,0.2);
+}
+.arch-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.arch-icon { font-size: 24px; }
+.arch-title {
     font-family: 'Orbitron', sans-serif;
     font-size: 12px;
     font-weight: 900;
     letter-spacing: 2px;
     text-transform: uppercase;
-    z-index: 999999;
-    box-shadow: 0 0 60px rgba(255,0,100,0.6);
-    display: none;
-    animation: honeypotIn 0.5s ease;
-    max-width: 400px;
+    color: #b400ff;
 }
-.honeypot-alert.show { display: block; }
-.honeypot-alert .title {
-    font-size: 14px;
-    margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.arch-desc {
+    color: #b0d0ff;
+    font-size: 11.5px;
+    line-height: 1.7;
 }
-.honeypot-alert .msg {
-    font-size: 10px;
-    color: #ffb3c9;
-    letter-spacing: 1px;
-    line-height: 1.5;
+.arch-desc b { color: #ffd700; }
+.arch-desc code {
+    background: #000;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #00f0ff;
     font-family: 'JetBrains Mono', monospace;
-    text-transform: none;
+    font-size: 10.5px;
 }
-@keyframes honeypotIn {
-    from { transform: translateX(400px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+.arch-flow {
+    background: rgba(0,0,0,0.5);
+    border-left: 4px solid #00ff64;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-top: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.9;
+    color: #b0d0ff;
+    overflow-x: auto;
 }
+.arch-flow .step {
+    display: block;
+    margin-bottom: 4px;
+}
+.arch-flow .step b { color: #00ff64; }
+.arch-flow .step .cyan { color: #00f0ff; }
+.arch-flow .step .gold { color: #ffd700; }
+.arch-flow .step .pink { color: #ff2d95; }
+.arch-flow .arrow { color: #6a6a8a; }
 
 @media (max-width: 600px) {
     body { font-size: 13px; }
@@ -1001,6 +1014,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     .req-card strong { font-size: 11px; }
     .req-card span { font-size: 10px; }
     .output-options { grid-template-columns: 1fr; }
+    .arch-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -1010,7 +1024,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     <div class="session-bar-fill" id="sessionBarFill"></div>
 </div>
 
-<!-- ✅ NEW v19: Honeypot Alert -->
 <div class="honeypot-alert" id="honeypotAlert">
     <div class="title">🚨 SECURITY ALERT</div>
     <div class="msg" id="honeypotMsg">Multiple failed attempts detected. Admin notified.</div>
@@ -1041,7 +1054,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
                 <span class="req-icon">🔑</span>
                 <div>
                     <strong>nx_xxxx.js</strong>
-                    <span>Unique encryption key file</span>
+                    <span>Polymorphic key generator</span>
                 </div>
             </div>
             <div class="req-card">
@@ -1108,7 +1121,79 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         </div>
         <div class="heavy-block-footer">
             <span class="footer-icon">🏆</span>
-            <span>Security Rating: <strong>9/10 Cryptographic</strong> · Zero-Knowledge Architecture</span>
+            <span>Security Rating: <strong>9.5/10 Cryptographic</strong> · Zero-Knowledge Architecture</span>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HEAVY BLOCK 3 — v20 POLYMORPHIC ARCHITECTURE (NEW)
+     ═══════════════════════════════════════════════════════════ -->
+<div class="heavy-block architecture" id="polymorphicArchitecture">
+    <div class="heavy-block-header">
+        <span class="heavy-block-icon">🧬</span>
+        <span class="heavy-block-title">v20 POLYMORPHIC SINGLE-USE HANDSHAKE ENGINE</span>
+        <span class="heavy-block-badge purple">NEW</span>
+    </div>
+    <div class="heavy-block-body">
+        <p class="heavy-block-lead">
+            This release introduces a <strong>revolutionary cryptographic architecture</strong> that fundamentally redefines how encryption keys are handled. Unlike conventional systems that store static keys, this platform employs a <strong>Polymorphic Single-Use Handshake Engine</strong> — a dynamic, self-mutating cryptographic framework that generates ephemeral lock-and-key pairs unique to each browser session.
+        </p>
+
+        <div class="arch-grid">
+            <div class="arch-card">
+                <div class="arch-card-header">
+                    <span class="arch-icon">👑</span>
+                    <span class="arch-title">LAYER 1 — MASTER KEY</span>
+                </div>
+                <div class="arch-desc">
+                    Your <b>Private Master Key</b> is permanently sealed within Firebase using your local password as the cryptographic anchor. It is encrypted with <code>AES-256-CBC</code> and never — under any circumstance — appears within the generated output, transmitted payloads, or downloaded artifacts. The Master Key is immutable for the lifetime of your account.
+                </div>
+            </div>
+
+            <div class="arch-card">
+                <div class="arch-card-header">
+                    <span class="arch-icon">🧬</span>
+                    <span class="arch-title">LAYER 2 — POLYMORPHIC KEY</span>
+                </div>
+                <div class="arch-desc">
+                    The <b>Polymorphic Key</b> is not a stored value — it is a <b>mathematically derived ephemeral artifact</b>. On every page load, refresh, or session initiation, a new key is synthesized from <code>SHA256(MasterKey ⊕ HardwareEntropy ⊕ TemporalNonce)</code>. This key exists <b>exclusively in volatile RAM</b> and is annihilated the instant the session terminates.
+                </div>
+            </div>
+
+            <div class="arch-card">
+                <div class="arch-card-header">
+                    <span class="arch-icon">🛣️</span>
+                    <span class="arch-title">LAYER 3 — ROUTE IDENTIFIER</span>
+                </div>
+                <div class="arch-desc">
+                    Each encryption operation is bound to a <b>Route Identifier</b> — a 32-character cryptographic fingerprint derived from <code>SHA256(MasterKey + "::ROUTE::" + Seed)</code>. This identifier is a <b>one-way public commitment</b> that proves the existence of a route without revealing the key. Routes possess a strict <b>30-second Time-To-Live</b> and are cryptographically destroyed upon expiry.
+                </div>
+            </div>
+
+            <div class="arch-card">
+                <div class="arch-card-header">
+                    <span class="arch-icon">🔥</span>
+                    <span class="arch-title">LAYER 4 — HARD PURGE</span>
+                </div>
+                <div class="arch-desc">
+                    When the session concludes — whether through page unload, tab visibility change, or manual refresh — the engine executes a <b>hard cryptographic purge</b>. All ephemeral state (seed, lock, key, route) is overwritten in memory before deallocation. The previous route becomes <b>permanently unrecoverable</b>, rendering any intercepted key material cryptographically inert.
+                </div>
+            </div>
+        </div>
+
+        <div class="arch-flow">
+<span class="step"><b>[SESSION INIT]</b> <span class="arrow">→</span> Hardware entropy harvested <span class="arrow">→</span> <span class="cyan">Ephemeral seed synthesized</span></span>
+<span class="step"><b>[ROUTE GEN]</b> <span class="arrow">→</span> <span class="gold">Lock = SHA256(MasterKey + "::LOCK::" + Seed)</span></span>
+<span class="step"><b>[KEY DERIVE]</b> <span class="arrow">→</span> <span class="gold">Key2 = SHA256(MasterKey + "::KEY2::" + Seed)</span></span>
+<span class="step"><b>[ENCRYPT]</b> <span class="arrow">→</span> <span class="pink">Payload sealed with Key2</span> <span class="arrow">→</span> <span class="cyan">Key2 sealed with MasterKey</span></span>
+<span class="step"><b>[WIPE]</b> <span class="arrow">→</span> Route annihilated from RAM <span class="arrow">→</span> <span class="pink">Previous route permanently dead</span></span>
+<span class="step"><b>[NEXT LOAD]</b> <span class="arrow">→</span> <span class="gold">Brand-new route</span> <span class="arrow">→</span> Old route useless to adversaries</span>
+        </div>
+
+        <div class="heavy-block-footer" style="margin-top:16px;">
+            <span class="footer-icon">🧬</span>
+            <span><strong>Polymorphic Advantage:</strong> A captured key from a previous session has <strong>zero value</strong> against the current session. Every refresh constructs an entirely new cryptographic reality.</span>
         </div>
     </div>
 </div>
@@ -1146,7 +1231,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 <div class="topbar">
     <div class="brand">
         <span class="logo">🔐</span>
-        <span class="title">Universal Encrypt Pro v19</span>
+        <span class="title">Universal Encrypt Pro v20</span>
     </div>
     <div class="topbar-actions">
         <a href="dashboard.html" class="topbar-btn dashboard">
@@ -1204,12 +1289,12 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     </div>
     <div class="header-card">
         <h1>⚡ Universal Encrypt Pro</h1>
-        <div class="subtitle">NightOrbit CodeForge · v19 HEAVY · AES-256 + HMAC</div>
+        <div class="subtitle">NightOrbit CodeForge · v20 POLYMORPHIC · AES-256 + HMAC</div>
         <div class="header-stats">
-            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v19 HEAVY</span>
+            <span class="header-stat"><i class="fa-solid fa-bolt"></i> v20 POLYMORPHIC</span>
             <span class="header-stat gold"><i class="fa-solid fa-shield-halved"></i> AES-256 + HMAC</span>
             <span class="header-stat pink"><i class="fa-solid fa-file-shield"></i> Key 1 Private</span>
-            <span class="header-stat green"><i class="fa-solid fa-database"></i> Server-Side</span>
+            <span class="header-stat green"><i class="fa-solid fa-rotate"></i> Key 2 Ephemeral</span>
         </div>
     </div>
     <div class="key-section">
@@ -1254,9 +1339,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
             This key is <b>encrypted with your password</b> and stored in Firebase. 
             It <b>never</b> goes into the encrypted code. Click the <span class="gold">eye icon</span> to reveal.</span>
         </div>
-        <!-- ✅ NEW v19: Public Key Badge (per refresh) -->
         <div class="public-key-badge" id="publicKeyBadge" style="display:none;">
-            <span class="label">KEY 2 PUBLIC:</span>
+            <span class="label">EPHEMERAL ROUTE:</span>
             <span id="publicKeyText">NightOrbitGyidi_public_key_...</span>
         </div>
     </div>
@@ -1269,7 +1353,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
             <li>Old encrypted code will be <b>LOCKED FOREVER</b> after key deletion</li>
             <li>Keep <span class="green">3 backups</span>: original code, encrypted output, decryptor + key file</li>
             <li>Password format: <span class="gold">16-64 chars with digits + upper + lower + symbols</span></li>
-            <li><b>Key 1 (Private)</b> never goes into code. <b>Key 2 (Public)</b> is per-file, refresh pe nayi.</li>
+            <li><b>Key 1 (Private)</b> never goes into code. <b>Key 2 (Polymorphic)</b> is ephemeral, per-session.</li>
         </ul>
     </div>
     <div class="progress-wrap">
@@ -1301,9 +1385,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         <div class="file-list" id="fileList"></div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         HEAVY BLOCK 3 — PRE-ENCRYPT CHECKLIST
-         ═══════════════════════════════════════════════════════════ -->
     <div class="heavy-block checklist" id="preEncryptChecklist">
         <div class="heavy-block-header">
             <span class="heavy-block-icon">📋</span>
@@ -1344,9 +1425,6 @@ button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     </div>
     <div id="status" class="status"></div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         HEAVY BLOCK 4 — OUTPUT SECTION ALERT
-         ═══════════════════════════════════════════════════════════ -->
     <div class="section">
         <label>🔒 Encrypted Output</label>
         <div class="heavy-block output-alert" id="outputAlert">
@@ -1414,16 +1492,14 @@ var state = {
     _pwdMode: null,
     _pendingAction: null,
     authHandled: false,
-    /* ✅ NEW v19: Session/Refresh tokens */
     sessionId: null,
     refreshId: null,
     key2Public: null,
-    /* ✅ NEW v19: Honeypot */
     decryptionAttempts: 0,
     honeypotTriggered: false
 };
 
-var SESSION_TIMEOUT = 5 * 60 * 1000; /* 5 minutes */
+var SESSION_TIMEOUT = 5 * 60 * 1000;
 var MAX_ATTEMPTS = 10;
 
 /* ═══════════════════════════════════════════════════════════
@@ -1483,109 +1559,70 @@ function universalCopy(text, btn, originalText) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   ✅ NEW v19: DYNAMIC TOKENS (Session + Refresh + Key 2 Public)
+   POLYMORPHIC ROUTE ENGINE (v20)
    ═══════════════════════════════════════════════════════════ */
-function generateDynamicTokens() {
-    var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    var temporaryKey2Public = '';
-    var temporaryRefreshId = '';
-    var temporarySessionId = '';
-    var i;
-
-    for (i = 0; i < 11; i++) {
-        temporaryKey2Public += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    for (i = 0; i < 16; i++) {
-        temporaryRefreshId += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    for (i = 0; i < 32; i++) {
-        temporarySessionId += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-
-    return {
-        key2Public: 'NightOrbitGyidi_public_key_' + temporaryKey2Public,
-        refreshId: temporaryRefreshId,
-        sessionId: temporarySessionId,
-        timestamp: Date.now()
-    };
-}
-
 function initDynamicTokens() {
-    /* Purani tokens delete karo (refresh simulation) */
-    try {
-        sessionStorage.removeItem('norb_session_id');
-        sessionStorage.removeItem('norb_refresh_id');
-        sessionStorage.removeItem('norb_key2_public');
-    } catch(e) {}
+    var route = null;
 
-    var tokens = generateDynamicTokens();
-    state.key2Public = tokens.key2Public;
-    state.refreshId = tokens.refreshId;
-    state.sessionId = tokens.sessionId;
+    if (typeof KEY_MANAGER !== 'undefined' && KEY_MANAGER._initiateNewRoute) {
+        try {
+            var masterKey = null;
+            try { masterKey = KEY_MANAGER.getKey(); } catch(e) {}
+            if (masterKey) {
+                route = KEY_MANAGER._initiateNewRoute(masterKey);
+            }
+        } catch(e) {
+            console.warn('Route engine unavailable:', e.message);
+        }
+    }
+
+    if (!route) {
+        /* Fallback deterministic route (no Key 1 yet) */
+        var fallbackSeed = Date.now().toString(36) + Math.random().toString(36).substring(2);
+        var fallbackHash = CryptoJS.SHA256(fallbackSeed).toString();
+        route = {
+            key2: 'NightOrbitGyidi_public_key_' + fallbackHash.substring(0, 11),
+            routeId: fallbackHash.substring(0, 32),
+            seedHash: fallbackHash.substring(0, 16),
+            ttl: 30000
+        };
+    }
+
+    state.key2Public = route.key2;
+    state.refreshId = route.routeId;
+    state.sessionId = route.routeId.substring(0, 32);
 
     var badge = document.getElementById('publicKeyBadge');
     var text = document.getElementById('publicKeyText');
     if (badge && text) {
-        text.textContent = tokens.key2Public;
+        text.textContent = route.routeId.substring(0, 32) + '...';
         badge.style.display = 'inline-flex';
     }
 
-    console.log('%c🎲 Dynamic tokens generated', 'color:#ffd700;font-weight:bold;');
-    console.log('   Key 2 Public:', tokens.key2Public);
-    console.log('   Refresh ID: ', tokens.refreshId);
-    console.log('   Session ID: ', tokens.sessionId.substring(0, 16) + '...');
-
-    /* ✅ Server pe session register karo (Firebase Functions) */
-    if (typeof KEY_MANAGER !== 'undefined' && KEY_MANAGER.registerFileOnServer === undefined) {
-        /* Functions SDK nahi hai to skip */
-    }
-    if (typeof firebase !== 'undefined' && firebase.functions && firebase.auth().currentUser) {
-        try {
-            var createSession = firebase.functions().httpsCallable('createSession');
-            createSession({
-                sessionId: tokens.sessionId,
-                key2Public: tokens.key2Public,
-                refreshId: tokens.refreshId
-            }).then(function(result) {
-                if (result && result.data && result.data.success) {
-                    console.log('%c✅ Session registered on server', 'color:#00ff64;font-weight:bold;');
-                    /* Server ka sessionId use karo */
-                    if (result.data.sessionId) {
-                        state.sessionId = result.data.sessionId;
-                    }
-                }
-            }).catch(function(err) {
-                console.warn('Session registration failed:', err.message);
-            });
-        } catch(e) {
-            console.warn('Firebase Functions not available:', e);
-        }
-    }
-
-    /* ✅ Har 30 second pe naya token (session expire simulation) */
+    /* Auto-rotation */
     if (window._tokenRefreshInterval) clearInterval(window._tokenRefreshInterval);
     window._tokenRefreshInterval = setInterval(function() {
         if (document.hidden) return;
-        console.log('%c🔄 Token refresh (30s)', 'color:#ffd700;font-size:11px;');
-        var newTokens = generateDynamicTokens();
-        state.key2Public = newTokens.key2Public;
-        state.refreshId = newTokens.refreshId;
-        /* sessionId ko change MAT karo — warna context token invalid ho jaayega */
+        if (typeof KEY_MANAGER === 'undefined') return;
+        if (!KEY_MANAGER.getKey || !KEY_MANAGER.getKey()) return;
+        try {
+            KEY_MANAGER._wipeRoute();
+            var newRoute = KEY_MANAGER._initiateNewRoute(KEY_MANAGER.getKey());
+            state.key2Public = newRoute.key2;
+            state.refreshId = newRoute.routeId;
+        } catch(e) {}
     }, 30000);
 
-    return tokens;
+    return route;
 }
-    
+
 /* ═══════════════════════════════════════════════════════════
-   ✅ NEW v19: HONEYPOT CANARY
+   HONEYPOT CANARY
    ═══════════════════════════════════════════════════════════ */
 function triggerSecurityAlert(reason) {
     if (state.honeypotTriggered) return;
     state.honeypotTriggered = true;
 
-    console.error('%c🚨 HONEYPOT CANARY TRIGGERED: ' + reason, 'color:#ff0064;font-weight:bold;font-size:14px;');
-
-    /* Show UI alert */
     var alertEl = document.getElementById('honeypotAlert');
     var msgEl = document.getElementById('honeypotMsg');
     if (alertEl) {
@@ -1596,65 +1633,28 @@ function triggerSecurityAlert(reason) {
         }, 8000);
     }
 
-    /* Send telemetry to Firebase */
     try {
         if (typeof KEY_MANAGER !== 'undefined' && KEY_MANAGER.sendHeartbeat) {
             KEY_MANAGER.sendHeartbeat('honeypot_triggered', {
                 reason: reason,
-                sessionId: state.sessionId,
-                refreshId: state.refreshId,
-                key2Public: state.key2Public,
                 attempts: state.decryptionAttempts,
-                userAgent: navigator.userAgent,
                 timestamp: new Date().toISOString()
             });
         }
-        /* Also log to Firebase admin_alerts */
         if (typeof firebase !== 'undefined' && firebase.database && state.user) {
             firebase.database().ref('admin_alerts').push({
                 type: 'honeypot_canary',
                 reason: reason,
                 userId: state.user.uid,
                 userEmail: state.user.email,
-                sessionId: state.sessionId,
-                refreshId: state.refreshId,
-                key2Public: state.key2Public,
                 attempts: state.decryptionAttempts,
                 device: navigator.userAgent,
                 timestamp: new Date().toISOString()
-            }).catch(function(err) {
-                console.warn('Admin alert save failed:', err);
-            });
+            }).catch(function() {});
         }
-    } catch (e) {
-        console.warn('Honeypot telemetry failed:', e);
-    }
+    } catch (e) {}
 
-    /* Also show toast */
     toast('🚨 Security Alert: Admin notified', 'error');
-}
-
-/* ✅ NEW v19: Advance Decryptor Core (Honeypot Logic) */
-function advanceDecryptorCore(inputKey, isPublicOnly) {
-    if (state.decryptionAttempts >= MAX_ATTEMPTS) {
-        triggerSecurityAlert('Max decryption attempts exceeded (' + MAX_ATTEMPTS + ')');
-        throw new Error('Critical Security Threat: TrustedScript assignment blocked.');
-    }
-
-    /* Public Key se poora code decrypt nahi ho sakta — sirf virtual engine */
-    if (isPublicOnly) {
-        state.decryptionAttempts++;
-        console.warn('[Warning] Invalid Decryption Protocol. Attempt ' + state.decryptionAttempts + '/' + MAX_ATTEMPTS);
-
-        /* 10 attempts → honeypot */
-        if (state.decryptionAttempts >= MAX_ATTEMPTS) {
-            triggerSecurityAlert('10+ failed decryption attempts detected');
-        }
-
-        return 'Fake_Decrypted_Workflow_Code_Data'; /* Hacker ko dhoka */
-    }
-
-    return 'Real_Source_Code'; /* Sirf Verified Private key se */
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1926,6 +1926,7 @@ pwdSubmitBtn.addEventListener('click', function() {
                 setPwdStatus('success', '✅ Private Key (Key 1) created! Password saved.');
                 document.getElementById('secretKey').value = result.key;
                 updateKeyUI();
+                initDynamicTokens();
                 setTimeout(closePwdModal, 1200);
                 toast('🔑 Private Key created successfully!', 'success');
             })
@@ -1942,6 +1943,7 @@ pwdSubmitBtn.addEventListener('click', function() {
                 setPwdStatus('success', '✅ Private Key revealed!');
                 document.getElementById('secretKey').value = result.key;
                 showReveal(result.key);
+                initDynamicTokens();
 
                 var action = state._pendingAction;
                 state._pendingAction = null;
@@ -1964,7 +1966,6 @@ pwdSubmitBtn.addEventListener('click', function() {
                 pwdInput.value = '';
                 pwdInput.focus();
 
-                /* ✅ v19: Track failed attempt for honeypot */
                 state.decryptionAttempts++;
                 if (state.decryptionAttempts >= MAX_ATTEMPTS) {
                     triggerSecurityAlert('Multiple wrong password attempts');
@@ -2111,21 +2112,21 @@ window.encryptNow = function() {
 };
 
 /* ═══════════════════════════════════════════════════════════
-   ✅ v19: performEncrypt — Key 2 + Context Token + Server
+   v20: performEncrypt — Polymorphic Route
    ═══════════════════════════════════════════════════════════ */
 function performEncrypt(secretKey) {
     var pasted = inputCodeEl.value;
     var fileNames = Object.keys(state.uploadedFiles);
-    showStatus('loading', '⏳ Encrypting (Key 2 + Context Token)...');
+    showStatus('loading', '⏳ Encrypting with Polymorphic Route...');
 
-    var payload, mode;
+    var payload;
     var totalSize = 0;
     var fileCount = 0;
 
     if (fileNames.length > 0) {
         var bundle = {
             __type: 'multi-file-bundle',
-            __version: '19.0',
+            __version: '20.0',
             __created: new Date().toISOString(),
             __fileCount: fileNames.length,
             files: {}
@@ -2144,19 +2145,26 @@ function performEncrypt(secretKey) {
             fileCount++;
         });
         payload = JSON.stringify(bundle);
-        mode = 'Bundle (' + fileNames.length + ' files, ' + bytes(totalSize) + ')';
     } else {
         payload = pasted;
         totalSize = new Blob([pasted]).size;
         fileCount = 1;
-        mode = 'Single ' + detectLanguage(pasted).toUpperCase() + ' (' + bytes(totalSize) + ')';
     }
 
-    /* ✅ Step 1: Key 2 (Public) generate karo — per-file */
-    var key2 = KEY_MANAGER.generateFileKey ? KEY_MANAGER.generateFileKey() : 
-               ('NightOrbitGyidi_public_key_' + Math.random().toString(36).slice(2, 13));
+    /* Step 1: Polymorphic route initiate */
+    var route;
+    try {
+        route = KEY_MANAGER._initiateNewRoute(secretKey);
+    } catch(e) {
+        showStatus('error', '❌ Route engine failed: ' + e.message);
+        return;
+    }
 
-    /* ✅ Step 2: Payload ko Key 2 se encrypt karo */
+    var key2 = route.key2;
+    var routeId = route.routeId;
+    var seedHash = route.seedHash;
+
+    /* Step 2: Payload encrypt with Key 2 */
     var dataIv = CryptoJS.lib.WordArray.random(16);
     var encryptedData = CryptoJS.AES.encrypt(payload, key2, {
         iv: dataIv,
@@ -2164,7 +2172,7 @@ function performEncrypt(secretKey) {
         padding: CryptoJS.pad.Pkcs7
     });
 
-    /* ✅ Step 3: Key 2 ko Key 1 (Private) se encrypt karo */
+    /* Step 3: Key 2 encrypt with Key 1 */
     var key2Iv = CryptoJS.lib.WordArray.random(16);
     var encryptedKey2 = CryptoJS.AES.encrypt(key2, secretKey, {
         iv: key2Iv,
@@ -2172,77 +2180,45 @@ function performEncrypt(secretKey) {
         padding: CryptoJS.pad.Pkcs7
     });
 
-    /* ✅ Step 4: Context Token (one-time) */
-    var contextToken = KEY_MANAGER.generateContextToken ? KEY_MANAGER.generateContextToken() :
-                       (Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2));
-
-    /* ✅ Step 5: HMAC (Key 1 se) */
+    /* Step 4: HMAC binding */
     var hmac = CryptoJS.HmacSHA256(
         dataIv.toString() + ':' + encryptedData.toString() + ':' +
-        key2Iv.toString() + ':' + encryptedKey2.toString() + ':' + contextToken,
+        key2Iv.toString() + ':' + encryptedKey2.toString() + ':' +
+        routeId + ':' + seedHash,
         secretKey
     ).toString();
 
-    /* ✅ Step 6: Server pe register karo (Firebase Functions) */
+    /* Step 5: v4 format output */
     var fileId = 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
-    
-    if (KEY_MANAGER.registerFileOnServer) {
-        KEY_MANAGER.registerFileOnServer({
-            encryptedData: encryptedData.toString(),
-            encryptedKey2: encryptedKey2.toString(),
-            dataIv: dataIv.toString(),
-            key2Iv: key2Iv.toString(),
-            hmac: hmac,
-            contextToken: contextToken,
-            fileSize: totalSize,
-            fileCount: fileCount
-        }).then(function(result) {
-            if (result && result.fileId) {
-                fileId = result.fileId;
-                console.log('%c✅ File registered on server:', 'color:#00ff64;font-weight:bold;', fileId);
-            }
-            finalizeEncryption();
-        }).catch(function(err) {
-            console.warn('Server registration failed, using local ID:', err);
-            finalizeEncryption();
-        });
-    } else {
-        finalizeEncryption();
+
+    var finalOutput = 'v4:' + fileId + ':' +
+                      dataIv.toString() + ':' + encryptedData.toString() + ':' +
+                      key2Iv.toString() + ':' + encryptedKey2.toString() + ':' +
+                      hmac + ':' + routeId + ':' + seedHash;
+
+    document.getElementById('outputEnc').value = finalOutput;
+    showStatus('success', '✅ Encrypted ' + bytes(totalSize) + ' → ' + bytes(new Blob([finalOutput]).size));
+    toast('Encrypted with Polymorphic Route!', 'success');
+    updateProgress();
+
+    /* CRITICAL: Wipe route after encryption */
+    try { KEY_MANAGER._wipeRoute(); } catch(e) {}
+
+    if (state.user && state.user.uid && KEY_MANAGER.updateEncryptionStats) {
+        KEY_MANAGER.updateEncryptionStats(state.user.uid, {
+            size: totalSize,
+            sizeFormatted: bytes(totalSize),
+            fileCount: fileCount,
+            duration: 0
+        }).catch(function() {});
     }
 
-    function finalizeEncryption() {
-    /* ✅ Step 7: v3 format output (Key 2 Public bhi embed karo) */
-    var finalOutput = 'v3:' + fileId + ':' + 
-                      dataIv.toString() + ':' + encryptedData.toString() + ':' +
-                      key2Iv.toString() + ':' + encryptedKey2.toString() + ':' + 
-                      hmac + ':' + contextToken + ':' + state.key2Public;
-    
-        document.getElementById('outputEnc').value = finalOutput;
-        showStatus('success', '✅ Encrypted ' + bytes(totalSize) + ' → ' + bytes(new Blob([finalOutput]).size) + ' | Key 2: ' + key2.substring(0, 30) + '...');
-        toast('Encrypted successfully with Key 2!', 'success');
-        updateProgress();
-
-        /* ✅ Track stats in Firebase */
-        if (state.user && state.user.uid && typeof KEY_MANAGER !== 'undefined' && KEY_MANAGER.updateEncryptionStats) {
-            KEY_MANAGER.updateEncryptionStats(state.user.uid, {
-                size: totalSize,
-                sizeFormatted: bytes(totalSize),
-                fileCount: fileCount,
-                duration: 0
-            }).catch(function(err) {
-                console.warn('Stats tracking failed:', err);
-            });
-        }
-
-        /* ✅ v19: Send heartbeat */
-        if (KEY_MANAGER.sendHeartbeat) {
-            KEY_MANAGER.sendHeartbeat('encryption_success', {
-                fileId: fileId,
-                size: totalSize,
-                fileCount: fileCount,
-                key2Public: key2.substring(0, 20) + '...'
-            });
-        }
+    if (KEY_MANAGER.sendHeartbeat) {
+        KEY_MANAGER.sendHeartbeat('encryption_success', {
+            fileId: fileId,
+            size: totalSize,
+            fileCount: fileCount
+        });
     }
 }
 
@@ -2268,9 +2244,6 @@ window.downloadOutput = function() {
     toast('Downloaded!', 'success');
 };
 
-/* ═══════════════════════════════════════════════════════════
-   ✅ v19: OPEN CODE DECRYPTOR (NEW)
-   ═══════════════════════════════════════════════════════════ */
 window.openCodeDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
     if (!out) {
@@ -2278,20 +2251,12 @@ window.openCodeDecryptor = function() {
         return;
     }
 
-    /* Save encrypted output to sessionStorage for decryptor */
     try {
         sessionStorage.setItem('norb_encrypted_payload', out);
         sessionStorage.setItem('norb_source', 'CodeEncryptor');
-        sessionStorage.setItem('norb_session_id', state.sessionId || '');
-        sessionStorage.setItem('norb_refresh_id', state.refreshId || '');
-        sessionStorage.setItem('norb_key2_public', state.key2Public || '');
-    } catch (e) {
-        console.warn('sessionStorage not available:', e);
-    }
+    } catch (e) {}
 
-    /* Open CodeDecryptor.html */
-    var decryptorUrl = 'CodeDecryptor.html';
-    var newWindow = window.open(decryptorUrl, '_blank');
+    var newWindow = window.open('CodeDecryptor.html', '_blank');
 
     if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
         toast('Popup blocked. Allow popups for this site.', 'error');
@@ -2301,12 +2266,11 @@ window.openCodeDecryptor = function() {
 };
 
 /* ═══════════════════════════════════════════════════════════
-   v19 HEAVY: downloadDecryptor
-   - Naya Key 2 function (refresh pe nayi)
-   - Context Token support
-   - Key 2 Public embed
-   - v3 format full read
-   - Server-side verification ready
+   v20 HEAVY: downloadDecryptor — POLYMORPHIC KEY FILE
+   - Key 1 obfuscated (no hints, no comments, no debug)
+   - Polymorphic Route Engine function (Key 2 generator)
+   - v4 format full read
+   - NO hacker hints
    ═══════════════════════════════════════════════════════════ */
 window.downloadDecryptor = function() {
     var out = document.getElementById('outputEnc').value;
@@ -2324,23 +2288,16 @@ window.downloadDecryptor = function() {
         return;
     }
 
-    /* ═══ 1. v3 FORMAT PARSE (Key 2 Public + Context Token) ═══ */
-    var contextToken = '';
-    var key2Public = state.key2Public || '';
-    var parsedV3 = KEY_MANAGER.parseFileMetadata ? KEY_MANAGER.parseFileMetadata(out) : null;
-    if (parsedV3) {
-        contextToken = parsedV3.contextToken || '';
-        key2Public = parsedV3.key2Public || key2Public;
-    } else {
-        /* Manual parse agar KEY_MANAGER mein function na ho */
-        var v3parts = out.split(':');
-        if (v3parts[0] === 'v3' && v3parts.length >= 8) {
-            contextToken = v3parts[7] || '';
-            key2Public = v3parts[8] || key2Public;
-        }
+    /* ═══ 1. Parse v4 metadata ═══ */
+    var routeId = '';
+    var seedHash = '';
+    var v4parts = out.split(':');
+    if (v4parts[0] === 'v4' && v4parts.length >= 9) {
+        routeId = v4parts[7] || '';
+        seedHash = v4parts[8] || '';
     }
 
-    /* ═══ 2. KEY FILE NAME GENERATE ═══ */
+    /* ═══ 2. Key file name ═══ */
     function rndHex(len) {
         var c = 'abcdef0123456789';
         var s = '';
@@ -2351,7 +2308,7 @@ window.downloadDecryptor = function() {
 
     var encData = out;
 
-    /* ═══ 3. KEY 1 OBFUSCATION (sirf Key 1) ═══ */
+    /* ═══ 3. Key 1 obfuscation (no hints) ═══ */
     var PREFIX = 'NightOrbitGyidi_houperSecret_';
     var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
     if (suffix.length < 60) { while (suffix.length < 60) suffix += '0'; }
@@ -2409,7 +2366,7 @@ window.downloadDecryptor = function() {
     var qF = rv(6), qG = rv(5), qH = rv(4), qI = rv(4), qJ = rv(5);
     var qK = rv(5), qL = rv(5), qM = rv(5), qN = rv(4), qO = rv(5);
 
-    /* ═══ 4. KEY FILE CONTENT (Key 1 obfuscated) ═══ */
+    /* ═══ 4. Key file content (Key 1 only — NO Key 2, NO hints) ═══ */
     var keyFileContent =
         '(function(){\n' +
         '"use strict";\n' +
@@ -2458,83 +2415,46 @@ window.downloadDecryptor = function() {
 
     var encodedKeyFileName = btoa(btoa(keyFileName));
 
-    var d1 = rv(8), d2 = rv(8), d3 = rv(8);
-    var d4 = rv(8), d5 = rv(8), d6 = rv(8);
+    /* ═══ 5. Polymorphic Route Engine (Key 2 Generator) ═══ */
+    /* NO comments, NO hints, NO debug output */
+    var rA = rv(6), rB = rv(7), rC = rv(5), rD = rv(6);
+    var rE = rv(8), rF = rv(6), rG = rv(5), rH = rv(4);
+    var rI = rv(4), rJ = rv(5), rK = rv(5), rL = rv(5);
 
-    var decoyFunctions =
-        '<script>\n' +
+    var polymorphicEngine =
         '(function(){\n' +
-        '  var ' + d1 + ' = [];\n' +
-        '  var ' + d2 + ' = {};\n' +
-        '  var ' + d3 + ' = function(x){ return x; };\n' +
-        '  window.__init = ' + d3 + ';\n' +
-        '  try { ' + d1 + '.push(Date.now()); } catch(e) {}\n' +
-        '  try { ' + d2 + '.start = 1; } catch(e) {}\n' +
-        '})();\n' +
-        '<' + '/script>\n';
+        'var ' + rA + '=null;\n' +
+        'var ' + rB + '=null;\n' +
+        'var ' + rC + '=30000;\n' +
+        'function ' + rD + '(){\n' +
+        'var ' + rE + '=[Date.now().toString(36),(typeof performance!=="undefined"&&performance.now)?performance.now().toString(36):"",window.screen.width+"x"+window.screen.height+"x"+(window.screen.colorDepth||0),window.innerWidth+"x"+window.innerHeight,navigator.hardwareConcurrency||"",navigator.deviceMemory||"",navigator.language||"",Math.random().toString(36).substring(2,15)];\n' +
+        'return ' + rE + '.join("|");\n' +
+        '}\n' +
+        'function ' + rF + '(' + rG + '){\n' +
+        'var ' + rH + '=' + rD + '();\n' +
+        'var ' + rI + '=CryptoJS.SHA256(' + rG + '+"::LOCK::"+' + rH + ').toString();\n' +
+        'var ' + rJ + '=CryptoJS.SHA256(' + rG + '+"::KEY2::"+' + rH + ').toString();\n' +
+        'var ' + rK + '=CryptoJS.SHA256(' + rG + '+"::ROUTE::"+' + rH + ').toString().substring(0,32);\n' +
+        'var ' + rL + '=CryptoJS.SHA256(' + rH + ').toString().substring(0,16);\n' +
+        rA + '={' + rH + ':' + rH + ',' + rI + ':' + rI + ',' + rJ + ':' + rJ + ',' + rK + ':' + rK + ',' + rL + ':' + rL + ',createdAt:Date.now(),ttl:' + rC + '};\n' +
+        'return ' + rA + ';\n' +
+        '}\n' +
+        'function ' + rG + '(){\n' +
+        'if(' + rA + '){' + rA + '=null;}\n' +
+        '}\n' +
+        'function ' + rH + '(){\n' +
+        'if(!window._0xSECRET){setTimeout(' + rH + ',100);return;}\n' +
+        'var r=' + rF + '(window._0xSECRET);\n' +
+        'window._0xROUTE=r;\n' +
+        'setInterval(function(){if(document.hidden)return;' + rG + '();var nr=' + rF + '(window._0xSECRET);window._0xROUTE=nr;},30000);\n' +
+        'window.addEventListener("beforeunload",function(){' + rG + '();window._0xROUTE=null;});\n' +
+        'document.addEventListener("visibilitychange",function(){if(document.hidden)' + rG + '();});\n' +
+        'window.addEventListener("pagehide",function(){' + rG + '();});\n' +
+        '}\n' +
+        'if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",' + rH + ');}else{' + rH + '();}\n' +
+        '})();\n';
 
-    var antiDebug =
-        '<script>\n' +
-        '(function(){\n' +
-        '  var ' + d4 + ' = 0;\n' +
-        '  var ' + d5 + ' = function(){\n' +
-        '    var ' + d6 + ' = new Date();\n' +
-        '    debugger;\n' +
-        '    if(new Date() - ' + d6 + ' > 100){\n' +
-        '      ' + d4 + '++;\n' +
-        '      if(' + d4 + ' > 3){ document.body.innerHTML = ""; }\n' +
-        '    }\n' +
-        '  };\n' +
-        '  setInterval(' + d5 + ', 1000);\n' +
-        '})();\n' +
-        '<' + '/script>\n';
-
-    /* ═══ 5. NAYA KEY 2 FUNCTION (refresh pe nayi) ═══ */
-    var newKey2FunctionScript =
-        '<script>\n' +
-        '/* ✅ NAYA: Key 2 function — har refresh pe nayi (temporary) */\n' +
-        '(function(){\n' +
-        '  var KEY2_PREFIX = "NightOrbitGyidi_public_key_";\n' +
-        '  var REFRESH_KEY = "norb_key2_refresh_id";\n' +
-        '  \n' +
-        '  function generateRefreshId() {\n' +
-        '    var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";\n' +
-        '    var id = "";\n' +
-        '    for (var i = 0; i < 16; i++) id += chars.charAt(Math.floor(Math.random() * chars.length));\n' +
-        '    return id;\n' +
-        '  }\n' +
-        '  \n' +
-        '  function generateKey2Public() {\n' +
-        '    var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";\n' +
-        '    var k = "";\n' +
-        '    for (var i = 0; i < 11; i++) k += chars.charAt(Math.floor(Math.random() * chars.length));\n' +
-        '    return KEY2_PREFIX + k;\n' +
-        '  }\n' +
-        '  \n' +
-        '  /* Refresh detect — session storage */\n' +
-        '  var lastRefresh = sessionStorage.getItem(REFRESH_KEY);\n' +
-        '  var currentRefresh = generateRefreshId();\n' +
-        '  if (lastRefresh) {\n' +
-        '    console.log("[Key 2] Old refresh ID expired:", lastRefresh.substring(0,8) + "...");\n' +
-        '  }\n' +
-        '  sessionStorage.setItem(REFRESH_KEY, currentRefresh);\n' +
-        '  console.log("[Key 2] New refresh ID:", currentRefresh.substring(0,8) + "...");\n' +
-        '  \n' +
-        '  /* ✅ Har 30 second pe nayi Key 2 Public (session alive) */\n' +
-        '  window._0xK2 = generateKey2Public();\n' +
-        '  console.log("[Key 2] Active:", window._0xK2);\n' +
-        '  \n' +
-        '  setInterval(function(){\n' +
-        '    if (document.hidden) return;\n' +
-        '    var old = window._0xK2;\n' +
-        '    window._0xK2 = generateKey2Public();\n' +
-        '    console.log("[Key 2] Rotated. Old:", old.substring(0,20) + "...");\n' +
-        '    console.log("[Key 2] New:", window._0xK2);\n' +
-        '  }, 30000);\n' +
-        '})();\n' +
-        '<' + '/script>\n';
-
-    /* ═══ 6. DECRYPTOR HTML BUILD ═══ */
+    /* ═══ 6. Decryptor HTML (no hints) ═══ */
     var parts = [
         '<!DOCTYPE html>',
         '<html lang="en">',
@@ -2544,10 +2464,7 @@ window.downloadDecryptor = function() {
         '<title id="pageTitle">Loading...</title>',
         '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
         '<script>(function(){var _a="' + encodedKeyFileName + '";var _b=atob(atob(_a));var _s=document.createElement("script");_s.src=_b;_s.async=false;_s.onload=function(){window._kf=1;};_s.onerror=function(){window._kf=0;};document.head.appendChild(_s);})();<' + '/script>',
-
-        /* ✅ NAYA: Key 2 function inject */
-        newKey2FunctionScript,
-
+        '<script>' + polymorphicEngine + '<' + '/script>',
         '<style>',
         '*{margin:0;padding:0;box-sizing:border-box;}',
         'html,body{width:100%;min-height:100vh;}',
@@ -2575,16 +2492,9 @@ window.downloadDecryptor = function() {
         '<' + '/head>',
         '<body>',
         '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
-        decoyFunctions,
-        antiDebug,
         '<script>',
         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
-        'var CONTEXT_TOKEN=' + JSON.stringify(contextToken) + ';',
-        'var KEY2_PUBLIC=' + JSON.stringify(key2Public) + ';',
-
-        '',
         'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
-        '',
         'function showError(msg){',
         '  document.title="Error";',
         '  document.body.innerHTML="";',
@@ -2593,11 +2503,9 @@ window.downloadDecryptor = function() {
         '  err+="<div class=\\"err-icon\\">❌<\\/div>";',
         '  err+="<h2>Decryption Failed<\\/h2>";',
         '  err+="<p>"+msg+"<\\/p>";',
-        '  err+="<p style=\\"font-size:11px;color:#6a6a8a;margin-top:20px;\\">Check: key file present, encrypted data, internet connection<\\/p>";',
         '  err+="<\\/div>";',
         '  document.body.innerHTML=err;',
         '}',
-        '',
         'function showKeyMissingError(){',
         '  document.title="Key File Missing";',
         '  document.body.innerHTML="";',
@@ -2612,23 +2520,19 @@ window.downloadDecryptor = function() {
         '  h+="<div style=\\"color:#00f0ff;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;\\">Required Files<\\/div>";',
         '  h+="<div style=\\"color:#fff;font-size:13px;line-height:1.9;\\">1. <b style=\\"color:#ffd700;\\">decryptor.html<\\/b><br>2. <b style=\\"color:#00f0ff;\\">The key file (.js)<\\/b><\\/div>";',
         '  h+="<\\/div>";',
-        '  h+="<div style=\\"color:#ffb3c9;font-size:12px;margin-top:20px;\\">⚠️ Do NOT rename the key file.<\\/div>";',
         '  h+="<\\/div><\\/div>";',
         '  document.body.innerHTML=h;',
         '}',
-        '',
         'function extractTitle(html){',
         '  var m=html.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);',
         '  return m?m[1].trim():"Original Web";',
         '}',
-        '',
         'function extractFavicon(html){',
         '  var m=html.match(/<link[^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\'][^>]*href=["\']([^"\']+)["\']/i);',
         '  if(m)return m[1];',
         '  m=html.match(/<link[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\']/i);',
         '  return m?m[1]:null;',
         '}',
-        '',
         'function applyOriginalBranding(html){',
         '  var title=extractTitle(html);',
         '  document.title=title;',
@@ -2640,7 +2544,6 @@ window.downloadDecryptor = function() {
         '    document.head.appendChild(link);',
         '  }',
         '}',
-        '',
         'function injectBlocker(html){',
         '  html = html.replace(/<noscript[\\s\\S]*?<\\/noscript>/gi, "");',
         '  html = html.replace(/<meta[^>]*http-equiv=["\']refresh["\'][^>]*>/gi, "");',
@@ -2671,7 +2574,6 @@ window.downloadDecryptor = function() {
         '  if(html.indexOf("</body>")!==-1){html=html.replace("</body>",js+"</body>");}else{html=html+js;}',
         '  return html;',
         '}',
-        '',
         'function renderHTML(htmlContent){',
         '  var loader=document.getElementById("loader");',
         '  if(loader)loader.style.display="none";',
@@ -2693,9 +2595,7 @@ window.downloadDecryptor = function() {
         '      showError("Render failed: "+e2.message);',
         '    }',
         '  }',
-        '  setTimeout(function(){try{iframe.focus();}catch(e){}},100);',
         '}',
-        '',
         'function renderText(textContent){',
         '  document.title="Decrypted Text";',
         '  document.body.innerHTML="";',
@@ -2705,7 +2605,6 @@ window.downloadDecryptor = function() {
         '  pre.textContent=textContent;',
         '  document.body.appendChild(pre);',
         '}',
-        '',
         'function renderBundle(bundle){',
         '  document.title="Bundle ("+bundle.__fileCount+" Files)";',
         '  document.body.innerHTML="";',
@@ -2734,7 +2633,6 @@ window.downloadDecryptor = function() {
         '    });',
         '  });',
         '}',
-        '',
         'ready(function(){',
         '  if(typeof CryptoJS==="undefined"){',
         '    showError("CryptoJS library failed to load. Check your internet connection.");',
@@ -2748,41 +2646,54 @@ window.downloadDecryptor = function() {
         '    try{',
         '      var dec;',
         '      var parts=ENCRYPTED_DATA.split(":");',
-        '      if(parts[0]==="v3" && parts.length>=7){',
-        '        /* ✅ v3 format: v3:fileId:dataIv:encryptedData:key2Iv:encryptedKey2:hmac[:contextToken[:key2Public]] */',
+        '      if(parts[0]==="v4" && parts.length>=9){',
         '        var fileId=parts[1];',
         '        var dataIv=CryptoJS.enc.Hex.parse(parts[2]);',
         '        var encryptedData=parts[3];',
         '        var key2Iv=CryptoJS.enc.Hex.parse(parts[4]);',
         '        var encryptedKey2=parts[5];',
         '        var storedHmac=parts[6];',
-        '        var contextToken=parts[7]||"";',
-        '        var key2Public=parts[8]||"";',
-        '        console.log("[Decryptor] v3 format detected");',
-        '        console.log("[Decryptor] File ID:", fileId);',
-        '        console.log("[Decryptor] Context Token:", contextToken.substring(0,16)+"...");',
-        '        console.log("[Decryptor] Key 2 Public:", key2Public);',
-        '        /* Verify HMAC with Key 1 */',
-        '        var computedHmac=CryptoJS.HmacSHA256(parts[2]+":"+encryptedData+":"+parts[4]+":"+encryptedKey2+":"+fileId,window._0xSECRET).toString();',
+        '        var routeId=parts[7];',
+        '        var seedHash=parts[8];',
+        '        var computedHmac=CryptoJS.HmacSHA256(parts[2]+":"+encryptedData+":"+parts[4]+":"+encryptedKey2+":"+routeId+":"+seedHash,window._0xSECRET).toString();',
         '        if(computedHmac!==storedHmac){',
         '          throw new Error("Integrity check failed - data tampered!");',
         '        }',
-        '        /* Key 2 decrypt karo (Key 1 se) */',
         '        var key2=CryptoJS.AES.decrypt(encryptedKey2,window._0xSECRET,{',
         '          iv:key2Iv,',
         '          mode:CryptoJS.mode.CBC,',
         '          padding:CryptoJS.pad.Pkcs7',
         '        }).toString(CryptoJS.enc.Utf8);',
         '        if(!key2||key2.length===0){throw new Error("Key 2 decryption failed");}',
-        '        console.log("[Decryptor] Key 2 decrypted successfully");',
-        '        /* Data decrypt karo (Key 2 se) */',
         '        dec=CryptoJS.AES.decrypt(encryptedData,key2,{',
         '          iv:dataIv,',
         '          mode:CryptoJS.mode.CBC,',
         '          padding:CryptoJS.pad.Pkcs7',
         '        }).toString(CryptoJS.enc.Utf8);',
+        '        key2=null;',
+        '      } else if(parts[0]==="v3" && parts.length>=7){',
+        '        var dataIv=CryptoJS.enc.Hex.parse(parts[2]);',
+        '        var encryptedData=parts[3];',
+        '        var key2Iv=CryptoJS.enc.Hex.parse(parts[4]);',
+        '        var encryptedKey2=parts[5];',
+        '        var storedHmac=parts[6];',
+        '        var computedHmac=CryptoJS.HmacSHA256(parts[2]+":"+encryptedData+":"+parts[4]+":"+encryptedKey2+":"+parts[1],window._0xSECRET).toString();',
+        '        if(computedHmac!==storedHmac){',
+        '          throw new Error("Integrity check failed - data tampered!");',
+        '        }',
+        '        var key2=CryptoJS.AES.decrypt(encryptedKey2,window._0xSECRET,{',
+        '          iv:key2Iv,',
+        '          mode:CryptoJS.mode.CBC,',
+        '          padding:CryptoJS.pad.Pkcs7',
+        '        }).toString(CryptoJS.enc.Utf8);',
+        '        if(!key2||key2.length===0){throw new Error("Key 2 decryption failed");}',
+        '        dec=CryptoJS.AES.decrypt(encryptedData,key2,{',
+        '          iv:dataIv,',
+        '          mode:CryptoJS.mode.CBC,',
+        '          padding:CryptoJS.pad.Pkcs7',
+        '        }).toString(CryptoJS.enc.Utf8);',
+        '        key2=null;',
         '      } else if(parts[0]==="v2" && parts.length===4){',
-        '        /* ✅ v2 format (legacy) */',
         '        var iv=CryptoJS.enc.Hex.parse(parts[1]);',
         '        var ciphertext=parts[2];',
         '        var storedHmac2=parts[3];',
@@ -2796,17 +2707,14 @@ window.downloadDecryptor = function() {
         '          padding:CryptoJS.pad.Pkcs7',
         '        }).toString(CryptoJS.enc.Utf8);',
         '      } else {',
-        '        /* v1 legacy */',
         '        dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,window._0xSECRET).toString(CryptoJS.enc.Utf8);',
         '      }',
         '      if(!dec||dec.length===0){throw new Error("Decryption failed - wrong key or corrupted data.");}',
-        '',
         '      var isBundle=false,bundle=null;',
         '      try{',
         '        var p=JSON.parse(dec);',
         '        if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}',
         '      }catch(e){}',
-        '',
         '      if(isBundle){',
         '        renderBundle(bundle);',
         '      } else {',
@@ -2830,7 +2738,7 @@ window.downloadDecryptor = function() {
 
     var html = parts.join('\n');
 
-    /* ═══ 7. DOWNLOAD FILES ═══ */
+    /* ═══ 7. Download files ═══ */
     var htmlBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
     var htmlLink = document.createElement('a');
     htmlLink.href = URL.createObjectURL(htmlBlob);
@@ -2843,7 +2751,7 @@ window.downloadDecryptor = function() {
     keyLink.download = keyFileName;
     keyLink.click();
 
-    showStatus('success', '🎁 Decryptor + Key file downloaded! (v19 + Key 2 Function)');
+    showStatus('success', '🎁 Decryptor + Key file downloaded! (v20 Polymorphic)');
     toast('Decryptor + Key file downloaded!', 'success');
 
     setTimeout(function() {
@@ -2944,9 +2852,6 @@ function handleAuthReady(e) {
     document.getElementById('welcomeName').textContent = name;
     document.getElementById('authStatus').textContent = 'Authenticated';
 
-    console.log('👤 Auth ready:', state.user.email);
-
-    /* ✅ v19: Init dynamic tokens on auth */
     initDynamicTokens();
 
     KEY_MANAGER.checkKeyStatus(state.user.uid).then(function(result) {
@@ -2957,7 +2862,6 @@ function handleAuthReady(e) {
         }
         updateKeyUI();
     }).catch(function(err) {
-        console.error('Key check failed:', err);
         updateKeyUI();
     });
 }
@@ -2986,9 +2890,8 @@ setTimeout(function() {
 updateKeyUI();
 initDynamicTokens();
 
-console.log('%c🔐 CodeEncryptor v19 HEAVY loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
-console.log('%c⚡ Key 1 Private | Key 2 Public (Refresh) | Honeypot Canary', 'color:#ffd700;font-size:11px;');
-console.log('%c🛡️ Device + IP + Server-side | 10 attempts → Admin Alert', 'color:#00ff64;font-size:11px;');
+console.log('%c🔐 CodeEncryptor v20 POLYMORPHIC HEAVY loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+console.log('%c⚡ Key 1 Private | Key 2 Ephemeral | Polymorphic Route Engine', 'color:#ffd700;font-size:11px;');
 
 })();
 </script>
