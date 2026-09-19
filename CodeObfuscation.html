@@ -2339,7 +2339,7 @@ function buildOptions(preset) {
             'data:audio/',
             'data:video/'
         ],
-        seed: 0,
+        seed: Math.floor(Math.random() * 1000000),
         stringArrayWrappersType: 'variable'
     };
     var selected = PRESETS[preset] || PRESETS.medium;
