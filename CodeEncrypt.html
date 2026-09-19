@@ -2078,7 +2078,18 @@
             showStatus('success', '✅ Copied!');
             toast('Copied!', 'success');
         };
-        
+
+        window.downloadOutput = function() {
+            var out = document.getElementById('outputEnc').value;
+            if (!out) { toast('Nothing to download', 'error'); return; }
+            var blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'encrypted_' + Date.now() + '.txt';
+            a.click();
+            toast('Downloaded!', 'success');
+        };
+            
         window.downloadDecryptor = function() {
             var out = document.getElementById('outputEnc').value;
             if (!out) { toast('Encrypt first!', 'error'); return; }
