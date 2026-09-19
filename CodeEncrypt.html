@@ -1331,1517 +1331,1219 @@
     <div class="toast-container" id="toastContainer"></div>
     
     
-<script>
-        (function() {
-        'use strict';
-        
-        var state = {
-            uploadedFiles: {},
-            currentLang: 'auto',
-            user: null,
-            keyRevealed: false,
-            sessionTimer: null,
-            sessionDeadline: null,
-            _pwdMode: null,
-            _pendingAction: null,
-            authHandled: false
-        };
-        
-        var SESSION_TIMEOUT = 30 * 60 * 1000; /* ✅ FIXED: 30 minutes (pehle 5 min tha) */
-        
-        function bytes(n) {
-            if (n < 1024) return n + ' B';
-            if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
-            return (n / 1024 / 1024).toFixed(2) + ' MB';
-        }
-        function num(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
-        
-        /* ✅ FIXED: HTML escape helper (XSS protection) */
-        function escapeHtml(str) {
-            if (str === null || str === undefined) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-        
-        function showStatus(type, msg) {
-            var el = document.getElementById('status');
-            el.className = 'status ' + type;
-            el.textContent = msg;
-        }
-        
-        function toast(msg, type) {
-            type = type || 'info';
-            var c = document.getElementById('toastContainer');
-            var icons = { success:'fa-circle-check', error:'fa-circle-xmark', warn:'fa-triangle-exclamation', info:'fa-circle-info' };
-            var el = document.createElement('div');
-            el.className = 'toast ' + type;
-            el.innerHTML = '<i class="fa-solid ' + icons[type] + ' toast-icon"></i><span>' + escapeHtml(msg) + '</span>';
-            c.appendChild(el);
-            setTimeout(function() {
-                el.classList.add('removing');
-                setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
-            }, 3500);
-        }
-        
-        /* ✅ FIXED: Clipboard copy with 60-second auto-clear */
-        function universalCopy(text, btn, originalText, autoClear) {
-            if (!text) return;
-            function done() {
-                if (btn) {
-                    btn.textContent = 'COPIED!';
-                    setTimeout(function() { btn.textContent = originalText || 'COPY'; }, 1500);
-                }
-                /* ✅ Auto-clear clipboard after 60 seconds (sensitive data) */
-                if (autoClear !== false) {
-                    setTimeout(function() {
-                        if (navigator.clipboard && navigator.clipboard.writeText) {
-                            navigator.clipboard.writeText('').catch(function() {});
-                        }
-                    }, 60000);
-                }
-            }
-            function fallback() {
-                var ta = document.createElement('textarea');
-                ta.value = text;
-                ta.style.position = 'fixed';
-                ta.style.left = '-9999px';
-                ta.style.top = '0';
-                document.body.appendChild(ta);
-                ta.focus();
-                ta.select();
-                try { document.execCommand('copy'); } catch(e) {}
-                document.body.removeChild(ta);
-                done();
-            }
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(done).catch(fallback);
-            } else {
-                fallback();
+ <script>
+
+    (function() {
+    'use strict';
+    
+    var state = {
+        uploadedFiles: {},
+        currentLang: 'auto',
+        user: null,
+        keyRevealed: false,
+        sessionTimer: null,
+        sessionDeadline: null,
+        _pwdMode: null,
+        _pendingAction: null,
+        authHandled: false
+    };
+    
+    var SESSION_TIMEOUT = 5 * 60 * 1000; /* 5 minutes */
+    
+    function bytes(n) {
+        if (n < 1024) return n + ' B';
+        if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+        return (n / 1024 / 1024).toFixed(2) + ' MB';
+    }
+    function num(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+    function showStatus(type, msg) {
+        var el = document.getElementById('status');
+        el.className = 'status ' + type;
+        el.textContent = msg;
+    }
+    function toast(msg, type) {
+        type = type || 'info';
+        var c = document.getElementById('toastContainer');
+        var icons = { success:'fa-circle-check', error:'fa-circle-xmark', warn:'fa-triangle-exclamation', info:'fa-circle-info' };
+        var el = document.createElement('div');
+        el.className = 'toast ' + type;
+        el.innerHTML = '<i class="fa-solid ' + icons[type] + ' toast-icon"></i><span>' + msg + '</span>';
+        c.appendChild(el);
+        setTimeout(function() {
+            el.classList.add('removing');
+            setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
+        }, 3500);
+    }
+    
+    function universalCopy(text, btn, originalText) {
+        if (!text) return;
+        function done() {
+            if (btn) {
+                btn.textContent = 'COPIED!';
+                setTimeout(function() { btn.textContent = originalText || 'COPY'; }, 1500);
             }
         }
-        
-        /* ═══════════════════════════════════════════════════════
-           ✅ FIXED: SECURE RANDOM (crypto.getRandomValues)
-           ═══════════════════════════════════════════════════════ */
-        function secureRandomBytes(length) {
-            var arr = new Uint8Array(length);
-            if (window.crypto && window.crypto.getRandomValues) {
-                window.crypto.getRandomValues(arr);
-            } else {
-                throw new Error('Secure random not available. Use modern browser.');
-            }
-            return arr;
+        function fallback() {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            ta.style.top = '0';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            try { document.execCommand('copy'); } catch(e) {}
+            document.body.removeChild(ta);
+            done();
         }
-        
-        function secureRandomString(len, charset) {
-            var arr = secureRandomBytes(len);
-            var result = '';
-            for (var i = 0; i < len; i++) {
-                result += charset.charAt(arr[i] % charset.length);
-            }
-            return result;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done).catch(fallback);
+        } else {
+            fallback();
         }
-        
-        function rndHex(len) {
-            return secureRandomString(len || 16, 'abcdef0123456789');
+    }
+    
+    window.toggleDrawer = function() {
+        document.getElementById('drawer').classList.toggle('open');
+        document.getElementById('drawerOverlay').classList.toggle('open');
+        document.getElementById('menuBtn').classList.toggle('open');
+    };
+    window.closeDrawer = function() {
+        document.getElementById('drawer').classList.remove('open');
+        document.getElementById('drawerOverlay').classList.remove('open');
+        document.getElementById('menuBtn').classList.remove('open');
+    };
+    window.selectLang = function(lang, btn) {
+        state.currentLang = lang;
+        document.querySelectorAll('.drawer .menu-item[data-lang]').forEach(function(b) { b.classList.remove('active'); });
+        if (btn) btn.classList.add('active');
+        closeDrawer();
+        updateDetection();
+    };
+    
+    function detectLanguage(code) {
+        var t = code.trim();
+        if (!t) return 'txt';
+        if (t.startsWith('{') || t.startsWith('[')) {
+            try { JSON.parse(t); return 'json'; } catch(e) {}
         }
-        
-        function rv(len) {
-            return secureRandomString(len || 6, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-        }
-        
-        function secureRandomInt(max) {
-            if (max <= 0) return 0;
-            var b = secureRandomBytes(4);
-            var n = ((b[0] << 24) | (b[1] << 16) | (b[2] << 8) | b[3]) >>> 0;
-            return n % max;
-        }
-        
-        window.toggleDrawer = function() {
-            document.getElementById('drawer').classList.toggle('open');
-            document.getElementById('drawerOverlay').classList.toggle('open');
-            document.getElementById('menuBtn').classList.toggle('open');
-        };
-        window.closeDrawer = function() {
-            document.getElementById('drawer').classList.remove('open');
-            document.getElementById('drawerOverlay').classList.remove('open');
-            document.getElementById('menuBtn').classList.remove('open');
-        };
-        window.selectLang = function(lang, btn) {
-            state.currentLang = lang;
-            document.querySelectorAll('.drawer .menu-item[data-lang]').forEach(function(b) { b.classList.remove('active'); });
-            if (btn) btn.classList.add('active');
-            closeDrawer();
-            updateDetection();
-        };
-        
-        function detectLanguage(code) {
-            var t = code.trim();
-            if (!t) return 'txt';
-            if (t.startsWith('{') || t.startsWith('[')) {
-                try { JSON.parse(t); return 'json'; } catch(e) {}
-            }
-            if (/^<!DOCTYPE\s+html/i.test(t) || /<html[\s>]/i.test(t)) return 'html';
-            if (/^<\?xml/i.test(t)) return 'xml';
-            if (/^<\?php/i.test(t)) return 'php';
-            if (/^\s*(def|class|import|from|print\s*\()/m.test(t)) return 'py';
-            if (/@media|@keyframes|:\s*root\s*\{/i.test(t)) return 'css';
-            if (/\b(function|const|let|var|=>|document\.|window\.)\b/.test(t)) return 'js';
-            return 'txt';
-        }
-        
-        var inputCodeEl = document.getElementById('inputCode');
-        function updateDetection() {
-            var code = inputCodeEl.value;
-            var stats = document.getElementById('inputStats');
-            if (!code.trim()) {
-                stats.style.display = 'none';
-                updateProgress();
-                return;
-            }
-            var detected = detectLanguage(code);
-            var finalLang = (state.currentLang === 'auto') ? detected : state.currentLang;
-            stats.style.display = 'grid';
-            document.getElementById('statLines').textContent = num(code.split('\n').length);
-            document.getElementById('statChars').textContent = num(code.length);
-            document.getElementById('statSize').textContent = bytes(new Blob([code]).size);
-            document.getElementById('statLang').textContent = finalLang.toUpperCase();
+        if (/^<!DOCTYPE\s+html/i.test(t) || /<html[\s>]/i.test(t)) return 'html';
+        if (/^<\?xml/i.test(t)) return 'xml';
+        if (/^<\?php/i.test(t)) return 'php';
+        if (/^\s*(def|class|import|from|print\s*\()/m.test(t)) return 'py';
+        if (/@media|@keyframes|:\s*root\s*\{/i.test(t)) return 'css';
+        if (/\b(function|const|let|var|=>|document\.|window\.)\b/.test(t)) return 'js';
+        return 'txt';
+    }
+    
+    var inputCodeEl = document.getElementById('inputCode');
+    function updateDetection() {
+        var code = inputCodeEl.value;
+        var stats = document.getElementById('inputStats');
+        if (!code.trim()) {
+            stats.style.display = 'none';
             updateProgress();
+            return;
         }
-        inputCodeEl.addEventListener('input', updateDetection);
-        
-        function updateProgress() {
-            var steps = 0;
-            if (KEY_MANAGER && KEY_MANAGER.hasPassword()) steps++;
-            if (inputCodeEl.value.trim() || Object.keys(state.uploadedFiles).length > 0) steps++;
-            if (document.getElementById('outputEnc').value) steps++;
-            var percent = Math.round((steps / 3) * 100);
-            document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('progressPercent').textContent = percent + '%';
+        var detected = detectLanguage(code);
+        var finalLang = (state.currentLang === 'auto') ? detected : state.currentLang;
+        stats.style.display = 'grid';
+        document.getElementById('statLines').textContent = num(code.split('\n').length);
+        document.getElementById('statChars').textContent = num(code.length);
+        document.getElementById('statSize').textContent = bytes(new Blob([code]).size);
+        document.getElementById('statLang').textContent = finalLang.toUpperCase();
+        updateProgress();
+    }
+    inputCodeEl.addEventListener('input', updateDetection);
+    
+    function updateProgress() {
+        var steps = 0;
+        if (KEY_MANAGER && KEY_MANAGER.hasPassword()) steps++;
+        if (inputCodeEl.value.trim() || Object.keys(state.uploadedFiles).length > 0) steps++;
+        if (document.getElementById('outputEnc').value) steps++;
+        var percent = Math.round((steps / 3) * 100);
+        document.getElementById('progressFill').style.width = percent + '%';
+        document.getElementById('progressPercent').textContent = percent + '%';
+    }
+    
+    function updateKeyUI() {
+        var keyText = document.getElementById('keyText');
+        var createBtn = document.getElementById('createKeyBtn');
+        var deleteBtn = document.getElementById('deleteKeyBtn');
+        var eyeBtn = document.getElementById('keyEyeBtn');
+        var infoText = document.getElementById('keyInfoText');
+    
+        if (KEY_MANAGER.hasPassword()) {
+            var masked = KEY_MANAGER.getDisplayKey();
+            keyText.textContent = masked;
+            createBtn.style.display = 'none';
+            deleteBtn.style.display = 'inline-flex';
+            eyeBtn.disabled = false;
+            infoText.innerHTML = '🔐 Your key is <span class="gold">password-protected</span>. Click the <span class="gold">eye icon</span> to reveal your full key. Or click <span class="red">DELETE KEY & REGENERATE</span> to create a new one.';
+        } else {
+            keyText.textContent = 'NightOrbitGyidi_houperSecret_************';
+            createBtn.style.display = 'inline-flex';
+            deleteBtn.style.display = 'none';
+            eyeBtn.disabled = true;
+            infoText.innerHTML = '🔑 Click <b>CREATE KEY & PASSWORD</b> to generate your unique encryption key. This key is encrypted with your password and stored in Firebase.';
         }
-        
-        function updateKeyUI() {
-            var keyText = document.getElementById('keyText');
-            var createBtn = document.getElementById('createKeyBtn');
-            var deleteBtn = document.getElementById('deleteKeyBtn');
-            var eyeBtn = document.getElementById('keyEyeBtn');
-            var infoText = document.getElementById('keyInfoText');
-        
-            if (KEY_MANAGER.hasPassword()) {
-                var masked = KEY_MANAGER.getDisplayKey();
-                keyText.textContent = masked;
-                createBtn.style.display = 'none';
-                deleteBtn.style.display = 'inline-flex';
-                eyeBtn.disabled = false;
-                infoText.innerHTML = '🔐 Your key is <span class="gold">password-protected</span>. Click the <span class="gold">eye icon</span> to reveal your full key. Or click <span class="red">DELETE KEY & REGENERATE</span> to create a new one.';
-            } else {
-                keyText.textContent = 'NightOrbitGyidi_houperSecret_************';
-                createBtn.style.display = 'inline-flex';
-                deleteBtn.style.display = 'none';
-                eyeBtn.disabled = true;
-                infoText.innerHTML = '🔑 Click <b>CREATE KEY & PASSWORD</b> to generate your unique encryption key. This key is encrypted with your password and stored in Firebase.';
-            }
-            updateProgress();
+        updateProgress();
+    }
+    
+    window.createKey = function() {
+        if (!state.user) {
+            toast('Please wait, loading user...', 'warn');
+            return;
         }
-        
-        window.createKey = function() {
-            if (!state.user) {
-                toast('Please wait, loading user...', 'warn');
-                return;
-            }
-            openPwdModal('create');
-        };
-        
-        /* ✅ FIXED: Custom modal instead of confirm()/prompt() — mobile-friendly */
-        window.deleteKey = function() {
-            if (!state.user) { toast('Not authenticated', 'error'); return; }
-            showDeleteConfirmModal();
-        };
-        
-        function showDeleteConfirmModal() {
-            var existing = document.getElementById('deleteConfirmOverlay');
-            if (existing) existing.remove();
-        
-            var overlay = document.createElement('div');
-            overlay.id = 'deleteConfirmOverlay';
-            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);backdrop-filter:blur(12px);z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
-        
-            var modal = document.createElement('div');
-            modal.style.cssText = 'background:rgba(11,11,26,0.98);border:2px solid #ff0064;border-radius:22px;padding:28px 24px;max-width:520px;width:100%;box-shadow:0 0 100px rgba(255,0,100,0.3);';
-        
-            modal.innerHTML =
-                '<h2 style="font-family:Orbitron,sans-serif;font-size:16px;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:8px;color:#ff0064;">⚠️ DELETE KEY — FINAL WARNING</h2>' +
-                '<p style="color:#6a6a8a;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:20px;">This cannot be undone</p>' +
-                '<div style="background:rgba(255,0,100,0.08);border-left:3px solid #ff0064;padding:14px 16px;border-radius:8px;margin-bottom:16px;">' +
-                '<div style="color:#ff0064;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">PERMANENT DAMAGE</div>' +
-                '<div style="color:#ffb3c9;font-size:12px;line-height:1.9;">' +
-                '• Your key will be <b>DELETED</b> from Firebase<br>' +
-                '• ALL code encrypted with old key will be <b>LOCKED FOREVER</b><br>' +
-                '• You will <b>NEVER</b> be able to decrypt old files<br>' +
-                '• No recovery is possible — not even by us' +
-                '</div></div>' +
-                '<label style="display:block;color:#ff0064;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:10px;">Type DELETE to confirm:</label>' +
-                '<input type="text" id="deleteConfirmInput" placeholder="DELETE" autocomplete="off" style="width:100%;background:#000;color:#ff0064;border:1.5px solid #333;border-radius:12px;padding:14px 18px;font-family:JetBrains Mono,monospace;font-size:14px;letter-spacing:2px;text-align:center;text-transform:uppercase;transition:all 0.3s;" />' +
-                '<div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">' +
-                '<button id="deleteCancelBtn" style="flex:1;background:linear-gradient(135deg,#00f0ff,#b400ff);color:#000;border:none;padding:14px 20px;border-radius:12px;font-weight:900;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;min-width:120px;">CANCEL</button>' +
-                '<button id="deleteConfirmBtn" disabled style="flex:1;background:linear-gradient(135deg,#ff0064,#b400ff);color:#fff;border:none;padding:14px 20px;border-radius:12px;font-weight:900;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;min-width:120px;opacity:0.4;">DELETE FOREVER</button>' +
-                '</div>';
-        
-            overlay.appendChild(modal);
-            document.body.appendChild(overlay);
-        
-            var input = document.getElementById('deleteConfirmInput');
-            var confirmBtn = document.getElementById('deleteConfirmBtn');
-            var cancelBtn = document.getElementById('deleteCancelBtn');
-            var inputField = input;
-        
-            inputField.style.borderColor = '#333';
-        
-            inputField.addEventListener('input', function() {
-                var val = this.value.trim().toUpperCase();
-                if (val === 'DELETE') {
-                    confirmBtn.disabled = false;
-                    confirmBtn.style.opacity = '1';
-                    inputField.style.borderColor = '#ff0064';
-                } else {
-                    confirmBtn.disabled = true;
-                    confirmBtn.style.opacity = '0.4';
-                    inputField.style.borderColor = '#333';
-                }
+        openPwdModal('create');
+    };
+    
+    window.deleteKey = function() {
+        if (!state.user) { toast('Not authenticated', 'error'); return; }
+    
+        var c1 = confirm(
+            '⚠️ WARNING #1 of 2\n\n' +
+            'This will PERMANENTLY DELETE your key from Firebase.\n\n' +
+            'ALL code encrypted with the old key will be LOCKED FOREVER.\n' +
+            'You will NOT be able to decrypt old files ever again.\n\n' +
+            'Continue?'
+        );
+        if (!c1) return;
+    
+        var c2 = prompt('Type DELETE (in caps) to confirm:');
+        if (c2 !== 'DELETE') {
+            toast('Deletion cancelled', 'warn');
+            return;
+        }
+    
+        showStatus('loading', '⏳ Deleting old key...');
+        KEY_MANAGER.deleteKey(state.user)
+            .then(function() {
+                KEY_MANAGER.clear();
+                hideReveal();
+                document.getElementById('secretKey').value = '';
+                document.getElementById('outputEnc').value = '';
+                updateKeyUI();
+                showStatus('success', '✅ Old key deleted. Create a new one.');
+                toast('🗑️ Old key deleted permanently', 'success');
+                setTimeout(function() {
+                    openPwdModal('create');
+                }, 800);
+            })
+            .catch(function(err) {
+                showStatus('error', '❌ ' + err.message);
             });
-        
-            inputField.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !confirmBtn.disabled) confirmBtn.click();
-            });
-        
-            cancelBtn.addEventListener('click', function() {
-                overlay.remove();
-                toast('Deletion cancelled', 'warn');
-            });
-        
-            confirmBtn.addEventListener('click', function() {
-                if (inputField.value.trim().toUpperCase() !== 'DELETE') return;
-                overlay.remove();
-                executeDeleteKey();
-            });
-        
-            setTimeout(function() { inputField.focus(); }, 200);
+    };
+    
+    var pwdOverlay = document.getElementById('pwdOverlay');
+    var pwdInput = document.getElementById('pwdInput');
+    var pwdSubmitBtn = document.getElementById('pwdSubmitBtn');
+    var pwdCancelBtn = document.getElementById('pwdCancelBtn');
+    var pwdStatus = document.getElementById('pwdStatus');
+    var pwdEyeBtn = document.getElementById('pwdEyeBtn');
+    var pwdModalTitle = document.getElementById('pwdModalTitle');
+    var pwdModalSub = document.getElementById('pwdModalSub');
+    var pwdModalLabel = document.getElementById('pwdModalLabel');
+    var reqList = document.getElementById('reqList');
+    
+    function openPwdModal(mode) {
+        state._pwdMode = mode;
+        if (mode === 'create') {
+            pwdModalTitle.textContent = '🔐 Create Your Password';
+            pwdModalSub.textContent = 'This will generate your unique key';
+            pwdModalLabel.textContent = 'Create Your Strong Password (16-64 chars)';
+            pwdSubmitBtn.innerHTML = '🔐 Create Key';
+            reqList.style.display = 'block';
+            pwdCancelBtn.style.display = 'none';
+        } else {
+            pwdModalTitle.textContent = '🔐 Enter Your Password';
+            pwdModalSub.textContent = 'Required to reveal your key';
+            pwdModalLabel.textContent = 'Your Password';
+            pwdSubmitBtn.innerHTML = '👁️ Reveal Key';
+            reqList.style.display = 'none';
+            pwdCancelBtn.style.display = 'inline-flex';
         }
-        
-        function executeDeleteKey() {
-            showStatus('loading', '⏳ Deleting old key...');
-            KEY_MANAGER.deleteKey(state.user)
-                .then(function() {
-                    KEY_MANAGER.clear();
-                    hideReveal();
-                    document.getElementById('secretKey').value = '';
-                    document.getElementById('outputEnc').value = '';
-                    updateKeyUI();
-                    showStatus('success', '✅ Old key deleted. Create a new one.');
-                    toast('🗑️ Old key deleted permanently', 'success');
-                    setTimeout(function() {
-                        openPwdModal('create');
-                    }, 800);
-                })
-                .catch(function(err) {
-                    showStatus('error', '❌ ' + err.message);
-                });
-        }
-        
-        var pwdOverlay = document.getElementById('pwdOverlay');
-        var pwdInput = document.getElementById('pwdInput');
-        var pwdSubmitBtn = document.getElementById('pwdSubmitBtn');
-        var pwdCancelBtn = document.getElementById('pwdCancelBtn');
-        var pwdStatus = document.getElementById('pwdStatus');
-        var pwdEyeBtn = document.getElementById('pwdEyeBtn');
-        var pwdModalTitle = document.getElementById('pwdModalTitle');
-        var pwdModalSub = document.getElementById('pwdModalSub');
-        var pwdModalLabel = document.getElementById('pwdModalLabel');
-        var reqList = document.getElementById('reqList');
-        
-        function openPwdModal(mode) {
-            state._pwdMode = mode;
-            if (mode === 'create') {
-                pwdModalTitle.textContent = '🔐 Create Your Password';
-                pwdModalSub.textContent = 'This will generate your unique key';
-                pwdModalLabel.textContent = 'Create Your Strong Password (16-64 chars)';
-                pwdSubmitBtn.innerHTML = '🔐 Create Key';
-                reqList.style.display = 'block';
-                pwdCancelBtn.style.display = 'none';
-            } else {
-                pwdModalTitle.textContent = '🔐 Enter Your Password';
-                pwdModalSub.textContent = 'Required to reveal your key';
-                pwdModalLabel.textContent = 'Your Password';
-                pwdSubmitBtn.innerHTML = '👁️ Reveal Key';
-                reqList.style.display = 'none';
-                pwdCancelBtn.style.display = 'inline-flex';
-            }
-        
-            pwdInput.value = '';
+    
+        pwdInput.value = '';
+        pwdInput.type = 'password';
+        pwdEyeBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+        pwdStatus.style.display = 'none';
+        pwdStatus.className = 'status';
+        pwdSubmitBtn.disabled = true;
+        pwdOverlay.classList.add('open');
+        setTimeout(function() { pwdInput.focus(); }, 200);
+    }
+    
+    function closePwdModal() {
+        pwdOverlay.classList.remove('open');
+        pwdInput.value = '';
+    }
+    
+    pwdEyeBtn.addEventListener('click', function() {
+        if (pwdInput.type === 'password') {
+            pwdInput.type = 'text';
+            pwdEyeBtn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+        } else {
             pwdInput.type = 'password';
             pwdEyeBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
-            pwdStatus.style.display = 'none';
-            pwdStatus.className = 'status';
-            pwdSubmitBtn.disabled = true;
-            pwdOverlay.classList.add('open');
-            setTimeout(function() { pwdInput.focus(); }, 200);
         }
-        
-        function closePwdModal() {
-            pwdOverlay.classList.remove('open');
-            pwdInput.value = '';
-        }
-        
-        pwdEyeBtn.addEventListener('click', function() {
-            if (pwdInput.type === 'password') {
-                pwdInput.type = 'text';
-                pwdEyeBtn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
-            } else {
-                pwdInput.type = 'password';
-                pwdEyeBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
-            }
-        });
-        
-        pwdInput.addEventListener('input', function() {
-            var v = this.value;
-        
-            var digits = (v.match(/\d/g) || []).length;
-            var lower = (v.match(/[a-z]/g) || []).length;
-            var upper = (v.match(/[A-Z]/g) || []).length;
-            var symbols = (v.match(/[^a-zA-Z0-9]/g) || []).length;
-        
-            var rLen = v.length >= 16 && v.length <= 64;
-            var rDig = digits >= 3;
-            var rLet = lower >= 4 && upper >= 3;
-            var rSym = symbols >= 3;
-        
-            var rStrength = false;
-            if (rLen && rDig && rLet && rSym && typeof zxcvbn !== 'undefined') {
-                try {
-                    rStrength = zxcvbn(v).score >= 3;
-                } catch(e) { rStrength = false; }
-            }
-        
-            updateReq('req-length', rLen);
-            updateReq('req-digits', rDig);
-            updateReq('req-letters', rLet);
-            updateReq('req-symbols', rSym);
-            updateReq('req-strength', rStrength);
-        
-            if (state._pwdMode === 'create') {
-                pwdSubmitBtn.disabled = !(rLen && rDig && rLet && rSym && rStrength);
-            } else {
-                pwdSubmitBtn.disabled = v.length < 16;
-            }
-        });
-        
-        function updateReq(id, valid) {
-            var el = document.getElementById(id);
-            if (!el) return;
-            var icon = el.querySelector('i');
-            if (valid) {
-                el.classList.add('valid');
-                el.classList.remove('invalid');
-                icon.className = 'fa-solid fa-circle-check';
-            } else {
-                el.classList.remove('valid');
-                el.classList.add('invalid');
-                icon.className = 'fa-solid fa-circle-xmark';
-            }
-        }
-        
-        pwdInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !pwdSubmitBtn.disabled) {
-                pwdSubmitBtn.click();
-            }
-        });
-        
-        pwdCancelBtn.addEventListener('click', closePwdModal);
-        
-        pwdSubmitBtn.addEventListener('click', function() {
-            if (!state.user) { setPwdStatus('error', '❌ Not authenticated'); return; }
-            var password = pwdInput.value;
-            var isCreate = state._pwdMode === 'create';
-        
-            if (isCreate) {
-                /* ✅ FIXED: Custom modal — no confirm() */
-                if (!confirm('⚠️ FINAL WARNING:\n\nYour password CANNOT be changed.\nIf you forget it, your key will be LOCKED FOREVER.\n\nYou can later DELETE & REGENERATE.\n\nPassword: 16-64 chars with digits, upper, lower, symbols.\n\nCreate this password?')) return;
-                setPwdStatus('loading', '⏳ Generating your unique key...');
-                pwdSubmitBtn.disabled = true;
-        
-                KEY_MANAGER.createKeyAndPassword(state.user, password)
-                    .then(function(result) {
-                        setPwdStatus('success', '✅ Key created! Password saved.');
-                        document.getElementById('secretKey').value = result.key;
-                        updateKeyUI();
-                        setTimeout(closePwdModal, 1200);
-                        toast('🔑 Key created successfully!', 'success');
-                    })
-                    .catch(function(err) {
-                        setPwdStatus('error', '❌ ' + err.message);
-                        pwdSubmitBtn.disabled = false;
-                    });
-            } else {
-                setPwdStatus('loading', '⏳ Verifying password...');
-                pwdSubmitBtn.disabled = true;
-        
-                KEY_MANAGER.unlockKey(state.user, password)
-                    .then(function(result) {
-                        setPwdStatus('success', '✅ Key revealed!');
-                        document.getElementById('secretKey').value = result.key;
-                        showReveal(result.key);
-        
-                        /* ✅ Migration notification */
-                        if (result.migrated) {
-                            toast('🔄 Key auto-upgraded to v3 (stronger encryption)', 'success');
-                        }
-        
-                        var action = state._pendingAction;
-                        state._pendingAction = null;
-        
-                        if (action === 'encrypt') {
-                            setTimeout(function() {
-                                performEncrypt(result.key);
-                            }, 500);
-                        } else if (action === 'downloadDecryptor') {
-                            setTimeout(function() {
-                                downloadDecryptor();
-                            }, 500);
-                        }
-        
-                        setTimeout(closePwdModal, 1000);
-                    })
-                    .catch(function(err) {
-                        setPwdStatus('error', '❌ ' + err.message);
-                        pwdSubmitBtn.disabled = false;
-                        pwdInput.value = '';
-                        pwdInput.focus();
-                    });
-            }
-        });
-        
-        function setPwdStatus(type, msg) {
-            pwdStatus.className = 'status ' + type;
-            pwdStatus.textContent = msg;
-            pwdStatus.style.display = 'block';
-        }
-        
-        window.toggleKeyReveal = function() {
-            if (!KEY_MANAGER.hasPassword()) { toast('Create key first', 'warn'); return; }
-            openPwdModal('reveal');
-        };
-        
-        function showReveal(key) {
-            var panel = document.getElementById('revealPanel');
-            var box = document.getElementById('revealBox');
-            var lenEl = document.getElementById('revealLength');
-            panel.classList.add('active');
-            box.textContent = key;
-            lenEl.textContent = key.length + ' chars';
-            state.keyRevealed = true;
-            startSessionTimer();
-        }
-        
-        window.hideReveal = function() {
-            document.getElementById('revealPanel').classList.remove('active');
-            state.keyRevealed = false;
-            stopSessionTimer();
-        };
-        
-        window.copyRevealedKey = function() {
-            var key = document.getElementById('revealBox').textContent;
-            if (!key) return;
-            universalCopy(key, null, null, true);
-            toast('✅ Key copied! (auto-clears in 60s)', 'success');
-        };
-        
-        /* ✅ FIXED: Session timer with activity refresh */
-        function startSessionTimer() {
-            stopSessionTimer();
-            state.sessionDeadline = Date.now() + SESSION_TIMEOUT;
-            var bar = document.getElementById('sessionBar');
-            var fill = document.getElementById('sessionBarFill');
-            if (bar) bar.classList.add('active');
-            state.sessionTimer = setInterval(function() {
-                var remaining = state.sessionDeadline - Date.now();
-                if (remaining <= 0) {
-                    stopSessionTimer();
-                    hideReveal();
-                    toast('⏰ Session expired — key hidden', 'warn');
-                    return;
-                }
-                if (fill) fill.style.width = ((remaining / SESSION_TIMEOUT) * 100) + '%';
-            }, 100);
-        }
-        function stopSessionTimer() {
-            if (state.sessionTimer) { clearInterval(state.sessionTimer); state.sessionTimer = null; }
-            var bar = document.getElementById('sessionBar');
-            if (bar) bar.classList.remove('active');
-        }
-        
-        /* ✅ Activity-based session refresh */
-        document.addEventListener('click', function() {
-            if (state.keyRevealed) state.sessionDeadline = Date.now() + SESSION_TIMEOUT;
-        });
-        document.addEventListener('keypress', function() {
-            if (state.keyRevealed) state.sessionDeadline = Date.now() + SESSION_TIMEOUT;
-        });
-        
-        var fileDrop = document.getElementById('fileDrop');
-        var fileInput = document.getElementById('fileInput');
-        fileDrop.addEventListener('click', function() { window.openFilePicker(); });
-        fileDrop.addEventListener('dragover', function(e) { e.preventDefault(); fileDrop.classList.add('dragover'); });
-        fileDrop.addEventListener('dragleave', function() { fileDrop.classList.remove('dragover'); });
-        fileDrop.addEventListener('drop', function(e) { e.preventDefault(); fileDrop.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
-        fileInput.addEventListener('change', function(e) { handleFiles(e.target.files); });
-        
-        window.openFilePicker = function() { closeDrawer(); fileInput.click(); };
-        
-        function handleFiles(files) {
-            Array.prototype.forEach.call(files, function(file) {
-                if (file.size > 5 * 1024 * 1024) {
-                    toast('File too large (max 5MB): ' + file.name, 'error');
-                    return;
-                }
-        
-                var reader = new FileReader();
-                reader.onload = function(ev) {
-                    var content = ev.target.result;
-                    var ext = (file.name.split('.').pop() || '').toLowerCase();
-                    state.uploadedFiles[file.name] = {
-                        content: content,
-                        lang: ext,
-                        size: file.size
-                    };
-                    renderFileList();
-                    updateProgress();
-                };
-                reader.readAsText(file);
-            });
-        }
-        
-        /* ✅ FIXED: XSS-safe file list rendering */
-        function renderFileList() {
-            var list = document.getElementById('fileList');
-            var names = Object.keys(state.uploadedFiles);
-            if (names.length === 0) { list.innerHTML = ''; return; }
-            list.innerHTML = names.map(function(name) {
-                var f = state.uploadedFiles[name];
-                var sizeStr = f.size ? ' <span class="fsize">(' + bytes(f.size) + ')</span>' : '';
-                var safeName = escapeHtml(name);
-                var safeAttr = name.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                return '<div class="file-item">📄 <span class="fname">' + safeName + '</span>' + sizeStr +
-                    '<span class="remove" onclick="removeFile(\'' + safeAttr + '\')">✖</span></div>';
-            }).join('');
-        }
-        window.removeFile = function(name) { delete state.uploadedFiles[name]; renderFileList(); updateProgress(); };
-        
-        window.encryptNow = function() {
+    });
+    
+    pwdInput.addEventListener('input', function() {
+        var v = this.value;
+    
+        var digits = (v.match(/\d/g) || []).length;
+        var lower = (v.match(/[a-z]/g) || []).length;
+        var upper = (v.match(/[A-Z]/g) || []).length;
+        var symbols = (v.match(/[^a-zA-Z0-9]/g) || []).length;
+    
+        var rLen = v.length >= 16 && v.length <= 64;
+        var rDig = digits >= 3;
+        var rLet = lower >= 4 && upper >= 3;
+        var rSym = symbols >= 3;
+    
+        var rStrength = false;
+        if (rLen && rDig && rLet && rSym && typeof zxcvbn !== 'undefined') {
             try {
-                if (!KEY_MANAGER.hasPassword()) {
-                    showStatus('error', '❌ Create your key first');
-                    toast('Create key first', 'error');
-                    return;
-                }
-        
-                var pasted = inputCodeEl.value;
-                var fileNames = Object.keys(state.uploadedFiles);
-        
-                if (!pasted.trim() && fileNames.length === 0) {
-                    showStatus('error', '❌ Paste code or upload files');
-                    return;
-                }
-        
-                if (KEY_MANAGER.isReady() && KEY_MANAGER.getKey()) {
-                    performEncrypt(KEY_MANAGER.getKey());
-                } else {
-                    state._pendingAction = 'encrypt';
-                    openPwdModal('reveal');
-                    toast('Enter password to encrypt', 'info');
-                }
-            } catch (e) {
-                showStatus('error', '❌ ' + e.message);
+                rStrength = zxcvbn(v).score >= 3;
+            } catch(e) { rStrength = false; }
+        }
+    
+        updateReq('req-length', rLen);
+        updateReq('req-digits', rDig);
+        updateReq('req-letters', rLet);
+        updateReq('req-symbols', rSym);
+        updateReq('req-strength', rStrength);
+    
+        if (state._pwdMode === 'create') {
+            pwdSubmitBtn.disabled = !(rLen && rDig && rLet && rSym && rStrength);
+        } else {
+            pwdSubmitBtn.disabled = v.length < 16;
+        }
+    });
+    
+    function updateReq(id, valid) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var icon = el.querySelector('i');
+        if (valid) {
+            el.classList.add('valid');
+            el.classList.remove('invalid');
+            icon.className = 'fa-solid fa-circle-check';
+        } else {
+            el.classList.remove('valid');
+            el.classList.add('invalid');
+            icon.className = 'fa-solid fa-circle-xmark';
+        }
+    }
+    
+    pwdInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !pwdSubmitBtn.disabled) {
+            pwdSubmitBtn.click();
+        }
+    });
+    
+    pwdCancelBtn.addEventListener('click', closePwdModal);
+    
+    pwdSubmitBtn.addEventListener('click', function() {
+        if (!state.user) { setPwdStatus('error', '❌ Not authenticated'); return; }
+        var password = pwdInput.value;
+        var isCreate = state._pwdMode === 'create';
+    
+        if (isCreate) {
+            if (!confirm('⚠️ FINAL WARNING:\n\nYour password CANNOT be changed.\nIf you forget it, your key will be LOCKED FOREVER.\n\nYou can later DELETE & REGENERATE.\n\nPassword: 16-64 chars with digits, upper, lower, symbols.\n\nCreate this password?')) return;
+            setPwdStatus('loading', '⏳ Generating your unique key...');
+            pwdSubmitBtn.disabled = true;
+    
+            KEY_MANAGER.createKeyAndPassword(state.user, password)
+                .then(function(result) {
+                    setPwdStatus('success', '✅ Key created! Password saved.');
+                    document.getElementById('secretKey').value = result.key;
+                    updateKeyUI();
+                    setTimeout(closePwdModal, 1200);
+                    toast('🔑 Key created successfully!', 'success');
+                })
+                .catch(function(err) {
+                    setPwdStatus('error', '❌ ' + err.message);
+                    pwdSubmitBtn.disabled = false;
+                });
+        } else {
+            setPwdStatus('loading', '⏳ Verifying password...');
+            pwdSubmitBtn.disabled = true;
+    
+            KEY_MANAGER.unlockKey(state.user, password)
+                .then(function(result) {
+                    setPwdStatus('success', '✅ Key revealed!');
+                    document.getElementById('secretKey').value = result.key;
+                    showReveal(result.key);
+    
+                    var action = state._pendingAction;
+                    state._pendingAction = null;
+    
+                    if (action === 'encrypt') {
+                        setTimeout(function() {
+                            performEncrypt(result.key);
+                        }, 500);
+                    } else if (action === 'downloadDecryptor') {
+                        setTimeout(function() {
+                            downloadDecryptor();
+                        }, 500);
+                    }
+    
+                    setTimeout(closePwdModal, 1000);
+                })
+                .catch(function(err) {
+                    setPwdStatus('error', '❌ ' + err.message);
+                    pwdSubmitBtn.disabled = false;
+                    pwdInput.value = '';
+                    pwdInput.focus();
+                });
+        }
+    });
+    
+    function setPwdStatus(type, msg) {
+        pwdStatus.className = 'status ' + type;
+        pwdStatus.textContent = msg;
+        pwdStatus.style.display = 'block';
+    }
+    
+    window.toggleKeyReveal = function() {
+        if (!KEY_MANAGER.hasPassword()) { toast('Create key first', 'warn'); return; }
+        openPwdModal('reveal');
+    };
+    
+    function showReveal(key) {
+        var panel = document.getElementById('revealPanel');
+        var box = document.getElementById('revealBox');
+        var lenEl = document.getElementById('revealLength');
+        panel.classList.add('active');
+        box.textContent = key;
+        lenEl.textContent = key.length + ' chars';
+        state.keyRevealed = true;
+        startSessionTimer();
+    }
+    
+    window.hideReveal = function() {
+        document.getElementById('revealPanel').classList.remove('active');
+        state.keyRevealed = false;
+        stopSessionTimer();
+    };
+    
+    window.copyRevealedKey = function() {
+        var key = document.getElementById('revealBox').textContent;
+        if (!key) return;
+        universalCopy(key, null, null);
+        toast('✅ Key copied!', 'success');
+    };
+    
+    function startSessionTimer() {
+        stopSessionTimer();
+        state.sessionDeadline = Date.now() + SESSION_TIMEOUT;
+        var bar = document.getElementById('sessionBar');
+        var fill = document.getElementById('sessionBarFill');
+        if (bar) bar.classList.add('active');
+        state.sessionTimer = setInterval(function() {
+            var remaining = state.sessionDeadline - Date.now();
+            if (remaining <= 0) {
+                stopSessionTimer();
+                hideReveal();
+                return;
             }
-        };
+            if (fill) fill.style.width = ((remaining / SESSION_TIMEOUT) * 100) + '%';
+        }, 100);
+    }
+    function stopSessionTimer() {
+        if (state.sessionTimer) { clearInterval(state.sessionTimer); state.sessionTimer = null; }
+        var bar = document.getElementById('sessionBar');
+        if (bar) bar.classList.remove('active');
+    }
+    
+    var fileDrop = document.getElementById('fileDrop');
+    var fileInput = document.getElementById('fileInput');
+    fileDrop.addEventListener('click', function() { window.openFilePicker(); });
+    fileDrop.addEventListener('dragover', function(e) { e.preventDefault(); fileDrop.classList.add('dragover'); });
+    fileDrop.addEventListener('dragleave', function() { fileDrop.classList.remove('dragover'); });
+    fileDrop.addEventListener('drop', function(e) { e.preventDefault(); fileDrop.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+    fileInput.addEventListener('change', function(e) { handleFiles(e.target.files); });
+    
+    window.openFilePicker = function() { closeDrawer(); fileInput.click(); };
+    
+    function handleFiles(files) {
+        Array.prototype.forEach.call(files, function(file) {
+            if (file.size > 5 * 1024 * 1024) {
+                toast('File too large (max 5MB): ' + file.name, 'error');
+                return;
+            }
+            
+            var reader = new FileReader();
+            reader.onload = function(ev) {
+                var content = ev.target.result;
+                var ext = (file.name.split('.').pop() || '').toLowerCase();
+                state.uploadedFiles[file.name] = { 
+                    content: content, 
+                    lang: ext,
+                    size: file.size
+                };
+                renderFileList();
+                updateProgress();
+            };
+            reader.readAsText(file);
+        });
+    }
         
-        /* ═══════════════════════════════════════════════════════
-           performEncrypt — AES-256-CBC + HMAC-SHA256 (v3 format)
-           ═══════════════════════════════════════════════════════ */
-        function performEncrypt(secretKey) {
+    function renderFileList() {
+        var list = document.getElementById('fileList');
+        var names = Object.keys(state.uploadedFiles);
+        if (names.length === 0) { list.innerHTML = ''; return; }
+        list.innerHTML = names.map(function(name) {
+            var f = state.uploadedFiles[name];
+            var sizeStr = f.size ? ' <span class="fsize">(' + bytes(f.size) + ')</span>' : '';
+            return '<div class="file-item">📄 <span class="fname">' + name + '</span>' + sizeStr +
+                '<span class="remove" onclick="removeFile(\'' + name.replace(/'/g, "\\'") + '\')">✖</span></div>';
+        }).join('');
+    }
+    window.removeFile = function(name) { delete state.uploadedFiles[name]; renderFileList(); updateProgress(); };
+    
+    window.encryptNow = function() {
+        try {
+            if (!KEY_MANAGER.hasPassword()) {
+                showStatus('error', '❌ Create your key first');
+                toast('Create key first', 'error');
+                return;
+            }
+    
             var pasted = inputCodeEl.value;
             var fileNames = Object.keys(state.uploadedFiles);
-            showStatus('loading', '⏳ Encrypting...');
-        
-            var payload, mode;
-            var totalSize = 0;
-            var fileCount = 0;
-        
-            if (fileNames.length > 0) {
-                var bundle = {
-                    __type: 'multi-file-bundle',
-                    __version: '19.0',
-                    __created: new Date().toISOString(),
-                    __fileCount: fileNames.length,
-                    files: {}
-                };
-                fileNames.forEach(function(name) {
-                    var content = state.uploadedFiles[name].content;
-                    var sizeBytes = new Blob([content]).size;
-        
-                    bundle.files[name] = {
-                        content: content,
-                        lang: state.uploadedFiles[name].lang || 'txt',
-                        size: sizeBytes,
-                        sizeFormatted: bytes(sizeBytes)
-                    };
-        
-                    totalSize += sizeBytes;
-                    fileCount++;
-                });
-                payload = JSON.stringify(bundle);
-                mode = 'Bundle (' + fileNames.length + ' files, ' + bytes(totalSize) + ')';
+    
+            if (!pasted.trim() && fileNames.length === 0) {
+                showStatus('error', '❌ Paste code or upload files');
+                return;
+            }
+    
+            if (KEY_MANAGER.isReady() && KEY_MANAGER.getKey()) {
+                performEncrypt(KEY_MANAGER.getKey());
             } else {
-                payload = pasted;
-                totalSize = new Blob([pasted]).size;
-                fileCount = 1;
-                mode = 'Single ' + detectLanguage(pasted).toUpperCase() + ' (' + bytes(totalSize) + ')';
-            }
-        
-            /* ═══ v3 FORMAT — SEPARATE SALTS (STRONGEST) ═══ */
-        
-            /* ✅ Layer 1: Random 256-bit AES salt */
-            var aesSalt = CryptoJS.lib.WordArray.random(16);
-        
-            /* ✅ Layer 2: Random 256-bit HMAC salt (ALAG!) */
-            var hmacSalt = CryptoJS.lib.WordArray.random(16);
-        
-            /* ✅ Layer 3: Random 128-bit IV */
-            var iv = CryptoJS.lib.WordArray.random(16);
-        
-            /* ✅ Layer 4: Derive AES key from aesSalt */
-            var aesKey = CryptoJS.PBKDF2(secretKey, aesSalt, {
-                keySize: 256 / 32,
-                iterations: 100000,
-                hasher: CryptoJS.algo.SHA256
-            });
-        
-            /* ✅ Layer 5: Derive HMAC key from hmacSalt (ALAG!) */
-            var hmacKey = CryptoJS.PBKDF2(secretKey, hmacSalt, {
-                keySize: 256 / 32,
-                iterations: 100000,
-                hasher: CryptoJS.algo.SHA256
-            });
-        
-            /* ✅ Layer 6: AES-256-CBC encrypt */
-            var encrypted = CryptoJS.AES.encrypt(payload, aesKey, {
-                iv: iv,
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7
-            });
-        
-            /* ✅ Layer 7: HMAC-SHA256 over salts + iv + ciphertext */
-            var hmac = CryptoJS.HmacSHA256(
-                aesSalt.toString() + ':' + hmacSalt.toString() + ':' +
-                iv.toString() + ':' + encrypted.toString(),
-                hmacKey
-            ).toString();
-        
-            /* ✅ v3 format: v3:aesSalt:hmacSalt:iv:ciphertext:hmac */
-            var finalOutput = 'v3:' + aesSalt.toString() + ':' + hmacSalt.toString() +
-                              ':' + iv.toString() + ':' + encrypted.toString() + ':' + hmac;
-        
-            document.getElementById('outputEnc').value = finalOutput;
-            showStatus('success', '✅ Encrypted ' + bytes(totalSize) + ' → ' + bytes(new Blob([finalOutput]).size) + ' (v3 STRONG)');
-            toast('Encrypted with v3 STRONG!', 'success');
-            updateProgress();
-        
-            if (state.user && state.user.uid && typeof KEY_MANAGER !== 'undefined' && KEY_MANAGER.updateEncryptionStats) {
-                KEY_MANAGER.updateEncryptionStats(state.user.uid, {
-                    size: totalSize,
-                    sizeFormatted: bytes(totalSize),
-                    fileCount: fileCount,
-                    duration: 0
-                }).catch(function(err) {
-                    console.warn('Stats tracking failed:', err);
-                });
-            }
-        }
-        
-        window.copyOutput = function() {
-            var out = document.getElementById('outputEnc');
-            if (!out.value) { toast('Nothing to copy', 'error'); return; }
-            universalCopy(out.value, null, null, false);
-            showStatus('success', '✅ Copied!');
-            toast('Copied!', 'success');
-        };
-
-        window.downloadOutput = function() {
-            var out = document.getElementById('outputEnc').value;
-            if (!out) { toast('Nothing to download', 'error'); return; }
-            var blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
-            var a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'encrypted_' + Date.now() + '.txt';
-            a.click();
-            toast('Downloaded!', 'success');
-        };
-            
-        window.downloadDecryptor = function() {
-            var out = document.getElementById('outputEnc').value;
-            if (!out) { toast('Encrypt first!', 'error'); return; }
-        
-            if (!KEY_MANAGER.isReady() || !KEY_MANAGER.getKey()) {
-                state._pendingAction = 'downloadDecryptor';
+                state._pendingAction = 'encrypt';
                 openPwdModal('reveal');
-                toast('Enter password first, then decryptor will be created', 'info');
-                return;
+                toast('Enter password to encrypt', 'info');
             }
-            var fullKey = KEY_MANAGER.getKey();
-            if (!fullKey || fullKey.length < 30) {
-                toast('Key not found. Please unlock first.', 'error');
-                return;
-            }
-        
-            /* ═══════════════════════════════════════════════════════
-               ✅ PROFESSIONAL RANDOM FILENAME (4-part)
-               Har user ka alag — 10^25+ combinations
-               ═══════════════════════════════════════════════════════ */
-            var typePrefixes = ['sk','vx','ky','zn','qm','pl','rt','jw','bd','fh',
-                                'gc','mn','tp','ws','xr','yv','az','ce','dg','ei',
-                                'fj','hk','lo','nu','op','qr','st','uv','wx','yz'];
-            var securityThemes = ['protection','security','shield','guard','defense',
-                                  'armor','fortress','sentinel','watch','sentry',
-                                  'vault','cipher','crypt','secure','safe',
-                                  'barrier','bulwark','rampart','bastion','citadel',
-                                  'stronghold','keep','tower','gate','lock',
-                                  'seal','ward','safeguard','guardian','preserver'];
-            var roleWords = ['key','server','module','engine','core',
-                             'loader','handler','worker','runner','driver',
-                             'helper','utility','service','agent','daemon',
-                             'process','thread','task','job','routine',
-                             'system','framework','runtime','kernel','shell',
-                             'interface','bridge','adapter','connector','linker'];
-            function pickRandom(arr) { return arr[secureRandomInt(arr.length)]; }
-        
-            var keyFileName = pickRandom(typePrefixes) + '-' +
-                              pickRandom(securityThemes) + '-' +
-                              rndHex(8) + '-' +
-                              pickRandom(roleWords) + '-' +
-                              rndHex(10) + '.js';
-        
-            var encData = out;
-            var PREFIX = 'NightOrbitGyidi_houperSecret_';
-            var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
-            if (suffix.length < 60) { while (suffix.length < 60) suffix += '0'; }
-            suffix = suffix.substring(0, 60);
-            var fullKeyString = PREFIX + suffix;
-        
-            /* ═══════════════════════════════════════════════════════
-               ✅ 8-LAYER KEY OBFUSCATION (original 7 + 1 new)
-               Layer 1: XOR with 0x5A + s1
-               Layer 2: Add s2, mod 256
-               Layer 3: XOR with s3
-               Layer 4: Even/Odd split + recombine
-               Layer 5: Random padding
-               Layer 6: Base64 encode
-               Layer 7: Reverse string
-               Layer 8: XOR with 0x5A + s4
-               ═══════════════════════════════════════════════════════ */
-            var s1 = (Date.now() % 251) + 1;
-            var s2 = secureRandomInt(251) + 1;
-            var s3 = secureRandomInt(251) + 1;
-            var s4 = secureRandomInt(251) + 1;
-        
-            var L1 = [];
-            for (var i = 0; i < fullKeyString.length; i++) {
-                L1.push((fullKeyString.charCodeAt(i) ^ 0x5A) ^ s1);
-            }
-            var L2 = [];
-            for (var j = 0; j < L1.length; j++) {
-                L2.push((L1[j] + s2) % 256);
-            }
-            var L3 = [];
-            for (var k = 0; k < L2.length; k++) {
-                L3.push(L2[k] ^ s3);
-            }
-            var even = [], odd = [];
-            for (var m = 0; m < L3.length; m++) {
-                if (m % 2 === 0) even.push(L3[m]);
-                else odd.push(L3[m]);
-            }
-            var L4 = even.concat(odd);
-            var padCount = secureRandomInt(10) + 5;
-            var padding = [];
-            for (var p = 0; p < padCount; p++) {
-                padding.push(secureRandomInt(256));
-            }
-            var L5 = padding.concat(L4);
-            var bin = '';
-            for (var b = 0; b < L5.length; b++) {
-                bin += String.fromCharCode(L5[b]);
-            }
-            var L6 = btoa(bin);
-            var L7 = L6.split('').reverse().join('');
-            var obf = [];
-            for (var bi = 0; bi < L7.length; bi++) {
-                obf.push((L7.charCodeAt(bi) ^ 0x5A) ^ s4);
-            }
-            var byteArrayString = '[' + obf.join(',') + ']';
-        
-            var qA = rv(6), qB = rv(7), qC = rv(5), qD = rv(6), qE = rv(8);
-            var qF = rv(6), qG = rv(5), qH = rv(4), qI = rv(4), qJ = rv(5);
-            var qK = rv(5), qL = rv(5), qM = rv(5), qN = rv(4), qO = rv(5);
-        
-            /* ═══════════════════════════════════════════════════════
-               ✅ FIX: Key file — NO comments, NO hints
-               Sirf raw obfuscated code — koi "NightOrbit" ya "Encrypted Key"
-               wala hint nahi. Windows bhi suspicious nahi hoga.
-               ═══════════════════════════════════════════════════════ */
-            var keyFileContent =
-                '(function(){\n' +
-                '"use strict";\n' +
-                'try{\n' +
-                'var S1=' + s1 + ',S2=' + s2 + ',S3=' + s3 + ',S4=' + s4 + ';\n' +
-                'var ' + qN + '=' + padCount + ';\n' +
-                'var ' + qA + '=' + byteArrayString + ';\n' +
-                'var ' + qB + '="";\n' +
-                'for(var ' + qC + '=0;' + qC + '<' + qA + '.length;' + qC + '++){\n' +
-                qB + '+=String.fromCharCode((' + qA + '[' + qC + ']^0x5A)^S4);\n' +
-                '}\n' +
-                'var ' + qD + '=' + qB + ';\n' +
-                'function ' + qE + '(s){\n' +
-                'var ' + qF + '=s.split("").reverse().join("");\n' +
-                'var ' + qG + '=atob(' + qF + ');\n' +
-                'var ' + qH + '=[];\n' +
-                'for(var ' + qI + '=0;' + qI + '<' + qG + '.length;' + qI + '++){\n' +
-                qH + '.push(' + qG + '.charCodeAt(' + qI + '));\n' +
-                '}\n' +
-                'var ' + qK + '=' + qH + '.slice(' + qN + ');\n' +
-                'var ' + qL + '=' + qK + '.slice(0,Math.ceil(' + qK + '.length/2));\n' +
-                'var ' + qM + '=' + qK + '.slice(Math.ceil(' + qK + '.length/2));\n' +
-                'var ' + qJ + '=[];\n' +
-                'for(var i=0;i<' + qK + '.length;i++){\n' +
-                'if(i%2===0)' + qJ + '.push(' + qL + '[Math.floor(i/2)]);\n' +
-                'else ' + qJ + '.push(' + qM + '[Math.floor(i/2)]);\n' +
-                '}\n' +
-                'var ' + qH + '=[];\n' +
-                'for(var q=0;q<' + qJ + '.length;q++){\n' +
-                qH + '.push(' + qJ + '[q]^S3);\n' +
-                '}\n' +
-                'var ' + qO + '=[];\n' +
-                'for(var r=0;r<' + qH + '.length;r++){\n' +
-                'var sh=(' + qH + '[r]-S2+256)%256;\n' +
-                qO + '.push(sh^S1);\n' +
-                '}\n' +
-                'var res="";\n' +
-                'for(var f=0;f<' + qO + '.length;f++){\n' +
-                'res+=String.fromCharCode(' + qO + '[f]^0x5A);\n' +
-                '}\n' +
-                /* ✅ Private variable — no window._0xSECRET */
-                'if(typeof window!=="undefined"){\n' +
-                '  window._kk="";\n' +
-                '  window._seal=function(){return res;};\n' +
-                '  window._kk=window._seal();\n' +
-                '  delete window._seal;\n' +
-                '}\n' +
-                '}catch(e){if(typeof window!=="undefined")window._kk="";}\n' +
-                '})();';
-        
-           /* ✅ OBFUSCATED FILENAME — jaise pehle nx_xxx tha */
-                var _nameBytes = [];
-                for (var _ni = 0; _ni < keyFileName.length; _ni++) {
-                    _nameBytes.push((keyFileName.charCodeAt(_ni) ^ 0x5A) ^ 0x3C);
-                }
-                var _nameB64 = btoa(JSON.stringify(_nameBytes));
-                var _nameRev = _nameB64.split('').reverse().join('');
-                var _nameObf = [];
-                for (var _nb = 0; _nb < _nameRev.length; _nb++) {
-                    _nameObf.push((_nameRev.charCodeAt(_nb) ^ 0x5A) ^ 0x3C);
-                }
-                var encodedKeyFileName = JSON.stringify(_nameObf);
-        
-            var d1 = rv(8), d2 = rv(8), d3 = rv(8);
-            var d4 = rv(8), d5 = rv(8), d6 = rv(8);
-        
-            var decoyFunctions =
-                '<script>\n' +
-                '(function(){\n' +
-                '  var ' + d1 + ' = [];\n' +
-                '  var ' + d2 + ' = {};\n' +
-                '  var ' + d3 + ' = function(x){ return x; };\n' +
-                '  window.__init = ' + d3 + ';\n' +
-                '  try { ' + d1 + '.push(Date.now()); } catch(e) {}\n' +
-                '  try { ' + d2 + '.start = 1; } catch(e) {}\n' +
-                '})();\n' +
-                '<' + '/script>\n';
-        
-            var antiDebug =
-                '<script>\n' +
-                '(function(){\n' +
-                '  var ' + d4 + ' = 0;\n' +
-                '  var ' + d5 + ' = function(){\n' +
-                '    var ' + d6 + ' = new Date();\n' +
-                '    debugger;\n' +
-                '    if(new Date() - ' + d6 + ' > 100){\n' +
-                '      ' + d4 + '++;\n' +
-                '      if(' + d4 + ' > 3){ document.body.innerHTML = ""; }\n' +
-                '    }\n' +
-                '  };\n' +
-                '  setInterval(' + d5 + ', 1000);\n' +
-                '})();\n' +
-                '<' + '/script>\n';
-        
-            /* ═══════════════════════════════════════════════════════
-               ✅ 4-Method Key Loader (file:// CORS bypass)
-               ═══════════════════════════════════════════════════════ */
-            var keyLoaderScript =
-                '<script>\n' +
-                '(function(){\n' +
-                '  var _raw = ' + encodedKeyFileName + ';\n' +
-                '  var _deobf = [];\n' +
-                '  for (var _i = 0; _i < _raw.length; _i++) {\n' +
-                '    _deobf.push((_raw[_i] ^ 0x3C) ^ 0x5A);\n' +
-                '  }\n' +
-                '  var _rev = String.fromCharCode.apply(null, _deobf);\n' +
-                '  var _b64 = _rev.split("").reverse().join("");\n' +
-                '  var _bytes = JSON.parse(atob(_b64));\n' +
-                '  var _chars = [];\n' +
-                '  for (var _j = 0; _j < _bytes.length; _j++) {\n' +
-                '    _chars.push(String.fromCharCode((_bytes[_j] ^ 0x3C) ^ 0x5A));\n' +
-                '  }\n' +
-                '  var KEY_FILENAME = _chars.join("");\n' +
-                '  console.log("🔍 Decryptor looking for:", KEY_FILENAME);\n' +
-                '  window._kf = 0;\n' +
-                '\n' +
-                '  function injectCode(code){\n' +
-                '    try {\n' +
-                '      var blob = new Blob([code], {type: "text/javascript"});\n' +
-                '      var url = URL.createObjectURL(blob);\n' +
-                '      var s = document.createElement("script");\n' +
-                '      s.src = url;\n' +
-                '      s.async = false;\n' +
-                '      document.head.appendChild(s);\n' +
-                '      window._kf = 1;\n' +
-                '      return true;\n' +
-                '    } catch(e) {\n' +
-                '      try {\n' +
-                '        var s = document.createElement("script");\n' +
-                '        s.textContent = code;\n' +
-                '        document.head.appendChild(s);\n' +
-                '        window._kf = 1;\n' +
-                '        return true;\n' +
-                '      } catch(e2) { return false; }\n' +
-                '    }\n' +
-                '  }\n' +
-                '\n' +
-                '  function tryFetch(cb){\n' +
-                '    try {\n' +
-                '      fetch(KEY_FILENAME).then(function(r){\n' +
-                '        if(!r.ok) throw new Error("HTTP " + r.status);\n' +
-                '        return r.text();\n' +
-                '      }).then(function(code){ cb(injectCode(code)); })\n' +
-                '      .catch(function(){ cb(false); });\n' +
-                '    } catch(e) { cb(false); }\n' +
-                '  }\n' +
-                '\n' +
-                '  function tryXHR(cb){\n' +
-                '    try {\n' +
-                '      var xhr = new XMLHttpRequest();\n' +
-                '      xhr.open("GET", KEY_FILENAME, true);\n' +
-                '      xhr.onload = function(){\n' +
-                '        if(xhr.status === 0 || xhr.status === 200){\n' +
-                '          cb(injectCode(xhr.responseText));\n' +
-                '        } else { cb(false); }\n' +
-                '      };\n' +
-                '      xhr.onerror = function(){ cb(false); };\n' +
-                '      xhr.send();\n' +
-                '    } catch(e) { cb(false); }\n' +
-                '  }\n' +
-                '\n' +
-                '  function tryScriptTag(cb){\n' +
-                '    try {\n' +
-                '      var s = document.createElement("script");\n' +
-                '      s.src = KEY_FILENAME;\n' +
-                '      s.async = false;\n' +
-                '      s.onload = function(){ window._kf = 1; cb(true); };\n' +
-                '      s.onerror = function(){ cb(false); };\n' +
-                '      document.head.appendChild(s);\n' +
-                '    } catch(e) { cb(false); }\n' +
-                '  }\n' +
-                '\n' +
-                '  function showManualPicker(){\n' +
-                '    if(document.getElementById("_mkWrap")) return;\n' +
-                '    var wrap = document.createElement("div");\n' +
-                '    wrap.id = "_mkWrap";\n' +
-                '    wrap.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.95);backdrop-filter:blur(12px);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:20px;font-family:monospace;color:#fff;";\n' +
-                '    var html = "<div style=\\"max-width:560px;width:100%;text-align:center;\\">";\n' +
-                '    html += "<div style=\\"font-size:72px;margin-bottom:20px;\\">🔑<\\/div>";\n' +
-                '    html += "<div style=\\"font-size:20px;letter-spacing:3px;text-transform:uppercase;color:#00f0ff;margin-bottom:14px;font-weight:bold;\\">Select Key File<\\/div>";\n' +
-                '    html += "<div style=\\"color:#b0b0d0;font-size:13px;line-height:1.8;margin-bottom:20px;\\">Browser blocks auto-loading of local files.<br>Please select the key file manually:<br><br>";\n' +
-                '    html += "<code style=\\"background:#000;padding:8px 14px;border-radius:8px;color:#00ff64;font-size:12px;display:inline-block;word-break:break-all;\\">" + KEY_FILENAME + "<\\/code><\\/div>";\n' +
-                '    html += "<input type=\\"file\\" id=\\"_mkFile\\" accept=\\".js\\" style=\\"display:none;\\" />";\n' +
-                '    html += "<button id=\\"_mkBtn\\" style=\\"background:linear-gradient(135deg,#00f0ff,#b400ff);color:#000;border:none;padding:16px 32px;border-radius:12px;font-weight:900;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;\\">📁 SELECT KEY FILE<\\/button>";\n' +
-                '    html += "<div id=\\"_mkStatus\\" style=\\"margin-top:16px;color:#6a6a8a;font-size:12px;\\"> <\\/div><\\/div>";\n' +
-                '    wrap.innerHTML = html;\n' +
-                '    document.body.appendChild(wrap);\n' +
-                '    var input = document.getElementById("_mkFile");\n' +
-                '    var btn = document.getElementById("_mkBtn");\n' +
-                '    var status = document.getElementById("_mkStatus");\n' +
-                '    btn.onclick = function(){ input.click(); };\n' +
-                '    input.onchange = function(){\n' +
-                '      var file = input.files[0];\n' +
-                '      if(!file) return;\n' +
-                '      status.textContent = "Loading " + file.name + "...";\n' +
-                '      status.style.color = "#ffd700";\n' +
-                '      var reader = new FileReader();\n' +
-                '      reader.onload = function(ev){\n' +
-                '        if(injectCode(ev.target.result)){\n' +
-                '          status.textContent = "✅ Key loaded! Decrypting...";\n' +
-                '          status.style.color = "#00ff64";\n' +
-                '          setTimeout(function(){ wrap.remove(); location.reload(); }, 500);\n' +
-                '        } else {\n' +
-                '          status.textContent = "❌ Failed to load";\n' +
-                '          status.style.color = "#ff0064";\n' +
-                '        }\n' +
-                '      };\n' +
-                '      reader.readAsText(file);\n' +
-                '    };\n' +
-                '  }\n' +
-                '\n' +
-                '  function tryAll(){\n' +
-                '    tryFetch(function(ok1){\n' +
-                '      if(ok1) return;\n' +
-                '      tryXHR(function(ok2){\n' +
-                '        if(ok2) return;\n' +
-                '        tryScriptTag(function(ok3){\n' +
-                '          if(ok3) return;\n' +
-                '          setTimeout(showManualPicker, 400);\n' +
-                '        });\n' +
-                '      });\n' +
-                '    });\n' +
-                '  }\n' +
-                '\n' +
-                '  if(document.readyState === "loading"){\n' +
-                '    document.addEventListener("DOMContentLoaded", tryAll);\n' +
-                '  } else {\n' +
-                '    tryAll();\n' +
-                '  }\n' +
-                '})();\n' +
-                '<' + '/script>\n';
-        
-            /* ═══════════════════════════════════════════════════════
-               Decryptor HTML
-               ═══════════════════════════════════════════════════════ */
-            var parts = [
-                '<!DOCTYPE html>',
-                '<html lang="en">',
-                '<head>',
-                '<meta charset="UTF-8">',
-                '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">',
-                '<title id="pageTitle">Loading...</title>',
-                '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
-                keyLoaderScript,
-                '<style>',
-                '*{margin:0;padding:0;box-sizing:border-box;}',
-                'html,body{width:100%;min-height:100vh;}',
-                'body{background:#05050f;color:#fff;font-family:"Courier New",monospace;overflow-x:hidden;}',
-                '.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,#0b0b1a 0%,#000 100%);z-index:9999;}',
-                '.spinner{width:60px;height:60px;border:4px solid rgba(0,240,255,0.15);border-top-color:#00f0ff;border-radius:50%;animation:spin 1s linear infinite;}',
-                '@keyframes spin{to{transform:rotate(360deg);}}',
-                '.txt{color:#00f0ff;font-size:14px;letter-spacing:3px;text-transform:uppercase;}',
-                '.sub{color:#6a6a8a;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:8px;}',
-                '.err{padding:60px 30px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;}',
-                '.err-icon{font-size:72px;}',
-                '.err h2{color:#ff0064;font-size:24px;letter-spacing:3px;text-transform:uppercase;}',
-                '.err p{color:#b0b0d0;font-size:13px;line-height:1.7;max-width:500px;}',
-                '.bundle-wrap{max-width:1100px;margin:0 auto;padding:30px 20px;}',
-                '.bundle-title{color:#00f0ff;text-align:center;font-size:22px;letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;font-family:"Orbitron",sans-serif;}',
-                '.file-card{background:rgba(0,240,255,0.04);border-left:4px solid #00f0ff;border-radius:10px;padding:18px;margin-bottom:16px;}',
-                '.file-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;}',
-                '.file-name{color:#ffd700;font-weight:bold;font-size:14px;}',
-                '.file-lang{background:#00f0ff;color:#000;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:bold;text-transform:uppercase;}',
-                '.file-content{background:#000;color:#00ff64;padding:14px;border-radius:8px;font-family:"Courier New",monospace;font-size:12px;line-height:1.5;max-height:400px;overflow:auto;white-space:pre-wrap;word-break:break-word;}',
-                '.dl-btn{background:linear-gradient(135deg,#00f0ff,#b400ff);border:none;padding:10px 20px;border-radius:8px;color:#000;font-weight:bold;cursor:pointer;margin-top:12px;font-family:inherit;letter-spacing:1px;text-transform:uppercase;font-size:11px;}',
-                '.dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,240,255,0.3);}',
-                '#renderFrame{width:100%;height:100vh;border:0;display:block;position:fixed;inset:0;z-index:10;}',
-                '<' + '/style>',
-                '<' + '/head>',
-                '<body>',
-                '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
-                decoyFunctions,
-                antiDebug,
-                '<script>',
-                'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
-                '',
-                'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
-                '',
-                'function showError(msg){',
-                '  document.title="Error";',
-                '  document.body.innerHTML="";',
-                '  document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;margin:0;";',
-                '  var err="<div class=\\"err\\">";',
-                '  err+="<div class=\\"err-icon\\">❌<\\/div>";',
-                '  err+="<h2>Decryption Failed<\\/h2>";',
-                '  err+="<p>"+msg+"<\\/p>";',
-                '  err+="<p style=\\"font-size:11px;color:#6a6a8a;margin-top:20px;\\">Check: key file present, encrypted data, internet connection<\\/p>";',
-                '  err+="<\\/div>";',
-                '  document.body.innerHTML=err;',
-                '}',
-                '',
-                'function showKeyMissingError(){',
-                '  document.title="Key File Missing";',
-                '  document.body.innerHTML="";',
-                '  document.body.style.cssText="background:#0b0b1a;color:#fff;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:monospace;";',
-                '  var h="<div style=\\"text-align:center;padding:40px 20px;max-width:600px;\\">";',
-                '  h+="<div style=\\"font-size:80px;margin-bottom:24px;\\">🔐<\\/div>";',
-                '  h+="<div style=\\"font-size:24px;letter-spacing:4px;text-transform:uppercase;color:#ff0064;margin-bottom:20px;font-weight:bold;\\">Key File Missing<\\/div>";',
-                '  h+="<div style=\\"color:#b0b0d0;font-size:14px;line-height:2;margin-bottom:24px;\\">";',
-                '  h+="Required key file not found in this folder.<br><br>";',
-                '  h+="Make sure the key file is in the <b style=\\"color:#ffd700;\\">SAME folder</b> as decryptor.html.<br><br>";',
-                '  h+="<div style=\\"color:#ffb3c9;font-size:12px;margin-top:20px;\\">⚠️ Do NOT rename the key file.<\\/div>";',
-                '  h+="<\\/div><\\/div>";',
-                '  document.body.innerHTML=h;',
-                '}',
-                '',
-                'function extractTitle(html){',
-                '  var m=html.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);',
-                '  return m?m[1].trim():"Original Web";',
-                '}',
-                '',
-                'function extractFavicon(html){',
-                '  var m=html.match(/<link[^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\'][^>]*href=["\']([^"\']+)["\']/i);',
-                '  if(m)return m[1];',
-                '  m=html.match(/<link[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\']/i);',
-                '  return m?m[1]:null;',
-                '}',
-                '',
-                'function applyOriginalBranding(html){',
-                '  var title=extractTitle(html);',
-                '  document.title=title;',
-                '  var fav=extractFavicon(html);',
-                '  if(fav){',
-                '    var link=document.querySelector("link[rel*=\'icon\']")||document.createElement("link");',
-                '    link.rel="icon";',
-                '    link.href=fav;',
-                '    document.head.appendChild(link);',
-                '  }',
-                '}',
-                '',
-                'function injectBlocker(html){',
-                '  html = html.replace(/<noscript[\\s\\S]*?<\\/noscript>/gi, "");',
-                '  html = html.replace(/<meta[^>]*http-equiv=["\']refresh["\'][^>]*>/gi, "");',
-                '  var css = "<style>" +',
-                '    "*{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;}" +',
-                '    "input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text;}" +',
-                '    "<\\/style>";',
-                '  var js = "<scr"+"ipt>" +',
-                '    "(function(){" +',
-                '      "function isEd(el){if(!el||!el.tagName)return false;var t=el.tagName.toLowerCase();return t===\'input\'||t===\'textarea\'||t===\'select\'||el.isContentEditable;}" +',
-                '      "document.addEventListener(\'contextmenu\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
-                '      "document.addEventListener(\'selectstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
-                '      "document.addEventListener(\'copy\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
-                '      "document.addEventListener(\'cut\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
-                '      "document.addEventListener(\'dragstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
-                '      "document.addEventListener(\'keydown\',function(e){" +',
-                '        "var t=e.target;var tag=t&&t.tagName?t.tagName.toLowerCase():\'\';" +',
-                '        "var ed=(tag===\'input\'||tag===\'textarea\'||tag===\'select\'||(t&&t.isContentEditable));" +',
-                '        "if(e.key===\'F12\'||e.keyCode===123){e.preventDefault();return false;}" +',
-                '        "if(e.ctrlKey&&e.shiftKey&&(e.key===\'I\'||e.key===\'J\'||e.key===\'C\'||e.keyCode===73||e.keyCode===74||e.keyCode===67)){e.preventDefault();return false;}" +',
-                '        "if(e.ctrlKey&&(e.key===\'U\'||e.keyCode===85)){e.preventDefault();return false;}" +',
-                '        "if(e.ctrlKey&&!ed&&(e.key===\'C\'||e.key===\'A\'||e.key===\'S\'||e.keyCode===67||e.keyCode===65||e.keyCode===83)){e.preventDefault();return false;}" +',
-                '        "if(!ed&&(e.key===\'Backspace\'||e.key===\'Tab\')){e.preventDefault();return false;}" +',
-                '      "},{capture:true});" +',
-                '    "})();" +',
-                '  "<\\/scr"+"ipt>";',
-                '  if(html.indexOf("</head>")!==-1){html=html.replace("</head>",css+"</head>");}else{html=css+html;}',
-                '  if(html.indexOf("</body>")!==-1){html=html.replace("</body>",js+"</body>");}else{html=html+js;}',
-                '  return html;',
-                '}',
-                '',
-                'function renderHTML(htmlContent){',
-                '  var loader=document.getElementById("loader");',
-                '  if(loader)loader.style.display="none";',
-                '  applyOriginalBranding(htmlContent);',
-                '  var finalHTML=injectBlocker(htmlContent);',
-                '  var iframe=document.createElement("iframe");',
-                '  iframe.id="renderFrame";',
-                '  iframe.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads");',
-                '  document.body.appendChild(iframe);',
-                '  try{ iframe.srcdoc=finalHTML; }',
-                '  catch(e){',
-                '    try{',
-                '      var blob=new Blob([finalHTML],{type:"text/html;charset=utf-8"});',
-                '      var url=URL.createObjectURL(blob);',
-                '      iframe.removeAttribute("srcdoc");',
-                '      iframe.src=url;',
-                '    }catch(e2){ showError("Render failed: "+e2.message); }',
-                '  }',
-                '  setTimeout(function(){try{iframe.focus();}catch(e){}},100);',
-                '}',
-                '',
-                'function renderText(textContent){',
-                '  document.title="Decrypted Text";',
-                '  document.body.innerHTML="";',
-                '  document.body.style.cssText="background:#000;color:#00ff64;font-family:\\"Courier New\\",monospace;padding:20px;margin:0;font-size:13px;line-height:1.6;";',
-                '  var pre=document.createElement("pre");',
-                '  pre.style.cssText="margin:0;white-space:pre-wrap;word-break:break-word;";',
-                '  pre.textContent=textContent;',
-                '  document.body.appendChild(pre);',
-                '}',
-                '',
-                'function renderBundle(bundle){',
-                '  document.title="Bundle ("+bundle.__fileCount+" Files)";',
-                '  document.body.innerHTML="";',
-                '  document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;padding:20px;margin:0;min-height:100vh;";',
-                '  function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/\'/g,"&#039;");}',
-                '  var h="<div class=\\"bundle-wrap\\">";',
-                '  h+="<div class=\\"bundle-title\\">📦 Multi-File Bundle ("+bundle.__fileCount+" files)<\\/div>";',
-                '  Object.keys(bundle.files).forEach(function(name){',
-                '    var f=bundle.files[name];',
-                '    h+="<div class=\\"file-card\\">";',
-                '    h+="<div class=\\"file-head\\"><span class=\\"file-name\\">📄 "+esc(name)+"<\\/span><span class=\\"file-lang\\">"+esc((f.lang||"?").toUpperCase())+"<\\/span><\\/div>";',
-                '    h+="<pre class=\\"file-content\\">"+esc(f.content)+"<\\/pre>";',
-                '    h+="<button class=\\"dl-btn\\" data-name=\\""+esc(name)+"\\">⬇ Download "+esc(name)+"<\\/button>";',
-                '    h+="<\\/div>";',
-                '  });',
-                '  h+="<\\/div>";',
-                '  document.body.innerHTML=h;',
-                '  document.body.querySelectorAll(".dl-btn").forEach(function(b){',
-                '    b.addEventListener("click",function(){',
-                '      var name=this.getAttribute("data-name");',
-                '      var f=bundle.files[name];',
-                '      var blob=new Blob([f.content],{type:"text/plain;charset=utf-8"});',
-                '      var a=document.createElement("a");',
-                '      a.href=URL.createObjectURL(blob);',
-                '      a.download=name;',
-                '      a.click();',
-                '    });',
-                '  });',
-                '}',
-                '',
-                'ready(function(){',
-                '  if(typeof CryptoJS==="undefined"){',
-                '    showError("CryptoJS library failed to load. Check your internet connection.");',
-                '    return;',
-                '  }',
-                '  setTimeout(function(){',
-                '    if(!window._kk || window._kk.length < 30){',
-                '      showKeyMissingError();',
-                '      return;',
-                '    }',
-                /* ✅ Private key variable inside IIFE */
-                '    (function(){',
-                '      var _0xSECRET = window._kk;',
-                '      delete window._kk;',
-                '      try{',
-                '        var dec;',
-                '        var parts=ENCRYPTED_DATA.split(":");',
-                '        if(parts[0]==="v3" && parts.length===6){',
-                '          var aesSalt=CryptoJS.enc.Hex.parse(parts[1]);',
-                '          var hmacSalt=CryptoJS.enc.Hex.parse(parts[2]);',
-                '          var iv=CryptoJS.enc.Hex.parse(parts[3]);',
-                '          var ciphertext=parts[4];',
-                '          var storedHmac=parts[5];',
-                '          var hmacKey=CryptoJS.PBKDF2(_0xSECRET,hmacSalt,{',
-                '            keySize:256/32,iterations:100000,hasher:CryptoJS.algo.SHA256',
-                '          });',
-                '          var computedHmac=CryptoJS.HmacSHA256(parts[1]+":"+parts[2]+":"+parts[3]+":"+ciphertext,hmacKey).toString();',
-                '          if(computedHmac!==storedHmac){ throw new Error("Integrity check failed"); }',
-                '          var aesKey=CryptoJS.PBKDF2(_0xSECRET,aesSalt,{',
-                '            keySize:256/32,iterations:100000,hasher:CryptoJS.algo.SHA256',
-                '          });',
-                '          dec=CryptoJS.AES.decrypt(ciphertext,aesKey,{',
-                '            iv:iv,mode:CryptoJS.mode.CBC,padding:CryptoJS.pad.Pkcs7',
-                '          }).toString(CryptoJS.enc.Utf8);',
-                '        } else if(parts[0]==="v2" && parts.length===4){',
-                '          var iv2=CryptoJS.enc.Hex.parse(parts[1]);',
-                '          var ciphertext2=parts[2];',
-                '          var storedHmac2=parts[3];',
-                '          var computedHmac2=CryptoJS.HmacSHA256(parts[1]+":"+ciphertext2,_0xSECRET).toString();',
-                '          if(computedHmac2!==storedHmac2){ throw new Error("Integrity check failed"); }',
-                '          dec=CryptoJS.AES.decrypt(ciphertext2,_0xSECRET,{',
-                '            iv:iv2,mode:CryptoJS.mode.CBC,padding:CryptoJS.pad.Pkcs7',
-                '          }).toString(CryptoJS.enc.Utf8);',
-                '        } else {',
-                '          dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,_0xSECRET).toString(CryptoJS.enc.Utf8);',
-                '        }',
-                '        if(!dec||dec.length===0){throw new Error("Decryption failed");}',
-                '        var isBundle=false,bundle=null;',
-                '        try{ var p=JSON.parse(dec); if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;} }catch(e){}',
-                '        if(isBundle){ renderBundle(bundle); }',
-                '        else {',
-                '          var trimmed=dec.trim();',
-                '          var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);',
-                '          if(isHTML){ renderHTML(dec); } else { renderText(dec); }',
-                '        }',
-                '      }catch(e){ showError(e.message); }',
-                '    })();',
-                '  }, 500);',
-                '});',
-                '<' + '/script>',
-                '<' + '/body>',
-                '<' + '/html>'
-            ];
-        
-            var html = parts.join('\n');
-        
-            /* ✅ Download decryptor.html */
-            var htmlBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
-            var htmlLink = document.createElement('a');
-            htmlLink.href = URL.createObjectURL(htmlBlob);
-            htmlLink.download = 'decryptor.html';
-            htmlLink.click();
-        
-            /* ✅ Download key file — SAME filename (exact match) */
-            var keyBlob = new Blob([keyFileContent], { type: 'text/javascript;charset=utf-8' });
-            var keyLink = document.createElement('a');
-            keyLink.href = URL.createObjectURL(keyBlob);
-            keyLink.download = keyFileName;
-            keyLink.click();
-        
-            showStatus('success', '🎁 Decryptor + Key file downloaded! Keep both in same folder.');
-            toast('Decryptor + Key file downloaded!', 'success');
-        
-            setTimeout(function() {
-                showKeyModal(keyFileName, keyFileContent);
-            }, 800);
-        };
-        
-        window.showKeyModal = function(fileName, keyCode) {
-            var existing = document.getElementById('keyModalOverlay');
-            if (existing) existing.remove();
-        
-            var overlay = document.createElement('div');
-            overlay.id = 'keyModalOverlay';
-            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
-        
-            var modal = document.createElement('div');
-            modal.style.cssText = 'background:rgba(11,11,26,0.98);border:2px solid #00f0ff;border-radius:22px;padding:28px 24px;max-width:580px;width:100%;box-shadow:0 0 100px rgba(0,240,255,0.3);';
-        
-            var safeFileName = escapeHtml(fileName);
-        
-            modal.innerHTML =
-                '<h2 style="font-family:Orbitron,sans-serif;font-size:16px;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:8px;background:linear-gradient(135deg,#00f0ff,#ff2d95);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">KEY FILE BACKUP</h2>' +
-                '<p style="color:#6a6a8a;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:20px;">Files auto-downloaded. Backup below.</p>' +
-        
-                '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
-                '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">✅ AUTO-DOWNLOADED</div>' +
-                '<div style="color:#b0d0ff;font-size:12px;line-height:1.7;">Two files have been downloaded:<br>1. <b style="color:#ffd700;">decryptor.html</b><br>2. <b style="color:#00f0ff;">' + safeFileName + '</b></div>' +
-                '</div>' +
-        
-                '<div style="background:rgba(255,215,0,0.08);border-left:3px solid #ffd700;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
-                '<div style="color:#ffd700;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📁 BACKUP — KEY FILE NAME</div>' +
-                '<div style="color:#fff;font-size:13px;font-family:JetBrains Mono,monospace;word-break:break-all;background:#000;padding:10px;border-radius:6px;border:1px solid #333;">' + safeFileName + '</div>' +
-                '<button onclick="copyToClipboard(\'' + safeFileName + '\', this)" style="margin-top:8px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">COPY FILE NAME</button>' +
-                '</div>' +
-        
-                '<div style="background:rgba(0,240,255,0.08);border-left:3px solid #00f0ff;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
-                '<div style="color:#00f0ff;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📝 BACKUP — KEY FILE CODE</div>' +
-                '<div id="keyCodeBox" style="color:#00ff64;font-size:10px;font-family:JetBrains Mono,monospace;word-break:break-all;background:#000;padding:10px;border-radius:6px;border:1px solid #333;max-height:180px;overflow-y:auto;white-space:pre-wrap;">' + escapeHtml(keyCode) + '</div>' +
-                '<button onclick="copyKeyCode(this)" style="margin-top:8px;background:linear-gradient(135deg,#00f0ff,#b400ff);color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">COPY KEY CODE</button>' +
-                '</div>' +
-        
-                '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:12px 14px;border-radius:8px;margin-bottom:20px;">' +
-                '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">⚠️ IMPORTANT — SAME FOLDER</div>' +
-                '<div style="color:#b0d0ff;font-size:12px;line-height:1.7;">Place <b>decryptor.html</b> and <b>' + safeFileName + '</b> in the SAME folder. Do NOT rename the key file.</div>' +
-                '</div>' +
-        
-                '<button onclick="closeKeyModal()" style="width:100%;background:linear-gradient(135deg,#00ff64,#00aa44);color:#000;border:none;padding:15px 22px;border-radius:12px;font-weight:900;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">OK, I UNDERSTAND</button>';
-        
-            overlay.appendChild(modal);
-            document.body.appendChild(overlay);
-        };
-        
-        window.copyToClipboard = function(text, btn) {
-            universalCopy(text, btn, 'COPY FILE NAME', false);
-        };
-        
-        window.copyKeyCode = function(btn) {
-            var code = document.getElementById('keyCodeBox').textContent;
-            if (!code) return;
-            universalCopy(code, btn, 'COPY KEY CODE', false);
-        };
-        
-        window.closeKeyModal = function() {
-            var overlay = document.getElementById('keyModalOverlay');
-            if (overlay) overlay.remove();
-        };
-        
-        window.clearAll = function() {
-            inputCodeEl.value = '';
-            document.getElementById('outputEnc').value = '';
-            document.getElementById('inputStats').style.display = 'none';
-            document.getElementById('status').className = 'status';
-            state.uploadedFiles = {};
-            renderFileList();
-            updateDetection();
-            closeDrawer();
-            showStatus('info', '🧹 Cleared');
-            toast('Cleared', 'info');
-        };
-        
-        window.doLogout = function() {
-            try {
-                KEY_MANAGER.clear();
-                if (window.AuthGuard && AuthGuard.logout) AuthGuard.logout();
-                else if (window.firebase && firebase.auth) firebase.auth().signOut().then(function(){ window.location.href='index.html'; });
-                else window.location.href = 'index.html';
-            } catch(e) { window.location.href = 'index.html'; }
-        };
-        
-        function handleAuthReady(e) {
-            if (!e.detail || !e.detail.user) return;
-            if (state.authHandled) return;
-            state.authHandled = true;
-        
-            state.user = e.detail.user;
-            var name = e.detail.name || (state.user.email ? state.user.email.split('@')[0] : 'User');
-            document.getElementById('welcomeName').textContent = name;
-            document.getElementById('authStatus').textContent = 'Authenticated';
-        
-            console.log('👤 Auth ready:', state.user.email);
-        
-            KEY_MANAGER.checkKeyStatus(state.user.uid).then(function(result) {
-                if (!result.hasKey) {
-                    toast('👋 Welcome! Click CREATE KEY to get started', 'info');
-                } else {
-                    toast('🔐 Key found. Click eye icon to reveal.', 'info');
-                }
-                updateKeyUI();
+        } catch (e) {
+            showStatus('error', '❌ ' + e.message);
+        }
+    };
+    
+    /* ═══════════════════════════════════════════════════════
+       performEncrypt — AES-256-CBC + HMAC-SHA256
+       ═══════════════════════════════════════════════════════ */
+    function performEncrypt(secretKey) {
+        var pasted = inputCodeEl.value;
+        var fileNames = Object.keys(state.uploadedFiles);
+        showStatus('loading', '⏳ Encrypting...');
+    
+        var payload, mode;
+        var totalSize = 0;
+        var fileCount = 0;
+    
+        if (fileNames.length > 0) {
+            var bundle = {
+                __type: 'multi-file-bundle',
+                __version: '18.0',
+                __created: new Date().toISOString(),
+                __fileCount: fileNames.length,
+                files: {}
+            };
+            fileNames.forEach(function(name) {
+                var content = state.uploadedFiles[name].content;
+                var sizeBytes = new Blob([content]).size;
+                
+                bundle.files[name] = { 
+                    content: content,
+                    size: sizeBytes,
+                    sizeFormatted: bytes(sizeBytes)
+                };
+                
+                totalSize += sizeBytes;
+                fileCount++;
+            });
+            payload = JSON.stringify(bundle);
+            mode = 'Bundle (' + fileNames.length + ' files, ' + bytes(totalSize) + ')';
+        } else {
+            payload = pasted;
+            totalSize = new Blob([pasted]).size;
+            fileCount = 1;
+            mode = 'Single ' + detectLanguage(pasted).toUpperCase() + ' (' + bytes(totalSize) + ')';
+        }
+    
+        /* ✅ AES-256-CBC with random IV */
+        var iv = CryptoJS.lib.WordArray.random(16);
+        var encrypted = CryptoJS.AES.encrypt(payload, secretKey, {
+            iv: iv,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+        });
+    
+        /* ✅ HMAC-SHA256 for integrity */
+        var hmac = CryptoJS.HmacSHA256(
+            iv.toString() + ':' + encrypted.toString(),
+            secretKey
+        ).toString();
+    
+        /* ✅ Combined format: v2:iv:ciphertext:hmac */
+        var finalOutput = 'v2:' + iv.toString() + ':' + encrypted.toString() + ':' + hmac;
+        document.getElementById('outputEnc').value = finalOutput;
+        showStatus('success', '✅ Encrypted ' + bytes(totalSize) + ' → ' + bytes(new Blob([finalOutput]).size));
+        toast('Encrypted successfully!', 'success');
+        updateProgress();
+    
+        /* ✅ Track stats in Firebase */
+        if (state.user && state.user.uid && typeof KEY_MANAGER !== 'undefined' && KEY_MANAGER.updateEncryptionStats) {
+            KEY_MANAGER.updateEncryptionStats(state.user.uid, {
+                size: totalSize,
+                sizeFormatted: bytes(totalSize),
+                fileCount: fileCount,
+                duration: 0
             }).catch(function(err) {
-                console.error('Key check failed:', err);
-                updateKeyUI();
+                console.warn('Stats tracking failed:', err);
             });
         }
+    }
+    
+    window.copyOutput = function() {
+        var out = document.getElementById('outputEnc');
+        if (!out.value) { toast('Nothing to copy', 'error'); return; }
+        universalCopy(out.value, null, null);
+        showStatus('success', '✅ Copied!');
+        toast('Copied!', 'success');
+    };
+    
+    window.downloadOutput = function() {
+        var out = document.getElementById('outputEnc').value;
+        if (!out) { toast('Nothing to download', 'error'); return; }
+        var blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'encrypted_' + Date.now() + '.txt';
+        a.click();
+        toast('Downloaded!', 'success');
+    };
+    
+    window.downloadDecryptor = function() {
+        var out = document.getElementById('outputEnc').value;
+        if (!out) { toast('Encrypt first!', 'error'); return; }
+    
+        if (!KEY_MANAGER.isReady() || !KEY_MANAGER.getKey()) {
+            state._pendingAction = 'downloadDecryptor';
+            openPwdModal('reveal');
+            toast('Enter password first, then decryptor will be created', 'info');
+            return;
+        }
+        var fullKey = KEY_MANAGER.getKey();
+        if (!fullKey || fullKey.length < 30) {
+            toast('Key not found. Please unlock first.', 'error');
+            return;
+        }
+    
+        function rndHex(len) {
+            var c = 'abcdef0123456789';
+            var s = '';
+            for (var i = 0; i < (len || 16); i++) s += c.charAt(Math.floor(Math.random() * c.length));
+            return s;
+        }
+        var typePrefixes = ['sk','vx','ky','zn','qm','pl','rt','jw','bd','fh',
+                            'gc','mn','tp','ws','xr','yv','az','ce','dg','ei',
+                            'fj','hk','lo','nu','op','qr','st','uv','wx','yz'];
+        var securityThemes = ['protection','security','shield','guard','defense',
+                              'armor','fortress','sentinel','watch','sentry',
+                              'vault','cipher','crypt','secure','safe',
+                              'barrier','bulwark','rampart','bastion','citadel',
+                              'stronghold','keep','tower','gate','lock',
+                              'seal','ward','safeguard','guardian','preserver'];
+        var roleWords = ['key','server','module','engine','core',
+                         'loader','handler','worker','runner','driver',
+                         'helper','utility','service','agent','daemon',
+                         'process','thread','task','job','routine',
+                         'system','framework','runtime','kernel','shell',
+                         'interface','bridge','adapter','connector','linker'];
+        function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
         
-        document.addEventListener('auth-guard-ready', handleAuthReady);
-        document.addEventListener('auth-ready', handleAuthReady);
-        
-        setTimeout(function() {
-            if (!state.user) {
-                if (window.firebase && firebase.auth && firebase.auth().currentUser) {
-                    handleAuthReady({ detail: { user: firebase.auth().currentUser } });
-                } else if (window.AuthGuard && AuthGuard.getUser && AuthGuard.getUser()) {
-                    handleAuthReady({ detail: { user: AuthGuard.getUser() } });
-                } else {
-                    showStatus('error', '❌ Not authenticated. Redirecting...');
-                    setTimeout(function() {
-                        window.location.href = 'index.html';
-                    }, 2000);
-                }
+        var keyFileName = pickRandom(typePrefixes) + '-' +
+                          pickRandom(securityThemes) + '-' +
+                          rndHex(8) + '-' +
+                          pickRandom(roleWords) + '-' +
+                          rndHex(10) + '.js';
+    
+        var encData = out;
+    
+        var PREFIX = 'NightOrbitGyidi_houperSecret_';
+        var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
+        if (suffix.length < 60) { while (suffix.length < 60) suffix += '0'; }
+        suffix = suffix.substring(0, 60);
+        var fullKeyString = PREFIX + suffix;
+    
+        var s1 = (Date.now() % 251) + 1;
+        var s2 = (Math.floor(Math.random() * 251)) + 1;
+        var s3 = (Math.floor(Math.random() * 251)) + 1;
+        var s4 = (Math.floor(Math.random() * 251)) + 1;
+    
+        var L1 = [];
+        for (var i = 0; i < fullKeyString.length; i++) {
+            L1.push((fullKeyString.charCodeAt(i) ^ 0x5A) ^ s1);
+        }
+        var L2 = [];
+        for (var j = 0; j < L1.length; j++) {
+            L2.push((L1[j] + s2) % 256);
+        }
+        var L3 = [];
+        for (var k = 0; k < L2.length; k++) {
+            L3.push(L2[k] ^ s3);
+        }
+        var even = [], odd = [];
+        for (var m = 0; m < L3.length; m++) {
+            if (m % 2 === 0) even.push(L3[m]);
+            else odd.push(L3[m]);
+        }
+        var L4 = even.concat(odd);
+        var padding = [];
+        var padCount = (Math.floor(Math.random() * 10) + 5);
+        for (var p = 0; p < padCount; p++) {
+            padding.push(Math.floor(Math.random() * 256));
+        }
+        var L5 = padding.concat(L4);
+        var bin = '';
+        for (var b = 0; b < L5.length; b++) {
+            bin += String.fromCharCode(L5[b]);
+        }
+        var L6 = btoa(bin);
+        var L7 = L6.split('').reverse().join('');
+        var obf = [];
+        for (var bi = 0; bi < L7.length; bi++) {
+            obf.push((L7.charCodeAt(bi) ^ 0x5A) ^ s4);
+        }
+        var byteArrayString = '[' + obf.join(',') + ']';
+    
+        function rv(len) {
+            var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            var s = '';
+            for (var i = 0; i < (len || 6); i++) s += c.charAt(Math.floor(Math.random() * c.length));
+            return s;
+        }
+        var qA = rv(6), qB = rv(7), qC = rv(5), qD = rv(6), qE = rv(8);
+        var qF = rv(6), qG = rv(5), qH = rv(4), qI = rv(4), qJ = rv(5);
+        var qK = rv(5), qL = rv(5), qM = rv(5), qN = rv(4), qO = rv(5);
+    
+        var keyFileContent =
+            '(function(){\n' +
+            '"use strict";\n' +
+            'try{\n' +
+            'var S1=' + s1 + ',S2=' + s2 + ',S3=' + s3 + ',S4=' + s4 + ';\n' +
+            'var ' + qN + '=' + padCount + ';\n' +
+            'var ' + qA + '=' + byteArrayString + ';\n' +
+            'var ' + qB + '="";\n' +
+            'for(var ' + qC + '=0;' + qC + '<' + qA + '.length;' + qC + '++){\n' +
+            qB + '+=String.fromCharCode((' + qA + '[' + qC + ']^0x5A)^S4);\n' +
+            '}\n' +
+            'var ' + qD + '=' + qB + ';\n' +
+            'function ' + qE + '(s){\n' +
+            'var ' + qF + '=s.split("").reverse().join("");\n' +
+            'var ' + qG + '=atob(' + qF + ');\n' +
+            'var ' + qH + '=[];\n' +
+            'for(var ' + qI + '=0;' + qI + '<' + qG + '.length;' + qI + '++){\n' +
+            qH + '.push(' + qG + '.charCodeAt(' + qI + '));\n' +
+            '}\n' +
+            'var ' + qK + '=' + qH + '.slice(' + qN + ');\n' +
+            'var ' + qL + '=' + qK + '.slice(0,Math.ceil(' + qK + '.length/2));\n' +
+            'var ' + qM + '=' + qK + '.slice(Math.ceil(' + qK + '.length/2));\n' +
+            'var ' + qJ + '=[];\n' +
+            'for(var i=0;i<' + qK + '.length;i++){\n' +
+            'if(i%2===0)' + qJ + '.push(' + qL + '[Math.floor(i/2)]);\n' +
+            'else ' + qJ + '.push(' + qM + '[Math.floor(i/2)]);\n' +
+            '}\n' +
+            'var ' + qH + '=[];\n' +
+            'for(var q=0;q<' + qJ + '.length;q++){\n' +
+            qH + '.push(' + qJ + '[q]^S3);\n' +
+            '}\n' +
+            'var ' + qO + '=[];\n' +
+            'for(var r=0;r<' + qH + '.length;r++){\n' +
+            'var sh=(' + qH + '[r]-S2+256)%256;\n' +
+            qO + '.push(sh^S1);\n' +
+            '}\n' +
+            'var res="";\n' +
+            'for(var f=0;f<' + qO + '.length;f++){\n' +
+            'res+=String.fromCharCode(' + qO + '[f]^0x5A);\n' +
+            '}\n' +
+            'return res;\n' +
+            '}\n' +
+            'window._0xSECRET=' + qE + '(' + qD + ');\n' +
+            '}catch(e){window._0xSECRET="";}\n' +
+            '})();\n';
+    
+        /* ✅ OBFUSCATED FILENAME — XOR + Base64 + Reverse + XOR */
+            var _nameBytes = [];
+            for (var _ni = 0; _ni < keyFileName.length; _ni++) {
+                _nameBytes.push((keyFileName.charCodeAt(_ni) ^ 0x5A) ^ 0x3C);
             }
-        }, 3000);
+            var _nameB64 = btoa(JSON.stringify(_nameBytes));
+            var _nameRev = _nameB64.split('').reverse().join('');
+            var _nameObf = [];
+            for (var _nb = 0; _nb < _nameRev.length; _nb++) {
+                _nameObf.push((_nameRev.charCodeAt(_nb) ^ 0x5A) ^ 0x3C);
+            }
+            var encodedKeyFileName = JSON.stringify(_nameObf);
+    
+        var d1 = rv(8), d2 = rv(8), d3 = rv(8);
+        var d4 = rv(8), d5 = rv(8), d6 = rv(8);
+    
+        var decoyFunctions =
+            '<script>\n' +
+            '(function(){\n' +
+            '  var ' + d1 + ' = [];\n' +
+            '  var ' + d2 + ' = {};\n' +
+            '  var ' + d3 + ' = function(x){ return x; };\n' +
+            '  window.__init = ' + d3 + ';\n' +
+            '  try { ' + d1 + '.push(Date.now()); } catch(e) {}\n' +
+            '  try { ' + d2 + '.start = 1; } catch(e) {}\n' +
+            '})();\n' +
+            '<' + '/script>\n';
+    
+        var antiDebug =
+            '<script>\n' +
+            '(function(){\n' +
+            '  var ' + d4 + ' = 0;\n' +
+            '  var ' + d5 + ' = function(){\n' +
+            '    var ' + d6 + ' = new Date();\n' +
+            '    debugger;\n' +
+            '    if(new Date() - ' + d6 + ' > 100){\n' +
+            '      ' + d4 + '++;\n' +
+            '      if(' + d4 + ' > 3){ document.body.innerHTML = ""; }\n' +
+            '    }\n' +
+            '  };\n' +
+            '  setInterval(' + d5 + ', 1000);\n' +
+            '})();\n' +
+            '<' + '/script>\n';
+    
+        var parts = [
+            '<!DOCTYPE html>',
+            '<html lang="en">',
+            '<head>',
+            '<meta charset="UTF-8">',
+            '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">',
+            '<title id="pageTitle">Loading...</title>',
+            '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
+            '<script>(function(){' +
+            'var _raw=' + encodedKeyFileName + ';' +
+            'var _deobf=[];' +
+            'for(var _i=0;_i<_raw.length;_i++){' +
+            '  _deobf.push((_raw[_i]^0x3C)^0x5A);' +
+            '}' +
+            'var _rev=String.fromCharCode.apply(null,_deobf);' +
+            'var _b64=_rev.split("").reverse().join("");' +
+            'var _bytes=JSON.parse(atob(_b64));' +
+            'var _chars=[];' +
+            'for(var _j=0;_j<_bytes.length;_j++){' +
+            '  _chars.push(String.fromCharCode((_bytes[_j]^0x3C)^0x5A));' +
+            '}' +
+            'var KEY_FILENAME=_chars.join("");' +
+            'var _s=document.createElement("script");' +
+            '_s.src=KEY_FILENAME;' +
+            '_s.async=false;' +
+            '_s.onload=function(){window._kf=1;};' +
+            '_s.onerror=function(){window._kf=0;};' +
+            'document.head.appendChild(_s);' +
+            '})();<' + '/script>',
+            '<style>',
+            '*{margin:0;padding:0;box-sizing:border-box;}',
+            'html,body{width:100%;min-height:100vh;}',
+            'body{background:#05050f;color:#fff;font-family:"Courier New",monospace;overflow-x:hidden;}',
+            '.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,#0b0b1a 0%,#000 100%);z-index:9999;}',
+            '.spinner{width:60px;height:60px;border:4px solid rgba(0,240,255,0.15);border-top-color:#00f0ff;border-radius:50%;animation:spin 1s linear infinite;}',
+            '@keyframes spin{to{transform:rotate(360deg);}}',
+            '.txt{color:#00f0ff;font-size:14px;letter-spacing:3px;text-transform:uppercase;}',
+            '.sub{color:#6a6a8a;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:8px;}',
+            '.err{padding:60px 30px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;}',
+            '.err-icon{font-size:72px;}',
+            '.err h2{color:#ff0064;font-size:24px;letter-spacing:3px;text-transform:uppercase;}',
+            '.err p{color:#b0b0d0;font-size:13px;line-height:1.7;max-width:500px;}',
+            '.bundle-wrap{max-width:1100px;margin:0 auto;padding:30px 20px;}',
+            '.bundle-title{color:#00f0ff;text-align:center;font-size:22px;letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;font-family:"Orbitron",sans-serif;}',
+            '.file-card{background:rgba(0,240,255,0.04);border-left:4px solid #00f0ff;border-radius:10px;padding:18px;margin-bottom:16px;}',
+            '.file-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;}',
+            '.file-name{color:#ffd700;font-weight:bold;font-size:14px;}',
+            '.file-lang{background:#00f0ff;color:#000;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:bold;text-transform:uppercase;}',
+            '.file-content{background:#000;color:#00ff64;padding:14px;border-radius:8px;font-family:"Courier New",monospace;font-size:12px;line-height:1.5;max-height:400px;overflow:auto;white-space:pre-wrap;word-break:break-word;}',
+            '.dl-btn{background:linear-gradient(135deg,#00f0ff,#b400ff);border:none;padding:10px 20px;border-radius:8px;color:#000;font-weight:bold;cursor:pointer;margin-top:12px;font-family:inherit;letter-spacing:1px;text-transform:uppercase;font-size:11px;}',
+            '.dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,240,255,0.3);}',
+            '#renderFrame{width:100%;height:100vh;border:0;display:block;position:fixed;inset:0;z-index:10;}',
+            '<' + '/style>',
+            '<' + '/head>',
+            '<body>',
+            '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
+            decoyFunctions,
+            antiDebug,
+            '<script>',
+            'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
+            '',
+            'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
+            '',
+            'function showError(msg){',
+            '  document.title="Error";',
+            '  document.body.innerHTML="";',
+            '  document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;margin:0;";',
+            '  var err="<div class=\\"err\\">";',
+            '  err+="<div class=\\"err-icon\\">❌<\\/div>";',
+            '  err+="<h2>Decryption Failed<\\/h2>";',
+            '  err+="<p>"+msg+"<\\/p>";',
+            '  err+="<p style=\\"font-size:11px;color:#6a6a8a;margin-top:20px;\\">Check: key file present, encrypted data, internet connection<\\/p>";',
+            '  err+="<\\/div>";',
+            '  document.body.innerHTML=err;',
+            '}',
+            '',
+            'function showKeyMissingError(){',
+            '  document.title="Key File Missing";',
+            '  document.body.innerHTML="";',
+            '  document.body.style.cssText="background:#0b0b1a;color:#fff;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:monospace;";',
+            '  var h="<div style=\\"text-align:center;padding:40px 20px;max-width:600px;\\">";',
+            '  h+="<div style=\\"font-size:80px;margin-bottom:24px;\\">🔐<\\/div>";',
+            '  h+="<div style=\\"font-size:24px;letter-spacing:4px;text-transform:uppercase;color:#ff0064;margin-bottom:20px;font-weight:bold;\\">Key File Missing<\\/div>";',
+            '  h+="<div style=\\"color:#b0b0d0;font-size:14px;line-height:2;margin-bottom:24px;\\">";',
+            '  h+="Required files not found in this folder.<br><br>";',
+            '  h+="Make sure <b style=\\"color:#ffd700;\\">BOTH</b> files are in the <b style=\\"color:#ffd700;\\">SAME folder</b>:<br><br>";',
+            '  h+="<div style=\\"background:rgba(0,240,255,0.08);border-left:3px solid #00f0ff;padding:12px 16px;border-radius:8px;text-align:left;margin:16px 0;\\">";',
+            '  h+="<div style=\\"color:#00f0ff;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;\\">Required Files<\\/div>";',
+            '  h+="<div style=\\"color:#fff;font-size:13px;line-height:1.9;\\">1. <b style=\\"color:#ffd700;\\">decryptor.html<\\/b><br>2. <b style=\\"color:#00f0ff;\\">The key file (.js)<\\/b><\\/div>";',
+            '  h+="<\\/div>";',
+            '  h+="<div style=\\"color:#ffb3c9;font-size:12px;margin-top:20px;\\">⚠️ Do NOT rename the key file.<\\/div>";',
+            '  h+="<\\/div><\\/div>";',
+            '  document.body.innerHTML=h;',
+            '}',
+            '',
+            'function extractTitle(html){',
+            '  var m=html.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);',
+            '  return m?m[1].trim():"Original Web";',
+            '}',
+            '',
+            'function extractFavicon(html){',
+            '  var m=html.match(/<link[^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\'][^>]*href=["\']([^"\']+)["\']/i);',
+            '  if(m)return m[1];',
+            '  m=html.match(/<link[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\']/i);',
+            '  return m?m[1]:null;',
+            '}',
+            '',
+            'function applyOriginalBranding(html){',
+            '  var title=extractTitle(html);',
+            '  document.title=title;',
+            '  var fav=extractFavicon(html);',
+            '  if(fav){',
+            '    var link=document.querySelector("link[rel*=\'icon\']")||document.createElement("link");',
+            '    link.rel="icon";',
+            '    link.href=fav;',
+            '    document.head.appendChild(link);',
+            '  }',
+            '}',
+            '',
+            'function injectBlocker(html){',
+            '  html = html.replace(/<noscript[\\s\\S]*?<\\/noscript>/gi, "");',
+            '  html = html.replace(/<meta[^>]*http-equiv=["\']refresh["\'][^>]*>/gi, "");',
+            '  var css = "<style>" +',
+            '    "*{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;}" +',
+            '    "input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text;}" +',
+            '    "<\\/style>";',
+            '  var js = "<scr"+"ipt>" +',
+            '    "(function(){" +',
+            '      "function isEd(el){if(!el||!el.tagName)return false;var t=el.tagName.toLowerCase();return t===\'input\'||t===\'textarea\'||t===\'select\'||el.isContentEditable;}" +',
+            '      "document.addEventListener(\'contextmenu\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
+            '      "document.addEventListener(\'selectstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
+            '      "document.addEventListener(\'copy\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
+            '      "document.addEventListener(\'cut\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
+            '      "document.addEventListener(\'dragstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});" +',
+            '      "document.addEventListener(\'keydown\',function(e){" +',
+            '        "var t=e.target;var tag=t&&t.tagName?t.tagName.toLowerCase():\'\';" +',
+            '        "var ed=(tag===\'input\'||tag===\'textarea\'||tag===\'select\'||(t&&t.isContentEditable));" +',
+            '        "if(e.key===\'F12\'||e.keyCode===123){e.preventDefault();return false;}" +',
+            '        "if(e.ctrlKey&&e.shiftKey&&(e.key===\'I\'||e.key===\'J\'||e.key===\'C\'||e.keyCode===73||e.keyCode===74||e.keyCode===67)){e.preventDefault();return false;}" +',
+            '        "if(e.ctrlKey&&(e.key===\'U\'||e.keyCode===85)){e.preventDefault();return false;}" +',
+            '        "if(e.ctrlKey&&!ed&&(e.key===\'C\'||e.key===\'A\'||e.key===\'S\'||e.keyCode===67||e.keyCode===65||e.keyCode===83)){e.preventDefault();return false;}" +',
+            '        "if(!ed&&(e.key===\'Backspace\'||e.key===\'Tab\')){e.preventDefault();return false;}" +',
+            '      "},{capture:true});" +',
+            '    "})();" +',
+            '  "<\\/scr"+"ipt>";',
+            '  if(html.indexOf("</head>")!==-1){html=html.replace("</head>",css+"</head>");}else{html=css+html;}',
+            '  if(html.indexOf("</body>")!==-1){html=html.replace("</body>",js+"</body>");}else{html=html+js;}',
+            '  return html;',
+            '}',
+            '',
+            'function renderHTML(htmlContent){',
+            '  var loader=document.getElementById("loader");',
+            '  if(loader)loader.style.display="none";',
+            '  applyOriginalBranding(htmlContent);',
+            '  var finalHTML=injectBlocker(htmlContent);',
+            '  var iframe=document.createElement("iframe");',
+            '  iframe.id="renderFrame";',
+            '  iframe.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-top-navigation-by-user-activation");',
+            '  document.body.appendChild(iframe);',
+            '  try{',
+            '    iframe.srcdoc=finalHTML;',
+            '  }catch(e){',
+            '    try{',
+            '      var blob=new Blob([finalHTML],{type:"text/html;charset=utf-8"});',
+            '      var url=URL.createObjectURL(blob);',
+            '      iframe.removeAttribute("srcdoc");',
+            '      iframe.src=url;',
+            '    }catch(e2){',
+            '      showError("Render failed: "+e2.message);',
+            '    }',
+            '  }',
+            '  setTimeout(function(){try{iframe.focus();}catch(e){}},100);',
+            '}',
+            '',
+            'function renderText(textContent){',
+            '  document.title="Decrypted Text";',
+            '  document.body.innerHTML="";',
+            '  document.body.style.cssText="background:#000;color:#00ff64;font-family:\\"Courier New\\",monospace;padding:20px;margin:0;font-size:13px;line-height:1.6;";',
+            '  var pre=document.createElement("pre");',
+            '  pre.style.cssText="margin:0;white-space:pre-wrap;word-break:break-word;";',
+            '  pre.textContent=textContent;',
+            '  document.body.appendChild(pre);',
+            '}',
+            '',
+            'function renderBundle(bundle){',
+            '  document.title="Bundle ("+bundle.__fileCount+" Files)";',
+            '  document.body.innerHTML="";',
+            '  document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;padding:20px;margin:0;min-height:100vh;";',
+            '  var h="<div class=\\"bundle-wrap\\">";',
+            '  h+="<div class=\\"bundle-title\\">📦 Multi-File Bundle ("+bundle.__fileCount+" files)<\\/div>";',
+            '  Object.keys(bundle.files).forEach(function(name){',
+            '    var f=bundle.files[name];',
+            '    h+="<div class=\\"file-card\\">";',
+            '    h+="<div class=\\"file-head\\"><span class=\\"file-name\\">📄 "+name+"<\\/span><span class=\\"file-lang\\">"+(f.lang||"?").toUpperCase()+"<\\/span><\\/div>";',
+            '    h+="<pre class=\\"file-content\\">"+f.content.replace(/</g,"&lt;")+"<\\/pre>";',
+            '    h+="<button class=\\"dl-btn\\" data-name=\\""+name+"\\">⬇ Download "+name+"<\\/button>";',
+            '    h+="<\\/div>";',
+            '  });',
+            '  h+="<\\/div>";',
+            '  document.body.innerHTML=h;',
+            '  document.body.querySelectorAll(".dl-btn").forEach(function(b){',
+            '    b.addEventListener("click",function(){',
+            '      var name=this.getAttribute("data-name");',
+            '      var f=bundle.files[name];',
+            '      var blob=new Blob([f.content],{type:"text/plain;charset=utf-8"});',
+            '      var a=document.createElement("a");',
+            '      a.href=URL.createObjectURL(blob);',
+            '      a.download=name;',
+            '      a.click();',
+            '    });',
+            '  });',
+            '}',
+            '',
+            'ready(function(){',
+            '  if(typeof CryptoJS==="undefined"){',
+            '    showError("CryptoJS library failed to load. Check your internet connection.");',
+            '    return;',
+            '  }',
+            '  setTimeout(function(){',
+            '    if(!window._0xSECRET || window._0xSECRET.length < 30){',
+            '      showKeyMissingError();',
+            '      return;',
+            '    }',
+            '    try{',
+            '      var dec;',
+            '      var parts=ENCRYPTED_DATA.split(":");',
+            '      if(parts[0]==="v2" && parts.length===4){',
+            '        /* ✅ v2 format with HMAC */',
+            '        var iv=CryptoJS.enc.Hex.parse(parts[1]);',
+            '        var ciphertext=parts[2];',
+            '        var storedHmac=parts[3];',
+            '        /* ✅ Verify HMAC */',
+            '        var computedHmac=CryptoJS.HmacSHA256(parts[1]+":"+ciphertext,window._0xSECRET).toString();',
+            '        if(computedHmac!==storedHmac){',
+            '          throw new Error("Integrity check failed - data tampered!");',
+            '        }',
+            '        dec=CryptoJS.AES.decrypt(ciphertext,window._0xSECRET,{',
+            '          iv:iv,',
+            '          mode:CryptoJS.mode.CBC,',
+            '          padding:CryptoJS.pad.Pkcs7',
+            '        }).toString(CryptoJS.enc.Utf8);',
+            '      } else {',
+            '        /* ✅ v1 legacy format */',
+            '        dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,window._0xSECRET).toString(CryptoJS.enc.Utf8);',
+            '      }',
+            '      if(!dec||dec.length===0){throw new Error("Decryption failed - wrong key or corrupted data.");}',
+            '',
+            '      var isBundle=false,bundle=null;',
+            '      try{',
+            '        var p=JSON.parse(dec);',
+            '        if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}',
+            '      }catch(e){}',
+            '',
+            '      if(isBundle){',
+            '        renderBundle(bundle);',
+            '      } else {',
+            '        var trimmed=dec.trim();',
+            '        var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);',
+            '        if(isHTML){',
+            '          renderHTML(dec);',
+            '        } else {',
+            '          renderText(dec);',
+            '        }',
+            '      }',
+            '    }catch(e){',
+            '      showError(e.message);',
+            '    }',
+            '  }, 500);',
+            '});',
+            '<' + '/script>',
+            '<' + '/body>',
+            '<' + '/html>'
+        ];
+    
+        var html = parts.join('\n');
+    
+        var htmlBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        var htmlLink = document.createElement('a');
+        htmlLink.href = URL.createObjectURL(htmlBlob);
+        htmlLink.download = 'decryptor.html';
+        htmlLink.click();
+    
+        var keyBlob = new Blob([keyFileContent], { type: 'text/javascript;charset=utf-8' });
+        var keyLink = document.createElement('a');
+        keyLink.href = URL.createObjectURL(keyBlob);
+        keyLink.download = keyFileName;
+        keyLink.click();
+    
+        showStatus('success', '🎁 Decryptor + Key file downloaded! Keep both in same folder.');
+        toast('Decryptor + Key file downloaded!', 'success');
+    
+        setTimeout(function() {
+            showKeyModal(keyFileName, keyFileContent);
+        }, 800);
+    };
         
-        updateKeyUI();
-        console.log('%c🔐 Universal Encrypt Pro v19 STRONG loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
-        console.log('%c🔒 AES-256-CBC + HMAC-SHA256 (SEPARATE KEYS) | v3 FORMAT', 'color:#ffd700;font-size:11px;');
-        console.log('%c🛡️ Key file name locked with 5-layer encryption', 'color:#00ff64;font-size:11px;');
-        
-        })();
+    window.showKeyModal = function(fileName, keyCode) {
+        var existing = document.getElementById('keyModalOverlay');
+        if (existing) existing.remove();
+    
+        var overlay = document.createElement('div');
+        overlay.id = 'keyModalOverlay';
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
+    
+        var modal = document.createElement('div');
+        modal.style.cssText = 'background:rgba(11,11,26,0.98);border:2px solid #00f0ff;border-radius:22px;padding:28px 24px;max-width:580px;width:100%;box-shadow:0 0 100px rgba(0,240,255,0.3);';
+    
+        modal.innerHTML =
+            '<h2 style="font-family:Orbitron,sans-serif;font-size:16px;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:8px;background:linear-gradient(135deg,#00f0ff,#ff2d95);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">KEY FILE BACKUP</h2>' +
+            '<p style="color:#6a6a8a;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:20px;">Files auto-downloaded. Backup below.</p>' +
+    
+            '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
+            '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">✅ AUTO-DOWNLOADED</div>' +
+            '<div style="color:#b0d0ff;font-size:12px;line-height:1.7;">Two files have been downloaded:<br>1. <b style="color:#ffd700;">decryptor.html</b><br>2. <b style="color:#00f0ff;">' + fileName + '</b></div>' +
+            '</div>' +
+    
+            '<div style="background:rgba(255,215,0,0.08);border-left:3px solid #ffd700;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
+            '<div style="color:#ffd700;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📁 BACKUP — KEY FILE NAME</div>' +
+            '<div style="color:#fff;font-size:13px;font-family:JetBrains Mono,monospace;word-break:break-all;background:#000;padding:10px;border-radius:6px;border:1px solid #333;">' + fileName + '</div>' +
+            '<button onclick="copyToClipboard(\'' + fileName + '\', this)" style="margin-top:8px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">COPY FILE NAME</button>' +
+            '</div>' +
+    
+            '<div style="background:rgba(0,240,255,0.08);border-left:3px solid #00f0ff;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
+            '<div style="color:#00f0ff;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📝 BACKUP — KEY FILE CODE</div>' +
+            '<div id="keyCodeBox" style="color:#00ff64;font-size:10px;font-family:JetBrains Mono,monospace;word-break:break-all;background:#000;padding:10px;border-radius:6px;border:1px solid #333;max-height:180px;overflow-y:auto;white-space:pre-wrap;">' + keyCode.replace(/</g, '&lt;') + '</div>' +
+            '<button onclick="copyKeyCode(this)" style="margin-top:8px;background:linear-gradient(135deg,#00f0ff,#b400ff);color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">COPY KEY CODE</button>' +
+            '</div>' +
+    
+            '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:12px 14px;border-radius:8px;margin-bottom:20px;">' +
+            '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">⚠️ IMPORTANT — SAME FOLDER</div>' +
+            '<div style="color:#b0d0ff;font-size:12px;line-height:1.7;">Place <b>decryptor.html</b> and <b>' + fileName + '</b> in the SAME folder. Do NOT rename the key file.</div>' +
+            '</div>' +
+    
+            '<button onclick="closeKeyModal()" style="width:100%;background:linear-gradient(135deg,#00ff64,#00aa44);color:#000;border:none;padding:15px 22px;border-radius:12px;font-weight:900;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">OK, I UNDERSTAND</button>';
+    
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+    };
+    
+    window.copyToClipboard = function(text, btn) {
+        universalCopy(text, btn, 'COPY FILE NAME');
+    };
+    
+    window.copyKeyCode = function(btn) {
+        var code = document.getElementById('keyCodeBox').textContent;
+        if (!code) return;
+        universalCopy(code, btn, 'COPY KEY CODE');
+    };
+    
+    window.closeKeyModal = function() {
+        var overlay = document.getElementById('keyModalOverlay');
+        if (overlay) overlay.remove();
+    };
+    
+    window.clearAll = function() {
+        inputCodeEl.value = '';
+        document.getElementById('outputEnc').value = '';
+        document.getElementById('inputStats').style.display = 'none';
+        document.getElementById('status').className = 'status';
+        state.uploadedFiles = {};
+        renderFileList();
+        updateDetection();
+        closeDrawer();
+        showStatus('info', '🧹 Cleared');
+        toast('Cleared', 'info');
+    };
+    
+    window.doLogout = function() {
+        try {
+            KEY_MANAGER.clear();
+            if (window.AuthGuard && AuthGuard.logout) AuthGuard.logout();
+            else if (window.firebase && firebase.auth) firebase.auth().signOut().then(function(){ window.location.href='index.html'; });
+            else window.location.href = 'index.html';
+        } catch(e) { window.location.href = 'index.html'; }
+    };
+    
+    function handleAuthReady(e) {
+        if (!e.detail || !e.detail.user) return;
+        if (state.authHandled) return;
+        state.authHandled = true;
+    
+        state.user = e.detail.user;
+        var name = e.detail.name || (state.user.email ? state.user.email.split('@')[0] : 'User');
+        document.getElementById('welcomeName').textContent = name;
+        document.getElementById('authStatus').textContent = 'Authenticated';
+    
+        console.log('👤 Auth ready:', state.user.email);
+    
+        KEY_MANAGER.checkKeyStatus(state.user.uid).then(function(result) {
+            if (!result.hasKey) {
+                toast('👋 Welcome! Click CREATE KEY to get started', 'info');
+            } else {
+                toast('🔐 Key found. Click eye icon to reveal.', 'info');
+            }
+            updateKeyUI();
+        }).catch(function(err) {
+            console.error('Key check failed:', err);
+            updateKeyUI();
+        });
+    }
+    
+    document.addEventListener('auth-guard-ready', handleAuthReady);
+    document.addEventListener('auth-ready', handleAuthReady);
+    
+    setTimeout(function() {
+        if (!state.user) {
+            if (window.firebase && firebase.auth && firebase.auth().currentUser) {
+                handleAuthReady({ detail: { user: firebase.auth().currentUser } });
+            } else if (window.AuthGuard && AuthGuard.getUser && AuthGuard.getUser()) {
+                handleAuthReady({ detail: { user: AuthGuard.getUser() } });
+            } else {
+                showStatus('error', '❌ Not authenticated. Redirecting...');
+                setTimeout(function() {
+                    window.location.href = 'index.html';
+                }, 2000);
+            }
+        }
+    }, 3000);
+    
+    updateKeyUI();
+    console.log('%c🔐 Universal Encrypt Pro v18 STRONG loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
+    
+    })();
 </script>
 </body>
 </html>
