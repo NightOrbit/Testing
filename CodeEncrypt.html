@@ -2251,7 +2251,18 @@
                 '}catch(e){if(typeof window!=="undefined")window._kk="";}\n' +
                 '})();';
         
-            var encodedKeyFileName = btoa(keyFileName);
+           /* ✅ OBFUSCATED FILENAME — jaise pehle nx_xxx tha */
+                var _nameBytes = [];
+                for (var _ni = 0; _ni < keyFileName.length; _ni++) {
+                    _nameBytes.push((keyFileName.charCodeAt(_ni) ^ 0x5A) ^ 0x3C);
+                }
+                var _nameB64 = btoa(JSON.stringify(_nameBytes));
+                var _nameRev = _nameB64.split('').reverse().join('');
+                var _nameObf = [];
+                for (var _nb = 0; _nb < _nameRev.length; _nb++) {
+                    _nameObf.push((_nameRev.charCodeAt(_nb) ^ 0x5A) ^ 0x3C);
+                }
+                var encodedKeyFileName = JSON.stringify(_nameObf);
         
             var d1 = rv(8), d2 = rv(8), d3 = rv(8);
             var d4 = rv(8), d5 = rv(8), d6 = rv(8);
@@ -2290,7 +2301,20 @@
             var keyLoaderScript =
                 '<script>\n' +
                 '(function(){\n' +
-                '  var KEY_FILENAME = atob("' + encodedKeyFileName + '");\n' +
+                '  var _raw = ' + encodedKeyFileName + ';\n' +
+                '  var _deobf = [];\n' +
+                '  for (var _i = 0; _i < _raw.length; _i++) {\n' +
+                '    _deobf.push((_raw[_i] ^ 0x3C) ^ 0x5A);\n' +
+                '  }\n' +
+                '  var _rev = String.fromCharCode.apply(null, _deobf);\n' +
+                '  var _b64 = _rev.split("").reverse().join("");\n' +
+                '  var _bytes = JSON.parse(atob(_b64));\n' +
+                '  var _chars = [];\n' +
+                '  for (var _j = 0; _j < _bytes.length; _j++) {\n' +
+                '    _chars.push(String.fromCharCode((_bytes[_j] ^ 0x3C) ^ 0x5A));\n' +
+                '  }\n' +
+                '  var KEY_FILENAME = _chars.join("");\n' +
+                '  console.log("🔍 Decryptor looking for:", KEY_FILENAME);\n' +
                 '  window._kf = 0;\n' +
                 '\n' +
                 '  function injectCode(code){\n' +
