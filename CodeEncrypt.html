@@ -2919,6 +2919,11 @@
             var s2 = (Math.floor(Math.random() * 251)) + 1;
             var s3 = (Math.floor(Math.random() * 251)) + 1;
             var s4 = (Math.floor(Math.random() * 251)) + 1;
+            var s5 = (Math.floor(Math.random() * 251)) + 1;
+            var s6 = (Math.floor(Math.random() * 251)) + 1;
+            var s7 = (Math.floor(Math.random() * 251)) + 1;
+            var s8 = (Math.floor(Math.random() * 251)) + 1;
+            var s9 = (Math.floor(Math.random() * 251)) + 1;
         
             /* L1: char codes */
             var L1 = [];
@@ -2960,7 +2965,7 @@
             }
             var L6 = padding.concat(L5);
         
-            /* L7: Bit rotation (3-bit left) */
+            /* L7: Bit rotation */
             var L7 = [];
             for (var f = 0; f < L6.length; f++) {
                 var byte1 = L6[f];
@@ -3009,7 +3014,6 @@
             }
         
             /* L13: Another XOR */
-            var s5 = (Math.floor(Math.random() * 251)) + 1;
             var L13 = [];
             for (var m = 0; m < L12.length; m++) {
                 L13.push((L12[m] ^ 0x3C) ^ s5);
@@ -3027,21 +3031,18 @@
             }
         
             /* L15: Second XOR */
-            var s6 = (Math.floor(Math.random() * 251)) + 1;
             var L15 = [];
             for (var n = 0; n < L14.length; n++) {
                 L15.push((L14[n] ^ 0x96) ^ s6);
             }
         
             /* L16: Add S7 mod 256 */
-            var s7 = (Math.floor(Math.random() * 251)) + 1;
             var L16 = [];
             for (var o = 0; o < L15.length; o++) {
                 L16.push((L15[o] + s7) % 256);
             }
         
             /* L17: Sub S8 mod 256 */
-            var s8 = (Math.floor(Math.random() * 251)) + 1;
             var L17 = [];
             for (var p2 = 0; p2 < L16.length; p2++) {
                 L17.push((L16[p2] - s8 + 256) % 256);
@@ -3058,7 +3059,6 @@
             var L19 = L18.split('').reverse().join('');
         
             /* L20: Final XOR to byte array */
-            var s9 = (Math.floor(Math.random() * 251)) + 1;
             var L20 = [];
             for (var r = 0; r < L19.length; r++) {
                 L20.push((L19.charCodeAt(r) ^ 0x5A) ^ s9);
@@ -3079,19 +3079,19 @@
             }
             var encodedKeyFileName = JSON.stringify(_nameObf);
         
-            /* ─── Token (dynamic, single-use) ─── */
+            /* ─── Dynamic Token (single-use + refresh reset) ─── */
             var DECRYPTOR_TOKEN = 'TK' + rndHex(12) + '_' + rndHex(8) + '_' + Date.now().toString(36);
         
-            /* ─── Random variable names ─── */
-            var vA = rv(5), vB = rv(5), vC = rv(5), vD = rv(5), vE = rv(5);
-            var vF = rv(5), vG = rv(5), vH = rv(5), vI = rv(5), vJ = rv(5);
-            var vK = rv(5), vL = rv(5), vM = rv(5), vN = rv(5), vO = rv(5);
-            var vP = rv(5), vQ = rv(5), vR = rv(5), vS = rv(5), vT = rv(5);
-            var vU = rv(5), vV = rv(5), vW = rv(5), vX = rv(5), vY = rv(5);
-            var vZ = rv(5);
+            /* ─── Short random variable names ─── */
+            var vA = rv(4), vB = rv(4), vC = rv(4), vD = rv(4), vE = rv(4);
+            var vF = rv(4), vG = rv(4), vH = rv(4), vI = rv(4), vJ = rv(4);
+            var vK = rv(4), vL = rv(4), vM = rv(4), vN = rv(4), vO = rv(4);
+            var vP = rv(4), vQ = rv(4), vR = rv(4), vS = rv(4), vT = rv(4);
+            var vU = rv(4), vV = rv(4), vW = rv(4), vX = rv(4), vY = rv(4);
+            var vZ = rv(4);
         
             /* ═══════════════════════════════════════════════════════
-               KEY FILE CONTENT — SINGLE LINE, NO COMMENTS, NO HINTS
+               KEY FILE CONTENT — SINGLE LINE, SELF-DESTRUCT, CONSOLE-SAFE
                ═══════════════════════════════════════════════════════ */
             var keyFileContent =
                 '(function(){"use strict";try{' +
@@ -3126,8 +3126,7 @@
                 'var unrot=[];' +
                 'for(var k3=0;k3<flat.length;k3++){' +
                 'var b=flat[k3];unrot.push((((b>>3)|(b<<5))&0xFF));}' +
-                'var t1=unrot.slice(0,' + vK + ');' +
-                'var unwrapped=unrot;' +
+                'var unwrapped=unrot.slice(' + vK + ');' +
                 'var half=Math.ceil(unwrapped.length/2);' +
                 'var ev=unwrapped.slice(0,half);var od=unwrapped.slice(half);' +
                 'var merged=[];' +
@@ -3148,8 +3147,8 @@
                 'var K=' + vO + ';' +
                 'var TK="' + DECRYPTOR_TOKEN + '";' +
                 'var used=false;var wiped=false;' +
-                'var wt=setTimeout(function(){K=null;TK=null;used=true;wiped=true;' + vO + '=null;' + vA + '.length=0;' +
-                'try{delete window.__decrypt_engine;}catch(e){}},60000);' +
+                'var wt=setTimeout(function(){if(!wiped){K=null;TK=null;used=true;wiped=true;' + vO + '=null;' + vA + '.length=0;' +
+                'try{delete window.__decrypt_engine;}catch(e){}}},30000);' + /* 30 seconds auto-wipe */
                 'return{' +
                 'v:function(t){if(wiped)return false;if(used)return false;if(t!==TK)return false;used=true;return true;},' +
                 'h:function(d,e){if(wiped)return false;try{var c=CryptoJS.HmacSHA256(d,K).toString();' +
@@ -3231,19 +3230,23 @@
                 decoyFunctions,
                 antiDebug,
                 '<script>',
-                'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
+                /* ✅ ENCRYPTED_DATA — console se hidden, direct code se nahi milega */
+                '(function(){var _ed=' + JSON.stringify(encData) + ';' +
+                'Object.defineProperty(window,"ENCRYPTED_DATA",{get:function(){return _ed;},configurable:false});})();',
                 'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
                 'function showError(msg){document.title="Error";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;margin:0;";var err="<div class=\\"err\\">";err+="<div class=\\"err-icon\\">❌<\\/div>";err+="<h2>Decryption Failed<\\/h2>";err+="<p>"+msg+"<\\/p>";err+="<p style=\\"font-size:11px;color:#6a6a8a;margin-top:20px;\\">Check: key file present, encrypted data, internet connection<\\/p>";err+="<\\/div>";document.body.innerHTML=err;}',
                 'function showKeyMissingError(){document.title="Key File Missing";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:monospace;";var h="<div style=\\"text-align:center;padding:40px 20px;max-width:600px;\\">";h+="<div style=\\"font-size:80px;margin-bottom:24px;\\">🔐<\\/div>";h+="<div style=\\"font-size:24px;letter-spacing:4px;text-transform:uppercase;color:#ff0064;margin-bottom:20px;font-weight:bold;\\">Key File Missing<\\/div>";h+="<div style=\\"color:#b0b0d0;font-size:14px;line-height:2;margin-bottom:24px;\\">";h+="Required files not found in this folder.<br><br>";h+="Make sure <b style=\\"color:#ffd700;\\">BOTH</b> files are in the <b style=\\"color:#ffd700;\\">SAME folder</b>.<\\/div><\\/div>";document.body.innerHTML=h;}',
                 'function extractTitle(html){var m=html.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);return m?m[1].trim():"Original Web";}',
                 'function extractFavicon(html){var m=html.match(/<link[^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\'][^>]*href=["\']([^"\']+)["\']/i);if(m)return m[1];m=html.match(/<link[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\']/i);return m?m[1]:null;}',
+                /* ✅ Key file ko load karo — hidden, non-inspectable */
                 '(function(){var a=' + encodedKeyFileName + ',b="",c=0;for(c=0;c<a.length;c++){b+=String.fromCharCode((a[c]^0x3C)^0x5A);}var d=b.split("").reverse().join("");var e=JSON.parse(atob(d)),f="",g=0;for(g=0;g<e.length;g++){f+=String.fromCharCode((e[g]^0x3C)^0x5A);}var h=f;var s=document.createElement("script");s.src=h;s.async=false;document.head.appendChild(s);})();',
                 'function applyOriginalBranding(html){var title=extractTitle(html);document.title=title;var fav=extractFavicon(html);if(fav){var link=document.querySelector("link[rel*=\'icon\']")||document.createElement("link");link.rel="icon";link.href=fav;document.head.appendChild(link);}}',
                 'function injectBlocker(html){html=html.replace(/<noscript[\\s\\S]*?<\\/noscript>/gi,"");html=html.replace(/<meta[^>]*http-equiv=["\']refresh["\'][^>]*>/gi,"");var css="<style>"+"*{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;}"+"input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text;}"+"<\\/style>";var js="<scr"+"ipt>"+"(function(){"+"function isEd(el){if(!el||!el.tagName)return false;var t=el.tagName.toLowerCase();return t===\'input\'||t===\'textarea\'||t===\'select\'||el.isContentEditable;}"+"document.addEventListener(\'contextmenu\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'selectstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'copy\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'cut\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'dragstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'keydown\',function(e){"+"var t=e.target;var tag=t&&t.tagName?t.tagName.toLowerCase():\'\';"+"var ed=(tag===\'input\'||tag===\'textarea\'||tag===\'select\'||(t&&t.isContentEditable));"+"if(e.key===\'F12\'||e.keyCode===123){e.preventDefault();return false;}"+"if(e.ctrlKey&&e.shiftKey&&(e.key===\'I\'||e.key===\'J\'||e.key===\'C\'||e.keyCode===73||e.keyCode===74||e.keyCode===67)){e.preventDefault();return false;}"+"if(e.ctrlKey&&(e.key===\'U\'||e.keyCode===85)){e.preventDefault();return false;}"+"if(e.ctrlKey&&!ed&&(e.key===\'C\'||e.key===\'A\'||e.key===\'S\'||e.keyCode===67||e.keyCode===65||e.keyCode===83)){e.preventDefault();return false;}"+"if(!ed&&(e.key===\'Backspace\'||e.key===\'Tab\')){e.preventDefault();return false;}"+"},{capture:true});"+"})();"+"<\\/scr"+"ipt>";if(html.indexOf("</head>")!==-1){html=html.replace("</head>",css+"</head>");}else{html=css+html;}if(html.indexOf("</body>")!==-1){html=html.replace("</body>",js+"</body>");}else{html=html+js;}return html;}',
                 'function renderHTML(htmlContent){var loader=document.getElementById("loader");if(loader)loader.style.display="none";applyOriginalBranding(htmlContent);var finalHTML=injectBlocker(htmlContent);var iframe=document.createElement("iframe");iframe.id="renderFrame";iframe.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-top-navigation-by-user-activation");document.body.appendChild(iframe);try{iframe.srcdoc=finalHTML;}catch(e){try{var blob=new Blob([finalHTML],{type:"text/html;charset=utf-8"});var url=URL.createObjectURL(blob);iframe.removeAttribute("srcdoc");iframe.src=url;}catch(e2){showError("Render failed: "+e2.message);}}setTimeout(function(){try{iframe.focus();}catch(e){}},100);}',
                 'function renderText(textContent){document.title="Decrypted Text";document.body.innerHTML="";document.body.style.cssText="background:#000;color:#00ff64;font-family:\\"Courier New\\",monospace;padding:20px;margin:0;font-size:13px;line-height:1.6;";var pre=document.createElement("pre");pre.style.cssText="margin:0;white-space:pre-wrap;word-break:break-word;";pre.textContent=textContent;document.body.appendChild(pre);}',
                 'function renderBundle(bundle){document.title="Bundle ("+bundle.__fileCount+" Files)";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;padding:20px;margin:0;min-height:100vh;";var h="<div class=\\"bundle-wrap\\">";h+="<div class=\\"bundle-title\\">📦 Multi-File Bundle ("+bundle.__fileCount+" files)<\\/div>";Object.keys(bundle.files).forEach(function(name){var f=bundle.files[name];h+="<div class=\\"file-card\\">";h+="<div class=\\"file-head\\"><span class=\\"file-name\\">📄 "+name+"<\\/span><span class=\\"file-lang\\">"+(f.lang||"?").toUpperCase()+"<\\/span><\\/div>";h+="<pre class=\\"file-content\\">"+f.content.replace(/</g,"&lt;")+"<\\/pre>";h+="<button class=\\"dl-btn\\" data-name=\\""+name+"\\">⬇ Download "+name+"<\\/button>";h+="<\\/div>";});h+="<\\/div>";document.body.innerHTML=h;document.body.querySelectorAll(".dl-btn").forEach(function(b){b.addEventListener("click",function(){var name=this.getAttribute("data-name");var f=bundle.files[name];var blob=new Blob([f.content],{type:"text/plain;charset=utf-8"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();});});}',
-                'ready(function(){if(typeof CryptoJS==="undefined"){showError("CryptoJS library failed to load. Check your internet connection.");return;}setTimeout(function(){var E=window.__decrypt_engine;if(!E||!E.a||!E.a()){showKeyMissingError();return;}var DT="' + DECRYPTOR_TOKEN + '";if(!E.v(DT)){showError("Token invalid or already used");return;}try{var parts=ENCRYPTED_DATA.split(":");var iv=parts[1];var ct=parts[2];var hm=parts[3];if(!E.h(iv+":"+ct,hm)){throw new Error("Integrity check failed");}var dec=E.d(ct,iv);if(!dec||dec.length===0){throw new Error("Decryption failed");}E.w();window.__decrypt_engine=null;var isBundle=false,bundle=null;try{var p=JSON.parse(dec);if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}}catch(e){}if(isBundle){renderBundle(bundle);}else{var trimmed=dec.trim();var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);if(isHTML){renderHTML(dec);}else{renderText(dec);}}}catch(e){showError(e.message);}},500);});',
+                /* ✅ Decrypt + immediate wipe (key end) */
+                'ready(function(){if(typeof CryptoJS==="undefined"){showError("CryptoJS library failed to load. Check your internet connection.");return;}setTimeout(function(){var E=window.__decrypt_engine;if(!E||!E.a||!E.a()){showKeyMissingError();return;}var DT="' + DECRYPTOR_TOKEN + '";if(!E.v(DT)){showError("Token invalid or already used");return;}try{var _ed=window.ENCRYPTED_DATA;var parts=_ed.split(":");var iv=parts[1];var ct=parts[2];var hm=parts[3];if(!E.h(iv+":"+ct,hm)){throw new Error("Integrity check failed");}var dec=E.d(ct,iv);if(!dec||dec.length===0){throw new Error("Decryption failed");}E.w();window.__decrypt_engine=null;var isBundle=false,bundle=null;try{var p=JSON.parse(dec);if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}}catch(e){}if(isBundle){renderBundle(bundle);}else{var trimmed=dec.trim();var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);if(isHTML){renderHTML(dec);}else{renderText(dec);}}}catch(e){showError(e.message);}},500);});',
                 '<' + '/script>',
                 '<' + '/body>',
                 '<' + '/html>'
