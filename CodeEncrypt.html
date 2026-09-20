@@ -2044,115 +2044,176 @@
 <div class="toast-container" id="toastContainer"></div>
 
     
- <script>
+<script>
+(function() {
+'use strict';
 
-    (function() {
-    'use strict';
-    
-    var state = {
-        uploadedFiles: {},
-        currentLang: 'auto',
-        user: null,
-        keyRevealed: false,
-        sessionTimer: null,
-        sessionDeadline: null,
-        _pwdMode: null,
-        _pendingAction: null,
-        authHandled: false
+/* ═══════════════════════════════════════════════════════════
+   STATE — Global App State
+   ═══════════════════════════════════════════════════════════ */
+var state = {
+    uploadedFiles: {},
+    currentLang: 'auto',
+    user: null,
+    keyRevealed: false,
+    sessionTimer: null,
+    sessionDeadline: null,
+    _pwdMode: null,
+    _pendingAction: null,
+    authHandled: false,
+    _decryptorBlobUrls: []
+};
+
+var SESSION_TIMEOUT = 5 * 60 * 1000; /* 5 minutes */
+
+/* ═══════════════════════════════════════════════════════════
+   UTILITY FUNCTIONS
+   ═══════════════════════════════════════════════════════════ */
+function bytes(n) {
+    if (n < 1024) return n + ' B';
+    if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+    return (n / 1024 / 1024).toFixed(2) + ' MB';
+}
+
+function num(n) {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function showStatus(type, msg) {
+    var el = document.getElementById('status');
+    if (!el) return;
+    el.className = 'status ' + type;
+    el.textContent = msg;
+}
+
+function toast(msg, type) {
+    type = type || 'info';
+    var c = document.getElementById('toastContainer');
+    if (!c) return;
+    var icons = {
+        success: 'fa-circle-check',
+        error: 'fa-circle-xmark',
+        warn: 'fa-triangle-exclamation',
+        info: 'fa-circle-info'
     };
-    
-    var SESSION_TIMEOUT = 5 * 60 * 1000; /* 5 minutes */
-    
-    function bytes(n) {
-        if (n < 1024) return n + ' B';
-        if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
-        return (n / 1024 / 1024).toFixed(2) + ' MB';
-    }
-    function num(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
-    function showStatus(type, msg) {
-        var el = document.getElementById('status');
-        el.className = 'status ' + type;
-        el.textContent = msg;
-    }
-    function toast(msg, type) {
-        type = type || 'info';
-        var c = document.getElementById('toastContainer');
-        var icons = { success:'fa-circle-check', error:'fa-circle-xmark', warn:'fa-triangle-exclamation', info:'fa-circle-info' };
-        var el = document.createElement('div');
-        el.className = 'toast ' + type;
-        el.innerHTML = '<i class="fa-solid ' + icons[type] + ' toast-icon"></i><span>' + msg + '</span>';
-        c.appendChild(el);
+    var el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.innerHTML = '<i class="fa-solid ' + icons[type] + ' toast-icon"></i><span>' + msg + '</span>';
+    c.appendChild(el);
+    setTimeout(function() {
+        el.classList.add('removing');
         setTimeout(function() {
-            el.classList.add('removing');
-            setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
-        }, 3500);
+            if (el.parentNode) el.parentNode.removeChild(el);
+        }, 300);
+    }, 3500);
+}
+
+function safe(fn, fallback) {
+    try {
+        return fn();
+    } catch (e) {
+        if (window.console && console.warn) console.warn('Safe fallback:', e.message);
+        return fallback;
     }
-    
-    function universalCopy(text, btn, originalText) {
-        if (!text) return;
-        function done() {
-            if (btn) {
-                btn.textContent = 'COPIED!';
-                setTimeout(function() { btn.textContent = originalText || 'COPY'; }, 1500);
-            }
-        }
-        function fallback() {
-            var ta = document.createElement('textarea');
-            ta.value = text;
-            ta.style.position = 'fixed';
-            ta.style.left = '-9999px';
-            ta.style.top = '0';
-            document.body.appendChild(ta);
-            ta.focus();
-            ta.select();
-            try { document.execCommand('copy'); } catch(e) {}
-            document.body.removeChild(ta);
-            done();
-        }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(done).catch(fallback);
-        } else {
-            fallback();
+}
+
+function universalCopy(text, btn, originalText) {
+    if (!text) return;
+    function done() {
+        if (btn) {
+            btn.textContent = 'COPIED!';
+            setTimeout(function() {
+                btn.textContent = originalText || 'COPY';
+            }, 1500);
         }
     }
-    
-    window.toggleDrawer = function() {
-        document.getElementById('drawer').classList.toggle('open');
-        document.getElementById('drawerOverlay').classList.toggle('open');
-        document.getElementById('menuBtn').classList.toggle('open');
-    };
-    window.closeDrawer = function() {
-        document.getElementById('drawer').classList.remove('open');
-        document.getElementById('drawerOverlay').classList.remove('open');
-        document.getElementById('menuBtn').classList.remove('open');
-    };
-    window.selectLang = function(lang, btn) {
+    function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        ta.style.top = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+        done();
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else {
+        fallback();
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DRAWER
+   ═══════════════════════════════════════════════════════════ */
+window.toggleDrawer = function() {
+    safe(function() {
+        var d = document.getElementById('drawer');
+        var o = document.getElementById('drawerOverlay');
+        var m = document.getElementById('menuBtn');
+        if (d) d.classList.toggle('open');
+        if (o) o.classList.toggle('open');
+        if (m) m.classList.toggle('open');
+    });
+};
+
+window.closeDrawer = function() {
+    safe(function() {
+        var d = document.getElementById('drawer');
+        var o = document.getElementById('drawerOverlay');
+        var m = document.getElementById('menuBtn');
+        if (d) d.classList.remove('open');
+        if (o) o.classList.remove('open');
+        if (m) m.classList.remove('open');
+    });
+};
+
+window.selectLang = function(lang, btn) {
+    safe(function() {
         state.currentLang = lang;
-        document.querySelectorAll('.drawer .menu-item[data-lang]').forEach(function(b) { b.classList.remove('active'); });
+        var items = document.querySelectorAll('.drawer .menu-item[data-lang]');
+        Array.prototype.forEach.call(items, function(b) {
+            b.classList.remove('active');
+        });
         if (btn) btn.classList.add('active');
         closeDrawer();
         updateDetection();
-    };
-    
-    function detectLanguage(code) {
-        var t = code.trim();
-        if (!t) return 'txt';
-        if (t.startsWith('{') || t.startsWith('[')) {
-            try { JSON.parse(t); return 'json'; } catch(e) {}
-        }
-        if (/^<!DOCTYPE\s+html/i.test(t) || /<html[\s>]/i.test(t)) return 'html';
-        if (/^<\?xml/i.test(t)) return 'xml';
-        if (/^<\?php/i.test(t)) return 'php';
-        if (/^\s*(def|class|import|from|print\s*\()/m.test(t)) return 'py';
-        if (/@media|@keyframes|:\s*root\s*\{/i.test(t)) return 'css';
-        if (/\b(function|const|let|var|=>|document\.|window\.)\b/.test(t)) return 'js';
-        return 'txt';
+    });
+};
+
+/* ═══════════════════════════════════════════════════════════
+   LANGUAGE DETECTION
+   ═══════════════════════════════════════════════════════════ */
+function detectLanguage(code) {
+    var t = code.trim();
+    if (!t) return 'txt';
+    if (t.startsWith('{') || t.startsWith('[')) {
+        try { JSON.parse(t); return 'json'; } catch (e) {}
     }
-    
-    var inputCodeEl = document.getElementById('inputCode');
-    function updateDetection() {
+    if (/^<!DOCTYPE\s+html/i.test(t) || /<html[\s>]/i.test(t)) return 'html';
+    if (/^<\?xml/i.test(t)) return 'xml';
+    if (/^<\?php/i.test(t)) return 'php';
+    if (/^\s*(def|class|import|from|print\s*\()/m.test(t)) return 'py';
+    if (/@media|@keyframes|:\s*root\s*\{/i.test(t)) return 'css';
+    if (/\b(function|const|let|var|=>|document\.|window\.)\b/.test(t)) return 'js';
+    return 'txt';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DETECTION & STATS
+   ═══════════════════════════════════════════════════════════ */
+var inputCodeEl = document.getElementById('inputCode');
+
+function updateDetection() {
+    if (!inputCodeEl) return;
+    safe(function() {
         var code = inputCodeEl.value;
         var stats = document.getElementById('inputStats');
+        if (!stats) return;
         if (!code.trim()) {
             stats.style.display = 'none';
             updateProgress();
@@ -2161,32 +2222,52 @@
         var detected = detectLanguage(code);
         var finalLang = (state.currentLang === 'auto') ? detected : state.currentLang;
         stats.style.display = 'grid';
-        document.getElementById('statLines').textContent = num(code.split('\n').length);
-        document.getElementById('statChars').textContent = num(code.length);
-        document.getElementById('statSize').textContent = bytes(new Blob([code]).size);
-        document.getElementById('statLang').textContent = finalLang.toUpperCase();
+        var elLines = document.getElementById('statLines');
+        var elChars = document.getElementById('statChars');
+        var elSize = document.getElementById('statSize');
+        var elLang = document.getElementById('statLang');
+        if (elLines) elLines.textContent = num(code.split('\n').length);
+        if (elChars) elChars.textContent = num(code.length);
+        if (elSize) elSize.textContent = bytes(new Blob([code]).size);
+        if (elLang) elLang.textContent = finalLang.toUpperCase();
         updateProgress();
-    }
-    inputCodeEl.addEventListener('input', updateDetection);
-    
-    function updateProgress() {
+    });
+}
+
+if (inputCodeEl) inputCodeEl.addEventListener('input', updateDetection);
+
+/* ═══════════════════════════════════════════════════════════
+   PROGRESS BAR
+   ═══════════════════════════════════════════════════════════ */
+function updateProgress() {
+    safe(function() {
         var steps = 0;
-        if (KEY_MANAGER && KEY_MANAGER.hasPassword()) steps++;
-        if (inputCodeEl.value.trim() || Object.keys(state.uploadedFiles).length > 0) steps++;
-        if (document.getElementById('outputEnc').value) steps++;
+        if (window.KEY_MANAGER && KEY_MANAGER.hasPassword()) steps++;
+        if (inputCodeEl && inputCodeEl.value.trim()) steps++;
+        else if (Object.keys(state.uploadedFiles).length > 0) steps++;
+        var outEl = document.getElementById('outputEnc');
+        if (outEl && outEl.value) steps++;
         var percent = Math.round((steps / 3) * 100);
-        document.getElementById('progressFill').style.width = percent + '%';
-        document.getElementById('progressPercent').textContent = percent + '%';
-    }
-    
-    function updateKeyUI() {
+        var fill = document.getElementById('progressFill');
+        var pct = document.getElementById('progressPercent');
+        if (fill) fill.style.width = percent + '%';
+        if (pct) pct.textContent = percent + '%';
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   KEY UI
+   ═══════════════════════════════════════════════════════════ */
+function updateKeyUI() {
+    safe(function() {
         var keyText = document.getElementById('keyText');
         var createBtn = document.getElementById('createKeyBtn');
         var deleteBtn = document.getElementById('deleteKeyBtn');
         var eyeBtn = document.getElementById('keyEyeBtn');
         var infoText = document.getElementById('keyInfoText');
-    
-        if (KEY_MANAGER.hasPassword()) {
+        if (!keyText || !createBtn || !deleteBtn || !eyeBtn || !infoText) return;
+
+        if (window.KEY_MANAGER && KEY_MANAGER.hasPassword()) {
             var masked = KEY_MANAGER.getDisplayKey();
             keyText.textContent = masked;
             createBtn.style.display = 'none';
@@ -2201,98 +2282,123 @@
             infoText.innerHTML = '🔑 Click <b>CREATE KEY & PASSWORD</b> to generate your unique encryption key. This key is encrypted with your password and stored in Firebase.';
         }
         updateProgress();
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CREATE KEY
+   ═══════════════════════════════════════════════════════════ */
+window.createKey = function() {
+    if (!state.user) {
+        toast('Please wait, loading user...', 'warn');
+        return;
     }
-    
-    window.createKey = function() {
-        if (!state.user) {
-            toast('Please wait, loading user...', 'warn');
-            return;
-        }
-        openPwdModal('create');
-    };
-    
-    window.deleteKey = function() {
-        if (!state.user) { toast('Not authenticated', 'error'); return; }
-    
-        var c1 = confirm(
-            '⚠️ WARNING #1 of 2\n\n' +
-            'This will PERMANENTLY DELETE your key from Firebase.\n\n' +
-            'ALL code encrypted with the old key will be LOCKED FOREVER.\n' +
-            'You will NOT be able to decrypt old files ever again.\n\n' +
-            'Continue?'
-        );
-        if (!c1) return;
-    
-        var c2 = prompt('Type DELETE (in caps) to confirm:');
-        if (c2 !== 'DELETE') {
-            toast('Deletion cancelled', 'warn');
-            return;
-        }
-    
-        showStatus('loading', '⏳ Deleting old key...');
-        KEY_MANAGER.deleteKey(state.user)
-            .then(function() {
-                KEY_MANAGER.clear();
-                hideReveal();
-                document.getElementById('secretKey').value = '';
-                document.getElementById('outputEnc').value = '';
-                updateKeyUI();
-                showStatus('success', '✅ Old key deleted. Create a new one.');
-                toast('🗑️ Old key deleted permanently', 'success');
-                setTimeout(function() {
-                    openPwdModal('create');
-                }, 800);
-            })
-            .catch(function(err) {
-                showStatus('error', '❌ ' + err.message);
-            });
-    };
-    
-    var pwdOverlay = document.getElementById('pwdOverlay');
-    var pwdInput = document.getElementById('pwdInput');
-    var pwdSubmitBtn = document.getElementById('pwdSubmitBtn');
-    var pwdCancelBtn = document.getElementById('pwdCancelBtn');
-    var pwdStatus = document.getElementById('pwdStatus');
-    var pwdEyeBtn = document.getElementById('pwdEyeBtn');
-    var pwdModalTitle = document.getElementById('pwdModalTitle');
-    var pwdModalSub = document.getElementById('pwdModalSub');
-    var pwdModalLabel = document.getElementById('pwdModalLabel');
-    var reqList = document.getElementById('reqList');
-    
-    function openPwdModal(mode) {
+    openPwdModal('create');
+};
+
+/* ═══════════════════════════════════════════════════════════
+   DELETE KEY
+   ═══════════════════════════════════════════════════════════ */
+window.deleteKey = function() {
+    if (!state.user) {
+        toast('Not authenticated', 'error');
+        return;
+    }
+
+    var c1 = confirm(
+        '⚠️ WARNING #1 of 2\n\n' +
+        'This will PERMANENTLY DELETE your key from Firebase.\n\n' +
+        'ALL code encrypted with the old key will be LOCKED FOREVER.\n' +
+        'You will NOT be able to decrypt old files ever again.\n\n' +
+        'Continue?'
+    );
+    if (!c1) return;
+
+    var c2 = prompt('Type DELETE (in caps) to confirm:');
+    if (c2 !== 'DELETE') {
+        toast('Deletion cancelled', 'warn');
+        return;
+    }
+
+    showStatus('loading', '⏳ Deleting old key...');
+    KEY_MANAGER.deleteKey(state.user)
+        .then(function() {
+            KEY_MANAGER.clear();
+            hideReveal();
+            var sk = document.getElementById('secretKey');
+            var oe = document.getElementById('outputEnc');
+            if (sk) sk.value = '';
+            if (oe) oe.value = '';
+            updateKeyUI();
+            showStatus('success', '✅ Old key deleted. Create a new one.');
+            toast('🗑️ Old key deleted permanently', 'success');
+            setTimeout(function() {
+                openPwdModal('create');
+            }, 800);
+        })
+        .catch(function(err) {
+            showStatus('error', '❌ ' + err.message);
+        });
+};
+
+/* ═══════════════════════════════════════════════════════════
+   PASSWORD MODAL
+   ═══════════════════════════════════════════════════════════ */
+var pwdOverlay = document.getElementById('pwdOverlay');
+var pwdInput = document.getElementById('pwdInput');
+var pwdSubmitBtn = document.getElementById('pwdSubmitBtn');
+var pwdCancelBtn = document.getElementById('pwdCancelBtn');
+var pwdStatus = document.getElementById('pwdStatus');
+var pwdEyeBtn = document.getElementById('pwdEyeBtn');
+var pwdModalTitle = document.getElementById('pwdModalTitle');
+var pwdModalSub = document.getElementById('pwdModalSub');
+var pwdModalLabel = document.getElementById('pwdModalLabel');
+var reqList = document.getElementById('reqList');
+
+function openPwdModal(mode) {
+    safe(function() {
         state._pwdMode = mode;
         if (mode === 'create') {
-            pwdModalTitle.textContent = '🔐 Create Your Password';
-            pwdModalSub.textContent = 'This will generate your unique key';
-            pwdModalLabel.textContent = 'Create Your Strong Password (16-64 chars)';
-            pwdSubmitBtn.innerHTML = '🔐 Create Key';
-            reqList.style.display = 'block';
-            pwdCancelBtn.style.display = 'none';
+            if (pwdModalTitle) pwdModalTitle.textContent = '🔐 Create Your Password';
+            if (pwdModalSub) pwdModalSub.textContent = 'This will generate your unique key';
+            if (pwdModalLabel) pwdModalLabel.textContent = 'Create Your Strong Password (16-64 chars)';
+            if (pwdSubmitBtn) pwdSubmitBtn.innerHTML = '🔐 Create Key';
+            if (reqList) reqList.style.display = 'block';
+            if (pwdCancelBtn) pwdCancelBtn.style.display = 'none';
         } else {
-            pwdModalTitle.textContent = '🔐 Enter Your Password';
-            pwdModalSub.textContent = 'Required to reveal your key';
-            pwdModalLabel.textContent = 'Your Password';
-            pwdSubmitBtn.innerHTML = '👁️ Reveal Key';
-            reqList.style.display = 'none';
-            pwdCancelBtn.style.display = 'inline-flex';
+            if (pwdModalTitle) pwdModalTitle.textContent = '🔐 Enter Your Password';
+            if (pwdModalSub) pwdModalSub.textContent = 'Required to reveal your key';
+            if (pwdModalLabel) pwdModalLabel.textContent = 'Your Password';
+            if (pwdSubmitBtn) pwdSubmitBtn.innerHTML = '👁️ Reveal Key';
+            if (reqList) reqList.style.display = 'none';
+            if (pwdCancelBtn) pwdCancelBtn.style.display = 'inline-flex';
         }
-    
-        pwdInput.value = '';
-        pwdInput.type = 'password';
-        pwdEyeBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
-        pwdStatus.style.display = 'none';
-        pwdStatus.className = 'status';
-        pwdSubmitBtn.disabled = true;
-        pwdOverlay.classList.add('open');
-        setTimeout(function() { pwdInput.focus(); }, 200);
-    }
-    
-    function closePwdModal() {
-        pwdOverlay.classList.remove('open');
-        pwdInput.value = '';
-    }
-    
+
+        if (pwdInput) {
+            pwdInput.value = '';
+            pwdInput.type = 'password';
+        }
+        if (pwdEyeBtn) pwdEyeBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+        if (pwdStatus) {
+            pwdStatus.style.display = 'none';
+            pwdStatus.className = 'status';
+        }
+        if (pwdSubmitBtn) pwdSubmitBtn.disabled = true;
+        if (pwdOverlay) pwdOverlay.classList.add('open');
+        setTimeout(function() { if (pwdInput) pwdInput.focus(); }, 200);
+    });
+}
+
+function closePwdModal() {
+    safe(function() {
+        if (pwdOverlay) pwdOverlay.classList.remove('open');
+        if (pwdInput) pwdInput.value = '';
+    });
+}
+
+if (pwdEyeBtn) {
     pwdEyeBtn.addEventListener('click', function() {
+        if (!pwdInput) return;
         if (pwdInput.type === 'password') {
             pwdInput.type = 'text';
             pwdEyeBtn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
@@ -2301,77 +2407,92 @@
             pwdEyeBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
         }
     });
-    
+}
+
+if (pwdInput) {
     pwdInput.addEventListener('input', function() {
-        var v = this.value;
-    
-        var digits = (v.match(/\d/g) || []).length;
-        var lower = (v.match(/[a-z]/g) || []).length;
-        var upper = (v.match(/[A-Z]/g) || []).length;
-        var symbols = (v.match(/[^a-zA-Z0-9]/g) || []).length;
-    
-        var rLen = v.length >= 16 && v.length <= 64;
-        var rDig = digits >= 3;
-        var rLet = lower >= 4 && upper >= 3;
-        var rSym = symbols >= 3;
-    
-        var rStrength = false;
-        if (rLen && rDig && rLet && rSym && typeof zxcvbn !== 'undefined') {
-            try {
-                rStrength = zxcvbn(v).score >= 3;
-            } catch(e) { rStrength = false; }
-        }
-    
-        updateReq('req-length', rLen);
-        updateReq('req-digits', rDig);
-        updateReq('req-letters', rLet);
-        updateReq('req-symbols', rSym);
-        updateReq('req-strength', rStrength);
-    
-        if (state._pwdMode === 'create') {
-            pwdSubmitBtn.disabled = !(rLen && rDig && rLet && rSym && rStrength);
-        } else {
-            pwdSubmitBtn.disabled = v.length < 16;
-        }
+        safe(function() {
+            var v = this.value;
+            var digits = (v.match(/\d/g) || []).length;
+            var lower = (v.match(/[a-z]/g) || []).length;
+            var upper = (v.match(/[A-Z]/g) || []).length;
+            var symbols = (v.match(/[^a-zA-Z0-9]/g) || []).length;
+
+            var rLen = v.length >= 16 && v.length <= 64;
+            var rDig = digits >= 3;
+            var rLet = lower >= 4 && upper >= 3;
+            var rSym = symbols >= 3;
+
+            var rStrength = false;
+            if (rLen && rDig && rLet && rSym && typeof zxcvbn !== 'undefined') {
+                try { rStrength = zxcvbn(v).score >= 3; } catch (e) { rStrength = false; }
+            }
+
+            updateReq('req-length', rLen);
+            updateReq('req-digits', rDig);
+            updateReq('req-letters', rLet);
+            updateReq('req-symbols', rSym);
+            updateReq('req-strength', rStrength);
+
+            if (pwdSubmitBtn) {
+                if (state._pwdMode === 'create') {
+                    pwdSubmitBtn.disabled = !(rLen && rDig && rLet && rSym && rStrength);
+                } else {
+                    pwdSubmitBtn.disabled = v.length < 16;
+                }
+            }
+        }.bind(this));
     });
-    
-    function updateReq(id, valid) {
-        var el = document.getElementById(id);
-        if (!el) return;
-        var icon = el.querySelector('i');
-        if (valid) {
-            el.classList.add('valid');
-            el.classList.remove('invalid');
-            icon.className = 'fa-solid fa-circle-check';
-        } else {
-            el.classList.remove('valid');
-            el.classList.add('invalid');
-            icon.className = 'fa-solid fa-circle-xmark';
-        }
-    }
-    
+
     pwdInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && !pwdSubmitBtn.disabled) {
+        if (e.key === 'Enter' && pwdSubmitBtn && !pwdSubmitBtn.disabled) {
             pwdSubmitBtn.click();
         }
     });
-    
-    pwdCancelBtn.addEventListener('click', closePwdModal);
-    
+}
+
+function updateReq(id, valid) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var icon = el.querySelector('i');
+    if (!icon) return;
+    if (valid) {
+        el.classList.add('valid');
+        el.classList.remove('invalid');
+        icon.className = 'fa-solid fa-circle-check';
+    } else {
+        el.classList.remove('valid');
+        el.classList.add('invalid');
+        icon.className = 'fa-solid fa-circle-xmark';
+    }
+}
+
+if (pwdCancelBtn) {
+    pwdCancelBtn.addEventListener('click', function() {
+        state._pendingAction = null;
+        closePwdModal();
+    });
+}
+
+if (pwdSubmitBtn) {
     pwdSubmitBtn.addEventListener('click', function() {
-        if (!state.user) { setPwdStatus('error', '❌ Not authenticated'); return; }
-        var password = pwdInput.value;
+        if (!state.user) {
+            setPwdStatus('error', '❌ Not authenticated');
+            return;
+        }
+        var password = pwdInput ? pwdInput.value : '';
         var isCreate = state._pwdMode === 'create';
-    
+
         if (isCreate) {
             if (!confirm('⚠️ FINAL WARNING:\n\nYour password CANNOT be changed.\nIf you forget it, your key will be LOCKED FOREVER.\n\nYou can later DELETE & REGENERATE.\n\nPassword: 16-64 chars with digits, upper, lower, symbols.\n\nCreate this password?')) return;
             setPwdStatus('loading', '⏳ Generating your unique key...');
             pwdSubmitBtn.disabled = true;
-    
+
             KEY_MANAGER.createKeyAndPassword(state.user, password)
                 .then(function(result) {
                     setPwdStatus('success', '✅ Key created! Password saved.');
-                    document.getElementById('secretKey').value = result.key;
+                    var sk = document.getElementById('secretKey');
+                    if (sk) sk.value = result.key;
                     updateKeyUI();
                     setTimeout(closePwdModal, 1200);
                     toast('🔑 Key created successfully!', 'success');
@@ -2383,16 +2504,17 @@
         } else {
             setPwdStatus('loading', '⏳ Verifying password...');
             pwdSubmitBtn.disabled = true;
-    
+
             KEY_MANAGER.unlockKey(state.user, password)
                 .then(function(result) {
                     setPwdStatus('success', '✅ Key revealed!');
-                    document.getElementById('secretKey').value = result.key;
+                    var sk = document.getElementById('secretKey');
+                    if (sk) sk.value = result.key;
                     showReveal(result.key);
-    
+
                     var action = state._pendingAction;
                     state._pendingAction = null;
-    
+
                     if (action === 'encrypt') {
                         setTimeout(function() {
                             performEncrypt(result.key);
@@ -2402,165 +2524,226 @@
                             downloadDecryptor();
                         }, 500);
                     }
-    
+
                     setTimeout(closePwdModal, 1000);
                 })
                 .catch(function(err) {
                     setPwdStatus('error', '❌ ' + err.message);
                     pwdSubmitBtn.disabled = false;
-                    pwdInput.value = '';
-                    pwdInput.focus();
+                    if (pwdInput) {
+                        pwdInput.value = '';
+                        pwdInput.focus();
+                    }
                 });
         }
     });
-    
-    function setPwdStatus(type, msg) {
-        pwdStatus.className = 'status ' + type;
-        pwdStatus.textContent = msg;
-        pwdStatus.style.display = 'block';
+}
+
+function setPwdStatus(type, msg) {
+    if (!pwdStatus) return;
+    pwdStatus.className = 'status ' + type;
+    pwdStatus.textContent = msg;
+    pwdStatus.style.display = 'block';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   KEY REVEAL
+   ═══════════════════════════════════════════════════════════ */
+window.toggleKeyReveal = function() {
+    if (!KEY_MANAGER.hasPassword()) {
+        toast('Create key first', 'warn');
+        return;
     }
-    
-    window.toggleKeyReveal = function() {
-        if (!KEY_MANAGER.hasPassword()) { toast('Create key first', 'warn'); return; }
-        openPwdModal('reveal');
-    };
-    
-    function showReveal(key) {
+    openPwdModal('reveal');
+};
+
+function showReveal(key) {
+    safe(function() {
         var panel = document.getElementById('revealPanel');
         var box = document.getElementById('revealBox');
         var lenEl = document.getElementById('revealLength');
-        panel.classList.add('active');
-        box.textContent = key;
-        lenEl.textContent = key.length + ' chars';
+        if (panel) panel.classList.add('active');
+        if (box) box.textContent = key;
+        if (lenEl) lenEl.textContent = key.length + ' chars';
         state.keyRevealed = true;
         startSessionTimer();
-    }
-    
-    window.hideReveal = function() {
-        document.getElementById('revealPanel').classList.remove('active');
+    });
+}
+
+window.hideReveal = function() {
+    safe(function() {
+        var panel = document.getElementById('revealPanel');
+        if (panel) panel.classList.remove('active');
         state.keyRevealed = false;
         stopSessionTimer();
-    };
-    
-    window.copyRevealedKey = function() {
-        var key = document.getElementById('revealBox').textContent;
-        if (!key) return;
-        universalCopy(key, null, null);
-        toast('✅ Key copied!', 'success');
-    };
-    
-    function startSessionTimer() {
-        stopSessionTimer();
-        state.sessionDeadline = Date.now() + SESSION_TIMEOUT;
-        var bar = document.getElementById('sessionBar');
-        var fill = document.getElementById('sessionBarFill');
-        if (bar) bar.classList.add('active');
-        state.sessionTimer = setInterval(function() {
-            var remaining = state.sessionDeadline - Date.now();
-            if (remaining <= 0) {
-                stopSessionTimer();
-                hideReveal();
-                return;
-            }
-            if (fill) fill.style.width = ((remaining / SESSION_TIMEOUT) * 100) + '%';
-        }, 100);
+    });
+};
+
+window.copyRevealedKey = function() {
+    var box = document.getElementById('revealBox');
+    if (!box) return;
+    var key = box.textContent;
+    if (!key) return;
+    universalCopy(key, null, null);
+    toast('✅ Key copied!', 'success');
+};
+
+/* ═══════════════════════════════════════════════════════════
+   SESSION TIMER
+   ═══════════════════════════════════════════════════════════ */
+function startSessionTimer() {
+    stopSessionTimer();
+    state.sessionDeadline = Date.now() + SESSION_TIMEOUT;
+    var bar = document.getElementById('sessionBar');
+    var fill = document.getElementById('sessionBarFill');
+    if (bar) bar.classList.add('active');
+    state.sessionTimer = setInterval(function() {
+        var remaining = state.sessionDeadline - Date.now();
+        if (remaining <= 0) {
+            stopSessionTimer();
+            hideReveal();
+            return;
+        }
+        if (fill) fill.style.width = ((remaining / SESSION_TIMEOUT) * 100) + '%';
+    }, 100);
+}
+
+function stopSessionTimer() {
+    if (state.sessionTimer) {
+        clearInterval(state.sessionTimer);
+        state.sessionTimer = null;
     }
-    function stopSessionTimer() {
-        if (state.sessionTimer) { clearInterval(state.sessionTimer); state.sessionTimer = null; }
-        var bar = document.getElementById('sessionBar');
-        if (bar) bar.classList.remove('active');
-    }
-    
-    var fileDrop = document.getElementById('fileDrop');
-    var fileInput = document.getElementById('fileInput');
+    var bar = document.getElementById('sessionBar');
+    if (bar) bar.classList.remove('active');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FILE UPLOAD
+   ═══════════════════════════════════════════════════════════ */
+var fileDrop = document.getElementById('fileDrop');
+var fileInput = document.getElementById('fileInput');
+
+if (fileDrop) {
     fileDrop.addEventListener('click', function() { window.openFilePicker(); });
-    fileDrop.addEventListener('dragover', function(e) { e.preventDefault(); fileDrop.classList.add('dragover'); });
-    fileDrop.addEventListener('dragleave', function() { fileDrop.classList.remove('dragover'); });
-    fileDrop.addEventListener('drop', function(e) { e.preventDefault(); fileDrop.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
-    fileInput.addEventListener('change', function(e) { handleFiles(e.target.files); });
-    
-    window.openFilePicker = function() { closeDrawer(); fileInput.click(); };
-    
-    function handleFiles(files) {
-        Array.prototype.forEach.call(files, function(file) {
-            if (file.size > 5 * 1024 * 1024) {
-                toast('File too large (max 5MB): ' + file.name, 'error');
-                return;
-            }
-            
-            var reader = new FileReader();
-            reader.onload = function(ev) {
+    fileDrop.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        fileDrop.classList.add('dragover');
+    });
+    fileDrop.addEventListener('dragleave', function() {
+        fileDrop.classList.remove('dragover');
+    });
+    fileDrop.addEventListener('drop', function(e) {
+        e.preventDefault();
+        fileDrop.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+}
+
+if (fileInput) {
+    fileInput.addEventListener('change', function(e) {
+        handleFiles(e.target.files);
+    });
+}
+
+window.openFilePicker = function() {
+    closeDrawer();
+    if (fileInput) fileInput.click();
+};
+
+function handleFiles(files) {
+    Array.prototype.forEach.call(files, function(file) {
+        if (file.size > 5 * 1024 * 1024) {
+            toast('File too large (max 5MB): ' + file.name, 'error');
+            return;
+        }
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+            safe(function() {
                 var content = ev.target.result;
                 var ext = (file.name.split('.').pop() || '').toLowerCase();
-                state.uploadedFiles[file.name] = { 
-                    content: content, 
+                state.uploadedFiles[file.name] = {
+                    content: content,
                     lang: ext,
                     size: file.size
                 };
                 renderFileList();
                 updateProgress();
-            };
-            reader.readAsText(file);
-        });
+            });
+        };
+        reader.readAsText(file);
+    });
+}
+
+function renderFileList() {
+    var list = document.getElementById('fileList');
+    if (!list) return;
+    var names = Object.keys(state.uploadedFiles);
+    if (names.length === 0) {
+        list.innerHTML = '';
+        return;
     }
-        
-    function renderFileList() {
-        var list = document.getElementById('fileList');
-        var names = Object.keys(state.uploadedFiles);
-        if (names.length === 0) { list.innerHTML = ''; return; }
-        list.innerHTML = names.map(function(name) {
-            var f = state.uploadedFiles[name];
-            var sizeStr = f.size ? ' <span class="fsize">(' + bytes(f.size) + ')</span>' : '';
-            return '<div class="file-item">📄 <span class="fname">' + name + '</span>' + sizeStr +
-                '<span class="remove" onclick="removeFile(\'' + name.replace(/'/g, "\\'") + '\')">✖</span></div>';
-        }).join('');
-    }
-    window.removeFile = function(name) { delete state.uploadedFiles[name]; renderFileList(); updateProgress(); };
-    
-    window.encryptNow = function() {
-        try {
-            if (!KEY_MANAGER.hasPassword()) {
-                showStatus('error', '❌ Create your key first');
-                toast('Create key first', 'error');
-                return;
-            }
-    
-            var pasted = inputCodeEl.value;
-            var fileNames = Object.keys(state.uploadedFiles);
-    
-            if (!pasted.trim() && fileNames.length === 0) {
-                showStatus('error', '❌ Paste code or upload files');
-                return;
-            }
-    
-            if (KEY_MANAGER.isReady() && KEY_MANAGER.getKey()) {
-                performEncrypt(KEY_MANAGER.getKey());
-            } else {
-                state._pendingAction = 'encrypt';
-                openPwdModal('reveal');
-                toast('Enter password to encrypt', 'info');
-            }
-        } catch (e) {
-            showStatus('error', '❌ ' + e.message);
+    list.innerHTML = names.map(function(name) {
+        var f = state.uploadedFiles[name];
+        var sizeStr = f.size ? ' <span class="fsize">(' + bytes(f.size) + ')</span>' : '';
+        return '<div class="file-item">📄 <span class="fname">' + name + '</span>' + sizeStr +
+            '<span class="remove" onclick="removeFile(\'' + name.replace(/'/g, "\\'") + '\')">✖</span></div>';
+    }).join('');
+}
+
+window.removeFile = function(name) {
+    delete state.uploadedFiles[name];
+    renderFileList();
+    updateProgress();
+};
+
+/* ═══════════════════════════════════════════════════════════
+   ENCRYPT NOW
+   ═══════════════════════════════════════════════════════════ */
+window.encryptNow = function() {
+    try {
+        if (!KEY_MANAGER.hasPassword()) {
+            showStatus('error', '❌ Create your key first');
+            toast('Create key first', 'error');
+            return;
         }
-    };
-    
-    /* ═══════════════════════════════════════════════════════
-       performEncrypt — AES-256-CBC + HMAC-SHA256
-       ═══════════════════════════════════════════════════════ */
-    function performEncrypt(secretKey) {
-        var pasted = inputCodeEl.value;
+
+        var pasted = inputCodeEl ? inputCodeEl.value : '';
+        var fileNames = Object.keys(state.uploadedFiles);
+
+        if (!pasted.trim() && fileNames.length === 0) {
+            showStatus('error', '❌ Paste code or upload files');
+            return;
+        }
+
+        if (KEY_MANAGER.isReady() && KEY_MANAGER.getKey()) {
+            performEncrypt(KEY_MANAGER.getKey());
+        } else {
+            state._pendingAction = 'encrypt';
+            openPwdModal('reveal');
+            toast('Enter password to encrypt', 'info');
+        }
+    } catch (e) {
+        showStatus('error', '❌ ' + e.message);
+    }
+};
+
+/* ═══════════════════════════════════════════════════════════
+   PERFORM ENCRYPT — AES-256-CBC + HMAC-SHA256
+   ═══════════════════════════════════════════════════════════ */
+function performEncrypt(secretKey) {
+    safe(function() {
+        var pasted = inputCodeEl ? inputCodeEl.value : '';
         var fileNames = Object.keys(state.uploadedFiles);
         showStatus('loading', '⏳ Encrypting...');
-    
-        var payload, mode;
+
+        var payload;
         var totalSize = 0;
         var fileCount = 0;
-    
+
         if (fileNames.length > 0) {
             var bundle = {
                 __type: 'multi-file-bundle',
-                __version: '18.0',
+                __version: '19.0',
                 __created: new Date().toISOString(),
                 __fileCount: fileNames.length,
                 files: {}
@@ -2568,477 +2751,672 @@
             fileNames.forEach(function(name) {
                 var content = state.uploadedFiles[name].content;
                 var sizeBytes = new Blob([content]).size;
-                
-                bundle.files[name] = { 
+                bundle.files[name] = {
                     content: content,
                     size: sizeBytes,
                     sizeFormatted: bytes(sizeBytes)
                 };
-                
                 totalSize += sizeBytes;
                 fileCount++;
             });
             payload = JSON.stringify(bundle);
-            mode = 'Bundle (' + fileNames.length + ' files, ' + bytes(totalSize) + ')';
         } else {
             payload = pasted;
             totalSize = new Blob([pasted]).size;
             fileCount = 1;
-            mode = 'Single ' + detectLanguage(pasted).toUpperCase() + ' (' + bytes(totalSize) + ')';
         }
-    
-        /* ✅ AES-256-CBC with random IV */
+
         var iv = CryptoJS.lib.WordArray.random(16);
         var encrypted = CryptoJS.AES.encrypt(payload, secretKey, {
             iv: iv,
             mode: CryptoJS.mode.CBC,
             padding: CryptoJS.pad.Pkcs7
         });
-    
-        /* ✅ HMAC-SHA256 for integrity */
+
         var hmac = CryptoJS.HmacSHA256(
             iv.toString() + ':' + encrypted.toString(),
             secretKey
         ).toString();
-    
-        /* ✅ Combined format: v2:iv:ciphertext:hmac */
+
         var finalOutput = 'v2:' + iv.toString() + ':' + encrypted.toString() + ':' + hmac;
-        document.getElementById('outputEnc').value = finalOutput;
+        var outEl = document.getElementById('outputEnc');
+        if (outEl) outEl.value = finalOutput;
+
         showStatus('success', '✅ Encrypted ' + bytes(totalSize) + ' → ' + bytes(new Blob([finalOutput]).size));
         toast('Encrypted successfully!', 'success');
         updateProgress();
-    
-        /* ✅ Track stats in Firebase */
+
         if (state.user && state.user.uid && typeof KEY_MANAGER !== 'undefined' && KEY_MANAGER.updateEncryptionStats) {
             KEY_MANAGER.updateEncryptionStats(state.user.uid, {
                 size: totalSize,
                 sizeFormatted: bytes(totalSize),
                 fileCount: fileCount,
                 duration: 0
-            }).catch(function(err) {
-                console.warn('Stats tracking failed:', err);
-            });
+            }).catch(function() {});
+        }
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COPY / DOWNLOAD OUTPUT
+   ═══════════════════════════════════════════════════════════ */
+window.copyOutput = function() {
+    var out = document.getElementById('outputEnc');
+    if (!out || !out.value) {
+        toast('Nothing to copy', 'error');
+        return;
+    }
+    universalCopy(out.value, null, null);
+    showStatus('success', '✅ Copied!');
+    toast('Copied!', 'success');
+};
+
+window.downloadOutput = function() {
+    var out = document.getElementById('outputEnc');
+    if (!out || !out.value) {
+        toast('Nothing to download', 'error');
+        return;
+    }
+    var blob = new Blob([out.value], { type: 'text/plain;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'encrypted_' + Date.now() + '.txt';
+    a.click();
+    toast('Downloaded!', 'success');
+};
+
+/* ═══════════════════════════════════════════════════════════
+   DOWNLOAD DECRYPTOR — v19 STRONG (20 layers, hidden filename,
+   closure-protected key, auto-wipe, single-line key file)
+   ═══════════════════════════════════════════════════════════ */
+window.downloadDecryptor = function() {
+    var outEl = document.getElementById('outputEnc');
+    if (!outEl || !outEl.value) {
+        toast('Encrypt first!', 'error');
+        return;
+    }
+
+    if (!KEY_MANAGER.isReady() || !KEY_MANAGER.getKey()) {
+        state._pendingAction = 'downloadDecryptor';
+        openPwdModal('reveal');
+        toast('Enter password first, then decryptor will be created', 'info');
+        return;
+    }
+
+    var fullKey = KEY_MANAGER.getKey();
+    if (!fullKey || fullKey.length < 30) {
+        toast('Key not found. Please unlock first.', 'error');
+        return;
+    }
+
+    var encData = outEl.value;
+
+    /* ─── Random helpers ─── */
+    function rndHex(len) {
+        var c = 'abcdef0123456789';
+        var s = '';
+        for (var i = 0; i < (len || 16); i++) s += c.charAt(Math.floor(Math.random() * c.length));
+        return s;
+    }
+    function rv(len) {
+        var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var s = '';
+        for (var i = 0; i < (len || 6); i++) s += c.charAt(Math.floor(Math.random() * c.length));
+        return s;
+    }
+    function pickRandom(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    /* ─── Key file name ─── */
+    var typePrefixes = ['sk','vx','ky','zn','qm','pl','rt','jw','bd','fh',
+                        'gc','mn','tp','ws','xr','yv','az','ce','dg','ei',
+                        'fj','hk','lo','nu','op','qr','st','uv','wx','yz'];
+    var securityThemes = ['protection','security','shield','guard','defense',
+                          'armor','fortress','sentinel','watch','sentry',
+                          'vault','cipher','crypt','secure','safe',
+                          'barrier','bulwark','rampart','bastion','citadel',
+                          'stronghold','keep','tower','gate','lock',
+                          'seal','ward','safeguard','guardian','preserver'];
+    var roleWords = ['key','server','module','engine','core',
+                     'loader','handler','worker','runner','driver',
+                     'helper','utility','service','agent','daemon',
+                     'process','thread','task','job','routine',
+                     'system','framework','runtime','kernel','shell',
+                     'interface','bridge','adapter','connector','linker'];
+
+    var keyFileName = pickRandom(typePrefixes) + '-' +
+                      pickRandom(securityThemes) + '-' +
+                      rndHex(8) + '-' +
+                      pickRandom(roleWords) + '-' +
+                      rndHex(10) + '.js';
+
+    /* ─── Extract suffix ─── */
+    var PREFIX = 'NightOrbitGyidi_houperSecret_';
+    var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
+    if (suffix.length < 60) {
+        while (suffix.length < 60) suffix += '0';
+    }
+    suffix = suffix.substring(0, 60);
+    var fullKeyString = PREFIX + suffix;
+
+    /* ─── 20-LAYER OBFUSCATION ─── */
+    var s1 = (Date.now() % 251) + 1;
+    var s2 = (Math.floor(Math.random() * 251)) + 1;
+    var s3 = (Math.floor(Math.random() * 251)) + 1;
+    var s4 = (Math.floor(Math.random() * 251)) + 1;
+
+    /* L1: char codes */
+    var L1 = [];
+    for (var i = 0; i < fullKeyString.length; i++) {
+        L1.push(fullKeyString.charCodeAt(i));
+    }
+
+    /* L2: XOR 0x5A + S1 */
+    var L2 = [];
+    for (var a = 0; a < L1.length; a++) {
+        L2.push((L1[a] ^ 0x5A) ^ s1);
+    }
+
+    /* L3: Add S2 mod 256 */
+    var L3 = [];
+    for (var b = 0; b < L2.length; b++) {
+        L3.push((L2[b] + s2) % 256);
+    }
+
+    /* L4: XOR S3 */
+    var L4 = [];
+    for (var c = 0; c < L3.length; c++) {
+        L4.push(L3[c] ^ s3);
+    }
+
+    /* L5: Even/Odd split */
+    var even = [], odd = [];
+    for (var d = 0; d < L4.length; d++) {
+        if (d % 2 === 0) even.push(L4[d]);
+        else odd.push(L4[d]);
+    }
+    var L5 = even.concat(odd);
+
+    /* L6: Random padding */
+    var padding = [];
+    var padCount = (Math.floor(Math.random() * 10) + 5);
+    for (var e = 0; e < padCount; e++) {
+        padding.push(Math.floor(Math.random() * 256));
+    }
+    var L6 = padding.concat(L5);
+
+    /* L7: Bit rotation (3-bit left) */
+    var L7 = [];
+    for (var f = 0; f < L6.length; f++) {
+        var byte1 = L6[f];
+        L7.push(((byte1 << 3) | (byte1 >> 5)) & 0xFF);
+    }
+
+    /* L8: Prime index XOR */
+    var primes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71];
+    var L8 = [];
+    for (var g = 0; g < L7.length; g++) {
+        var p = primes[g % primes.length];
+        L8.push((L7[g] ^ p) & 0xFF);
+    }
+
+    /* L9: Fibonacci swap */
+    var fib = [0,1,1,2,3,5,8,13,21,34,55,89,144,233];
+    for (var h = 0; h < fib.length - 1; h++) {
+        var idx1 = fib[h] % L8.length;
+        var idx2 = fib[h + 1] % L8.length;
+        var tmp = L8[idx1];
+        L8[idx1] = L8[idx2];
+        L8[idx2] = tmp;
+    }
+
+    /* L10: Caesar shift +13 */
+    var L10 = [];
+    for (var j = 0; j < L8.length; j++) {
+        L10.push((L8[j] + 13) % 256);
+    }
+
+    /* L11: Hash mix */
+    var L11 = [];
+    var mixSeed = s1 + s2 + s3 + s4;
+    for (var k = 0; k < L10.length; k++) {
+        L11.push((L10[k] ^ (mixSeed % 256)) & 0xFF);
+        mixSeed = (mixSeed * 31 + L10[k]) % 100000;
+    }
+
+    /* L12: Interleave with decoy */
+    var L12 = [];
+    for (var l = 0; l < L11.length; l++) {
+        L12.push(L11[l]);
+        if (l % 2 === 1) {
+            L12.push((l * 7) % 256);
         }
     }
-    
-    window.copyOutput = function() {
-        var out = document.getElementById('outputEnc');
-        if (!out.value) { toast('Nothing to copy', 'error'); return; }
-        universalCopy(out.value, null, null);
-        showStatus('success', '✅ Copied!');
-        toast('Copied!', 'success');
-    };
-    
-    window.downloadOutput = function() {
-        var out = document.getElementById('outputEnc').value;
-        if (!out) { toast('Nothing to download', 'error'); return; }
-        var blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
-        var a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'encrypted_' + Date.now() + '.txt';
-        a.click();
-        toast('Downloaded!', 'success');
-    };
-    
-    window.downloadDecryptor = function() {
-        var out = document.getElementById('outputEnc').value;
-        if (!out) { toast('Encrypt first!', 'error'); return; }
-    
-        if (!KEY_MANAGER.isReady() || !KEY_MANAGER.getKey()) {
-            state._pendingAction = 'downloadDecryptor';
-            openPwdModal('reveal');
-            toast('Enter password first, then decryptor will be created', 'info');
-            return;
+
+    /* L13: Another XOR */
+    var s5 = (Math.floor(Math.random() * 251)) + 1;
+    var L13 = [];
+    for (var m = 0; m < L12.length; m++) {
+        L13.push((L12[m] ^ 0x3C) ^ s5);
+    }
+
+    /* L14: Matrix transpose (conceptual — 1D shift) */
+    var matrixSize = Math.ceil(Math.sqrt(L13.length));
+    var padded = L13.slice();
+    while (padded.length < matrixSize * matrixSize) padded.push(0);
+    var L14 = [];
+    for (var col = 0; col < matrixSize; col++) {
+        for (var row = 0; row < matrixSize; row++) {
+            L14.push(padded[row * matrixSize + col]);
         }
-        var fullKey = KEY_MANAGER.getKey();
-        if (!fullKey || fullKey.length < 30) {
-            toast('Key not found. Please unlock first.', 'error');
-            return;
-        }
-    
-        function rndHex(len) {
-            var c = 'abcdef0123456789';
-            var s = '';
-            for (var i = 0; i < (len || 16); i++) s += c.charAt(Math.floor(Math.random() * c.length));
-            return s;
-        }
-        var typePrefixes = ['sk','vx','ky','zn','qm','pl','rt','jw','bd','fh',
-                            'gc','mn','tp','ws','xr','yv','az','ce','dg','ei',
-                            'fj','hk','lo','nu','op','qr','st','uv','wx','yz'];
-        var securityThemes = ['protection','security','shield','guard','defense',
-                              'armor','fortress','sentinel','watch','sentry',
-                              'vault','cipher','crypt','secure','safe',
-                              'barrier','bulwark','rampart','bastion','citadel',
-                              'stronghold','keep','tower','gate','lock',
-                              'seal','ward','safeguard','guardian','preserver'];
-        var roleWords = ['key','server','module','engine','core',
-                         'loader','handler','worker','runner','driver',
-                         'helper','utility','service','agent','daemon',
-                         'process','thread','task','job','routine',
-                         'system','framework','runtime','kernel','shell',
-                         'interface','bridge','adapter','connector','linker'];
-        function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-        
-        var keyFileName = pickRandom(typePrefixes) + '-' +
-                          pickRandom(securityThemes) + '-' +
-                          rndHex(8) + '-' +
-                          pickRandom(roleWords) + '-' +
-                          rndHex(10) + '.js';
-    
-        var encData = out;
-    
-        var PREFIX = 'NightOrbitGyidi_houperSecret_';
-        var suffix = fullKey.indexOf(PREFIX) === 0 ? fullKey.substring(PREFIX.length) : fullKey;
-        if (suffix.length < 60) { while (suffix.length < 60) suffix += '0'; }
-        suffix = suffix.substring(0, 60);
-        var fullKeyString = PREFIX + suffix;
-    
-        var s1 = (Date.now() % 251) + 1;
-        var s2 = (Math.floor(Math.random() * 251)) + 1;
-        var s3 = (Math.floor(Math.random() * 251)) + 1;
-        var s4 = (Math.floor(Math.random() * 251)) + 1;
-    
-        var L1 = [];
-        for (var i = 0; i < fullKeyString.length; i++) {
-            L1.push((fullKeyString.charCodeAt(i) ^ 0x5A) ^ s1);
-        }
-        var L2 = [];
-        for (var j = 0; j < L1.length; j++) {
-            L2.push((L1[j] + s2) % 256);
-        }
-        var L3 = [];
-        for (var k = 0; k < L2.length; k++) {
-            L3.push(L2[k] ^ s3);
-        }
-        var even = [], odd = [];
-        for (var m = 0; m < L3.length; m++) {
-            if (m % 2 === 0) even.push(L3[m]);
-            else odd.push(L3[m]);
-        }
-        var L4 = even.concat(odd);
-        var padding = [];
-        var padCount = (Math.floor(Math.random() * 10) + 5);
-        for (var p = 0; p < padCount; p++) {
-            padding.push(Math.floor(Math.random() * 256));
-        }
-        var L5 = padding.concat(L4);
-        var bin = '';
-        for (var b = 0; b < L5.length; b++) {
-            bin += String.fromCharCode(L5[b]);
-        }
-        var L6 = btoa(bin);
-        var L7 = L6.split('').reverse().join('');
-        var obf = [];
-        for (var bi = 0; bi < L7.length; bi++) {
-            obf.push((L7.charCodeAt(bi) ^ 0x5A) ^ s4);
-        }
-        var byteArrayString = '[' + obf.join(',') + ']';
-    
-        function rv(len) {
-            var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            var s = '';
-            for (var i = 0; i < (len || 6); i++) s += c.charAt(Math.floor(Math.random() * c.length));
-            return s;
-        }
-        var qA = rv(6), qB = rv(7), qC = rv(5), qD = rv(6), qE = rv(8);
-        var qF = rv(6), qG = rv(5), qH = rv(4), qI = rv(4), qJ = rv(5);
-        var qK = rv(5), qL = rv(5), qM = rv(5), qN = rv(4), qO = rv(5);
-    
-        var keyFileContent =
-            '(function(){\n' +
-            '"use strict";\n' +
-            'try{\n' +
-            'var S1=' + s1 + ',S2=' + s2 + ',S3=' + s3 + ',S4=' + s4 + ';\n' +
-            'var ' + qN + '=' + padCount + ';\n' +
-            'var ' + qA + '=' + byteArrayString + ';\n' +
-            'var ' + qB + '="";\n' +
-            'for(var ' + qC + '=0;' + qC + '<' + qA + '.length;' + qC + '++){\n' +
-            qB + '+=String.fromCharCode((' + qA + '[' + qC + ']^0x5A)^S4);\n' +
-            '}\n' +
-            'var ' + qD + '=' + qB + ';\n' +
-            'function ' + qE + '(s){\n' +
-            'var ' + qF + '=s.split("").reverse().join("");\n' +
-            'var ' + qG + '=atob(' + qF + ');\n' +
-            'var ' + qH + '=[];\n' +
-            'for(var ' + qI + '=0;' + qI + '<' + qG + '.length;' + qI + '++){\n' +
-            qH + '.push(' + qG + '.charCodeAt(' + qI + '));\n' +
-            '}\n' +
-            'var ' + qK + '=' + qH + '.slice(' + qN + ');\n' +
-            'var ' + qL + '=' + qK + '.slice(0,Math.ceil(' + qK + '.length/2));\n' +
-            'var ' + qM + '=' + qK + '.slice(Math.ceil(' + qK + '.length/2));\n' +
-            'var ' + qJ + '=[];\n' +
-            'for(var i=0;i<' + qK + '.length;i++){\n' +
-            'if(i%2===0)' + qJ + '.push(' + qL + '[Math.floor(i/2)]);\n' +
-            'else ' + qJ + '.push(' + qM + '[Math.floor(i/2)]);\n' +
-            '}\n' +
-            'var ' + qH + '=[];\n' +
-            'for(var q=0;q<' + qJ + '.length;q++){\n' +
-            qH + '.push(' + qJ + '[q]^S3);\n' +
-            '}\n' +
-            'var ' + qO + '=[];\n' +
-            'for(var r=0;r<' + qH + '.length;r++){\n' +
-            'var sh=(' + qH + '[r]-S2+256)%256;\n' +
-            qO + '.push(sh^S1);\n' +
-            '}\n' +
-            'var res="";\n' +
-            'for(var f=0;f<' + qO + '.length;f++){\n' +
-            'res+=String.fromCharCode(' + qO + '[f]^0x5A);\n' +
-            '}\n' +
-            'return res;\n' +
-            '}\n' +
-            'window._0xSECRET=' + qE + '(' + qD + ');\n' +
-            '}catch(e){window._0xSECRET="";}\n' +
-            '})();\n';
-    
-        /* ✅ OBFUSCATED FILENAME — XOR + Base64 + Reverse + XOR */
-            var _nameBytes = [];
-            for (var _ni = 0; _ni < keyFileName.length; _ni++) {
-                _nameBytes.push((keyFileName.charCodeAt(_ni) ^ 0x5A) ^ 0x3C);
-            }
-            var _nameB64 = btoa(JSON.stringify(_nameBytes));
-            var _nameRev = _nameB64.split('').reverse().join('');
-            var _nameObf = [];
-            for (var _nb = 0; _nb < _nameRev.length; _nb++) {
-                _nameObf.push((_nameRev.charCodeAt(_nb) ^ 0x5A) ^ 0x3C);
-            }
-            var encodedKeyFileName = JSON.stringify(_nameObf);
-    
-        var d1 = rv(8), d2 = rv(8), d3 = rv(8);
-        var d4 = rv(8), d5 = rv(8), d6 = rv(8);
-    
-        var decoyFunctions =
-            '<script>\n' +
-            '(function(){\n' +
-            '  var ' + d1 + ' = [];\n' +
-            '  var ' + d2 + ' = {};\n' +
-            '  var ' + d3 + ' = function(x){ return x; };\n' +
-            '  window.__init = ' + d3 + ';\n' +
-            '  try { ' + d1 + '.push(Date.now()); } catch(e) {}\n' +
-            '  try { ' + d2 + '.start = 1; } catch(e) {}\n' +
-            '})();\n' +
-            '<' + '/script>\n';
-    
-        var antiDebug =
-            '<script>\n' +
-            '(function(){\n' +
-            '  var ' + d4 + ' = 0;\n' +
-            '  var ' + d5 + ' = function(){\n' +
-            '    var ' + d6 + ' = new Date();\n' +
-            '    debugger;\n' +
-            '    if(new Date() - ' + d6 + ' > 100){\n' +
-            '      ' + d4 + '++;\n' +
-            '      if(' + d4 + ' > 3){ document.body.innerHTML = ""; }\n' +
-            '    }\n' +
-            '  };\n' +
-            '  setInterval(' + d5 + ', 1000);\n' +
-            '})();\n' +
-            '<' + '/script>\n';
-    
-        var parts = [
-            '<!DOCTYPE html>',
-            '<html lang="en">',
-            '<head>',
-            '<meta charset="UTF-8">',
-            '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">',
-            '<title id="pageTitle">Loading...</title>',
-            '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
-            '<style>',
-            '*{margin:0;padding:0;box-sizing:border-box;}',
-            'html,body{width:100%;min-height:100vh;}',
-            'body{background:#05050f;color:#fff;font-family:"Courier New",monospace;overflow-x:hidden;}',
-            '.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,#0b0b1a 0%,#000 100%);z-index:9999;}',
-            '.spinner{width:60px;height:60px;border:4px solid rgba(0,240,255,0.15);border-top-color:#00f0ff;border-radius:50%;animation:spin 1s linear infinite;}',
-            '@keyframes spin{to{transform:rotate(360deg);}}',
-            '.txt{color:#00f0ff;font-size:14px;letter-spacing:3px;text-transform:uppercase;}',
-            '.sub{color:#6a6a8a;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:8px;}',
-            '.err{padding:60px 30px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;}',
-            '.err-icon{font-size:72px;}',
-            '.err h2{color:#ff0064;font-size:24px;letter-spacing:3px;text-transform:uppercase;}',
-            '.err p{color:#b0b0d0;font-size:13px;line-height:1.7;max-width:500px;}',
-            '.bundle-wrap{max-width:1100px;margin:0 auto;padding:30px 20px;}',
-            '.bundle-title{color:#00f0ff;text-align:center;font-size:22px;letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;font-family:"Orbitron",sans-serif;}',
-            '.file-card{background:rgba(0,240,255,0.04);border-left:4px solid #00f0ff;border-radius:10px;padding:18px;margin-bottom:16px;}',
-            '.file-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;}',
-            '.file-name{color:#ffd700;font-weight:bold;font-size:14px;}',
-            '.file-lang{background:#00f0ff;color:#000;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:bold;text-transform:uppercase;}',
-            '.file-content{background:#000;color:#00ff64;padding:14px;border-radius:8px;font-family:"Courier New",monospace;font-size:12px;line-height:1.5;max-height:400px;overflow:auto;white-space:pre-wrap;word-break:break-word;}',
-            '.dl-btn{background:linear-gradient(135deg,#00f0ff,#b400ff);border:none;padding:10px 20px;border-radius:8px;color:#000;font-weight:bold;cursor:pointer;margin-top:12px;font-family:inherit;letter-spacing:1px;text-transform:uppercase;font-size:11px;}',
-            '.dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,240,255,0.3);}',
-            '#renderFrame{width:100%;height:100vh;border:0;display:block;position:fixed;inset:0;z-index:10;}',
-            '<' + '/style>',
-            '<' + '/head>',
-            '<body>',
-            '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
-            decoyFunctions,
-            antiDebug,
-            '<script>',
-            'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
-            'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
-            'function showError(msg){document.title="Error";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;margin:0;";var err="<div class=\\"err\\">";err+="<div class=\\"err-icon\\">❌<\\/div>";err+="<h2>Decryption Failed<\\/h2>";err+="<p>"+msg+"<\\/p>";err+="<p style=\\"font-size:11px;color:#6a6a8a;margin-top:20px;\\">Check: key file present, encrypted data, internet connection<\\/p>";err+="<\\/div>";document.body.innerHTML=err;}',
-            'function showKeyMissingError(){document.title="Key File Missing";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:monospace;";var h="<div style=\\"text-align:center;padding:40px 20px;max-width:600px;\\">";h+="<div style=\\"font-size:80px;margin-bottom:24px;\\">🔐<\\/div>";h+="<div style=\\"font-size:24px;letter-spacing:4px;text-transform:uppercase;color:#ff0064;margin-bottom:20px;font-weight:bold;\\">Key File Missing<\\/div>";h+="<div style=\\"color:#b0b0d0;font-size:14px;line-height:2;margin-bottom:24px;\\">";h+="Required files not found in this folder.<br><br>";h+="Make sure <b style=\\"color:#ffd700;\\">BOTH</b> files are in the <b style=\\"color:#ffd700;\\">SAME folder</b>:<br><br>";h+="<div style=\\"background:rgba(0,240,255,0.08);border-left:3px solid #00f0ff;padding:12px 16px;border-radius:8px;text-align:left;margin:16px 0;\\">";h+="<div style=\\"color:#00f0ff;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;\\">Required Files<\\/div>";h+="<div style=\\"color:#fff;font-size:13px;line-height:1.9;\\">1. <b style=\\"color:#ffd700;\\">decryptor.html<\\/b><br>2. <b style=\\"color:#00f0ff;\\">The key file (.js)<\\/b><\\/div>";h+="<\\/div>";h+="<div style=\\"color:#ffb3c9;font-size:12px;margin-top:20px;\\">⚠️ Do NOT rename the key file.<\\/div>";h+="<\\/div><\\/div>";document.body.innerHTML=h;}',
-            'function extractTitle(html){var m=html.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);return m?m[1].trim():"Original Web";}',
-            'function extractFavicon(html){var m=html.match(/<link[^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\'][^>]*href=["\']([^"\']+)["\']/i);if(m)return m[1];m=html.match(/<link[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\']/i);return m?m[1]:null;}',
-            '(function(){var a=' + encodedKeyFileName + ',b="",c=0;for(c=0;c<a.length;c++){b+=String.fromCharCode((a[c]^0x3C)^0x5A);}var d=b.split("").reverse().join("");var e=JSON.parse(atob(d)),f="",g=0;for(g=0;g<e.length;g++){f+=String.fromCharCode((e[g]^0x3C)^0x5A);}var h=f;var s=document.createElement("script");s.src=h;s.async=false;s.onload=function(){window._kf=1;};s.onerror=function(){window._kf=0;};document.head.appendChild(s);})();',
-            'function applyOriginalBranding(html){var title=extractTitle(html);document.title=title;var fav=extractFavicon(html);if(fav){var link=document.querySelector("link[rel*=\'icon\']")||document.createElement("link");link.rel="icon";link.href=fav;document.head.appendChild(link);}}',
-            'function injectBlocker(html){html=html.replace(/<noscript[\\s\\S]*?<\\/noscript>/gi,"");html=html.replace(/<meta[^>]*http-equiv=["\']refresh["\'][^>]*>/gi,"");var css="<style>"+"*{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;}"+"input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text;}"+"<\\/style>";var js="<scr"+"ipt>"+"(function(){"+"function isEd(el){if(!el||!el.tagName)return false;var t=el.tagName.toLowerCase();return t===\'input\'||t===\'textarea\'||t===\'select\'||el.isContentEditable;}"+"document.addEventListener(\'contextmenu\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'selectstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'copy\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'cut\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'dragstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'keydown\',function(e){"+"var t=e.target;var tag=t&&t.tagName?t.tagName.toLowerCase():\'\';"+"var ed=(tag===\'input\'||tag===\'textarea\'||tag===\'select\'||(t&&t.isContentEditable));"+"if(e.key===\'F12\'||e.keyCode===123){e.preventDefault();return false;}"+"if(e.ctrlKey&&e.shiftKey&&(e.key===\'I\'||e.key===\'J\'||e.key===\'C\'||e.keyCode===73||e.keyCode===74||e.keyCode===67)){e.preventDefault();return false;}"+"if(e.ctrlKey&&(e.key===\'U\'||e.keyCode===85)){e.preventDefault();return false;}"+"if(e.ctrlKey&&!ed&&(e.key===\'C\'||e.key===\'A\'||e.key===\'S\'||e.keyCode===67||e.keyCode===65||e.keyCode===83)){e.preventDefault();return false;}"+"if(!ed&&(e.key===\'Backspace\'||e.key===\'Tab\')){e.preventDefault();return false;}"+"},{capture:true});"+"})();"+"<\\/scr"+"ipt>";if(html.indexOf("</head>")!==-1){html=html.replace("</head>",css+"</head>");}else{html=css+html;}if(html.indexOf("</body>")!==-1){html=html.replace("</body>",js+"</body>");}else{html=html+js;}return html;}',
-            'function renderHTML(htmlContent){var loader=document.getElementById("loader");if(loader)loader.style.display="none";applyOriginalBranding(htmlContent);var finalHTML=injectBlocker(htmlContent);var iframe=document.createElement("iframe");iframe.id="renderFrame";iframe.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-top-navigation-by-user-activation");document.body.appendChild(iframe);try{iframe.srcdoc=finalHTML;}catch(e){try{var blob=new Blob([finalHTML],{type:"text/html;charset=utf-8"});var url=URL.createObjectURL(blob);iframe.removeAttribute("srcdoc");iframe.src=url;}catch(e2){showError("Render failed: "+e2.message);}}setTimeout(function(){try{iframe.focus();}catch(e){}},100);}',
-            'function renderText(textContent){document.title="Decrypted Text";document.body.innerHTML="";document.body.style.cssText="background:#000;color:#00ff64;font-family:\\"Courier New\\",monospace;padding:20px;margin:0;font-size:13px;line-height:1.6;";var pre=document.createElement("pre");pre.style.cssText="margin:0;white-space:pre-wrap;word-break:break-word;";pre.textContent=textContent;document.body.appendChild(pre);}',
-            'function renderBundle(bundle){document.title="Bundle ("+bundle.__fileCount+" Files)";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;padding:20px;margin:0;min-height:100vh;";var h="<div class=\\"bundle-wrap\\">";h+="<div class=\\"bundle-title\\">📦 Multi-File Bundle ("+bundle.__fileCount+" files)<\\/div>";Object.keys(bundle.files).forEach(function(name){var f=bundle.files[name];h+="<div class=\\"file-card\\">";h+="<div class=\\"file-head\\"><span class=\\"file-name\\">📄 "+name+"<\\/span><span class=\\"file-lang\\">"+(f.lang||"?").toUpperCase()+"<\\/span><\\/div>";h+="<pre class=\\"file-content\\">"+f.content.replace(/</g,"&lt;")+"<\\/pre>";h+="<button class=\\"dl-btn\\" data-name=\\""+name+"\\">⬇ Download "+name+"<\\/button>";h+="<\\/div>";});h+="<\\/div>";document.body.innerHTML=h;document.body.querySelectorAll(".dl-btn").forEach(function(b){b.addEventListener("click",function(){var name=this.getAttribute("data-name");var f=bundle.files[name];var blob=new Blob([f.content],{type:"text/plain;charset=utf-8"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();});});}',
-            'ready(function(){if(typeof CryptoJS==="undefined"){showError("CryptoJS library failed to load. Check your internet connection.");return;}setTimeout(function(){if(!window._0xSECRET||window._0xSECRET.length<30){showKeyMissingError();return;}try{var dec;var parts=ENCRYPTED_DATA.split(":");if(parts[0]==="v2"&&parts.length===4){var iv=CryptoJS.enc.Hex.parse(parts[1]);var ciphertext=parts[2];var storedHmac=parts[3];var computedHmac=CryptoJS.HmacSHA256(parts[1]+":"+ciphertext,window._0xSECRET).toString();if(computedHmac!==storedHmac){throw new Error("Integrity check failed - data tampered!");}dec=CryptoJS.AES.decrypt(ciphertext,window._0xSECRET,{iv:iv,mode:CryptoJS.mode.CBC,padding:CryptoJS.pad.Pkcs7}).toString(CryptoJS.enc.Utf8);}else{dec=CryptoJS.AES.decrypt(ENCRYPTED_DATA,window._0xSECRET).toString(CryptoJS.enc.Utf8);}if(!dec||dec.length===0){throw new Error("Decryption failed - wrong key or corrupted data.");}var isBundle=false,bundle=null;try{var p=JSON.parse(dec);if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}}catch(e){}if(isBundle){renderBundle(bundle);}else{var trimmed=dec.trim();var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);if(isHTML){renderHTML(dec);}else{renderText(dec);}}}catch(e){showError(e.message);}},500);});',
-            '<' + '/script>',
-            '<' + '/body>',
-            '<' + '/html>'
-        ];
-    
-        var html = parts.join('\n');
-    
-        var htmlBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
-        var htmlLink = document.createElement('a');
-        htmlLink.href = URL.createObjectURL(htmlBlob);
-        htmlLink.download = 'decryptor.html';
-        htmlLink.click();
-    
-        var keyBlob = new Blob([keyFileContent], { type: 'text/javascript;charset=utf-8' });
-        var keyLink = document.createElement('a');
-        keyLink.href = URL.createObjectURL(keyBlob);
-        keyLink.download = keyFileName;
-        keyLink.click();
-    
-        showStatus('success', '🎁 Decryptor + Key file downloaded! Keep both in same folder.');
-        toast('Decryptor + Key file downloaded!', 'success');
-    
-        setTimeout(function() {
-            showKeyModal(keyFileName, keyFileContent);
-        }, 800);
-    };
-        
-    window.showKeyModal = function(fileName, keyCode) {
+    }
+
+    /* L15: Second XOR */
+    var s6 = (Math.floor(Math.random() * 251)) + 1;
+    var L15 = [];
+    for (var n = 0; n < L14.length; n++) {
+        L15.push((L14[n] ^ 0x96) ^ s6);
+    }
+
+    /* L16: Add S7 mod 256 */
+    var s7 = (Math.floor(Math.random() * 251)) + 1;
+    var L16 = [];
+    for (var o = 0; o < L15.length; o++) {
+        L16.push((L15[o] + s7) % 256);
+    }
+
+    /* L17: Sub S8 mod 256 */
+    var s8 = (Math.floor(Math.random() * 251)) + 1;
+    var L17 = [];
+    for (var p2 = 0; p2 < L16.length; p2++) {
+        L17.push((L16[p2] - s8 + 256) % 256);
+    }
+
+    /* L18: Base64 encode */
+    var bin = '';
+    for (var q = 0; q < L17.length; q++) {
+        bin += String.fromCharCode(L17[q]);
+    }
+    var L18 = btoa(bin);
+
+    /* L19: Reverse */
+    var L19 = L18.split('').reverse().join('');
+
+    /* L20: Final XOR to byte array */
+    var s9 = (Math.floor(Math.random() * 251)) + 1;
+    var L20 = [];
+    for (var r = 0; r < L19.length; r++) {
+        L20.push((L19.charCodeAt(r) ^ 0x5A) ^ s9);
+    }
+
+    var byteArrayString = '[' + L20.join(',') + ']';
+
+    /* ─── Obfuscated filename ─── */
+    var _nameBytes = [];
+    for (var ni = 0; ni < keyFileName.length; ni++) {
+        _nameBytes.push((keyFileName.charCodeAt(ni) ^ 0x5A) ^ 0x3C);
+    }
+    var _nameB64 = btoa(JSON.stringify(_nameBytes));
+    var _nameRev = _nameB64.split('').reverse().join('');
+    var _nameObf = [];
+    for (var nb = 0; nb < _nameRev.length; nb++) {
+        _nameObf.push((_nameRev.charCodeAt(nb) ^ 0x5A) ^ 0x3C);
+    }
+    var encodedKeyFileName = JSON.stringify(_nameObf);
+
+    /* ─── Token (dynamic, single-use) ─── */
+    var DECRYPTOR_TOKEN = 'TK' + rndHex(12) + '_' + rndHex(8) + '_' + Date.now().toString(36);
+
+    /* ─── Random variable names ─── */
+    var vA = rv(5), vB = rv(5), vC = rv(5), vD = rv(5), vE = rv(5);
+    var vF = rv(5), vG = rv(5), vH = rv(5), vI = rv(5), vJ = rv(5);
+    var vK = rv(5), vL = rv(5), vM = rv(5), vN = rv(5), vO = rv(5);
+    var vP = rv(5), vQ = rv(5), vR = rv(5), vS = rv(5), vT = rv(5);
+    var vU = rv(5), vV = rv(5), vW = rv(5), vX = rv(5), vY = rv(5);
+    var vZ = rv(5);
+
+    /* ═══════════════════════════════════════════════════════
+       KEY FILE CONTENT — SINGLE LINE, NO COMMENTS, NO HINTS
+       ═══════════════════════════════════════════════════════ */
+    var keyFileContent =
+        '(function(){"use strict";try{' +
+        'var ' + vA + '=' + byteArrayString + ';' +
+        'var ' + vB + '=' + s1 + ',' + vC + '=' + s2 + ',' + vD + '=' + s3 + ',' + vE + '=' + s4 + ';' +
+        'var ' + vF + '=' + s5 + ',' + vG + '=' + s6 + ',' + vH + '=' + s7 + ',' + vI + '=' + s8 + ',' + vJ + '=' + s9 + ';' +
+        'var ' + vK + '=' + padCount + ';' +
+        'var ' + vL + '=' + matrixSize + ';' +
+        'function ' + vM + '(' + vN + '){' +
+        'var ' + vO + '="";' +
+        'for(var ' + vP + '=0;' + vP + '<' + vN + '.length;' + vP + '++){' +
+        vO + '+=String.fromCharCode((' + vN + '[' + vP + ']^0x5A)^' + vJ + ');}' +
+        'var ' + vQ + '=' + vO + '.split("").reverse().join("");' +
+        'var ' + vR + ';try{' + vR + '=atob(' + vQ + ');}catch(' + vS + '){return null;}' +
+        'var ' + vT + '=[];' +
+        'for(var ' + vU + '=0;' + vU + '<' + vR + '.length;' + vU + '++){' +
+        vT + '.push(' + vR + '.charCodeAt(' + vU + '));}' +
+        'var ' + vV + '=[];' +
+        'for(var ' + vW + '=0;' + vW + '<' + vT + '.length;' + vW + '++){' +
+        vV + '.push((' + vT + '[' + vW + ']+' + vI + ')%256);}' +
+        'var ' + vX + '=[];' +
+        'for(var ' + vY + '=0;' + vY + '<' + vV + '.length;' + vY + '++){' +
+        vX + '.push((' + vV + '[' + vY + ']-' + vH + '+256)%256);}' +
+        'var ' + vZ + '=[];' +
+        'for(var i=0;i<' + vX + '.length;i++){' +
+        vZ + '.push((' + vX + '[i]^0x96)^' + vG + ');}' +
+        'var m=[];' +
+        'for(var k=0;k<' + vZ + '.length;k+=2){m.push(' + vZ + '[k]);}' +
+        'var mm=[];' +
+        'for(var k2=1;k2<' + vZ + '.length;k2+=2){mm.push(' + vZ + '[k2]);}' +
+        'var flat=m.concat(mm);' +
+        'var unrot=[];' +
+        'for(var k3=0;k3<flat.length;k3++){' +
+        'var b=flat[k3];unrot.push((((b>>3)|(b<<5))&0xFF));}' +
+        'var t1=unrot.slice(0,' + vK + ');' +
+        'var unwrapped=unrot;' +
+        'var half=Math.ceil(unwrapped.length/2);' +
+        'var ev=unwrapped.slice(0,half);var od=unwrapped.slice(half);' +
+        'var merged=[];' +
+        'for(var k4=0;k4<unwrapped.length;k4++){' +
+        'if(k4%2===0)merged.push(ev[Math.floor(k4/2)]);' +
+        'else merged.push(od[Math.floor(k4/2)]);}' +
+        'var afterX=[];' +
+        'for(var k5=0;k5<merged.length;k5++){afterX.push(merged[k5]^' + vE + ');}' +
+        'var sub=[];' +
+        'for(var k6=0;k6<afterX.length;k6++){sub.push((afterX[k6]-' + vC + '+256)%256);}' +
+        'var res="";' +
+        'for(var k7=0;k7<sub.length;k7++){res+=String.fromCharCode((sub[k7]^' + vB + ')^0x5A);}' +
+        'return res;}' +
+        'var ' + vO + '=' + vM + '(' + vA + ');' +
+        'if(!' + vO + '||' + vO + '.length<30){window.__decrypt_engine=null;return;}' +
+        'var ' + vQ + '=null;' +
+        'var ' + vR + '=(function(){' +
+        'var K=' + vO + ';' +
+        'var TK="' + DECRYPTOR_TOKEN + '";' +
+        'var used=false;var wiped=false;' +
+        'var wt=setTimeout(function(){K=null;TK=null;used=true;wiped=true;' + vO + '=null;' + vA + '.length=0;' +
+        'try{delete window.__decrypt_engine;}catch(e){}},60000);' +
+        'return{' +
+        'v:function(t){if(wiped)return false;if(used)return false;if(t!==TK)return false;used=true;return true;},' +
+        'h:function(d,e){if(wiped)return false;try{var c=CryptoJS.HmacSHA256(d,K).toString();' +
+        'if(c.length!==e.length)return false;var df=0;' +
+        'for(var i=0;i<c.length;i++){df|=c.charCodeAt(i)^e.charCodeAt(i);}return df===0;}catch(x){return false;}},' +
+        'd:function(ct,iv){if(wiped)throw new Error("e");try{var v=CryptoJS.enc.Hex.parse(iv);' +
+        'return CryptoJS.AES.decrypt(ct,K,{iv:v,mode:CryptoJS.mode.CBC,padding:CryptoJS.pad.Pkcs7}).toString(CryptoJS.enc.Utf8);' +
+        '}catch(x){throw new Error("d");}},' +
+        'w:function(){if(wt){clearTimeout(wt);wt=null;}K=null;TK=null;used=true;wiped=true;' + vO + '=null;' + vA + '.length=0;' +
+        'try{delete window.__decrypt_engine;}catch(e){}},' +
+        'a:function(){return !wiped;},' +
+        'toString:function(){return "[object]";},' +
+        'valueOf:function(){return null;}' +
+        '};})();' +
+        'window.__decrypt_engine={v:' + vR + '.v,h:' + vR + '.h,d:' + vR + '.d,w:' + vR + '.w,a:' + vR + '.a};' +
+        vO + '=null;' + vA + '.length=0;' +
+        '}catch(g){try{window.__decrypt_engine=null;}catch(g2){}}})();';
+
+    /* ─── Decoy functions ─── */
+    var d1 = rv(8), d2 = rv(8), d3 = rv(8);
+    var d4 = rv(8), d5 = rv(8), d6 = rv(8);
+
+    var decoyFunctions =
+        '<script>' +
+        '(function(){' +
+        'var ' + d1 + '=[];var ' + d2 + '={};var ' + d3 + '=function(x){return x;};' +
+        'window.__init=' + d3 + ';' +
+        'try{' + d1 + '.push(Date.now());}catch(e){}' +
+        'try{' + d2 + '.start=1;}catch(e){}' +
+        '})();' +
+        '<' + '/script>';
+
+    var antiDebug =
+        '<script>' +
+        '(function(){' +
+        'var ' + d4 + '=0;var ' + d5 + '=function(){' +
+        'var ' + d6 + '=new Date();debugger;' +
+        'if(new Date()-' + d6 + '>100){' + d4 + '++;if(' + d4 + '>3){document.body.innerHTML="";}}' +
+        '};setInterval(' + d5 + ',1000);' +
+        '})();' +
+        '<' + '/script>';
+
+    /* ─── Build decryptor HTML ─── */
+    var parts = [
+        '<!DOCTYPE html>',
+        '<html lang="en">',
+        '<head>',
+        '<meta charset="UTF-8">',
+        '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">',
+        '<title id="pageTitle">Loading...</title>',
+        '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
+        '<style>',
+        '*{margin:0;padding:0;box-sizing:border-box;}',
+        'html,body{width:100%;min-height:100vh;}',
+        'body{background:#05050f;color:#fff;font-family:"Courier New",monospace;overflow-x:hidden;}',
+        '.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,#0b0b1a 0%,#000 100%);z-index:9999;}',
+        '.spinner{width:60px;height:60px;border:4px solid rgba(0,240,255,0.15);border-top-color:#00f0ff;border-radius:50%;animation:spin 1s linear infinite;}',
+        '@keyframes spin{to{transform:rotate(360deg);}}',
+        '.txt{color:#00f0ff;font-size:14px;letter-spacing:3px;text-transform:uppercase;}',
+        '.sub{color:#6a6a8a;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:8px;}',
+        '.err{padding:60px 30px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;}',
+        '.err-icon{font-size:72px;}',
+        '.err h2{color:#ff0064;font-size:24px;letter-spacing:3px;text-transform:uppercase;}',
+        '.err p{color:#b0b0d0;font-size:13px;line-height:1.7;max-width:500px;}',
+        '.bundle-wrap{max-width:1100px;margin:0 auto;padding:30px 20px;}',
+        '.bundle-title{color:#00f0ff;text-align:center;font-size:22px;letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;font-family:"Orbitron",sans-serif;}',
+        '.file-card{background:rgba(0,240,255,0.04);border-left:4px solid #00f0ff;border-radius:10px;padding:18px;margin-bottom:16px;}',
+        '.file-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;}',
+        '.file-name{color:#ffd700;font-weight:bold;font-size:14px;}',
+        '.file-lang{background:#00f0ff;color:#000;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:bold;text-transform:uppercase;}',
+        '.file-content{background:#000;color:#00ff64;padding:14px;border-radius:8px;font-family:"Courier New",monospace;font-size:12px;line-height:1.5;max-height:400px;overflow:auto;white-space:pre-wrap;word-break:break-word;}',
+        '.dl-btn{background:linear-gradient(135deg,#00f0ff,#b400ff);border:none;padding:10px 20px;border-radius:8px;color:#000;font-weight:bold;cursor:pointer;margin-top:12px;font-family:inherit;letter-spacing:1px;text-transform:uppercase;font-size:11px;}',
+        '.dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,240,255,0.3);}',
+        '#renderFrame{width:100%;height:100vh;border:0;display:block;position:fixed;inset:0;z-index:10;}',
+        '<' + '/style>',
+        '<' + '/head>',
+        '<body>',
+        '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
+        decoyFunctions,
+        antiDebug,
+        '<script>',
+        'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
+        'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
+        'function showError(msg){document.title="Error";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;margin:0;";var err="<div class=\\"err\\">";err+="<div class=\\"err-icon\\">❌<\\/div>";err+="<h2>Decryption Failed<\\/h2>";err+="<p>"+msg+"<\\/p>";err+="<p style=\\"font-size:11px;color:#6a6a8a;margin-top:20px;\\">Check: key file present, encrypted data, internet connection<\\/p>";err+="<\\/div>";document.body.innerHTML=err;}',
+        'function showKeyMissingError(){document.title="Key File Missing";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:monospace;";var h="<div style=\\"text-align:center;padding:40px 20px;max-width:600px;\\">";h+="<div style=\\"font-size:80px;margin-bottom:24px;\\">🔐<\\/div>";h+="<div style=\\"font-size:24px;letter-spacing:4px;text-transform:uppercase;color:#ff0064;margin-bottom:20px;font-weight:bold;\\">Key File Missing<\\/div>";h+="<div style=\\"color:#b0b0d0;font-size:14px;line-height:2;margin-bottom:24px;\\">";h+="Required files not found in this folder.<br><br>";h+="Make sure <b style=\\"color:#ffd700;\\">BOTH</b> files are in the <b style=\\"color:#ffd700;\\">SAME folder</b>.<\\/div><\\/div>";document.body.innerHTML=h;}',
+        'function extractTitle(html){var m=html.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);return m?m[1].trim():"Original Web";}',
+        'function extractFavicon(html){var m=html.match(/<link[^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\'][^>]*href=["\']([^"\']+)["\']/i);if(m)return m[1];m=html.match(/<link[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\']/i);return m?m[1]:null;}',
+        '(function(){var a=' + encodedKeyFileName + ',b="",c=0;for(c=0;c<a.length;c++){b+=String.fromCharCode((a[c]^0x3C)^0x5A);}var d=b.split("").reverse().join("");var e=JSON.parse(atob(d)),f="",g=0;for(g=0;g<e.length;g++){f+=String.fromCharCode((e[g]^0x3C)^0x5A);}var h=f;var s=document.createElement("script");s.src=h;s.async=false;document.head.appendChild(s);})();',
+        'function applyOriginalBranding(html){var title=extractTitle(html);document.title=title;var fav=extractFavicon(html);if(fav){var link=document.querySelector("link[rel*=\'icon\']")||document.createElement("link");link.rel="icon";link.href=fav;document.head.appendChild(link);}}',
+        'function injectBlocker(html){html=html.replace(/<noscript[\\s\\S]*?<\\/noscript>/gi,"");html=html.replace(/<meta[^>]*http-equiv=["\']refresh["\'][^>]*>/gi,"");var css="<style>"+"*{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;}"+"input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text;}"+"<\\/style>";var js="<scr"+"ipt>"+"(function(){"+"function isEd(el){if(!el||!el.tagName)return false;var t=el.tagName.toLowerCase();return t===\'input\'||t===\'textarea\'||t===\'select\'||el.isContentEditable;}"+"document.addEventListener(\'contextmenu\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'selectstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'copy\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'cut\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'dragstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'keydown\',function(e){"+"var t=e.target;var tag=t&&t.tagName?t.tagName.toLowerCase():\'\';"+"var ed=(tag===\'input\'||tag===\'textarea\'||tag===\'select\'||(t&&t.isContentEditable));"+"if(e.key===\'F12\'||e.keyCode===123){e.preventDefault();return false;}"+"if(e.ctrlKey&&e.shiftKey&&(e.key===\'I\'||e.key===\'J\'||e.key===\'C\'||e.keyCode===73||e.keyCode===74||e.keyCode===67)){e.preventDefault();return false;}"+"if(e.ctrlKey&&(e.key===\'U\'||e.keyCode===85)){e.preventDefault();return false;}"+"if(e.ctrlKey&&!ed&&(e.key===\'C\'||e.key===\'A\'||e.key===\'S\'||e.keyCode===67||e.keyCode===65||e.keyCode===83)){e.preventDefault();return false;}"+"if(!ed&&(e.key===\'Backspace\'||e.key===\'Tab\')){e.preventDefault();return false;}"+"},{capture:true});"+"})();"+"<\\/scr"+"ipt>";if(html.indexOf("</head>")!==-1){html=html.replace("</head>",css+"</head>");}else{html=css+html;}if(html.indexOf("</body>")!==-1){html=html.replace("</body>",js+"</body>");}else{html=html+js;}return html;}',
+        'function renderHTML(htmlContent){var loader=document.getElementById("loader");if(loader)loader.style.display="none";applyOriginalBranding(htmlContent);var finalHTML=injectBlocker(htmlContent);var iframe=document.createElement("iframe");iframe.id="renderFrame";iframe.setAttribute("sandbox","allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads allow-top-navigation-by-user-activation");document.body.appendChild(iframe);try{iframe.srcdoc=finalHTML;}catch(e){try{var blob=new Blob([finalHTML],{type:"text/html;charset=utf-8"});var url=URL.createObjectURL(blob);iframe.removeAttribute("srcdoc");iframe.src=url;}catch(e2){showError("Render failed: "+e2.message);}}setTimeout(function(){try{iframe.focus();}catch(e){}},100);}',
+        'function renderText(textContent){document.title="Decrypted Text";document.body.innerHTML="";document.body.style.cssText="background:#000;color:#00ff64;font-family:\\"Courier New\\",monospace;padding:20px;margin:0;font-size:13px;line-height:1.6;";var pre=document.createElement("pre");pre.style.cssText="margin:0;white-space:pre-wrap;word-break:break-word;";pre.textContent=textContent;document.body.appendChild(pre);}',
+        'function renderBundle(bundle){document.title="Bundle ("+bundle.__fileCount+" Files)";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;padding:20px;margin:0;min-height:100vh;";var h="<div class=\\"bundle-wrap\\">";h+="<div class=\\"bundle-title\\">📦 Multi-File Bundle ("+bundle.__fileCount+" files)<\\/div>";Object.keys(bundle.files).forEach(function(name){var f=bundle.files[name];h+="<div class=\\"file-card\\">";h+="<div class=\\"file-head\\"><span class=\\"file-name\\">📄 "+name+"<\\/span><span class=\\"file-lang\\">"+(f.lang||"?").toUpperCase()+"<\\/span><\\/div>";h+="<pre class=\\"file-content\\">"+f.content.replace(/</g,"&lt;")+"<\\/pre>";h+="<button class=\\"dl-btn\\" data-name=\\""+name+"\\">⬇ Download "+name+"<\\/button>";h+="<\\/div>";});h+="<\\/div>";document.body.innerHTML=h;document.body.querySelectorAll(".dl-btn").forEach(function(b){b.addEventListener("click",function(){var name=this.getAttribute("data-name");var f=bundle.files[name];var blob=new Blob([f.content],{type:"text/plain;charset=utf-8"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();});});}',
+        'ready(function(){if(typeof CryptoJS==="undefined"){showError("CryptoJS library failed to load. Check your internet connection.");return;}setTimeout(function(){var E=window.__decrypt_engine;if(!E||!E.a||!E.a()){showKeyMissingError();return;}var DT="' + DECRYPTOR_TOKEN + '";if(!E.v(DT)){showError("Token invalid or already used");return;}try{var parts=ENCRYPTED_DATA.split(":");var iv=parts[1];var ct=parts[2];var hm=parts[3];if(!E.h(iv+":"+ct,hm)){throw new Error("Integrity check failed");}var dec=E.d(ct,iv);if(!dec||dec.length===0){throw new Error("Decryption failed");}E.w();window.__decrypt_engine=null;var isBundle=false,bundle=null;try{var p=JSON.parse(dec);if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}}catch(e){}if(isBundle){renderBundle(bundle);}else{var trimmed=dec.trim();var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);if(isHTML){renderHTML(dec);}else{renderText(dec);}}}catch(e){showError(e.message);}},500);});',
+        '<' + '/script>',
+        '<' + '/body>',
+        '<' + '/html>'
+    ];
+
+    var html = parts.join('\n');
+
+    /* ─── Download decryptor.html ─── */
+    var htmlBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    var htmlUrl = URL.createObjectURL(htmlBlob);
+    var htmlLink = document.createElement('a');
+    htmlLink.href = htmlUrl;
+    htmlLink.download = 'decryptor.html';
+    htmlLink.click();
+
+    /* ─── Download key file ─── */
+    var keyBlob = new Blob([keyFileContent], { type: 'text/javascript;charset=utf-8' });
+    var keyUrl = URL.createObjectURL(keyBlob);
+    var keyLink = document.createElement('a');
+    keyLink.href = keyUrl;
+    keyLink.download = keyFileName;
+    keyLink.click();
+
+    /* ─── Cleanup blob URLs ─── */
+    setTimeout(function() {
+        URL.revokeObjectURL(htmlUrl);
+        URL.revokeObjectURL(keyUrl);
+    }, 30000);
+
+    showStatus('success', '🎁 Decryptor + Key file downloaded! Keep both in same folder.');
+    toast('Decryptor + Key file downloaded!', 'success');
+
+    setTimeout(function() {
+        showKeyModal(keyFileName, keyFileContent);
+    }, 800);
+};
+
+/* ═══════════════════════════════════════════════════════════
+   KEY FILE MODAL
+   ═══════════════════════════════════════════════════════════ */
+window.showKeyModal = function(fileName, keyCode) {
+    safe(function() {
         var existing = document.getElementById('keyModalOverlay');
         if (existing) existing.remove();
-    
+
         var overlay = document.createElement('div');
         overlay.id = 'keyModalOverlay';
         overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
-    
+
         var modal = document.createElement('div');
         modal.style.cssText = 'background:rgba(11,11,26,0.98);border:2px solid #00f0ff;border-radius:22px;padding:28px 24px;max-width:580px;width:100%;box-shadow:0 0 100px rgba(0,240,255,0.3);';
-    
+
         modal.innerHTML =
             '<h2 style="font-family:Orbitron,sans-serif;font-size:16px;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:8px;background:linear-gradient(135deg,#00f0ff,#ff2d95);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">KEY FILE BACKUP</h2>' +
             '<p style="color:#6a6a8a;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:20px;">Files auto-downloaded. Backup below.</p>' +
-    
+
             '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
             '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">✅ AUTO-DOWNLOADED</div>' +
             '<div style="color:#b0d0ff;font-size:12px;line-height:1.7;">Two files have been downloaded:<br>1. <b style="color:#ffd700;">decryptor.html</b><br>2. <b style="color:#00f0ff;">' + fileName + '</b></div>' +
             '</div>' +
-    
+
             '<div style="background:rgba(255,215,0,0.08);border-left:3px solid #ffd700;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
             '<div style="color:#ffd700;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📁 BACKUP — KEY FILE NAME</div>' +
             '<div style="color:#fff;font-size:13px;font-family:JetBrains Mono,monospace;word-break:break-all;background:#000;padding:10px;border-radius:6px;border:1px solid #333;">' + fileName + '</div>' +
             '<button onclick="copyToClipboard(\'' + fileName + '\', this)" style="margin-top:8px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">COPY FILE NAME</button>' +
             '</div>' +
-    
+
             '<div style="background:rgba(0,240,255,0.08);border-left:3px solid #00f0ff;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
             '<div style="color:#00f0ff;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📝 BACKUP — KEY FILE CODE</div>' +
             '<div id="keyCodeBox" style="color:#00ff64;font-size:10px;font-family:JetBrains Mono,monospace;word-break:break-all;background:#000;padding:10px;border-radius:6px;border:1px solid #333;max-height:180px;overflow-y:auto;white-space:pre-wrap;">' + keyCode.replace(/</g, '&lt;') + '</div>' +
             '<button onclick="copyKeyCode(this)" style="margin-top:8px;background:linear-gradient(135deg,#00f0ff,#b400ff);color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">COPY KEY CODE</button>' +
             '</div>' +
-    
+
             '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:12px 14px;border-radius:8px;margin-bottom:20px;">' +
             '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">⚠️ IMPORTANT — SAME FOLDER</div>' +
             '<div style="color:#b0d0ff;font-size:12px;line-height:1.7;">Place <b>decryptor.html</b> and <b>' + fileName + '</b> in the SAME folder. Do NOT rename the key file.</div>' +
             '</div>' +
-    
+
             '<button onclick="closeKeyModal()" style="width:100%;background:linear-gradient(135deg,#00ff64,#00aa44);color:#000;border:none;padding:15px 22px;border-radius:12px;font-weight:900;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">OK, I UNDERSTAND</button>';
-    
+
         overlay.appendChild(modal);
         document.body.appendChild(overlay);
-    };
-    
-    window.copyToClipboard = function(text, btn) {
-        universalCopy(text, btn, 'COPY FILE NAME');
-    };
-    
-    window.copyKeyCode = function(btn) {
-        var code = document.getElementById('keyCodeBox').textContent;
-        if (!code) return;
-        universalCopy(code, btn, 'COPY KEY CODE');
-    };
-    
-    window.closeKeyModal = function() {
-        var overlay = document.getElementById('keyModalOverlay');
-        if (overlay) overlay.remove();
-    };
-    
-    window.clearAll = function() {
-        inputCodeEl.value = '';
-        document.getElementById('outputEnc').value = '';
-        document.getElementById('inputStats').style.display = 'none';
-        document.getElementById('status').className = 'status';
+    });
+};
+
+window.copyToClipboard = function(text, btn) {
+    universalCopy(text, btn, 'COPY FILE NAME');
+};
+
+window.copyKeyCode = function(btn) {
+    var box = document.getElementById('keyCodeBox');
+    if (!box) return;
+    var code = box.textContent;
+    if (!code) return;
+    universalCopy(code, btn, 'COPY KEY CODE');
+};
+
+window.closeKeyModal = function() {
+    var overlay = document.getElementById('keyModalOverlay');
+    if (overlay) overlay.remove();
+};
+
+/* ═══════════════════════════════════════════════════════════
+   CLEAR ALL
+   ═══════════════════════════════════════════════════════════ */
+window.clearAll = function() {
+    safe(function() {
+        if (inputCodeEl) inputCodeEl.value = '';
+        var oe = document.getElementById('outputEnc');
+        if (oe) oe.value = '';
+        var stats = document.getElementById('inputStats');
+        if (stats) stats.style.display = 'none';
+        var st = document.getElementById('status');
+        if (st) st.className = 'status';
         state.uploadedFiles = {};
         renderFileList();
         updateDetection();
         closeDrawer();
         showStatus('info', '🧹 Cleared');
         toast('Cleared', 'info');
-    };
-    
-    window.doLogout = function() {
-        try {
-            KEY_MANAGER.clear();
-            if (window.AuthGuard && AuthGuard.logout) AuthGuard.logout();
-            else if (window.firebase && firebase.auth) firebase.auth().signOut().then(function(){ window.location.href='index.html'; });
-            else window.location.href = 'index.html';
-        } catch(e) { window.location.href = 'index.html'; }
-    };
-    
-    function handleAuthReady(e) {
-        if (!e.detail || !e.detail.user) return;
-        if (state.authHandled) return;
-        state.authHandled = true;
-    
-        state.user = e.detail.user;
-        var name = e.detail.name || (state.user.email ? state.user.email.split('@')[0] : 'User');
-        document.getElementById('welcomeName').textContent = name;
-        document.getElementById('authStatus').textContent = 'Authenticated';
-    
-        console.log('👤 Auth ready:', state.user.email);
-    
-        KEY_MANAGER.checkKeyStatus(state.user.uid).then(function(result) {
-            if (!result.hasKey) {
-                toast('👋 Welcome! Click CREATE KEY to get started', 'info');
-            } else {
-                toast('🔐 Key found. Click eye icon to reveal.', 'info');
-            }
-            updateKeyUI();
-        }).catch(function(err) {
-            console.error('Key check failed:', err);
-            updateKeyUI();
+    });
+};
+
+/* ═══════════════════════════════════════════════════════════
+   LOGOUT
+   ═══════════════════════════════════════════════════════════ */
+window.doLogout = function() {
+    try {
+        KEY_MANAGER.clear();
+        if (window.AuthGuard && AuthGuard.logout) AuthGuard.logout();
+        else if (window.firebase && firebase.auth) firebase.auth().signOut().then(function() {
+            window.location.href = 'index.html';
         });
+        else window.location.href = 'index.html';
+    } catch (e) {
+        window.location.href = 'index.html';
     }
-    
-    document.addEventListener('auth-guard-ready', handleAuthReady);
-    document.addEventListener('auth-ready', handleAuthReady);
-    
-    setTimeout(function() {
-        if (!state.user) {
-            if (window.firebase && firebase.auth && firebase.auth().currentUser) {
-                handleAuthReady({ detail: { user: firebase.auth().currentUser } });
-            } else if (window.AuthGuard && AuthGuard.getUser && AuthGuard.getUser()) {
-                handleAuthReady({ detail: { user: AuthGuard.getUser() } });
-            } else {
-                showStatus('error', '❌ Not authenticated. Redirecting...');
-                setTimeout(function() {
-                    window.location.href = 'index.html';
-                }, 2000);
-            }
+};
+
+/* ═══════════════════════════════════════════════════════════
+   AUTH HANDLING
+   ═══════════════════════════════════════════════════════════ */
+function handleAuthReady(e) {
+    if (!e.detail || !e.detail.user) return;
+    if (state.authHandled) return;
+    state.authHandled = true;
+
+    state.user = e.detail.user;
+    var name = e.detail.name || (state.user.email ? state.user.email.split('@')[0] : 'User');
+    var wn = document.getElementById('welcomeName');
+    var as = document.getElementById('authStatus');
+    if (wn) wn.textContent = name;
+    if (as) as.textContent = 'Authenticated';
+
+    KEY_MANAGER.checkKeyStatus(state.user.uid).then(function(result) {
+        if (!result.hasKey) {
+            toast('👋 Welcome! Click CREATE KEY to get started', 'info');
+        } else {
+            toast('🔐 Key found. Click eye icon to reveal.', 'info');
         }
-    }, 3000);
-    
-    updateKeyUI();
-    console.log('%c🔐 Universal Encrypt Pro v18 STRONG loaded', 'color:#00f0ff;font-size:16px;font-weight:bold;');
-    
-    })();
+        updateKeyUI();
+    }).catch(function() {
+        updateKeyUI();
+    });
+}
+
+document.addEventListener('auth-guard-ready', handleAuthReady);
+document.addEventListener('auth-ready', handleAuthReady);
+
+setTimeout(function() {
+    if (!state.user) {
+        if (window.firebase && firebase.auth && firebase.auth().currentUser) {
+            handleAuthReady({ detail: { user: firebase.auth().currentUser } });
+        } else if (window.AuthGuard && AuthGuard.getUser && AuthGuard.getUser()) {
+            handleAuthReady({ detail: { user: AuthGuard.getUser() } });
+        } else {
+            showStatus('error', '❌ Not authenticated. Redirecting...');
+            setTimeout(function() {
+                window.location.href = 'index.html';
+            }, 2000);
+        }
+    }
+}, 3000);
+
+updateKeyUI();
+
+})();
 </script>
 </body>
 </html>
