@@ -1796,11 +1796,11 @@
             <i class="fa-solid fa-arrow-left"></i>
             <span class="label">Dashboard</span>
         </a>
-        <button class="topbar-btn logout">
+        <button class="topbar-btn logout" onclick="doLogout()">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span class="label">Logout</span>
         </button>
-        <button class="menu-btn" id="menuBtn" aria-label="Menu">
+        <button class="menu-btn" id="menuBtn" onclick="toggleDrawer()" aria-label="Menu">
             <span></span><span></span><span></span>
         </button>
     </div>
@@ -1810,12 +1810,12 @@
 <div class="drawer-overlay" id="drawerOverlay"></div>
 <div class="drawer" id="drawer">
     <h3>🎯 Select Language</h3>
-    <button class="menu-item active" data-lang="auto"><span class="ico">🔍</span><span class="label">Auto Detect</span><span class="ext">AUTO</span></button>
-    <button class="menu-item" data-lang="html"><span class="ico">🌐</span><span class="label">HTML</span><span class="ext">.html</span></button>
-    <button class="menu-item" data-lang="css"><span class="ico">🎨</span><span class="label">CSS</span><span class="ext">.css</span></button>
-    <button class="menu-item" data-lang="js"><span class="ico">⚡</span><span class="label">JavaScript</span><span class="ext">.js</span></button>
-    <button class="menu-item" data-lang="json"><span class="ico">📦</span><span class="label">JSON</span><span class="ext">.json</span></button>
-    <button class="menu-item" data-lang="txt"><span class="ico">📝</span><span class="label">Plain Text</span><span class="ext">.txt</span></button>
+    <button class="menu-item active" data-lang="auto" onclick="selectLang('auto', this)"><span class="ico">🔍</span><span class="label">Auto Detect</span><span class="ext">AUTO</span></button>
+    <button class="menu-item" data-lang="html" onclick="selectLang('html', this)"><span class="ico">🌐</span><span class="label">HTML</span><span class="ext">.html</span></button>
+    <button class="menu-item" data-lang="css" onclick="selectLang('css', this)"><span class="ico">🎨</span><span class="label">CSS</span><span class="ext">.css</span></button>
+    <button class="menu-item" data-lang="js" onclick="selectLang('js', this)"><span class="ico">⚡</span><span class="label">JavaScript</span><span class="ext">.js</span></button>
+    <button class="menu-item" data-lang="json" onclick="selectLang('json', this)"><span class="ico">📦</span><span class="label">JSON</span><span class="ext">.json</span></button>
+    <button class="menu-item" data-lang="txt" onclick="selectLang('txt', this)"><span class="ico">📝</span><span class="label">Plain Text</span><span class="ext">.txt</span></button>
     <h3 style="margin-top:20px;">⚙️ Quick Actions</h3>
     <button class="menu-item"><span class="ico">📁</span><span class="label">Upload Files</span><span class="ext">MULTI</span></button>
     <button class="menu-item"><span class="ico">🗑️</span><span class="label">Clear All</span><span class="ext">RESET</span></button>
@@ -1831,7 +1831,7 @@
         <span class="label">Back to Dashboard</span>
         <span class="ext">HOME</span>
     </a>
-    <button class="menu-item danger">
+    <button class="menu-item danger" onclick="doLogout()">
         <span class="ico">🚪</span>
         <span class="label">Logout</span>
         <span class="ext">EXIT</span>
@@ -1868,15 +1868,15 @@
             <div class="key-display">
                 <span class="key-text" id="keyText">NightOrbitGyidi_houperSecret_************</span>
             </div>
-            <button class="key-eye-btn" id="keyEyeBtn" title="Reveal full key" disabled>
+            <button class="key-eye-btn" id="keyEyeBtn" onclick="toggleKeyReveal()" title="Reveal full key" disabled>
                 <i class="fa-solid fa-eye" id="keyEyeIcon"></i>
             </button>
         </div>
         <div class="key-actions">
-            <button class="key-action-btn create" id="createKeyBtn">
+            <button class="key-action-btn create" id="createKeyBtn" onclick="createKey()">
                 <i class="fa-solid fa-plus"></i> CREATE KEY & PASSWORD
             </button>
-            <button class="key-action-btn delete" id="deleteKeyBtn" style="display:none;">
+            <button class="key-action-btn delete" id="deleteKeyBtn" onclick="deleteKey()" style="display:none;">
                 <i class="fa-solid fa-trash"></i> DELETE KEY & REGENERATE
             </button>
         </div>
@@ -1887,12 +1887,12 @@
             </div>
             <div class="reveal-box" id="revealBox"></div>
             <div class="reveal-actions">
-                <button class="reveal-mini-btn warn">
-                    <i class="fa-solid fa-copy"></i> COPY KEY
-                </button>
-                <button class="reveal-mini-btn">
-                    <i class="fa-solid fa-eye-slash"></i> HIDE
-                </button>
+            <button class="reveal-mini-btn warn" onclick="copyRevealedKey()">
+               <i class="fa-solid fa-copy"></i> COPY KEY
+               </button>
+           <button class="reveal-mini-btn" onclick="hideReveal()">
+               <i class="fa-solid fa-eye-slash"></i> HIDE
+           </button>
             </div>
         </div>
         <div class="key-info" id="keyInfo">
@@ -1999,9 +1999,9 @@
     </div>
 
     <div class="btn-row">
-        <button>🔐 ENCRYPT</button>
-        <button class="secondary">📂 LOAD FILES</button>
-        <button class="danger">🗑️ CLEAR ALL</button>
+        <button onclick="encryptNow()">🔐 ENCRYPT</button>
+        <button class="secondary" onclick="openFilePicker()">📂 LOAD FILES</button>
+        <button class="danger" onclick="clearAll()">🗑️ CLEAR ALL</button>
     </div>
 
     <div id="status" class="status"></div>
@@ -2049,9 +2049,9 @@
     </div>
 
     <div class="btn-row">
-        <button class="green">📋 COPY</button>
-        <button class="secondary">⬇️ DOWNLOAD ENCRYPTED (Raw String)</button>
-        <button class="pink pulse-glow">🎁 DOWNLOAD DECRYPTOR + KEY FILE (REQUIRED)</button>
+        <button class="green" onclick="copyOutput()">📋 COPY</button>
+        <button class="secondary" onclick="downloadOutput()">⬇️ DOWNLOAD ENCRYPTED (Raw String)</button>
+        <button class="pink pulse-glow" onclick="downloadDecryptor()">🎁 DOWNLOAD DECRYPTOR + KEY FILE (REQUIRED)</button>
     </div>
 </div>
 
