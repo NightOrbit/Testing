@@ -4,8 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0b0b1a">
-    <title>Universal Code Encryptor — NightOrbit v18 STRONG</title>
-
+    <title>Universal Code Encryptor — NightOrbit</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="auth-guard.js"></script>
+    
+    <!-- CryptoJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    
+    <!-- Key Manager -->
+    <script src="key-manager.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/zxcvbn@4.4.2/dist/zxcvbn.js"></script>    
+    
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -3399,20 +3413,53 @@ function handleAuthReady(e) {
 document.addEventListener('auth-guard-ready', handleAuthReady);
 document.addEventListener('auth-ready', handleAuthReady);
 
-setTimeout(function() {
-    if (!state.user) {
-        if (window.firebase && firebase.auth && firebase.auth().currentUser) {
-            handleAuthReady({ detail: { user: firebase.auth().currentUser } });
-        } else if (window.AuthGuard && AuthGuard.getUser && AuthGuard.getUser()) {
-            handleAuthReady({ detail: { user: AuthGuard.getUser() } });
-        } else {
-            showStatus('error', '❌ Not authenticated. Redirecting...');
-            setTimeout(function() {
-                window.location.href = 'index.html';
-            }, 2000);
+(function waitForAuth() {
+    var attempts = 0;
+    var maxAttempts = 30; /* 15 seconds */
+
+    var check = setInterval(function() {
+        attempts++;
+
+        /* Source 1: state.user already set */
+        if (state.user) {
+            clearInterval(check);
+            return;
         }
-    }
-}, 3000);
+
+        /* Source 2: window.__currentUser (from auth-guard) */
+        if (window.__currentUser) {
+            clearInterval(check);
+            handleAuthReady({ detail: { user: window.__currentUser } });
+            return;
+        }
+
+        /* Source 3: AuthGuard.getUser() */
+        if (window.AuthGuard && typeof AuthGuard.getUser === 'function') {
+            var u = AuthGuard.getUser();
+            if (u) {
+                clearInterval(check);
+                handleAuthReady({ detail: { user: u } });
+                return;
+            }
+        }
+
+        /* Source 4: firebase.auth().currentUser */
+        if (window.firebase && firebase.auth && firebase.auth().currentUser) {
+            clearInterval(check);
+            handleAuthReady({ detail: { user: firebase.auth().currentUser } });
+            return;
+        }
+
+        /* Max attempts — show error, DON'T redirect */
+        if (attempts >= maxAttempts) {
+            clearInterval(check);
+            if (!state.user) {
+                showStatus('error', '❌ Auth timeout. Please refresh the page.');
+                toast('Auth timeout. Please refresh.', 'error');
+            }
+        }
+    }, 500);
+})();
 
 updateKeyUI();
 
