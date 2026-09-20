@@ -182,86 +182,73 @@ var KEY_MANAGER = {
         };
     },
 
-    /* ═══════════════════════════════════════════════════════
-       KEY GENERATION
-       ═══════════════════════════════════════════════════════ */
-        generateRandomKey: function() {
-        var digits = '0123456789';
-        var letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        var symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
-
-        /* ✅ Step 1: Separate arrays banao */
-        var arrDigits = [];
-        var arrLetters = [];
-        var arrSymbols = [];
-
-        var i;
-        for (i = 0; i < 15; i++) {
-            arrDigits.push(digits.charAt(this._secureRandomInt(digits.length)));
-        }
-        for (i = 0; i < 15; i++) {
-            arrLetters.push(letters.charAt(this._secureRandomInt(letters.length)));
-        }
-        for (i = 0; i < 30; i++) {
-            arrSymbols.push(symbols.charAt(this._secureRandomInt(symbols.length)));
-        }
-
-        /* ✅ Step 2: Combine karo */
-        var combined = arrDigits.concat(arrLetters).concat(arrSymbols);
-
-        /* ✅ Step 3: Verify total = 60 */
-        if (combined.length !== 60) {
-            while (combined.length < 60) {
-                combined.push(letters.charAt(this._secureRandomInt(letters.length)));
-            }
-            combined = combined.slice(0, 60);
-        }
-
-        /* ✅ Step 4: Shuffle karo */
-        this._secureShuffle(combined);
-
-        /* ✅ Step 5: FINAL VERIFY — exactly 60 chars */
-        if (combined.length !== 60) {
-            while (combined.length < 60) {
-                combined.push('0');
-            }
-            combined = combined.slice(0, 60);
-        }
-
-        /* ✅ Step 6: Count verify karo */
-        var finalStr = combined.join('');
-        var finalDigits = (finalStr.match(/\d/g) || []).length;
-        var finalLetters = (finalStr.match(/[a-zA-Z]/g) || []).length;
-        var finalSymbols = (finalStr.match(/[^a-zA-Z0-9]/g) || []).length;
-
-        /* ✅ Agar count galat hai to fix karo */
-        if (finalDigits !== 15) {
-            /* Extra digits replace karo symbols se */
-            var diff = 15 - finalDigits;
-            if (diff > 0) {
-                for (i = 0; i < combined.length && diff > 0; i++) {
-                    if (/[^0-9]/.test(combined[i])) {
-                        combined[i] = digits.charAt(this._secureRandomInt(digits.length));
-                        diff--;
-                    }
-                }
-            }
-        }
-
-        if (finalLetters !== 15) {
-            var diffL = 15 - finalLetters;
-            if (diffL > 0) {
-                for (i = 0; i < combined.length && diffL > 0; i++) {
-                    if (/[^a-zA-Z]/.test(combined[i])) {
-                        combined[i] = letters.charAt(this._secureRandomInt(letters.length));
-                        diffL--;
-                    }
-                }
-            }
-        }
-
-        return this._PREFIX + combined.join('');
-    },
+          /* ═══════════════════════════════════════════════════════
+             KEY GENERATION
+             ═══════════════════════════════════════════════════════ */
+          generateRandomKey: function() {
+              var digits = '0123456789';
+              var letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+              var symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+      
+              var arrDigits = [];
+              for (var i = 0; i < 15; i++) {
+                  arrDigits.push(digits.charAt(this._secureRandomInt(digits.length)));
+              }
+      
+              var arrLetters = [];
+              for (var j = 0; j < 15; j++) {
+                  arrLetters.push(letters.charAt(this._secureRandomInt(letters.length)));
+              }
+      
+              var arrSymbols = [];
+              for (var k = 0; k < 30; k++) {
+                  arrSymbols.push(symbols.charAt(this._secureRandomInt(symbols.length)));
+              }
+      
+              var combined = arrDigits.concat(arrLetters).concat(arrSymbols);
+      
+              while (combined.length < 60) {
+                  combined.push(letters.charAt(this._secureRandomInt(letters.length)));
+              }
+              combined = combined.slice(0, 60);
+      
+              this._secureShuffle(combined);
+      
+              while (combined.length < 60) {
+                  combined.push('0');
+              }
+              combined = combined.slice(0, 60);
+      
+              var finalStr = combined.join('');
+              var finalDigits = (finalStr.match(/\d/g) || []).length;
+              if (finalDigits !== 15) {
+                  var needD = 15 - finalDigits;
+                  for (var m = 0; m < combined.length && needD > 0; m++) {
+                      if (!/\d/.test(combined[m])) {
+                          combined[m] = digits.charAt(this._secureRandomInt(digits.length));
+                          needD--;
+                      }
+                  }
+              }
+      
+              finalStr = combined.join('');
+              var finalLetters = (finalStr.match(/[a-zA-Z]/g) || []).length;
+              if (finalLetters !== 15) {
+                  var needL = 15 - finalLetters;
+                  for (var n = 0; n < combined.length && needL > 0; n++) {
+                      if (!/[a-zA-Z]/.test(combined[n]) && !/\d/.test(combined[n])) {
+                          combined[n] = letters.charAt(this._secureRandomInt(letters.length));
+                          needL--;
+                      }
+                  }
+              }
+      
+              return this._PREFIX + combined.join('');
+          },
+      
+          generateUserSalt: function() {
+              return this._bytesToHex(this._secureRandomBytes(32));
+          },
 
     /* ═══════════════════════════════════════════════════════
        PASSWORD HASHING (PBKDF2-SHA256 600K)
