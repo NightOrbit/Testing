@@ -186,53 +186,81 @@ var KEY_MANAGER = {
        KEY GENERATION
        ═══════════════════════════════════════════════════════ */
         generateRandomKey: function() {
-           var digits = '0123456789';
-           var letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-           var symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
-           var result = [];
-           var i;
-   
-           /* ✅ 15 digits */
-           for (i = 0; i < 15; i++) {
-               result.push(digits.charAt(this._secureRandomInt(digits.length)));
-           }
-   
-           /* ✅ 15 letters */
-           for (i = 0; i < 15; i++) {
-               result.push(letters.charAt(this._secureRandomInt(letters.length)));
-           }
-   
-           /* ✅ 30 symbols */
-           for (i = 0; i < 30; i++) {
-               result.push(symbols.charAt(this._secureRandomInt(symbols.length)));
-           }
-   
-           /* ✅ FIX: Check length BEFORE shuffle — 60 chars ensure karo */
-           while (result.length < 60) {
-               result.push(letters.charAt(this._secureRandomInt(letters.length)));
-           }
-           result = result.slice(0, 60);
-   
-           /* ✅ Shuffle */
-           this._secureShuffle(result);
-   
-           /* ✅ FIX: Check length AFTER shuffle — 60 chars ensure karo */
-           while (result.length < 60) {
-               result.push('0');
-           }
-           result = result.slice(0, 60);
-   
-           /* ✅ FINAL FIX: Force exact 60 chars */
-           if (result.length !== 60) {
-               result = result.join('').substring(0, 60).split('');
-           }
-   
-           return this._PREFIX + result.join('');
-       },
+        var digits = '0123456789';
+        var letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
 
-    generateUserSalt: function() {
-        /* ✅ 256-bit user salt (32 bytes) */
-        return this._bytesToHex(this._secureRandomBytes(32));
+        /* ✅ Step 1: Separate arrays banao */
+        var arrDigits = [];
+        var arrLetters = [];
+        var arrSymbols = [];
+
+        var i;
+        for (i = 0; i < 15; i++) {
+            arrDigits.push(digits.charAt(this._secureRandomInt(digits.length)));
+        }
+        for (i = 0; i < 15; i++) {
+            arrLetters.push(letters.charAt(this._secureRandomInt(letters.length)));
+        }
+        for (i = 0; i < 30; i++) {
+            arrSymbols.push(symbols.charAt(this._secureRandomInt(symbols.length)));
+        }
+
+        /* ✅ Step 2: Combine karo */
+        var combined = arrDigits.concat(arrLetters).concat(arrSymbols);
+
+        /* ✅ Step 3: Verify total = 60 */
+        if (combined.length !== 60) {
+            while (combined.length < 60) {
+                combined.push(letters.charAt(this._secureRandomInt(letters.length)));
+            }
+            combined = combined.slice(0, 60);
+        }
+
+        /* ✅ Step 4: Shuffle karo */
+        this._secureShuffle(combined);
+
+        /* ✅ Step 5: FINAL VERIFY — exactly 60 chars */
+        if (combined.length !== 60) {
+            while (combined.length < 60) {
+                combined.push('0');
+            }
+            combined = combined.slice(0, 60);
+        }
+
+        /* ✅ Step 6: Count verify karo */
+        var finalStr = combined.join('');
+        var finalDigits = (finalStr.match(/\d/g) || []).length;
+        var finalLetters = (finalStr.match(/[a-zA-Z]/g) || []).length;
+        var finalSymbols = (finalStr.match(/[^a-zA-Z0-9]/g) || []).length;
+
+        /* ✅ Agar count galat hai to fix karo */
+        if (finalDigits !== 15) {
+            /* Extra digits replace karo symbols se */
+            var diff = 15 - finalDigits;
+            if (diff > 0) {
+                for (i = 0; i < combined.length && diff > 0; i++) {
+                    if (/[^0-9]/.test(combined[i])) {
+                        combined[i] = digits.charAt(this._secureRandomInt(digits.length));
+                        diff--;
+                    }
+                }
+            }
+        }
+
+        if (finalLetters !== 15) {
+            var diffL = 15 - finalLetters;
+            if (diffL > 0) {
+                for (i = 0; i < combined.length && diffL > 0; i++) {
+                    if (/[^a-zA-Z]/.test(combined[i])) {
+                        combined[i] = letters.charAt(this._secureRandomInt(letters.length));
+                        diffL--;
+                    }
+                }
+            }
+        }
+
+        return this._PREFIX + combined.join('');
     },
 
     /* ═══════════════════════════════════════════════════════
