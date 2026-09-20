@@ -185,20 +185,50 @@ var KEY_MANAGER = {
     /* ═══════════════════════════════════════════════════════
        KEY GENERATION
        ═══════════════════════════════════════════════════════ */
-    generateRandomKey: function() {
-        var digits = '0123456789';
-        var letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        var symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
-        var result = [];
-        var i;
-
-        for (i = 0; i < 15; i++) result.push(digits.charAt(this._secureRandomInt(digits.length)));
-        for (i = 0; i < 15; i++) result.push(letters.charAt(this._secureRandomInt(letters.length)));
-        for (i = 0; i < 30; i++) result.push(symbols.charAt(this._secureRandomInt(symbols.length)));
-
-        this._secureShuffle(result);
-        return this._PREFIX + result.join('');
-    },
+        generateRandomKey: function() {
+           var digits = '0123456789';
+           var letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+           var symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+           var result = [];
+           var i;
+   
+           /* ✅ 15 digits */
+           for (i = 0; i < 15; i++) {
+               result.push(digits.charAt(this._secureRandomInt(digits.length)));
+           }
+   
+           /* ✅ 15 letters */
+           for (i = 0; i < 15; i++) {
+               result.push(letters.charAt(this._secureRandomInt(letters.length)));
+           }
+   
+           /* ✅ 30 symbols */
+           for (i = 0; i < 30; i++) {
+               result.push(symbols.charAt(this._secureRandomInt(symbols.length)));
+           }
+   
+           /* ✅ FIX: Check length BEFORE shuffle — 60 chars ensure karo */
+           while (result.length < 60) {
+               result.push(letters.charAt(this._secureRandomInt(letters.length)));
+           }
+           result = result.slice(0, 60);
+   
+           /* ✅ Shuffle */
+           this._secureShuffle(result);
+   
+           /* ✅ FIX: Check length AFTER shuffle — 60 chars ensure karo */
+           while (result.length < 60) {
+               result.push('0');
+           }
+           result = result.slice(0, 60);
+   
+           /* ✅ FINAL FIX: Force exact 60 chars */
+           if (result.length !== 60) {
+               result = result.join('').substring(0, 60).split('');
+           }
+   
+           return this._PREFIX + result.join('');
+       },
 
     generateUserSalt: function() {
         /* ✅ 256-bit user salt (32 bytes) */
