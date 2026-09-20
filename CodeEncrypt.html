@@ -3015,7 +3015,7 @@
                 L13.push((L12[m] ^ 0x3C) ^ s5);
             }
         
-            /* L14: Matrix transpose (conceptual — 1D shift) */
+            /* L14: Matrix transpose */
             var matrixSize = Math.ceil(Math.sqrt(L13.length));
             var padded = L13.slice();
             while (padded.length < matrixSize * matrixSize) padded.push(0);
