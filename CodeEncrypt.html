@@ -22,8 +22,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
- <style>
+<style>
         /* ============================================================
            GLOBAL RESET & VARIABLES
            ============================================================ */
@@ -61,7 +60,7 @@
             font-size: 14px;
             line-height: 1.5;
         }
-    
+
         /* ============================================================
            TOPBAR
            ============================================================ */
@@ -190,7 +189,7 @@
         .menu-btn.open span:nth-child(3) {
             transform: translateY(-7px) rotate(-45deg);
         }
-    
+
         /* ============================================================
            DRAWER
            ============================================================ */
@@ -288,7 +287,7 @@
             opacity: 0.6;
             letter-spacing: 1px;
         }
-    
+
         /* ============================================================
            CONTAINER
            ============================================================ */
@@ -328,7 +327,7 @@
             align-items: center;
             gap: 5px;
         }
-    
+
         /* ============================================================
            HEADER CARD
            ============================================================ */
@@ -404,7 +403,7 @@
         .header-stat.gold i { color: var(--gold); }
         .header-stat.pink i { color: var(--pink); }
         .header-stat.green i { color: var(--green); }
-    
+
         /* ============================================================
            KEY SECTION
            ============================================================ */
@@ -534,7 +533,7 @@
         .key-info .green { color: var(--green); font-weight: bold; }
         .key-info .gold { color: var(--gold); font-weight: bold; }
         .key-info .red { color: var(--red); font-weight: bold; }
-    
+
         /* ============================================================
            REVEAL PANEL
            ============================================================ */
@@ -612,7 +611,7 @@
             border-color: rgba(255,215,0,0.3);
             color: var(--gold);
         }
-    
+
         /* ============================================================
            PASSWORD MODAL
            ============================================================ */
@@ -805,7 +804,7 @@
             width: 18px;
             margin-right: 6px;
         }
-    
+
         /* ============================================================
            HEAVY BLOCKS — Professional Security Documentation
            ============================================================ */
@@ -821,30 +820,50 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* ─── Critical (Red) ─── */
         .heavy-block.critical {
             background: linear-gradient(135deg, rgba(255,0,100,0.12), rgba(180,0,255,0.08));
             border: 2px solid #ff0064;
             box-shadow: 0 0 50px rgba(255,0,100,0.25);
         }
+
+        /* ─── Standards (Cyan) ─── */
         .heavy-block.standards {
             background: linear-gradient(135deg, rgba(0,240,255,0.10), rgba(180,0,255,0.06));
             border: 2px solid #00f0ff;
             box-shadow: 0 0 50px rgba(0,240,255,0.20);
         }
+
+        /* ─── Memory (Green) ─── */
         .heavy-block.memory {
             background: linear-gradient(135deg, rgba(0,255,100,0.10), rgba(0,240,255,0.06));
             border: 2px solid #00ff64;
             box-shadow: 0 0 50px rgba(0,255,100,0.20);
         }
+
+        /* ─── Token (Gold) ─── */
         .heavy-block.token {
             background: linear-gradient(135deg, rgba(255,215,0,0.10), rgba(255,140,0,0.06));
             border: 2px solid #ffd700;
             box-shadow: 0 0 50px rgba(255,215,0,0.20);
         }
+
+        /* ─── Checklist (Cyan subtle) ─── */
         .heavy-block.checklist {
             background: rgba(0,240,255,0.05);
             border: 1.5px solid #00f0ff;
         }
+
+        /* ─── Output Alert (Gold) ─── */
+        .heavy-block.output-alert {
+            background: linear-gradient(135deg, rgba(255,215,0,0.10), rgba(255,140,0,0.06));
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 40px rgba(255,215,0,0.20);
+            margin-bottom: 14px;
+        }
+
+        /* ─── Heavy Block Header ─── */
         .heavy-block-header {
             display: flex;
             align-items: center;
@@ -864,12 +883,33 @@
             text-transform: uppercase;
             flex: 1;
         }
-        .heavy-block.critical .heavy-block-title { color: #ff0064; text-shadow: 0 0 20px rgba(255,0,100,0.6); }
-        .heavy-block.standards .heavy-block-title { color: #00f0ff; text-shadow: 0 0 20px rgba(0,240,255,0.6); }
-        .heavy-block.memory .heavy-block-title { color: #00ff64; text-shadow: 0 0 20px rgba(0,255,100,0.6); }
-        .heavy-block.token .heavy-block-title { color: #ffd700; text-shadow: 0 0 20px rgba(255,215,0,0.6); }
-        .heavy-block.checklist .heavy-block-title { color: #00f0ff; }
-    
+
+        /* ─── Title Colors Per Variant ─── */
+        .heavy-block.critical .heavy-block-title {
+            color: #ff0064;
+            text-shadow: 0 0 20px rgba(255,0,100,0.6);
+        }
+        .heavy-block.standards .heavy-block-title {
+            color: #00f0ff;
+            text-shadow: 0 0 20px rgba(0,240,255,0.6);
+        }
+        .heavy-block.memory .heavy-block-title {
+            color: #00ff64;
+            text-shadow: 0 0 20px rgba(0,255,100,0.6);
+        }
+        .heavy-block.token .heavy-block-title {
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255,215,0,0.6);
+        }
+        .heavy-block.checklist .heavy-block-title {
+            color: #00f0ff;
+        }
+        .heavy-block.output-alert .heavy-block-title {
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255,215,0,0.6);
+        }
+
+        /* ─── Badges ─── */
         .heavy-block-badge {
             background: #ff0064;
             color: #fff;
@@ -880,11 +920,14 @@
             letter-spacing: 2px;
             font-family: 'Orbitron', sans-serif;
             text-transform: uppercase;
+            white-space: nowrap;
         }
         .heavy-block-badge.gold { background: #ffd700; color: #000; }
         .heavy-block-badge.green { background: #00ff64; color: #000; }
         .heavy-block-badge.cyan { background: #00f0ff; color: #000; }
-    
+        .heavy-block-badge.red { background: #ff0064; color: #fff; }
+
+        /* ─── Lead Text ─── */
         .heavy-block-lead {
             color: #b0d0ff;
             font-size: 13px;
@@ -892,7 +935,8 @@
             margin-bottom: 14px;
         }
         .heavy-block-lead strong { color: #fff; }
-    
+
+        /* ─── Requirements Grid ─── */
         .heavy-block-requirements {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -923,6 +967,8 @@
             color: #b0b0d0;
             font-size: 11px;
         }
+
+        /* ─── Warning Box ─── */
         .heavy-block-warning {
             background: rgba(255,0,100,0.10);
             border-left: 4px solid #ff0064;
@@ -937,7 +983,8 @@
         }
         .heavy-block-warning strong { color: #ff0064; }
         .warn-icon { font-size: 20px; flex-shrink: 0; }
-    
+
+        /* ─── Standards Grid ─── */
         .standards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -972,7 +1019,8 @@
             font-size: 10px;
             line-height: 1.4;
         }
-    
+
+        /* ─── Footer ─── */
         .heavy-block-footer {
             background: rgba(0,255,100,0.06);
             border-left: 4px solid #00ff64;
@@ -986,7 +1034,8 @@
         }
         .heavy-block-footer strong { color: #00ff64; }
         .footer-icon { font-size: 18px; }
-    
+
+        /* ─── Checklist Grid ─── */
         .checklist-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1042,7 +1091,65 @@
         }
         .checklist-step.critical .step-content strong { color: #ff0064; }
         .step-content span { color: #8a8aaa; font-size: 11px; }
-    
+
+        /* ─── Output Options Grid ─── */
+        .output-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+        }
+        .output-option {
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+        .output-option.correct {
+            background: rgba(0,255,100,0.08);
+            border-left: 4px solid #00ff64;
+        }
+        .output-option.incorrect {
+            background: rgba(255,0,100,0.08);
+            border-left: 4px solid #ff0064;
+        }
+        .option-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .option-header strong {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            letter-spacing: 2px;
+        }
+        .output-option.correct .option-header strong { color: #00ff64; }
+        .output-option.incorrect .option-header strong { color: #ff0064; }
+        .option-icon { font-size: 16px; }
+        .output-option ol {
+            padding-left: 20px;
+            color: #b0d0ff;
+        }
+        .output-option ol li { margin-bottom: 3px; }
+        .output-option code {
+            background: #000;
+            padding: 1px 5px;
+            border-radius: 3px;
+            color: #00f0ff;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .output-option p { color: #ffb3c9; }
+        .output-option strong { color: #ff0064; }
+
+        /* ─── Pulse Glow ─── */
+        .pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,45,149,0.4); }
+            50% { box-shadow: 0 0 40px rgba(255,45,149,0.8); }
+        }
+
         /* ============================================================
            PROGRESS BAR
            ============================================================ */
@@ -1089,7 +1196,7 @@
             min-width: 45px;
             text-align: right;
         }
-    
+
         /* ============================================================
            SECTIONS
            ============================================================ */
@@ -1129,7 +1236,7 @@
         }
         textarea { min-height: 220px; }
         textarea.tall { min-height: 320px; }
-    
+
         /* ============================================================
            BUTTONS
            ============================================================ */
@@ -1158,7 +1265,7 @@
         button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
         button.pink { background: linear-gradient(135deg, var(--pink), var(--purple)); color: #fff; }
         button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-    
+
         .btn-row {
             display: flex;
             flex-wrap: wrap;
@@ -1170,7 +1277,7 @@
             flex: 1 1 auto;
             min-width: 120px;
         }
-    
+
         /* ============================================================
            STATUS
            ============================================================ */
@@ -1209,7 +1316,7 @@
             color: var(--gold);
             display: block;
         }
-    
+
         /* ============================================================
            FILE DROP
            ============================================================ */
@@ -1270,7 +1377,7 @@
             transition: all 0.2s;
         }
         .file-item .remove:hover { background: rgba(255,0,100,0.2); }
-    
+
         /* ============================================================
            STATS GRID
            ============================================================ */
@@ -1311,7 +1418,7 @@
         .stat-value.gold { color: var(--gold); }
         .stat-value.green { color: var(--green); }
         .stat-value.pink { color: var(--pink); }
-    
+
         /* ============================================================
            WARN BOX
            ============================================================ */
@@ -1343,7 +1450,7 @@
         .warn-box ul li b { color: var(--red); }
         .warn-box ul li .gold { color: var(--gold); font-weight: bold; }
         .warn-box ul li .green { color: var(--green); font-weight: bold; }
-    
+
         /* ============================================================
            TOAST
            ============================================================ */
@@ -1389,7 +1496,7 @@
         @keyframes toastOut {
             to { transform: translateX(400px); opacity: 0; }
         }
-    
+
         /* ============================================================
            SESSION BAR
            ============================================================ */
@@ -1411,7 +1518,7 @@
             transition: width 1s linear;
             box-shadow: 0 0 10px rgba(0,240,255,0.6);
         }
-    
+
         /* ============================================================
            RESPONSIVE
            ============================================================ */
@@ -1436,6 +1543,7 @@
             .req-card { padding: 10px 12px; }
             .req-card strong { font-size: 11px; }
             .req-card span { font-size: 10px; }
+            .output-options { grid-template-columns: 1fr; }
         }
     </style>
 </head>
