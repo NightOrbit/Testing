@@ -1,0 +1,2559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0b0b1a">
+<title>Create JS File — NightOrbit CodeForge</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+<script src="auth-guard.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.1.1/dist/index.browser.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════════════════════════ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+    --cyan: #00f0ff;
+    --pink: #ff2d95;
+    --purple: #b400ff;
+    --gold: #ffd700;
+    --green: #00ff64;
+    --red: #ff0064;
+    --orange: #ff8c00;
+    --card: rgba(11, 11, 26, 0.94);
+    --border: rgba(0, 240, 255, 0.22);
+    --muted: #6a6a8a;
+    --text: #e5e5ef;
+    --text-dim: #b0b0d0;
+    --header-h: 68px;
+}
+
+html,
+body {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    background: radial-gradient(ellipse at top, #13132a 0%, #000 70%);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding-top: var(--header-h);
+    padding-bottom: 40px;
+    font-size: 14px;
+    line-height: 1.6;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: -1;
+    animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(50px, 50px);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOPBAR
+   ═══════════════════════════════════════════════════════════════ */
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--header-h);
+    background: rgba(6, 6, 15, 0.96);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    gap: 12px;
+    box-shadow: 0 4px 30px rgba(0, 240, 255, 0.08);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    color: var(--cyan);
+    letter-spacing: 1.5px;
+}
+
+.brand .logo {
+    font-size: 26px;
+    filter: drop-shadow(0 0 10px var(--cyan));
+}
+
+.brand .title {
+    background: linear-gradient(135deg, var(--cyan), var(--pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.brand .title-ver {
+    font-size: 9px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    padding: 2px 8px;
+    border: 1px solid var(--gold);
+    border-radius: 20px;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.topbar-btn {
+    padding: 8px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Orbitron', sans-serif;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.topbar-btn.dashboard {
+    background: linear-gradient(135deg, var(--gold), var(--orange));
+    color: #000;
+}
+
+.topbar-btn.logout {
+    background: linear-gradient(135deg, var(--red), var(--purple));
+    color: #fff;
+}
+
+.topbar-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 240, 255, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTAINER
+   ═══════════════════════════════════════════════════════════════ */
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 15px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   USER WELCOME
+   ═══════════════════════════════════════════════════════════════ */
+.user-welcome {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.06), rgba(180, 0, 255, 0.06));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.user-welcome::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--cyan), var(--purple));
+}
+
+.user-welcome i {
+    color: var(--cyan);
+    font-size: 18px;
+}
+
+.user-welcome b {
+    color: var(--cyan);
+}
+
+.user-welcome .auth-badge {
+    margin-left: auto;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--green);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 255, 100, 0.08);
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 255, 100, 0.2);
+    font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HEADER CARD
+   ═══════════════════════════════════════════════════════════════ */
+.header-card {
+    background: var(--card);
+    border: 2px solid var(--cyan);
+    border-radius: 22px;
+    padding: 32px 28px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 0 80px rgba(0, 240, 255, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.header-card::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 22px;
+    padding: 2px;
+    background: conic-gradient(from 0deg, var(--cyan), var(--pink), var(--purple), var(--gold), var(--green), var(--cyan));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: borderSpin 8s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes borderSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.header-card h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--cyan), var(--pink), var(--purple));
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 4px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    animation: gradientShift 4s ease infinite;
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes gradientShift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.header-card .subtitle {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    font-weight: 600;
+}
+
+.header-stats {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+.header-stat {
+    background: rgba(0, 240, 255, 0.05);
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    border-radius: 40px;
+    padding: 6px 14px;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-weight: 700;
+}
+
+.header-stat i {
+    color: var(--cyan);
+    font-size: 12px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GUIDE BOX
+   ═══════════════════════════════════════════════════════════════ */
+.guide-box {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.06), rgba(180, 0, 255, 0.04));
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.guide-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--cyan), var(--purple), var(--pink));
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+}
+
+.guide-box h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.guide-box h2 i {
+    font-size: 20px;
+}
+
+.guide-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.guide-step {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-radius: 12px;
+    padding: 14px 16px;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.guide-step:hover {
+    border-color: var(--cyan);
+    background: rgba(0, 240, 255, 0.05);
+    transform: translateY(-3px);
+}
+
+.guide-step .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    color: #000;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 13px;
+    margin-bottom: 10px;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+}
+
+.guide-step .step-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--cyan);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.guide-step .step-desc {
+    font-size: 11.5px;
+    color: var(--text-dim);
+    line-height: 1.6;
+}
+
+.guide-note {
+    background: rgba(255, 215, 0, 0.06);
+    border-left: 3px solid var(--gold);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 11.5px;
+    color: #ffe6a0;
+    line-height: 1.7;
+}
+
+.guide-note strong {
+    color: var(--gold);
+}
+
+.guide-note code {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--cyan);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION
+   ═══════════════════════════════════════════════════════════════ */
+.section {
+    background: rgba(0, 240, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.section:hover {
+    border-color: rgba(0, 240, 255, 0.35);
+}
+
+label {
+    color: var(--cyan);
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    font-weight: 800;
+    display: block;
+    margin-bottom: 12px;
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEXTAREA / INPUT
+   ═══════════════════════════════════════════════════════════════ */
+textarea,
+input[type="text"] {
+    width: 100%;
+    background: #000;
+    color: var(--green);
+    border: 1px solid #1a1a2e;
+    border-radius: 12px;
+    padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    resize: vertical;
+    transition: all 0.3s;
+}
+
+textarea:focus,
+input:focus {
+    outline: none;
+    border-color: var(--cyan);
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
+}
+
+textarea {
+    min-height: 240px;
+}
+
+textarea.huge {
+    min-height: 420px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════════════════════════════════ */
+button {
+    background: linear-gradient(135deg, var(--cyan), var(--purple));
+    color: #000;
+    border: none;
+    padding: 14px 26px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    transition: all 0.3s;
+    box-shadow: 0 6px 20px rgba(0, 240, 255, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+button:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(0, 240, 255, 0.5);
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+button.green {
+    background: linear-gradient(135deg, var(--green), #00aa44);
+}
+
+button.danger {
+    background: linear-gradient(135deg, var(--red), #c00040);
+    color: #fff;
+}
+
+button.secondary {
+    background: linear-gradient(135deg, var(--gold), var(--orange));
+}
+
+.btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin: 16px 0;
+}
+
+.btn-row button {
+    flex: 1 1 auto;
+    min-width: 140px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OPTIONS GRID
+   ═══════════════════════════════════════════════════════════════ */
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+}
+
+.option-box {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1.5px solid rgba(0, 240, 255, 0.15);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.option-box:hover {
+    border-color: var(--cyan);
+    background: rgba(0, 240, 255, 0.05);
+}
+
+.option-box.recommended {
+    border-color: var(--gold);
+    background: rgba(255, 215, 0, 0.05);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+}
+
+.option-box.recommended:hover {
+    border-color: var(--gold);
+    background: rgba(255, 215, 0, 0.08);
+}
+
+.option-box input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    accent-color: var(--cyan);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.option-box.recommended input[type="checkbox"] {
+    accent-color: var(--gold);
+}
+
+.option-box .opt-text {
+    flex: 1;
+}
+
+.option-box .opt-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--cyan);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.option-box.recommended .opt-title {
+    color: var(--gold);
+}
+
+.option-box .opt-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.rec-badge {
+    font-size: 8px;
+    background: var(--gold);
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 1px;
+    font-weight: 900;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATUS
+   ═══════════════════════════════════════════════════════════════ */
+.status {
+    text-align: left;
+    padding: 16px;
+    border-radius: 12px;
+    margin-top: 14px;
+    font-size: 12px;
+    display: none;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    white-space: pre-wrap;
+    line-height: 1.8;
+}
+
+.status.success {
+    background: rgba(0, 255, 100, 0.08);
+    border: 1.5px solid var(--green);
+    color: var(--green);
+    display: block;
+}
+
+.status.error {
+    background: rgba(255, 0, 100, 0.08);
+    border: 1.5px solid var(--red);
+    color: var(--red);
+    display: block;
+}
+
+.status.info {
+    background: rgba(0, 240, 255, 0.08);
+    border: 1.5px solid var(--cyan);
+    color: var(--cyan);
+    display: block;
+}
+
+.status.warn {
+    background: rgba(255, 215, 0, 0.08);
+    border: 1.5px solid var(--gold);
+    color: var(--gold);
+    display: block;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ERROR DISPLAY
+   ═══════════════════════════════════════════════════════════════ */
+.error-display {
+    background: rgba(255, 0, 100, 0.05);
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-top: 14px;
+    display: none;
+}
+
+.error-display.show {
+    display: block;
+}
+
+.error-display .err-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    font-weight: 900;
+    color: var(--red);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.error-display .err-head i {
+    font-size: 18px;
+}
+
+.error-display .err-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.6;
+}
+
+.error-display .err-label {
+    color: var(--muted);
+    min-width: 100px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding-top: 2px;
+}
+
+.error-display .err-value {
+    color: #fff;
+    flex: 1;
+    word-break: break-all;
+}
+
+.error-display .err-value.highlight {
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: var(--gold);
+    font-weight: 700;
+}
+
+.error-display .err-line-code {
+    background: #000;
+    border: 1px solid rgba(255, 0, 100, 0.3);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: #ffb0c8;
+    overflow-x: auto;
+    white-space: pre;
+    position: relative;
+}
+
+.error-display .err-line-code .line-num {
+    color: var(--red);
+    font-weight: 900;
+    margin-right: 10px;
+    user-select: none;
+}
+
+.error-display .err-suggestion {
+    background: rgba(0, 240, 255, 0.06);
+    border-left: 3px solid var(--cyan);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 12px;
+    font-size: 11.5px;
+    color: #b0d0ff;
+    line-height: 1.7;
+}
+
+.error-display .err-suggestion strong {
+    color: var(--cyan);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATS GRID
+   ═══════════════════════════════════════════════════════════════ */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.stat-card {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1.5px solid rgba(0, 240, 255, 0.15);
+    border-radius: 12px;
+    padding: 14px 12px;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+}
+
+.stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--cyan);
+}
+
+.stat-value.gold {
+    color: var(--gold);
+}
+
+.stat-value.green {
+    color: var(--green);
+}
+
+.stat-value.pink {
+    color: var(--pink);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INFO BOX
+   ═══════════════════════════════════════════════════════════════ */
+.info-box {
+    background: rgba(0, 240, 255, 0.05);
+    border-left: 4px solid var(--cyan);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    font-size: 11.5px;
+    color: #b0d0ff;
+    line-height: 1.8;
+}
+
+.info-box strong {
+    color: var(--cyan);
+}
+
+.info-box code {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--gold);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FILENAME INPUT
+   ═══════════════════════════════════════════════════════════════ */
+.filename-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filename-wrap input[type="text"] {
+    flex: 1;
+    min-width: 200px;
+    font-size: 13px;
+    padding: 12px 16px;
+}
+
+.filename-wrap .ext-badge {
+    background: linear-gradient(135deg, var(--gold), var(--orange));
+    color: #000;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 13px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    letter-spacing: 1.5px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════════════════════════════ */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+    max-width: 420px;
+}
+
+.toast {
+    background: rgba(11, 11, 26, 0.98);
+    border: 2px solid var(--cyan);
+    border-radius: 14px;
+    padding: 14px 20px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    pointer-events: auto;
+    animation: toastIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 280px;
+}
+
+.toast i {
+    font-size: 18px;
+}
+
+.toast.success {
+    border-color: var(--green);
+}
+
+.toast.success i {
+    color: var(--green);
+}
+
+.toast.error {
+    border-color: var(--red);
+}
+
+.toast.error i {
+    color: var(--red);
+}
+
+.toast.warn {
+    border-color: var(--gold);
+}
+
+.toast.warn i {
+    color: var(--gold);
+}
+
+.toast.info i {
+    color: var(--cyan);
+}
+
+@keyframes toastIn {
+    from {
+        transform: translateX(420px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.toast.removing {
+    animation: toastOut 0.35s ease forwards;
+}
+
+@keyframes toastOut {
+    to {
+        transform: translateX(420px);
+        opacity: 0;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .header-card h1 {
+        font-size: 22px;
+        letter-spacing: 2px;
+    }
+    .btn-row button {
+        flex: 1 1 100%;
+    }
+    .toast-container {
+        bottom: 15px;
+        right: 15px;
+        left: 15px;
+    }
+    .guide-steps {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="brand">
+        <span class="logo">🌌</span>
+        <span class="title">NightOrbit</span>
+        <span class="title-ver">JS FILE v2</span>
+    </div>
+    <div class="topbar-actions">
+        <a href="Dashboard.html" class="topbar-btn dashboard">
+            <i class="fa-solid fa-arrow-left"></i> Dashboard
+        </a>
+        <button class="topbar-btn logout" onclick="doLogout()">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="user-welcome">
+        <i class="fa-solid fa-circle-user"></i>
+        <span>Welcome, <b id="welcomeName">User</b></span>
+        <span class="auth-badge">
+            <i class="fa-solid fa-shield-halved"></i> Authenticated
+        </span>
+    </div>
+
+    <div class="header-card">
+        <h1>📄 Create JS File</h1>
+        <div class="subtitle">NightOrbit CodeForge · JavaScript File Generator · Advanced Error Detection</div>
+        <div class="header-stats">
+            <span class="header-stat"><i class="fa-solid fa-file-code"></i> .js Output</span>
+            <span class="header-stat"><i class="fa-solid fa-bolt"></i> Auto Extract</span>
+            <span class="header-stat"><i class="fa-solid fa-check-double"></i> Syntax + Runtime</span>
+            <span class="header-stat"><i class="fa-solid fa-magnifying-glass"></i> Exact Line</span>
+        </div>
+    </div>
+
+    <div class="guide-box">
+        <h2><i class="fa-solid fa-circle-info"></i> How To Use This Tool</h2>
+        <div class="guide-steps">
+            <div class="guide-step">
+                <div class="step-num">1</div>
+                <div class="step-title">Paste Your Code</div>
+                <div class="step-desc">Paste JavaScript directly, or paste full HTML — the tool automatically extracts JavaScript from <code>&lt;script&gt;</code> tags.</div>
+            </div>
+            <div class="guide-step">
+                <div class="step-num">2</div>
+                <div class="step-title">Choose Options</div>
+                <div class="step-desc">Select Minify, Remove Hints, Error Checking (recommended ON), and Show Exact Line. Defaults are optimized.</div>
+            </div>
+            <div class="guide-step">
+                <div class="step-num">3</div>
+                <div class="step-title">Enter File Name</div>
+                <div class="step-desc">Type the file name (without <code>.js</code>). The tool adds <code>.js</code> automatically. Example: <code>my-script</code> → <code>my-script.js</code></div>
+            </div>
+            <div class="guide-step">
+                <div class="step-num">4</div>
+                <div class="step-title">Create &amp; Download</div>
+                <div class="step-desc">Click <strong>CREATE JS FILE</strong>. The tool validates (syntax + runtime), minifies, and downloads your file instantly.</div>
+            </div>
+        </div>
+        <div class="guide-note">
+            <strong>💡 Advanced Detection:</strong>
+            • <strong>Syntax Errors</strong> — missing brackets, extra symbols, unclosed strings, mismatched braces.<br>
+            • <strong>Runtime Errors</strong> — undefined functions (like <code>fu init()</code> instead of <code>function init()</code>), undefined variables, wrong types.<br>
+            • <strong>Exact Line</strong> — shows the line number, column, full line content, and error type.<br>
+            • <strong>Minify</strong> reduces file size but <strong>never</strong> breaks any function or logic.
+        </div>
+    </div>
+
+    <div class="section">
+        <label>📝 Paste Your JavaScript / HTML Code</label>
+        <div class="info-box">
+            <strong>JavaScript or HTML:</strong> Paste JavaScript directly, or paste full HTML — the tool automatically extracts JavaScript from <code>&lt;script&gt;</code> tags and removes all HTML tags, hints, and comments.
+        </div>
+
+        <textarea id="inputCode" class="huge" placeholder="// Paste your JavaScript code here...&#10;// OR paste full HTML — the tool will extract JS automatically.&#10;//&#10;// Example:&#10;// function greet(name) {&#10;//     return 'Hello, ' + name + '!';&#10;// }"></textarea>
+
+        <div class="stats-grid" id="inputStats" style="display:none;">
+            <div class="stat-card"><div class="stat-label">Lines</div><div class="stat-value" id="statLines">0</div></div>
+            <div class="stat-card"><div class="stat-label">Characters</div><div class="stat-value gold" id="statChars">0</div></div>
+            <div class="stat-card"><div class="stat-label">Size</div><div class="stat-value green" id="statSize">0 B</div></div>
+            <div class="stat-card"><div class="stat-label">Type</div><div class="stat-value pink" id="statLang">—</div></div>
+        </div>
+    </div>
+
+    <div class="section">
+        <label>⚙️ Options — Select What You Want</label>
+        <div class="options-grid">
+
+            <label class="option-box" for="optMinify">
+                <input type="checkbox" id="optMinify">
+                <div class="opt-text">
+                    <div class="opt-title">
+                        <i class="fa-solid fa-compress"></i> Minify Code
+                    </div>
+                    <div class="opt-desc">Remove comments, extra spaces, and line breaks to reduce file size. Functions and logic stay 100% safe.</div>
+                </div>
+            </label>
+
+            <label class="option-box" for="optHints">
+                <input type="checkbox" id="optHints">
+                <div class="opt-text">
+                    <div class="opt-title">
+                        <i class="fa-solid fa-broom"></i> Remove Hints &amp; Comments
+                    </div>
+                    <div class="opt-desc">Strip all HTML hints, comments, and non-JavaScript content from the output.</div>
+                </div>
+            </label>
+
+            <label class="option-box recommended" for="optErrorCheck">
+                <input type="checkbox" id="optErrorCheck" checked>
+                <div class="opt-text">
+                    <div class="opt-title">
+                        <i class="fa-solid fa-shield-halved"></i> Error Checking
+                        <span class="rec-badge">RECOMMENDED</span>
+                    </div>
+                    <div class="opt-desc">Validate syntax + runtime errors before creating the file. Catches undefined functions, missing brackets, and more.</div>
+                </div>
+            </label>
+
+            <label class="option-box" for="optExactLine">
+                <input type="checkbox" id="optExactLine" checked>
+                <div class="opt-text">
+                    <div class="opt-title">
+                        <i class="fa-solid fa-crosshairs"></i> Show Exact Line
+                    </div>
+                    <div class="opt-desc">Show the exact line number, column, and full line content where the error occurred.</div>
+                </div>
+            </label>
+
+        </div>
+    </div>
+
+    <div class="section">
+        <label>📁 File Name</label>
+        <div class="filename-wrap">
+            <input type="text" id="fileName" placeholder="Enter file name (example: my-script)" value="nightorbit-script">
+            <span class="ext-badge">.JS</span>
+        </div>
+    </div>
+
+    <div class="btn-row">
+        <button class="green" onclick="createJsFile()">
+            <i class="fa-solid fa-file-export"></i> CREATE JS FILE
+        </button>
+        <button class="secondary" onclick="validateOnly()">
+            <i class="fa-solid fa-circle-check"></i> CHECK ERRORS ONLY
+        </button>
+        <button class="danger" onclick="clearAll()">
+            <i class="fa-solid fa-trash"></i> CLEAR
+        </button>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <div id="errorDisplay" class="error-display">
+        <div class="err-head">
+            <i class="fa-solid fa-triangle-exclamation"></i> JavaScript Error Detected
+        </div>
+        <div class="err-row">
+            <div class="err-label">Error Type</div>
+            <div class="err-value" id="errType">—</div>
+        </div>
+        <div class="err-row">
+            <div class="err-label">Line Number</div>
+            <div class="err-value highlight" id="errLineNum">—</div>
+        </div>
+        <div class="err-row">
+            <div class="err-label">Full Line</div>
+            <div class="err-value" id="errLineText">—</div>
+        </div>
+        <div class="err-row">
+            <div class="err-label">Message</div>
+            <div class="err-value" id="errMessage">—</div>
+        </div>
+        <div class="err-line-code" id="errLineCode" style="display:none;"></div>
+        <div class="err-suggestion" id="errSuggestion">
+            <strong>💡 Suggestion:</strong> <span id="errSuggestionText">—</span>
+        </div>
+    </div>
+
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+(function(){
+'use strict';
+
+var STATE = {
+    dom: {},
+    isProcessing: false
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILS
+   ═══════════════════════════════════════════════════════════════ */
+var Utils = {
+    bytes: function(n) {
+        if (!n) return '0 B';
+        if (n < 1024) return n + ' B';
+        if (n < 1048576) return (n/1024).toFixed(2) + ' KB';
+        return (n/1048576).toFixed(2) + ' MB';
+    },
+    sizeOf: function(str) {
+        if (!str) return 0;
+        try { return new Blob([str]).size; }
+        catch(e) { return str.length; }
+    },
+    escapeHtml: function(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   UI
+   ═══════════════════════════════════════════════════════════════ */
+var UI = {
+    cache: function() {
+        var ids = [
+            'inputCode','inputStats','statLines','statChars','statSize','statLang',
+            'status','toastContainer','welcomeName','fileName',
+            'optMinify','optHints','optErrorCheck','optExactLine',
+            'errorDisplay','errType','errLineNum','errLineText',
+            'errMessage','errLineCode','errSuggestion','errSuggestionText'
+        ];
+        for (var i = 0; i < ids.length; i++) {
+            STATE.dom[ids[i]] = document.getElementById(ids[i]);
+        }
+    },
+    status: function(type, msg) {
+        var el = STATE.dom.status;
+        if (!el) return;
+        el.className = 'status ' + type;
+        el.textContent = msg;
+    },
+    hideStatus: function() {
+        var el = STATE.dom.status;
+        if (el) el.className = 'status';
+        var ed = STATE.dom.errorDisplay;
+        if (ed) ed.classList.remove('show');
+    },
+    toast: function(msg, type, duration) {
+        type = type || 'info';
+        duration = duration || 3500;
+        var c = STATE.dom.toastContainer;
+        if (!c) return;
+        var iconMap = {
+            success: 'fa-circle-check',
+            error: 'fa-circle-xmark',
+            warn: 'fa-triangle-exclamation',
+            info: 'fa-circle-info'
+        };
+        var el = document.createElement('div');
+        el.className = 'toast ' + type;
+        el.innerHTML = '<i class="fa-solid ' + (iconMap[type] || iconMap.info) + '"></i><span>' + Utils.escapeHtml(msg) + '</span>';
+        c.appendChild(el);
+        setTimeout(function() {
+            el.classList.add('removing');
+            setTimeout(function() {
+                if (el.parentNode) el.parentNode.removeChild(el);
+            }, 400);
+        }, duration);
+    },
+    showError: function(errInfo) {
+        var ed = STATE.dom.errorDisplay;
+        if (!ed) return;
+
+        if (STATE.dom.errType) STATE.dom.errType.textContent = errInfo.type || 'Error';
+        var lineText = errInfo.line ? ('Line ' + errInfo.line + (errInfo.column ? ', Col ' + errInfo.column : '')) : 'Unknown';
+        if (STATE.dom.errLineNum) STATE.dom.errLineNum.textContent = lineText;
+        if (STATE.dom.errLineText) STATE.dom.errLineText.textContent = errInfo.lineText || '—';
+        if (STATE.dom.errMessage) STATE.dom.errMessage.textContent = errInfo.message || '—';
+
+        if (errInfo.lineText && errInfo.line) {
+            var codeEl = STATE.dom.errLineCode;
+            if (codeEl) {
+                codeEl.style.display = 'block';
+                codeEl.innerHTML = '<span class="line-num">' + errInfo.line + ' |</span>' + Utils.escapeHtml(errInfo.lineText);
+            }
+        } else {
+            if (STATE.dom.errLineCode) STATE.dom.errLineCode.style.display = 'none';
+        }
+
+        if (STATE.dom.errSuggestionText) {
+            STATE.dom.errSuggestionText.textContent = errInfo.suggestion || 'Please check the syntax around the reported line.';
+        }
+
+        ed.classList.add('show');
+    }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   DETECT INPUT TYPE
+   ═══════════════════════════════════════════════════════════════ */
+function detectInputType(code) {
+    if (!code || !code.trim()) return { type: 'empty' };
+    var t = code.trim();
+    var hasScript = /<script\b[^>]*>[\s\S]*?<\/script\s*>/i.test(t);
+    var hasHtml = /<!DOCTYPE|<html\b|<head\b|<body\b|<div\b|<span\b|<p\b|<button\b|<meta\b|<link\b/i.test(t);
+    var hasCss = /(?:^|\s)(?:[.#][\w-]+\s*\{|\w+\s*:\s*[^;{}]+\s*;)/.test(t) && !hasScript;
+    var hasJs = /(?:function\s+\w+|var\s+\w+|let\s+\w+|const\s+\w+|=>|\breturn\b|console\.|document\.|window\.)/.test(t);
+    if (hasScript) return { type: 'mixed' };
+    if (hasHtml) return { type: 'html' };
+    if (hasCss) return { type: 'css' };
+    if (hasJs || t.length > 0) return { type: 'js' };
+    return { type: 'empty' };
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EXTRACT JS FROM HTML
+   ═══════════════════════════════════════════════════════════════ */
+function extractJsFromHtml(code) {
+    if (!code) return '';
+    var scripts = [];
+    var re = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
+    var m;
+    while ((m = re.exec(code)) !== null) {
+        var attrs = m[1] || '';
+        var body = m[2] || '';
+        if (/\bsrc\s*=/i.test(attrs)) continue;
+        if (body.trim()) scripts.push(body);
+    }
+    if (scripts.length) return scripts.join('\n\n');
+    return stripHtmlTags(code);
+}
+
+function stripHtmlTags(code) {
+    if (!code) return '';
+    var r = code;
+    r = r.replace(/<!--[\s\S]*?-->/g, '');
+    r = r.replace(/<!DOCTYPE[^>]*>/gi, '');
+    r = r.replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi, '');
+    r = r.replace(/<script\b[^>]*>/gi, '');
+    r = r.replace(/<\/script\s*>/gi, '');
+    r = r.replace(/<[^>]+>/g, '');
+    return r;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SAFE COMMENT STRIPPER
+   ═══════════════════════════════════════════════════════════════ */
+function stripJsComments(code) {
+    if (!code) return '';
+    var out = [], i = 0, len = code.length, state = 'code';
+    var lastNonWs = '';
+    var tail = '';
+
+    while (i < len) {
+        var ch = code[i], nx = code[i+1];
+
+        if (state === 'line') {
+            if (ch === '\n') {
+                state = 'code';
+                out.push(ch);
+            }
+            i++;
+            continue;
+        }
+        if (state === 'block') {
+            if (ch === '*' && nx === '/') {
+                state = 'code';
+                i += 2;
+                continue;
+            }
+            i++;
+            continue;
+        }
+        if (state === 'single') {
+            out.push(ch);
+            if (ch === '\\' && i+1 < len) {
+                out.push(code[i+1]);
+                i += 2;
+                continue;
+            }
+            if (ch === "'") state = 'code';
+            i++;
+            continue;
+        }
+        if (state === 'double') {
+            out.push(ch);
+            if (ch === '\\' && i+1 < len) {
+                out.push(code[i+1]);
+                i += 2;
+                continue;
+            }
+            if (ch === '"') state = 'code';
+            i++;
+            continue;
+        }
+        if (state === 'template') {
+            out.push(ch);
+            if (ch === '\\' && i+1 < len) {
+                out.push(code[i+1]);
+                i += 2;
+                continue;
+            }
+            if (ch === '`') state = 'code';
+            i++;
+            continue;
+        }
+        if (state === 'regex') {
+            out.push(ch);
+            if (ch === '\\' && i+1 < len) {
+                out.push(code[i+1]);
+                i += 2;
+                continue;
+            }
+            if (ch === '[') state = 'regex-class';
+            else if (ch === '/') {
+                state = 'code';
+                while (i+1 < len && /[gimsuy]/.test(code[i+1])) {
+                    i++;
+                    out.push(code[i]);
+                }
+            }
+            i++;
+            continue;
+        }
+        if (state === 'regex-class') {
+            out.push(ch);
+            if (ch === '\\' && i+1 < len) {
+                out.push(code[i+1]);
+                i += 2;
+                continue;
+            }
+            if (ch === ']') state = 'regex';
+            i++;
+            continue;
+        }
+
+        if (ch === '/' && nx === '/') {
+            state = 'line';
+            i += 2;
+            continue;
+        }
+        if (ch === '/' && nx === '*') {
+            state = 'block';
+            i += 2;
+            continue;
+        }
+        if (ch === "'") {
+            state = 'single';
+            out.push(ch);
+            i++;
+            lastNonWs = ch;
+            continue;
+        }
+        if (ch === '"') {
+            state = 'double';
+            out.push(ch);
+            i++;
+            lastNonWs = ch;
+            continue;
+        }
+        if (ch === '`') {
+            state = 'template';
+            out.push(ch);
+            i++;
+            lastNonWs = ch;
+            continue;
+        }
+
+        if (ch === '/') {
+            var prev = lastNonWs;
+            if (prev === '' || /[=(:,;!&|?{}\[\]<>+\-*%^~]/.test(prev) ||
+                /\b(return|typeof|instanceof|in|of|new|delete|void|do|else|case)\s*$/.test(tail)) {
+                state = 'regex';
+                out.push(ch);
+                i++;
+                continue;
+            }
+        }
+
+        if (!/\s/.test(ch)) {
+            lastNonWs = ch;
+            tail = (tail + ch).slice(-30);
+        }
+        out.push(ch);
+        i++;
+    }
+    return out.join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SAFE MINIFIER
+   ═══════════════════════════════════════════════════════════════ */
+function safeMinify(code) {
+    if (!code) return '';
+    var noComments = stripJsComments(code);
+    var out = [], i = 0, len = noComments.length, state = 'code';
+    var lastNonWs = '';
+
+    while (i < len) {
+        var ch = noComments[i], nx = noComments[i+1];
+
+        if (state === 'single') {
+            out.push(ch);
+            if (ch === '\\' && i+1 < len) {
+                out.push(noComments[i+1]);
+                i += 2;
+                continue;
+            }
+            if (ch === "'") state = 'code';
+            i++;
+            continue;
+        }
+        if (state === 'double') {
+            out.push(ch);
+            if (ch === '\\' && i+1 < len) {
+                out.push(noComments[i+1]);
+                i += 2;
+                continue;
+            }
+            if (ch === '"') state = 'code';
+            i++;
+            continue;
+        }
+        if (state === 'template') {
+            out.push(ch);
+            if (ch === '\\' && i+1 < len) {
+                out.push(noComments[i+1]);
+                i += 2;
+                continue;
+            }
+            if (ch === '`') state = 'code';
+            i++;
+            continue;
+        }
+        if (state === 'regex') {
+            out.push(ch);
+            if (ch === '\\' && i+1 < len) {
+                out.push(noComments[i+1]);
+                i += 2;
+                continue;
+            }
+            if (ch === '[') state = 'regex-class';
+            else if (ch === '/') {
+                state = 'code';
+                while (i+1 < len && /[gimsuy]/.test(noComments[i+1])) {
+                    i++;
+                    out.push(noComments[i]);
+                }
+            }
+            i++;
+            continue;
+        }
+        if (state === 'regex-class') {
+            out.push(ch);
+            if (ch === '\\' && i+1 < len) {
+                out.push(noComments[i+1]);
+                i += 2;
+                continue;
+            }
+            if (ch === ']') state = 'regex';
+            i++;
+            continue;
+        }
+
+        if (ch === "'") {
+            state = 'single';
+            out.push(ch);
+            i++;
+            lastNonWs = ch;
+            continue;
+        }
+        if (ch === '"') {
+            state = 'double';
+            out.push(ch);
+            i++;
+            lastNonWs = ch;
+            continue;
+        }
+        if (ch === '`') {
+            state = 'template';
+            out.push(ch);
+            i++;
+            lastNonWs = ch;
+            continue;
+        }
+
+        if (ch === '/') {
+            var prev = lastNonWs;
+            if (prev === '' || /[=(:,;!&|?{}\[\]<>+\-*%^~]/.test(prev) ||
+                /\b(return|typeof|instanceof|in|of|new|delete|void|do|else|case)\s*$/.test(out.join('').slice(-30))) {
+                state = 'regex';
+                out.push(ch);
+                i++;
+                continue;
+            }
+        }
+
+        if (/\s/.test(ch)) {
+            if (out.length && out[out.length-1] !== ' ' && i+1 < len && !/\s/.test(nx)) {
+                var prevCh = lastNonWs;
+                var nextCh = nx;
+                if (/[A-Za-z0-9_$]/.test(prevCh) && /[A-Za-z0-9_$]/.test(nextCh)) {
+                    out.push(' ');
+                }
+            }
+            i++;
+            continue;
+        }
+
+        out.push(ch);
+        if (!/\s/.test(ch)) lastNonWs = ch;
+        i++;
+    }
+    return out.join('').trim();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADVANCE ERROR CHECKER v2 — Syntax + Runtime
+   ═══════════════════════════════════════════════════════════════ */
+function checkJsErrors(code) {
+    if (!code || !code.trim()) {
+        return {
+            valid: false,
+            type: 'Empty Input',
+            message: 'No JavaScript code found in input.',
+            line: null,
+            column: null,
+            lineText: null,
+            suggestion: 'Please paste JavaScript code.'
+        };
+    }
+
+    var lines = code.split('\n');
+
+    /* ═══ STEP 1: SYNTAX CHECK via V8 native parser ═══ */
+    var syntaxPassed = false;
+    try {
+        new Function(code);
+        syntaxPassed = true;
+    } catch (syntaxErr) {
+        var msg = syntaxErr.message || String(syntaxErr);
+        var errType = 'Syntax Error';
+        var suggestion = 'Check the syntax around this line.';
+        var v8Line = null;
+        var v8Col = null;
+
+        var posMatch = msg.match(/\((\d+):(\d+)\)/);
+        if (posMatch) {
+            v8Line = parseInt(posMatch[1], 10);
+            v8Col = parseInt(posMatch[2], 10);
+        }
+        if (v8Line === null) {
+            var lcMatch = msg.match(/line\s+(\d+)(?:\s+column\s+(\d+))?/i);
+            if (lcMatch) {
+                v8Line = parseInt(lcMatch[1], 10);
+                if (lcMatch[2]) v8Col = parseInt(lcMatch[2], 10);
+            }
+        }
+
+        if (v8Line !== null && v8Line > 0) {
+            var candidate = lines[v8Line - 1] || '';
+            if (!candidate.trim() && v8Line - 1 >= 1 && v8Line - 1 <= lines.length) {
+                v8Line = v8Line - 1;
+            }
+        }
+
+        if (/Unexpected token/i.test(msg)) {
+            var tm = msg.match(/Unexpected token\s+['"]?(.+?)['"]?(?:\s|$|,|\))/i);
+            var badToken = tm ? tm[1].trim() : '';
+            errType = 'Unexpected Token';
+            if (badToken === '}') suggestion = 'Extra closing brace "}". No matching "{" before this.';
+            else if (badToken === ')') suggestion = 'Extra closing parenthesis ")". No matching "(" before this.';
+            else if (badToken === ']') suggestion = 'Extra closing bracket "]". No matching "[" before this.';
+            else if (badToken === '{') suggestion = 'Unexpected "{". Check the statement before this block.';
+            else if (badToken === '(') suggestion = 'Unexpected "(". Check the expression before this parenthesis.';
+            else if (badToken === '[') suggestion = 'Unexpected "[". Check the expression before this bracket.';
+            else if (badToken === "'" || badToken === '"' || badToken === '`') suggestion = 'Unclosed quote ' + badToken + '. Check string literals.';
+            else if (badToken) suggestion = 'Unexpected "' + badToken + '". Check what is missing before it.';
+        } else if (/Unexpected end of input/i.test(msg)) {
+            errType = 'Unexpected End of Input';
+            v8Line = lines.length;
+            suggestion = 'Code ends too early. Missing bracket, brace, parenthesis, or string close.';
+        } else if (/Unterminated string/i.test(msg)) {
+            errType = 'Unterminated String';
+            suggestion = 'A string is not closed. Add a matching quote on this line.';
+        } else if (/Invalid or unexpected token/i.test(msg)) {
+            errType = 'Invalid Token';
+            suggestion = 'An invalid character found. Check for stray symbols or hidden unicode.';
+        } else if (/missing \) after argument list/i.test(msg)) {
+            errType = 'Missing Closing Parenthesis';
+            suggestion = 'A function call is missing its closing ")".';
+        } else if (/missing \} after function body/i.test(msg)) {
+            errType = 'Missing Closing Brace';
+            suggestion = 'A function is missing its closing "}".';
+        } else if (/missing ; before statement/i.test(msg)) {
+            errType = 'Missing Semicolon';
+            suggestion = 'A semicolon ";" is missing before this statement.';
+        } else if (/missing \] after element list/i.test(msg)) {
+            errType = 'Missing Closing Bracket';
+            suggestion = 'An array is missing its closing "]".';
+        } else if (/Invalid regular expression/i.test(msg)) {
+            errType = 'Invalid Regular Expression';
+            suggestion = 'Check the regex pattern and its flags.';
+        }
+
+        if (v8Line !== null && v8Line >= 1 && v8Line <= lines.length) {
+            return {
+                valid: false,
+                type: errType,
+                message: msg + (v8Col ? ' (line ' + v8Line + ', column ' + v8Col + ')' : ''),
+                line: v8Line,
+                column: v8Col,
+                lineText: lines[v8Line - 1],
+                suggestion: suggestion
+            };
+        }
+
+        var bt = customBracketTracker(lines);
+        if (bt) return bt;
+
+        return {
+            valid: false,
+            type: errType,
+            message: msg,
+            line: null,
+            column: null,
+            lineText: null,
+            suggestion: suggestion
+        };
+    }
+
+    /* ═══ STEP 2: RUNTIME CHECK — sandbox execution ═══ */
+    if (syntaxPassed) {
+        try {
+            var noop = function(){};
+            var fakeEl = {
+                style: {},
+                classList: { add: noop, remove: noop, toggle: noop, contains: function(){ return false; } },
+                dataset: {},
+                children: [],
+                childNodes: [],
+                parentNode: null,
+                addEventListener: noop,
+                removeEventListener: noop,
+                appendChild: noop,
+                removeChild: noop,
+                insertBefore: noop,
+                setAttribute: noop,
+                getAttribute: function(){ return null; },
+                removeAttribute: noop,
+                querySelector: function(){ return null; },
+                querySelectorAll: function(){ return []; },
+                getElementById: function(){ return null; },
+                focus: noop,
+                blur: noop,
+                click: noop,
+                innerHTML: '',
+                textContent: '',
+                value: ''
+            };
+
+            var sandbox = {
+                window: null,
+                document: {
+                    body: fakeEl,
+                    head: fakeEl,
+                    documentElement: fakeEl,
+                    createElement: function(){ return fakeEl; },
+                    createTextNode: function(){ return fakeEl; },
+                    createDocumentFragment: function(){ return fakeEl; },
+                    getElementById: function(){ return null; },
+                    querySelector: function(){ return null; },
+                    querySelectorAll: function(){ return []; },
+                    getElementsByTagName: function(){ return []; },
+                    getElementsByClassName: function(){ return []; },
+                    addEventListener: noop,
+                    removeEventListener: noop,
+                    readyState: 'complete',
+                    cookie: ''
+                },
+                console: { log: noop, warn: noop, error: noop, info: noop, debug: noop, trace: noop, table: noop, dir: noop, group: noop, groupEnd: noop, time: noop, timeEnd: noop },
+                setTimeout: function(){ return 0; },
+                setInterval: function(){ return 0; },
+                clearTimeout: noop,
+                clearInterval: noop,
+                requestAnimationFrame: function(){ return 0; },
+                cancelAnimationFrame: noop,
+                queueMicrotask: noop,
+                fetch: function(){ return Promise.resolve({ ok: false, json: function(){ return Promise.resolve({}); }, text: function(){ return Promise.resolve(''); } }); },
+                XMLHttpRequest: function(){ this.open = noop; this.send = noop; this.setRequestHeader = noop; this.addEventListener = noop; },
+                localStorage: { getItem: function(){ return null; }, setItem: noop, removeItem: noop, clear: noop },
+                sessionStorage: { getItem: function(){ return null; }, setItem: noop, removeItem: noop, clear: noop },
+                navigator: { userAgent: '', platform: '', language: 'en' },
+                location: { href: '', hostname: '', pathname: '', search: '', hash: '', reload: noop, assign: noop, replace: noop },
+                alert: noop,
+                confirm: function(){ return false; },
+                prompt: function(){ return null; },
+                URL: { createObjectURL: function(){ return ''; }, revokeObjectURL: noop },
+                Blob: function(){ this.size = 0; this.type = ''; },
+                FileReader: function(){ this.readAsText = noop; this.addEventListener = noop; },
+                MutationObserver: function(){ this.observe = noop; this.disconnect = noop; this.takeRecords = function(){ return []; }; },
+                IntersectionObserver: function(){ this.observe = noop; this.disconnect = noop; },
+                ResizeObserver: function(){ this.observe = noop; this.disconnect = noop; },
+                performance: { now: function(){ return Date.now(); } },
+                atob: function(s){ return s; },
+                btoa: function(s){ return s; },
+                firebase: { auth: function(){ return { onAuthStateChanged: noop, signOut: function(){ return Promise.resolve(); } }; }, database: function(){ return {}; }, initializeApp: noop },
+                JavaScriptObfuscator: { obfuscate: function(){ return { getObfuscatedCode: function(){ return ''; } }; } }
+            };
+            sandbox.window = sandbox;
+            sandbox.globalThis = sandbox;
+            sandbox.self = sandbox;
+
+            var keys = Object.keys(sandbox);
+            var vals = keys.map(function(k){ return sandbox[k]; });
+
+            var wrapped = '(function(' + keys.join(',') + '){\n"use strict";\n' + code + '\n})';
+            var fn = eval(wrapped);
+            fn.apply(null, vals);
+        } catch (runtimeErr) {
+            var rMsg = runtimeErr.message || String(runtimeErr);
+            var rStack = runtimeErr.stack || '';
+
+            var rLine = null;
+            var rCol = null;
+
+            var sm = rStack.match(/<anonymous>:(\d+):(\d+)/) || rStack.match(/:(\d+):(\d+)/);
+            if (sm) {
+                rLine = parseInt(sm[1], 10);
+                rCol = parseInt(sm[2], 10);
+            }
+
+            if (rLine !== null && rLine > 2) rLine = rLine - 2;
+            else if (rLine !== null) rLine = 1;
+
+            if (rLine !== null && (rLine < 1 || rLine > lines.length || !lines[rLine - 1])) {
+                rLine = null;
+            }
+
+            var rType = 'Runtime Error';
+            var rSug = 'Check the code on this line carefully.';
+            var rLineText = rLine ? lines[rLine - 1] : null;
+
+            if (/is not defined/i.test(rMsg)) {
+                var vm = rMsg.match(/(\w+) is not defined/i);
+                var vName = vm ? vm[1] : '';
+                rType = 'Undefined Variable';
+                rSug = '"' + vName + '" is used but never defined. Check for typos, or declare it with var/let/const/function.';
+            } else if (/is not a function/i.test(rMsg)) {
+                rType = 'Not a Function';
+                rSug = 'You are calling something that is not a function. Check the name and its type.';
+            } else if (/Cannot read propert/i.test(rMsg)) {
+                rType = 'Cannot Read Property';
+                rSug = 'You are accessing a property on null or undefined. Add a null check before this line.';
+            } else if (/Cannot set propert/i.test(rMsg)) {
+                rType = 'Cannot Set Property';
+                rSug = 'You are setting a property on null or undefined. Check the object.';
+            } else if (/is not a constructor/i.test(rMsg)) {
+                rType = 'Not a Constructor';
+                rSug = 'You are using "new" on something that is not a class or constructor function.';
+            } else if (/Assignment to constant variable/i.test(rMsg)) {
+                rType = 'Const Reassignment';
+                rSug = 'You are trying to reassign a "const" variable. Use "let" or "var" instead.';
+            } else if (/Maximum call stack/i.test(rMsg)) {
+                rType = 'Stack Overflow';
+                rSug = 'Infinite recursion detected. Check your recursive function.';
+            } else if (/ReferenceError/i.test(rMsg)) {
+                rType = 'Reference Error';
+                rSug = 'A variable or function is referenced but not defined. Check spelling.';
+            } else if (/TypeError/i.test(rMsg)) {
+                rType = 'Type Error';
+                rSug = 'A value is of the wrong type for this operation.';
+            }
+
+            return {
+                valid: false,
+                type: rType,
+                message: rMsg + (rLine ? ' (line ' + rLine + (rCol ? ', column ' + rCol : '') + ')' : ''),
+                line: rLine,
+                column: rCol,
+                lineText: rLineText,
+                suggestion: rSug
+            };
+        }
+    }
+
+    /* ═══ STEP 3: Custom bracket tracker as last resort ═══ */
+    var customResult = customBracketTracker(lines);
+    if (customResult) return customResult;
+
+    return { valid: true };
+}function checkJsErrors(code) {
+    if (!code || !code.trim()) {
+        return {
+            valid: false,
+            type: 'Empty Input',
+            message: 'No JavaScript code found in input.',
+            line: null,
+            column: null,
+            lineText: null,
+            suggestion: 'Please paste JavaScript code.'
+        };
+    }
+
+    var lines = code.split('\n');
+
+    /* ═══ Use JavaScriptObfuscator library for accurate detection ═══ */
+    if (typeof JavaScriptObfuscator !== 'undefined') {
+        try {
+            // Just validate — don't actually obfuscate heavily
+            JavaScriptObfuscator.obfuscate(code, {
+                compact: true,
+                controlFlowFlattening: false,
+                deadCodeInjection: false,
+                stringArray: false,
+                simplify: false,
+                identifierNamesGenerator: 'hexadecimal',
+                renameGlobals: false,
+                target: 'browser',
+                seed: 0
+            });
+            return { valid: true };
+        } catch (libErr) {
+            var libMsg = libErr.message || String(libErr);
+            var libLine = null;
+            var libCol = null;
+
+            // Extract line:column
+            var posMatch = libMsg.match(/\((\d+):(\d+)\)/);
+            if (posMatch) {
+                libLine = parseInt(posMatch[1], 10);
+                libCol = parseInt(posMatch[2], 10);
+            }
+            if (libLine === null) {
+                var lcMatch = libMsg.match(/line\s+(\d+)(?:\s+column\s+(\d+))?/i);
+                if (lcMatch) {
+                    libLine = parseInt(lcMatch[1], 10);
+                    if (lcMatch[2]) libCol = parseInt(lcMatch[2], 10);
+                }
+            }
+
+            // Classify error type
+            var errType = 'Syntax Error';
+            var suggestion = 'Check the syntax around this line.';
+
+            if (/Unexpected token/i.test(libMsg)) {
+                var tm = libMsg.match(/Unexpected token\s+['"]?(.+?)['"]?(?:\s|$|,|\))/i);
+                var badToken = tm ? tm[1].trim() : '';
+                errType = 'Unexpected Token';
+                if (badToken === '}') suggestion = 'Extra closing brace "}". No matching "{" before this.';
+                else if (badToken === ')') suggestion = 'Extra closing parenthesis ")". No matching "(" before this.';
+                else if (badToken === ']') suggestion = 'Extra closing bracket "]". No matching "[" before this.';
+                else if (badToken === '{') suggestion = 'Unexpected "{". Check the statement before this block.';
+                else if (badToken === '(') suggestion = 'Unexpected "(". Check the expression before this parenthesis.';
+                else if (badToken === '[') suggestion = 'Unexpected "[". Check the expression before this bracket.';
+                else if (badToken) suggestion = 'Unexpected "' + badToken + '". Check what is missing before it.';
+            } else if (/Unexpected end of input/i.test(libMsg)) {
+                errType = 'Unexpected End of Input';
+                libLine = lines.length;
+                suggestion = 'Code ends too early. Missing bracket, brace, parenthesis, or string close.';
+            } else if (/Unterminated string/i.test(libMsg)) {
+                errType = 'Unterminated String';
+                suggestion = 'A string is not closed. Add a matching quote.';
+            }
+
+            if (libLine !== null && libLine >= 1 && libLine <= lines.length) {
+                return {
+                    valid: false,
+                    type: errType,
+                    message: libMsg + (libCol ? ' (line ' + libLine + ', column ' + libCol + ')' : ''),
+                    line: libLine,
+                    column: libCol,
+                    lineText: lines[libLine - 1],
+                    suggestion: suggestion
+                };
+            }
+            // Library failed but no line info — fall through to V8
+        }
+    }
+
+    /* ═══ Fallback: V8 native parser ═══ */
+    try {
+        new Function(code);
+        return { valid: true };
+    } catch (err) {
+        var msg = err.message || String(err);
+        var v8Line = null;
+        var v8Col = null;
+
+        var posMatch2 = msg.match(/\((\d+):(\d+)\)/);
+        if (posMatch2) {
+            v8Line = parseInt(posMatch2[1], 10);
+            v8Col = parseInt(posMatch2[2], 10);
+        }
+        if (v8Line === null) {
+            var lcMatch2 = msg.match(/line\s+(\d+)(?:\s+column\s+(\d+))?/i);
+            if (lcMatch2) {
+                v8Line = parseInt(lcMatch2[1], 10);
+                if (lcMatch2[2]) v8Col = parseInt(lcMatch2[2], 10);
+            }
+        }
+
+        // V8 wraps → offset -2
+        if (v8Line !== null && v8Line > 2) {
+            v8Line = v8Line - 2;
+        } else if (v8Line !== null && v8Line > 0) {
+            v8Line = 1;
+        }
+
+        if (v8Line !== null && (v8Line < 1 || v8Line > lines.length)) {
+            v8Line = null;
+            v8Col = null;
+        }
+
+        if (v8Line !== null) {
+            return {
+                valid: false,
+                type: 'Syntax Error',
+                message: msg,
+                line: v8Line,
+                column: v8Col,
+                lineText: lines[v8Line - 1],
+                suggestion: 'Check the syntax around this line.'
+            };
+        }
+
+        // Last resort — bracket tracker
+        var bt = customBracketTracker(lines);
+        if (bt) return bt;
+
+        return {
+            valid: false,
+            type: 'Syntax Error',
+            message: msg,
+            line: null,
+            column: null,
+            lineText: null,
+            suggestion: 'Could not determine exact line. Please check your code manually.'
+        };
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CUSTOM BRACKET TRACKER — fallback
+   ═══════════════════════════════════════════════════════════════ */
+function customBracketTracker(lines) {
+    var stack = [];
+    var state = 'code';
+    var stringStart = null;
+    var blockCommentStart = null;
+
+    for (var ln = 0; ln < lines.length; ln++) {
+        var line = lines[ln];
+        var lineNum = ln + 1;
+
+        for (var col = 0; col < line.length; col++) {
+            var ch = line[col];
+            var nx = line[col + 1];
+
+            if (state === 'line-comment') continue;
+            if (state === 'block-comment') {
+                if (ch === '*' && nx === '/') {
+                    state = 'code';
+                    col++;
+                }
+                continue;
+            }
+            if (state === 'regex-class') {
+                if (ch === '\\') { col++; continue; }
+                if (ch === ']') state = 'regex';
+                continue;
+            }
+            if (state === 'regex') {
+                if (ch === '\\') { col++; continue; }
+                if (ch === '[') { state = 'regex-class'; continue; }
+                if (ch === '/') {
+                    state = 'code';
+                    while (col + 1 < line.length && /[gimsuy]/.test(line[col + 1])) col++;
+                }
+                continue;
+            }
+            if (state === 'single') {
+                if (ch === '\\') { col++; continue; }
+                if (ch === "'") state = 'code';
+                continue;
+            }
+            if (state === 'double') {
+                if (ch === '\\') { col++; continue; }
+                if (ch === '"') state = 'code';
+                continue;
+            }
+            if (state === 'template') {
+                if (ch === '\\') { col++; continue; }
+                if (ch === '`') state = 'code';
+                continue;
+            }
+
+            if (ch === '/' && nx === '/') {
+                state = 'line-comment';
+                col++;
+                continue;
+            }
+            if (ch === '/' && nx === '*') {
+                state = 'block-comment';
+                blockCommentStart = lineNum;
+                col++;
+                continue;
+            }
+
+            if (ch === "'") { state = 'single'; stringStart = { line: lineNum, col: col + 1 }; continue; }
+            if (ch === '"') { state = 'double'; stringStart = { line: lineNum, col: col + 1 }; continue; }
+            if (ch === '`') { state = 'template'; stringStart = { line: lineNum, col: col + 1 }; continue; }
+
+            if (ch === '/') {
+                var prev = '';
+                for (var k = col - 1; k >= 0; k--) {
+                    if (!/\s/.test(line[k])) { prev = line[k]; break; }
+                }
+                if (prev === '' || /[=(:,;!&|?{}\[\]<>+\-*%^~]/.test(prev)) {
+                    state = 'regex';
+                    continue;
+                }
+            }
+
+            if (ch === '{' || ch === '(' || ch === '[') {
+                stack.push({ char: ch, line: lineNum, col: col + 1 });
+            } else if (ch === '}' || ch === ')' || ch === ']') {
+                if (stack.length === 0) {
+                    var expected = ch === '}' ? '{' : (ch === ')' ? '(' : '[');
+                    return {
+                        type: 'Extra Closing Bracket',
+                        message: 'Extra closing "' + ch + '" at line ' + lineNum + ', column ' + (col + 1) + '.',
+                        line: lineNum,
+                        column: col + 1,
+                        lineText: line,
+                        suggestion: 'Remove the extra "' + ch + '" on this line, or add a matching "' + expected + '" before it.'
+                    };
+                }
+                var top = stack[stack.length - 1];
+                var expectedClose = top.char === '{' ? '}' : (top.char === '(' ? ')' : ']');
+                if (ch !== expectedClose) {
+                    return {
+                        type: 'Mismatched Bracket',
+                        message: 'Expected "' + expectedClose + '" to close "' + top.char + '" from line ' + top.line + ', but found "' + ch + '" at line ' + lineNum + ', column ' + (col + 1) + '.',
+                        line: lineNum,
+                        column: col + 1,
+                        lineText: line,
+                        suggestion: 'Replace "' + ch + '" with "' + expectedClose + '" on this line, or fix the bracket opened at line ' + top.line + '.'
+                    };
+                }
+                stack.pop();
+            }
+        }
+
+        if (state === 'line-comment') state = 'code';
+    }
+
+    if (state === 'single' || state === 'double' || state === 'template') {
+        var q = state === 'single' ? "'" : (state === 'double' ? '"' : '`');
+        var sl = stringStart ? stringStart.line : 1;
+        return {
+            type: 'Unterminated String',
+            message: 'String starting with ' + q + ' at line ' + sl + ' is never closed.',
+            line: sl,
+            column: stringStart ? stringStart.col : null,
+            lineText: lines[sl - 1] || '',
+            suggestion: 'Add a closing ' + q + ' to end this string.'
+        };
+    }
+
+    if (state === 'block-comment') {
+        return {
+            type: 'Unterminated Block Comment',
+            message: 'Block comment starting at line ' + blockCommentStart + ' is never closed with */.',
+            line: blockCommentStart,
+            column: null,
+            lineText: lines[blockCommentStart - 1] || '',
+            suggestion: 'Add "*/" to close the block comment.'
+        };
+    }
+
+    if (stack.length > 0) {
+        var unclosed = stack[stack.length - 1];
+        var closeChar = unclosed.char === '{' ? '}' : (unclosed.char === '(' ? ')' : ']');
+        return {
+            type: 'Missing Closing Bracket',
+            message: 'Opening "' + unclosed.char + '" at line ' + unclosed.line + ', column ' + unclosed.col + ' is never closed.',
+            line: unclosed.line,
+            column: unclosed.col,
+            lineText: lines[unclosed.line - 1] || '',
+            suggestion: 'Add a closing "' + closeChar + '" to match the "' + unclosed.char + '" opened on this line.'
+        };
+    }
+
+    return null;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANALYZE INPUT
+   ═══════════════════════════════════════════════════════════════ */
+function analyzeInput() {
+    var code = STATE.dom.inputCode ? STATE.dom.inputCode.value : '';
+    var stats = STATE.dom.inputStats;
+    if (!code.trim()) {
+        if (stats) stats.style.display = 'none';
+        if (STATE.dom.statLang) STATE.dom.statLang.textContent = '—';
+        return;
+    }
+    var lines = code.split('\n').length;
+    var chars = code.length;
+    var size = Utils.sizeOf(code);
+    if (STATE.dom.statLines) STATE.dom.statLines.textContent = lines.toLocaleString();
+    if (STATE.dom.statChars) STATE.dom.statChars.textContent = chars.toLocaleString();
+    if (STATE.dom.statSize) STATE.dom.statSize.textContent = Utils.bytes(size);
+    if (stats) stats.style.display = 'grid';
+    var d = detectInputType(code);
+    var label = d.type === 'mixed' ? 'HTML+JS' : d.type.toUpperCase();
+    if (STATE.dom.statLang) STATE.dom.statLang.textContent = label;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PREPARE CODE
+   ═══════════════════════════════════════════════════════════════ */
+function prepareCode(raw) {
+    var result = {
+        original: raw,
+        extracted: '',
+        processed: '',
+        wasHtml: false,
+        minified: false,
+        hintsRemoved: false,
+        valid: false,
+        error: null,
+        extractedSize: 0,
+        finalSize: 0
+    };
+
+    var detection = detectInputType(raw);
+
+    if (detection.type === 'html' || detection.type === 'mixed') {
+        result.wasHtml = true;
+        result.extracted = extractJsFromHtml(raw);
+    } else {
+        result.extracted = raw;
+    }
+
+    var removeHints = STATE.dom.optHints && STATE.dom.optHints.checked;
+    if (removeHints && result.extracted) {
+        result.extracted = stripJsComments(result.extracted);
+        result.hintsRemoved = true;
+    }
+
+    if (!result.extracted.trim()) {
+        result.error = {
+            valid: false,
+            type: 'Empty Input',
+            message: 'No JavaScript code found in the input.',
+            line: null,
+            lineText: null,
+            suggestion: 'Please paste JavaScript code or HTML containing <script> tags with inline JavaScript.'
+        };
+        return result;
+    }
+
+    result.extractedSize = Utils.sizeOf(result.extracted);
+
+    var doErrorCheck = STATE.dom.optErrorCheck && STATE.dom.optErrorCheck.checked;
+    if (doErrorCheck) {
+        var errResult = checkJsErrors(result.extracted);
+        if (!errResult.valid) {
+            result.error = errResult;
+            result.valid = false;
+            return result;
+        }
+    }
+
+    result.valid = true;
+
+    var doMinify = STATE.dom.optMinify && STATE.dom.optMinify.checked;
+    if (doMinify) {
+        try {
+            var minified = safeMinify(result.extracted);
+            if (doErrorCheck) {
+                var recheck = checkJsErrors(minified);
+                if (recheck.valid) {
+                    result.processed = minified;
+                    result.minified = true;
+                } else {
+                    result.processed = result.extracted;
+                    result.minified = false;
+                }
+            } else {
+                result.processed = minified;
+                result.minified = true;
+            }
+        } catch (e) {
+            result.processed = result.extracted;
+            result.minified = false;
+        }
+    } else {
+        result.processed = result.extracted;
+    }
+
+    result.finalSize = Utils.sizeOf(result.processed);
+    return result;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BUILD SUCCESS MESSAGE
+   ═══════════════════════════════════════════════════════════════ */
+function buildSuccessMessage(result, downloaded, fileName) {
+    var lines = [];
+
+    if (result.wasHtml) {
+        lines.push('✓ HTML detected — JavaScript extracted successfully.');
+        lines.push('  All HTML tags, hints, and non-JS content removed.');
+    } else {
+        lines.push('✓ JavaScript code detected.');
+    }
+
+    lines.push('');
+    lines.push('✓ Code validated — no syntax or runtime errors found.');
+
+    if (result.hintsRemoved) {
+        lines.push('✓ Hints and comments removed.');
+    }
+
+    if (result.minified) {
+        var saved = result.extractedSize - result.finalSize;
+        var pct = result.extractedSize > 0 ? ((saved / result.extractedSize) * 100).toFixed(1) : '0';
+        lines.push('');
+        lines.push('✓ Minified successfully:');
+        lines.push('  Before: ' + Utils.bytes(result.extractedSize));
+        lines.push('  After:  ' + Utils.bytes(result.finalSize));
+        lines.push('  Saved:  ' + Utils.bytes(saved) + ' (' + pct + '%)');
+        lines.push('  All functions, variables, and logic remain intact.');
+    } else if (STATE.dom.optMinify && STATE.dom.optMinify.checked) {
+        lines.push('');
+        lines.push('ℹ Minify was enabled but skipped (code already compact or re-validation failed).');
+    }
+
+    lines.push('');
+    if (downloaded) {
+        lines.push('✓ File downloaded: ' + fileName + '.js');
+    }
+
+    return lines.join('\n');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GET FILE NAME
+   ═══════════════════════════════════════════════════════════════ */
+function getFileName() {
+    var nameInput = STATE.dom.fileName;
+    var name = nameInput ? nameInput.value.trim() : '';
+    if (!name) {
+        name = 'nightorbit-script';
+        if (nameInput) nameInput.value = name;
+    }
+    name = name.replace(/\.js$/i, '');
+    name = name.replace(/[<>:"/\\|?*\x00-\x1F]/g, '-');
+    name = name.replace(/\s+/g, '-');
+    if (!name) name = 'nightorbit-script';
+    return name;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CREATE JS FILE
+   ═══════════════════════════════════════════════════════════════ */
+window.createJsFile = function() {
+    if (STATE.isProcessing) return;
+    var raw = STATE.dom.inputCode ? STATE.dom.inputCode.value : '';
+    if (!raw.trim()) {
+        UI.toast('Please paste JavaScript or HTML code first', 'warn');
+        return;
+    }
+
+    STATE.isProcessing = true;
+    UI.hideStatus();
+
+    try {
+        var result = prepareCode(raw);
+
+        if (result.error && !result.valid) {
+            UI.status('error', '❌ Error detected — File not created.\nPlease fix the error and try again.');
+            UI.showError(result.error);
+            UI.toast('Error found — see details below', 'error', 6000);
+            STATE.isProcessing = false;
+            return;
+        }
+
+        if (!result.valid) {
+            UI.status('error', '❌ Validation failed — File not created.');
+            UI.toast('Validation failed', 'error', 5000);
+            STATE.isProcessing = false;
+            return;
+        }
+
+        var fileName = getFileName();
+
+        var blob = new Blob([result.processed], { type: 'application/javascript' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = fileName + '.js';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 1500);
+
+        UI.status('success', buildSuccessMessage(result, true, fileName));
+        UI.toast('File created and downloaded: ' + fileName + '.js', 'success', 4000);
+    } catch (err) {
+        console.error(err);
+        UI.status('error', 'Unexpected error: ' + (err.message || err));
+        UI.toast('Unexpected error occurred', 'error', 5000);
+    } finally {
+        STATE.isProcessing = false;
+    }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   VALIDATE ONLY
+   ═══════════════════════════════════════════════════════════════ */
+window.validateOnly = function() {
+    var raw = STATE.dom.inputCode ? STATE.dom.inputCode.value : '';
+    if (!raw.trim()) {
+        UI.toast('Please paste code first', 'warn');
+        return;
+    }
+
+    UI.hideStatus();
+
+    try {
+        var detection = detectInputType(raw);
+        var extracted = raw;
+        var wasHtml = false;
+
+        if (detection.type === 'html' || detection.type === 'mixed') {
+            extracted = extractJsFromHtml(raw);
+            wasHtml = true;
+        }
+
+        if (!extracted.trim()) {
+            UI.status('error', '❌ No JavaScript code found in input.');
+            UI.toast('No JavaScript found', 'error', 4000);
+            return;
+        }
+
+        var errResult = checkJsErrors(extracted);
+
+        if (!errResult.valid) {
+            UI.status('error', '❌ Error detected — please fix and try again.');
+            UI.showError(errResult);
+            UI.toast('Error found — see details below', 'error', 6000);
+        } else {
+            var msg = [];
+            if (wasHtml) {
+                msg.push('✓ HTML detected — JavaScript extracted successfully.');
+                msg.push('  All HTML tags, hints, and non-JS content removed.');
+            } else {
+                msg.push('✓ JavaScript code detected.');
+            }
+            msg.push('');
+            msg.push('✓ Code validated — no syntax or runtime errors found.');
+            msg.push('✓ Your code is ready to create a JS file.');
+            UI.status('success', msg.join('\n'));
+            UI.toast('Code is valid — no errors found', 'success', 3500);
+        }
+    } catch (err) {
+        UI.status('error', 'Validation error: ' + (err.message || err));
+    }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   CLEAR
+   ═══════════════════════════════════════════════════════════════ */
+window.clearAll = function() {
+    if (STATE.dom.inputCode) STATE.dom.inputCode.value = '';
+    if (STATE.dom.inputStats) STATE.dom.inputStats.style.display = 'none';
+    if (STATE.dom.optMinify) STATE.dom.optMinify.checked = false;
+    if (STATE.dom.optHints) STATE.dom.optHints.checked = false;
+    if (STATE.dom.optErrorCheck) STATE.dom.optErrorCheck.checked = true;
+    if (STATE.dom.optExactLine) STATE.dom.optExactLine.checked = true;
+    if (STATE.dom.fileName) STATE.dom.fileName.value = 'nightorbit-script';
+    UI.hideStatus();
+    UI.toast('Cleared', 'info');
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   LOGOUT
+   ═══════════════════════════════════════════════════════════════ */
+window.doLogout = function() {
+    try {
+        if (typeof firebase !== 'undefined' && firebase.auth) {
+            firebase.auth().signOut().then(function() {
+                window.location.href = 'Login.html';
+            }).catch(function() {
+                window.location.href = 'Login.html';
+            });
+        } else {
+            window.location.href = 'Login.html';
+        }
+    } catch (e) {
+        window.location.href = 'Login.html';
+    }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════════ */
+function init() {
+    UI.cache();
+    var input = STATE.dom.inputCode;
+    if (input) {
+        var deb;
+        input.addEventListener('input', function() {
+            clearTimeout(deb);
+            deb = setTimeout(analyzeInput, 250);
+        });
+    }
+    try {
+        if (typeof firebase !== 'undefined' && firebase.auth) {
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    var name = user.displayName || user.email || 'User';
+                    if (STATE.dom.welcomeName) STATE.dom.welcomeName.textContent = name;
+                }
+            });
+        }
+    } catch (e) {}
+    UI.toast('Create JS File v2 ready', 'success', 2500);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
+
+})();
+</script>
+</body>
+</html>
