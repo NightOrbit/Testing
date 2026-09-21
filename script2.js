@@ -47,6 +47,7 @@
 const firebaseConfig = {
     apiKey: "AIzaSyCMYIa1YwahQRF_EGizjR1Xjj4aD9uBN_o",
     authDomain: "nightorbitbuilder.firebaseapp.com",
+    databaseURL: "https://nightorbitbuilder-default-rtdb.firebaseio.com",
     projectId: "nightorbitbuilder",
     storageBucket: "nightorbitbuilder.firebasestorage.app",
     messagingSenderId: "537115613677",
@@ -149,12 +150,55 @@ function updateLastLogin(uid) {
     });
 }
 
+/* ═══════════════════════════════════════════════════════════
+   TRACK TOOL CLICK — Save last action to Firebase
+   ═══════════════════════════════════════════════════════════ */
+function trackToolClick(toolName) {
+    if (!auth.currentUser || !auth.currentUser.uid) return;
+
+    const now = new Date().toISOString();
+    const nowStr = getFullTime();
+
+    db.ref('users/' + auth.currentUser.uid + '/activity').update({
+        lastAction: toolName,
+        lastActionTime: now,
+        lastActionTimeFormatted: nowStr
+    }).catch(function() {});
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ATTACH TRACKING — Har tool card aur menu item pe
+   ═══════════════════════════════════════════════════════════ */
+function attachToolTracking() {
+    /* Dashboard tool cards */
+    document.querySelectorAll('.tool-card').forEach(function(card) {
+        card.addEventListener('click', function() {
+            var toolName = card.querySelector('.tool-name');
+            if (toolName) {
+                trackToolClick(toolName.textContent.trim());
+            }
+        });
+    });
+
+    /* Side menu items */
+    document.querySelectorAll('.side-menu .menu-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+            if (item.id === 'logoutBtn') return;
+            var label = item.textContent.trim().replace(/\s+/g, ' ');
+            if (label) {
+                trackToolClick(label);
+            }
+        });
+    });
+}
+
 auth.onAuthStateChanged(function(user) {
     if (user) {
         updateLastLogin(user.uid);
         loadUserInfo(user);
         loadingScreen.classList.add('hidden');
         appContainer.style.display = 'flex';
+        attachToolTracking();
     } else {
         showLoginRequired();
     }
