@@ -124,8 +124,12 @@
         });
     }
 
+    function getISO() {
+        return new Date().toISOString();
+    }
+
     // ============================================================
-    //  DEVICE DETECTION — Detailed
+    //  DEVICE DETECTION
     // ============================================================
     function detectOS() {
         var ua = navigator.userAgent;
@@ -242,10 +246,9 @@
     }
 
     // ============================================================
-    //  LOCATION — IP-based (with fallback APIs)
+    //  LOCATION — IP-based
     // ============================================================
     async function getLocationData() {
-        // Primary API: ipapi.co
         try {
             var res = await fetch('https://ipapi.co/json/');
             if (res.ok) {
@@ -268,7 +271,6 @@
             console.warn('ipapi.co failed, trying fallback...');
         }
 
-        // Fallback API: ipwho.is
         try {
             var res2 = await fetch('https://ipwho.is/');
             if (res2.ok) {
@@ -291,7 +293,6 @@
             console.warn('ipwho.is failed too.');
         }
 
-        // Second fallback: ip-api.com
         try {
             var res3 = await fetch('http://ip-api.com/json/');
             if (res3.ok) {
@@ -316,7 +317,6 @@
             console.warn('ip-api.com failed too.');
         }
 
-        // All failed
         return {
             ip: 'Unknown', city: 'Unknown', region: 'Unknown',
             country: 'Unknown', countryCode: 'Unknown', postal: 'Unknown',
@@ -326,7 +326,7 @@
     }
 
     // ============================================================
-    //  COLLECT ALL DEVICE INFO
+    //  COLLECT ALL INFO
     // ============================================================
     async function collectAllInfo() {
         var os = detectOS();
@@ -336,7 +336,6 @@
         var location = await getLocationData();
 
         return {
-            // Account
             email: '',
             username: '',
             uid: '',
@@ -344,7 +343,6 @@
             emailVerified: '',
             photoURL: '',
 
-            // Location
             location: location,
             ip: location.ip,
             city: location.city,
@@ -358,11 +356,9 @@
             timezone: location.timezone,
             utcOffset: location.utcOffset,
 
-            // Network
             networkType: net.type,
             connectionSpeed: net.speed,
 
-            // Device
             deviceName: getDeviceName(),
             deviceType: getDeviceType(),
             os: os.name,
@@ -379,23 +375,20 @@
             battery: battery,
             gpu: getGPUInfo(),
 
-            // Language
             language: navigator.language || 'Unknown',
             languages: (navigator.languages || []).join(', ') || 'Unknown',
             platform: navigator.platform || 'Unknown',
             cookiesEnabled: navigator.cookieEnabled ? 'Yes' : 'No',
             doNotTrack: navigator.doNotTrack || 'Not set',
 
-            // User Agent
             userAgent: navigator.userAgent
         };
     }
 
     // ============================================================
-    //  SHOW USER INFO IN UI
+    //  DISPLAY INFO IN UI
     // ============================================================
     function displayAllInfo(full) {
-        // Account
         setVal('infoEmail', full.email);
         setVal('infoUsername', full.username);
         setVal('infoUid', full.uid);
@@ -403,7 +396,6 @@
         setVal('infoEmailVerified', full.emailVerified);
         setVal('infoPhoto', full.photoURL);
 
-        // Location
         setVal('infoIP', full.ip);
         setVal('infoCity', full.city);
         setVal('infoRegion', full.region);
@@ -416,7 +408,6 @@
         setVal('infoNetwork', full.networkType);
         setVal('infoSpeed', full.connectionSpeed);
 
-        // Device
         setVal('infoDevice', full.deviceName);
         setVal('infoDeviceType', full.deviceType);
         setVal('infoOS', full.os);
@@ -433,14 +424,12 @@
         setVal('infoBattery', full.battery);
         setVal('infoGPU', full.gpu);
 
-        // Language
         setVal('infoLanguage', full.language);
         setVal('infoLanguages', full.languages);
         setVal('infoPlatform', full.platform);
         setVal('infoCookies', full.cookiesEnabled);
         setVal('infoDNT', full.doNotTrack);
 
-        // Times
         setVal('infoFirstLogin', full.firstLoginTime || '--');
         setVal('infoLastLogin', full.lastLoginTime || '--');
         setVal('infoTotalLogins', full.totalLogins || '1');
@@ -450,16 +439,16 @@
     }
 
     // ============================================================
-    //  SAVE USER TO DATABASE
+    //  SAVE USER TO DATABASE — NESTED STRUCTURE
     // ============================================================
     async function saveUserToDb(user) {
         var now = Date.now();
         var nowStr = getFullTime();
+        var nowISO = getISO();
 
         showStatus('loading', 'Collecting device info...');
         var full = await collectAllInfo();
 
-        // Add Firebase user data
         full.email = user.email || 'Unknown';
         full.username = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
         full.uid = user.uid;
@@ -473,38 +462,87 @@
         var existing = snap.val();
 
         if (existing) {
-            // Update — keep firstLogin, increment totalLogins
+            // ═══ UPDATE ═══
             var totalLogins = (existing.totalLogins || 1) + 1;
             full.totalLogins = totalLogins;
             full.firstLogin = existing.firstLogin;
             full.firstLoginTime = existing.firstLoginTime;
 
             await db.ref('users/' + user.uid).update({
+                uid: full.uid,
                 email: full.email,
                 username: full.username,
                 provider: full.provider,
                 emailVerified: full.emailVerified,
                 photoURL: full.photoURL,
 
-                // Location
-                location: full.location,
+                // ═══ NESTED PROFILE ═══
+                profile: {
+                    email: full.email,
+                    name: full.username,
+                    createdAt: (existing.profile && existing.profile.createdAt) || nowISO,
+                    firstLogin: (existing.profile && existing.profile.firstLogin) || nowISO,
+                    lastLogin: nowISO
+                },
+
+                // ═══ NESTED DEVICE INFO ═══
+                deviceInfo: {
+                    deviceModel: full.deviceName || '—',
+                    deviceType: full.deviceType || '—',
+                    os: full.os || '—',
+                    osVersion: full.osVersion || '—',
+                    browser: full.browser || '—',
+                    browserVersion: full.browserVersion || '—',
+                    screen: full.screenSize || '—',
+                    viewport: full.viewport || '—',
+                    pixelRatio: full.pixelRatio || '—',
+                    colorDepth: full.colorDepth || '—',
+                    touch: full.touchSupport || '—',
+                    cores: full.cpuCores || '—',
+                    memory: full.deviceMemory || '—',
+                    battery: full.battery || '—',
+                    gpu: full.gpu || '—',
+                    language: full.language || '—',
+                    languages: full.languages || '—',
+                    platform: full.platform || '—',
+                    cookies: full.cookiesEnabled || '—',
+                    dnt: full.doNotTrack || '—'
+                },
+
+                // ═══ NESTED LOCATION ═══
+                location: {
+                    ip: full.ip || '—',
+                    city: full.city || '—',
+                    region: full.region || '—',
+                    country: full.country || '—',
+                    countryCode: full.countryCode || '—',
+                    postal: full.postal || '—',
+                    lat: full.latitude || '—',
+                    lng: full.longitude || '—',
+                    isp: full.isp || '—',
+                    timezone: full.timezone || '—',
+                    utcOffset: full.utcOffset || '—',
+                    gps: '—'
+                },
+
+                // ═══ NESTED NETWORK ═══
+                network: {
+                    type: full.networkType || '—',
+                    speed: full.connectionSpeed || '—'
+                },
+
+                // ═══ NESTED ACTIVITY ═══
+                activity: {
+                    encryptCount: (existing.activity && existing.activity.encryptCount) || 0,
+                    lastAction: 'login',
+                    lastActionTime: nowISO
+                },
+
+                // ═══ FLAT (backup) ═══
                 ip: full.ip,
                 city: full.city,
                 region: full.region,
                 country: full.country,
-                countryCode: full.countryCode,
-                postal: full.postal,
-                latitude: full.latitude,
-                longitude: full.longitude,
-                isp: full.isp,
-                timezone: full.timezone,
-                utcOffset: full.utcOffset,
-
-                // Network
-                networkType: full.networkType,
-                connectionSpeed: full.connectionSpeed,
-
-                // Device
                 deviceName: full.deviceName,
                 deviceType: full.deviceType,
                 os: full.os,
@@ -512,33 +550,24 @@
                 browser: full.browser,
                 browserVersion: full.browserVersion,
                 screenSize: full.screenSize,
-                viewport: full.viewport,
-                pixelRatio: full.pixelRatio,
-                colorDepth: full.colorDepth,
-                touchSupport: full.touchSupport,
                 cpuCores: full.cpuCores,
                 deviceMemory: full.deviceMemory,
                 battery: full.battery,
                 gpu: full.gpu,
-
-                // Language
                 language: full.language,
-                languages: full.languages,
                 platform: full.platform,
-                cookiesEnabled: full.cookiesEnabled,
-                doNotTrack: full.doNotTrack,
-
                 userAgent: full.userAgent,
 
-                // Times
+                // ═══ TIMES ═══
                 lastLogin: now,
                 lastLoginTime: nowStr,
+                lastLoginISO: nowISO,
                 totalLogins: totalLogins,
                 sessionStart: now,
-                sessionStartTime: getFullTime()
+                sessionStartTime: nowStr
             });
         } else {
-            // First time
+            // ═══ FIRST TIME ═══
             full.totalLogins = 1;
             full.firstLogin = now;
             full.firstLoginTime = nowStr;
@@ -555,22 +584,76 @@
                 emailVerified: full.emailVerified,
                 photoURL: full.photoURL,
 
-                location: full.location,
+                // ═══ NESTED PROFILE ═══
+                profile: {
+                    email: full.email,
+                    name: full.username,
+                    createdAt: nowISO,
+                    firstLogin: nowISO,
+                    lastLogin: nowISO
+                },
+
+                // ═══ NESTED DEVICE INFO ═══
+                deviceInfo: {
+                    deviceModel: full.deviceName || '—',
+                    deviceType: full.deviceType || '—',
+                    os: full.os || '—',
+                    osVersion: full.osVersion || '—',
+                    browser: full.browser || '—',
+                    browserVersion: full.browserVersion || '—',
+                    screen: full.screenSize || '—',
+                    viewport: full.viewport || '—',
+                    pixelRatio: full.pixelRatio || '—',
+                    colorDepth: full.colorDepth || '—',
+                    touch: full.touchSupport || '—',
+                    cores: full.cpuCores || '—',
+                    memory: full.deviceMemory || '—',
+                    battery: full.battery || '—',
+                    gpu: full.gpu || '—',
+                    language: full.language || '—',
+                    languages: full.languages || '—',
+                    platform: full.platform || '—',
+                    cookies: full.cookiesEnabled || '—',
+                    dnt: full.doNotTrack || '—'
+                },
+
+                // ═══ NESTED LOCATION ═══
+                location: {
+                    ip: full.ip || '—',
+                    city: full.city || '—',
+                    region: full.region || '—',
+                    country: full.country || '—',
+                    countryCode: full.countryCode || '—',
+                    postal: full.postal || '—',
+                    lat: full.latitude || '—',
+                    lng: full.longitude || '—',
+                    isp: full.isp || '—',
+                    timezone: full.timezone || '—',
+                    utcOffset: full.utcOffset || '—',
+                    gps: '—'
+                },
+
+                // ═══ NESTED NETWORK ═══
+                network: {
+                    type: full.networkType || '—',
+                    speed: full.connectionSpeed || '—'
+                },
+
+                // ═══ NESTED ACTIVITY ═══
+                activity: {
+                    encryptCount: 0,
+                    lastAction: 'signup',
+                    lastActionTime: nowISO
+                },
+
+                // ═══ BAN FIELDS (default) ═══
+                banned: false,
+
+                // ═══ FLAT (backup) ═══
                 ip: full.ip,
                 city: full.city,
                 region: full.region,
                 country: full.country,
-                countryCode: full.countryCode,
-                postal: full.postal,
-                latitude: full.latitude,
-                longitude: full.longitude,
-                isp: full.isp,
-                timezone: full.timezone,
-                utcOffset: full.utcOffset,
-
-                networkType: full.networkType,
-                connectionSpeed: full.connectionSpeed,
-
                 deviceName: full.deviceName,
                 deviceType: full.deviceType,
                 os: full.os,
@@ -578,27 +661,21 @@
                 browser: full.browser,
                 browserVersion: full.browserVersion,
                 screenSize: full.screenSize,
-                viewport: full.viewport,
-                pixelRatio: full.pixelRatio,
-                colorDepth: full.colorDepth,
-                touchSupport: full.touchSupport,
                 cpuCores: full.cpuCores,
                 deviceMemory: full.deviceMemory,
                 battery: full.battery,
                 gpu: full.gpu,
-
                 language: full.language,
-                languages: full.languages,
                 platform: full.platform,
-                cookiesEnabled: full.cookiesEnabled,
-                doNotTrack: full.doNotTrack,
-
                 userAgent: full.userAgent,
 
+                // ═══ TIMES ═══
                 firstLogin: full.firstLogin,
                 firstLoginTime: full.firstLoginTime,
+                firstLoginISO: nowISO,
                 lastLogin: full.lastLogin,
                 lastLoginTime: full.lastLoginTime,
+                lastLoginISO: nowISO,
                 totalLogins: full.totalLogins,
                 sessionStart: full.sessionStart,
                 sessionStartTime: full.sessionStartTime
@@ -614,7 +691,6 @@
     async function showUserInfoFromDb(uid, liveData) {
         var snap = await db.ref('users/' + uid).once('value');
         var data = snap.val() || {};
-
         var full = liveData || {};
 
         full.email = data.email || full.email || '--';
@@ -669,6 +745,92 @@
     }
 
     // ============================================================
+    //  BAN SCREEN
+    // ============================================================
+    function showBanScreen(userData) {
+        var loaderEl = document.getElementById('loader');
+        if (loaderEl) loaderEl.style.display = 'none';
+
+        var banReason = userData.banReason || 'Violation of terms of service';
+        var bannedAt = userData.bannedAt || '—';
+        var bannedBy = userData.bannedBy || 'Administrator';
+
+        var banDate = '—';
+        try {
+            var d = new Date(bannedAt);
+            if (!isNaN(d.getTime())) {
+                banDate = d.toLocaleString('en-GB', {
+                    day: '2-digit', month: 'short', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+            }
+        } catch(e) {}
+
+        function esc(s) {
+            return String(s || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        var html = '';
+        html += '<div style="position:fixed;inset:0;background:radial-gradient(circle at 50% 30%, #1a0a14 0%, #000 100%);color:#fff;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;padding:20px;z-index:9999999;overflow-y:auto;">';
+        html += '<div style="max-width:620px;width:100%;background:rgba(11,11,26,0.98);border:2px solid #ff0064;border-radius:24px;padding:44px 36px;box-shadow:0 0 120px rgba(255,0,100,0.5);text-align:center;position:relative;">';
+        html += '<div style="position:absolute;top:-2px;left:-2px;right:-2px;bottom:-2px;border-radius:24px;background:linear-gradient(135deg,#ff0064,#b400ff);z-index:-1;filter:blur(20px);opacity:0.3;"></div>';
+        html += '<div style="font-size:90px;margin-bottom:24px;animation:ban-pulse 2s infinite;">🚫</div>';
+        html += '<h1 style="font-family:Orbitron,sans-serif;font-size:28px;letter-spacing:5px;text-transform:uppercase;color:#ff0064;margin-bottom:14px;text-shadow:0 0 40px rgba(255,0,100,0.6);">Account Banned</h1>';
+        html += '<div style="width:80px;height:3px;background:linear-gradient(90deg,transparent,#ff0064,transparent);margin:0 auto 24px;"></div>';
+        html += '<p style="color:#b0b0d0;font-size:15px;line-height:1.8;margin-bottom:32px;">Your account has been <b style="color:#ff0064;">permanently banned</b> from accessing NightOrbit CodeForge.</p>';
+
+        html += '<div style="background:rgba(255,0,100,0.08);border-left:4px solid #ff0064;border-radius:12px;padding:20px 24px;text-align:left;margin-bottom:28px;">';
+
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,0,100,0.15);gap:12px;flex-wrap:wrap;">';
+        html += '<span style="color:#6a6a8a;text-transform:uppercase;letter-spacing:1.5px;font-size:10px;font-weight:700;">Reason</span>';
+        html += '<span style="color:#ffb3c9;font-weight:600;font-size:13px;text-align:right;word-break:break-word;">' + esc(banReason) + '</span>';
+        html += '</div>';
+
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,0,100,0.15);gap:12px;flex-wrap:wrap;">';
+        html += '<span style="color:#6a6a8a;text-transform:uppercase;letter-spacing:1.5px;font-size:10px;font-weight:700;">Banned On</span>';
+        html += '<span style="color:#ffd700;font-weight:600;font-size:13px;text-align:right;">' + banDate + '</span>';
+        html += '</div>';
+
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;gap:12px;flex-wrap:wrap;">';
+        html += '<span style="color:#6a6a8a;text-transform:uppercase;letter-spacing:1.5px;font-size:10px;font-weight:700;">Banned By</span>';
+        html += '<span style="color:#00f0ff;font-weight:600;font-size:13px;text-align:right;word-break:break-all;">' + esc(bannedBy) + '</span>';
+        html += '</div>';
+
+        html += '</div>';
+
+        html += '<p style="color:#6a6a8a;font-size:12px;line-height:1.8;margin-bottom:28px;">If you believe this is a mistake, please contact support at<br><b style="color:#00f0ff;font-size:14px;">support@nightorbit.com</b></p>';
+
+        html += '<button onclick="window.__banSignOut()" style="background:linear-gradient(135deg,#ff0064,#b400ff);color:#fff;border:none;padding:18px 36px;border-radius:14px;font-family:Orbitron,sans-serif;font-size:13px;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;width:100%;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 10px 40px rgba(255,0,100,0.4);">';
+        html += '<span>🚪</span> SIGN OUT';
+        html += '</button>';
+
+        html += '<div style="margin-top:24px;font-size:10px;color:#444;letter-spacing:3px;">NIGHTORBIT CODEFORGE</div>';
+        html += '</div></div>';
+
+        var styleEl = document.createElement('style');
+        styleEl.textContent = '@keyframes ban-pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } }';
+        document.head.appendChild(styleEl);
+
+        document.body.innerHTML = html;
+
+        window.__banSignOut = function() {
+            try {
+                auth.signOut().then(function() {
+                    window.location.reload();
+                }).catch(function() {
+                    window.location.reload();
+                });
+            } catch(e) {
+                window.location.reload();
+            }
+        };
+    }
+
+    // ============================================================
     //  GOOGLE LOGIN
     // ============================================================
     var googleBtn = document.getElementById('googleLoginBtn');
@@ -686,6 +848,18 @@
                 .then(async function(result) {
                     var user = result.user;
                     currentUser = user;
+
+                    // ═══ BAN CHECK ═══
+                    try {
+                        var banSnap = await db.ref('users/' + user.uid + '/banned').once('value');
+                        if (banSnap.val() === true) {
+                            var userSnap = await db.ref('users/' + user.uid).once('value');
+                            showBanScreen(userSnap.val() || {});
+                            return;
+                        }
+                    } catch (err) {
+                        console.warn('Ban check failed:', err.message);
+                    }
 
                     showStatus('loading', 'Collecting your info...');
 
@@ -715,21 +889,34 @@
     }
 
     // ============================================================
-    //  AUTH STATE LISTENER
+    //  AUTH STATE LISTENER — WITH BAN CHECK
     // ============================================================
     auth.onAuthStateChanged(async function(user) {
-        if (user) {
-            currentUser = user;
+        if (!user) return;
 
-            try {
-                var full = await saveUserToDb(user);
-                await showUserInfoFromDb(user.uid, full);
-                showStatus('success', '✅ Already logged in. Redirecting...');
-                safeRedirect('dashboard.html', 2000);
-            } catch (e) {
-                console.error('Auto-login error:', e);
-                showStatus('error', 'Error: ' + e.message);
+        currentUser = user;
+
+        // ═══ BAN CHECK ═══
+        try {
+            var banSnap = await db.ref('users/' + user.uid + '/banned').once('value');
+            if (banSnap.val() === true) {
+                var userSnap = await db.ref('users/' + user.uid).once('value');
+                showBanScreen(userSnap.val() || {});
+                return;
             }
+        } catch (err) {
+            console.warn('Ban check failed:', err.message);
+        }
+
+        // ═══ NOT BANNED — normal flow ═══
+        try {
+            var full = await saveUserToDb(user);
+            await showUserInfoFromDb(user.uid, full);
+            showStatus('success', '✅ Already logged in. Redirecting...');
+            safeRedirect('dashboard.html', 2000);
+        } catch (e) {
+            console.error('Auto-login error:', e);
+            showStatus('error', 'Error: ' + e.message);
         }
     });
 
