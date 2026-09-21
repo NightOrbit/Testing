@@ -175,7 +175,7 @@ function attachToolTracking() {
         card.addEventListener('click', function() {
             var toolName = card.querySelector('.tool-name');
             if (toolName) {
-                trackToolClick(toolName.textContent.trim());
+                trackToolClick('Entered ' + toolName.textContent.trim());  // ← "Entered" add
             }
         });
     });
@@ -186,7 +186,7 @@ function attachToolTracking() {
             if (item.id === 'logoutBtn') return;
             var label = item.textContent.trim().replace(/\s+/g, ' ');
             if (label) {
-                trackToolClick(label);
+                trackToolClick('Entered ' + label);  // ← "Entered" add
             }
         });
     });
