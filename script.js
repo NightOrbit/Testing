@@ -868,7 +868,7 @@
                         await showUserInfoFromDb(user.uid, full);
                         showLoader(false);
                         showStatus('success', '✅ Login successful! Redirecting...');
-                        safeRedirect('dashboard.html', 2500);
+                        safeRedirect('Dashboard.html', 2500);
                     } catch (err) {
                         console.error('Save error:', err);
                         showLoader(false);
@@ -913,7 +913,7 @@
             var full = await saveUserToDb(user);
             await showUserInfoFromDb(user.uid, full);
             showStatus('success', '✅ Already logged in. Redirecting...');
-            safeRedirect('dashboard.html', 2000);
+            safeRedirect('Dashboard.html', 2000);
         } catch (e) {
             console.error('Auto-login error:', e);
             showStatus('error', 'Error: ' + e.message);
