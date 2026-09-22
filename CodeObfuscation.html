@@ -2965,15 +2965,15 @@ window.doLogout = function() {
     try {
         if (typeof firebase !== 'undefined' && firebase.auth) {
             firebase.auth().signOut().then(function() {
-                window.location.href = 'Login.html';
+                window.location.href = 'index.html';
             }).catch(function() {
-                window.location.href = 'Login.html';
+                window.location.href = 'index.html';
             });
         } else {
-            window.location.href = 'Login.html';
+            window.location.href = 'index.html';
         }
     } catch (e) {
-        window.location.href = 'Login.html';
+        window.location.href = 'index.html';
     }
 };
 
