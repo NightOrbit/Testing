@@ -3076,10 +3076,12 @@
                         'var REALKEY=' + qE + '(' + qD + ');\n' +
                         'if(!REALKEY||REALKEY.length<30){return;}\n' +
                 
-                        /* ✅ FAKE _0xSECRET — search karne wale ko yeh milega */
-                        'var FAKE_KEY="NightOrbitGyidi_houperSecret_FAKE_DECOY_DO_NOT_USE_" + ' +
-                        '(Math.random().toString(36).substring(2,10));\n' +
-                        'window._0xSECRET = FAKE_KEY;\n' +
+                        'var _0x' + rv(6) + '="NightOrbitGyidi_houperSecret_" + ' +
+                        '(Math.random().toString(36).substring(2,20)) + (Math.random().toString(36).substring(2,20));\n' +
+                        'window._0xSECRET = _0x' + rv(6) + ';\n' +
+                        'var _0x' + rv(6) + '2="NightOrbitGyidi_houperSecret_" + ' +
+                        '(Math.random().toString(36).substring(2,20));\n' +
+                        'window._0xSECRET2 = _0x' + rv(6) + '2;\n' +
                 
                         /* ✅ FAKE __dx object — dekhne mein real jaisa */
                         'window.__dx = {\n' +
