@@ -2877,435 +2877,426 @@
                DOWNLOAD DECRYPTOR — v19 STRONG (20 layers, hidden filename,
                closure-protected key, auto-wipe, single-line key file)
                ═══════════════════════════════════════════════════════════ */
-               window.downloadDecryptor = function() {
-                    var outEl = document.getElementById('outputEnc');
-                    if (!outEl || !outEl.value) {
-                        toast('Encrypt first!', 'error');
-                        return;
-                    }
-                
-                    if (!KEY_MANAGER.isReady() || !KEY_MANAGER.getKey()) {
-                        state._pendingAction = 'downloadDecryptor';
-                        openPwdModal('reveal');
-                        toast('Enter password first, then decryptor will be created', 'info');
-                        return;
-                    }
-                
-                    var fullKey = KEY_MANAGER.getKey();
-                    if (!fullKey || fullKey.length < 30) {
-                        toast('Key not found. Please unlock first.', 'error');
-                        return;
-                    }
-                
-                    var encData = outEl.value;
-                    var fullKeyString = fullKey;
-                
-                    /* ─── Random helpers ─── */
-                    function rndHex(len) {
-                        var c = 'abcdef0123456789';
-                        var s = '';
-                        for (var i = 0; i < (len || 16); i++) s += c.charAt(Math.floor(Math.random() * c.length));
-                        return s;
-                    }
-                    function rv(len) {
-                        var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                        var s = '';
-                        for (var i = 0; i < (len || 6); i++) s += c.charAt(Math.floor(Math.random() * c.length));
-                        return s;
-                    }
-                    function pickRandom(arr) {
-                        return arr[Math.floor(Math.random() * arr.length)];
-                    }
-                
-                    /* ═══════════════════════════════════════════════════════════
-                       STEP 1: User se app file ka naam poochho
-                       ═══════════════════════════════════════════════════════════ */
-                    var userAppName = prompt(
-                        '📄 Apni decrypted app file ka naam likho:\n\n' +
-                        '(Example: my-gyidi-app ya gyidi-bazar)\n' +
-                        '.html automatically add ho jayega',
-                        'gyidi-app'
-                    );
-                
-                    if (!userAppName || userAppName.trim() === '') {
-                        userAppName = 'gyidi-app';
-                    }
-                    userAppName = userAppName.trim().replace(/[^a-zA-Z0-9_-]/g, '');
-                    if (!userAppName) userAppName = 'gyidi-app';
-                    var userAppFileName = userAppName + '.html';
-                
-                    /* ─── Key file name ─── */
-                    var typePrefixes = ['sk','vx','ky','zn','qm','pl','rt','jw','bd','fh',
-                                        'gc','mn','tp','ws','xr','yv','az','ce','dg','ei',
-                                        'fj','hk','lo','nu','op','qr','st','uv','wx','yz'];
-                    var securityThemes = ['protection','security','shield','guard','defense',
-                                          'armor','fortress','sentinel','watch','sentry',
-                                          'vault','cipher','crypt','secure','safe',
-                                          'barrier','bulwark','rampart','bastion','citadel',
-                                          'stronghold','keep','tower','gate','lock',
-                                          'seal','ward','safeguard','guardian','preserver'];
-                    var roleWords = ['key','server','module','engine','core',
-                                     'loader','handler','worker','runner','driver',
-                                     'helper','utility','service','agent','daemon',
-                                     'process','thread','task','job','routine',
-                                     'system','framework','runtime','kernel','shell',
-                                     'interface','bridge','adapter','connector','linker'];
-                
-                    var keyFileName = pickRandom(typePrefixes) + '-' +
-                                      pickRandom(securityThemes) + '-' +
-                                      rndHex(8) + '-' +
-                                      pickRandom(roleWords) + '-' +
-                                      rndHex(10) + '.js';
-                
-                    /* ═══════════════════════════════════════════════════════════
-                       7-LAYER OBFUSCATION
-                       ═══════════════════════════════════════════════════════════ */
-                    var s1 = (Date.now() % 251) + 1;
-                    var s2 = (Math.floor(Math.random() * 251)) + 1;
-                    var s3 = (Math.floor(Math.random() * 251)) + 1;
-                    var s4 = (Math.floor(Math.random() * 251)) + 1;
-                
-                    /* L1: char codes + XOR 0x5A + XOR S1 */
-                    var L1 = [];
-                    for (var i = 0; i < fullKeyString.length; i++) {
-                        L1.push((fullKeyString.charCodeAt(i) ^ 0x5A) ^ s1);
-                    }
-                
-                    /* L2: + S2 mod 256 */
-                    var L2 = [];
-                    for (var j = 0; j < L1.length; j++) {
-                        L2.push((L1[j] + s2) % 256);
-                    }
-                
-                    /* L3: XOR S3 */
-                    var L3 = [];
-                    for (var k = 0; k < L2.length; k++) {
-                        L3.push(L2[k] ^ s3);
-                    }
-                
-                    /* L4: even/odd split */
-                    var even = [], odd = [];
-                    for (var m = 0; m < L3.length; m++) {
-                        if (m % 2 === 0) even.push(L3[m]);
-                        else odd.push(L3[m]);
-                    }
-                    var L4 = even.concat(odd);
-                
-                    /* L5: random padding */
-                    var padding = [];
-                    var padCount = (Math.floor(Math.random() * 10) + 5);
-                    for (var p = 0; p < padCount; p++) {
-                        padding.push(Math.floor(Math.random() * 256));
-                    }
-                    var L5 = padding.concat(L4);
-                
-                    /* L6: base64 */
-                    var bin = '';
-                    for (var b = 0; b < L5.length; b++) {
-                        bin += String.fromCharCode(L5[b]);
-                    }
-                    var L6 = btoa(bin);
-                
-                    /* L7: reverse + XOR 0x5A + XOR S4 */
-                    var L7 = L6.split('').reverse().join('');
-                    var obf = [];
-                    for (var bi = 0; bi < L7.length; bi++) {
-                        obf.push((L7.charCodeAt(bi) ^ 0x5A) ^ s4);
-                    }
-                    var byteArrayString = '[' + obf.join(',') + ']';
-                
-                    /* ─── Obfuscated filename ─── */
-                    var _nameBytes = [];
-                    for (var ni = 0; ni < keyFileName.length; ni++) {
-                        _nameBytes.push((keyFileName.charCodeAt(ni) ^ 0x5A) ^ 0x3C);
-                    }
-                    var _nameB64 = btoa(JSON.stringify(_nameBytes));
-                    var _nameRev = _nameB64.split('').reverse().join('');
-                    var _nameObf = [];
-                    for (var nb = 0; nb < _nameRev.length; nb++) {
-                        _nameObf.push((_nameRev.charCodeAt(nb) ^ 0x5A) ^ 0x3C);
-                    }
-                    var encodedKeyFileName = JSON.stringify(_nameObf);
-                
-                    /* ─── Random variable names ─── */
-                    var qA = rv(6), qB = rv(7), qC = rv(5), qD = rv(6), qE = rv(8);
-                    var qF = rv(6), qG = rv(5), qH = rv(4), qI = rv(4), qJ = rv(5);
-                    var qK = rv(5), qL = rv(5), qM = rv(5), qN = rv(4), qO = rv(5);
-                
-                    /* ─── Token ─── */
-                    var DECRYPTOR_TOKEN = 'TK' + rndHex(12) + '_' + rndHex(8) + '_' + Date.now().toString(36);
-                
-                    /* ═══════════════════════════════════════════════════════════
-                       KEY FILE CONTENT
-                       ═══════════════════════════════════════════════════════════ */
-                    var keyFileContent =
-                        '(function(){\n' +
-                        '"use strict";\n' +
-                        'try{\n' +
-                        'var S1=' + s1 + ',S2=' + s2 + ',S3=' + s3 + ',S4=' + s4 + ';\n' +
-                        'var ' + qN + '=' + padCount + ';\n' +
-                        'var ' + qA + '=' + byteArrayString + ';\n' +
-                        'var ' + qB + '="";\n' +
-                        'for(var ' + qC + '=0;' + qC + '<' + qA + '.length;' + qC + '++){\n' +
-                        qB + '+=String.fromCharCode((' + qA + '[' + qC + ']^0x5A)^S4);\n' +
-                        '}\n' +
-                        'var ' + qD + '=' + qB + ';\n' +
-                        'function ' + qE + '(s){\n' +
-                        'var ' + qF + '=s.split("").reverse().join("");\n' +
-                        'var ' + qG + '=atob(' + qF + ');\n' +
-                        'var ' + qH + '=[];\n' +
-                        'for(var ' + qI + '=0;' + qI + '<' + qG + '.length;' + qI + '++){\n' +
-                        qH + '.push(' + qG + '.charCodeAt(' + qI + '));\n' +
-                        '}\n' +
-                        'var ' + qK + '=' + qH + '.slice(' + qN + ');\n' +
-                        'var ' + qL + '=' + qK + '.slice(0,Math.ceil(' + qK + '.length/2));\n' +
-                        'var ' + qM + '=' + qK + '.slice(Math.ceil(' + qK + '.length/2));\n' +
-                        'var ' + qJ + '=[];\n' +
-                        'for(var i=0;i<' + qK + '.length;i++){\n' +
-                        'if(i%2===0)' + qJ + '.push(' + qL + '[Math.floor(i/2)]);\n' +
-                        'else ' + qJ + '.push(' + qM + '[Math.floor(i/2)]);\n' +
-                        '}\n' +
-                        'var ' + qH + '=[];\n' +
-                        'for(var q=0;q<' + qJ + '.length;q++){\n' +
-                        qH + '.push(' + qJ + '[q]^S3);\n' +
-                        '}\n' +
-                        'var ' + qO + '=[];\n' +
-                        'for(var r=0;r<' + qH + '.length;r++){\n' +
-                        'var sh=(' + qH + '[r]-S2+256)%256;\n' +
-                        qO + '.push(sh^S1);\n' +
-                        '}\n' +
-                        'var res="";\n' +
-                        'for(var f=0;f<' + qO + '.length;f++){\n' +
-                        'res+=String.fromCharCode(' + qO + '[f]^0x5A);\n' +
-                        '}\n' +
-                        'return res;\n' +
-                        '}\n' +
-                        'var REALKEY=' + qE + '(' + qD + ');\n' +
-                        'if(!REALKEY||REALKEY.length<30){return;}\n' +
-                        'window._0xSECRET="NightOrbitGyidi_houperSecret_"+Math.random().toString(36).substring(2,20);\n' +
-                        'window.__dx={a:true,v:function(){return false;},h:function(){return false;},d:function(){return "DECOY";},w:function(){window._0xSECRET=null;window.__dx=null;}};\n' +
-                        'var _TOKEN="' + DECRYPTOR_TOKEN + '";\n' +
-                        'var _used=false;\n' +
-                        'var _wiped=false;\n' +
-                        'var __realDecrypt={\n' +
-                        'verify:function(t){if(_wiped||_used)return false;if(t!==_TOKEN)return false;_used=true;return true;},\n' +
-                        'hmac:function(data,expected){if(_wiped)return false;try{var c=CryptoJS.HmacSHA256(data,REALKEY).toString();if(c.length!==expected.length)return false;var diff=0;for(var i=0;i<c.length;i++){diff|=c.charCodeAt(i)^expected.charCodeAt(i);}return diff===0;}catch(e){return false;}},\n' +
-                        'aes:function(ct,iv){if(_wiped)throw new Error("e");try{var v=CryptoJS.enc.Hex.parse(iv);return CryptoJS.AES.decrypt(ct,REALKEY,{iv:v,mode:CryptoJS.mode.CBC,padding:CryptoJS.pad.Pkcs7}).toString(CryptoJS.enc.Utf8);}catch(e){throw new Error("d");}},\n' +
-                        'wipe:function(){REALKEY=null;_TOKEN=null;_used=true;_wiped=true;try{delete window.__realDecrypt;}catch(e){}window._0xSECRET=null;window.__dx=null;},\n' +
-                        'isAlive:function(){return !_wiped;}\n' +
-                        '};\n' +
-                        'try{Object.defineProperty(window,"__realDecrypt",{value:__realDecrypt,enumerable:false,writable:false,configurable:false});}catch(e){window.__realDecrypt=__realDecrypt;}\n' +
-                        '}catch(g){try{window._0xSECRET="";window.__dx=null;}catch(g2){}}\n' +
-                        '})();\n';
-                
-                    /* ─── Decoy + Anti-debug ─── */
-                    var d1 = rv(8), d2 = rv(8), d3 = rv(8);
-                    var d4 = rv(8), d5 = rv(8), d6 = rv(8);
-                
-                    var decoyFunctions =
-                        '<script>\n' +
-                        '(function(){\n' +
-                        '  var ' + d1 + ' = [];\n' +
-                        '  var ' + d2 + ' = {};\n' +
-                        '  var ' + d3 + ' = function(x){ return x; };\n' +
-                        '  window.__init = ' + d3 + ';\n' +
-                        '  try { ' + d1 + '.push(Date.now()); } catch(e) {}\n' +
-                        '  try { ' + d2 + '.start = 1; } catch(e) {}\n' +
-                        '})();\n' +
-                        '<' + '/script>\n';
-                
-                    var antiDebug =
-                        '<script>\n' +
-                        '(function(){\n' +
-                        '  var ' + d4 + ' = 0;\n' +
-                        '  var ' + d5 + ' = function(){\n' +
-                        '    var ' + d6 + ' = new Date();\n' +
-                        '    debugger;\n' +
-                        '    if(new Date() - ' + d6 + ' > 100){\n' +
-                        '      ' + d4 + '++;\n' +
-                        '      if(' + d4 + ' > 3){ document.body.innerHTML = ""; }\n' +
-                        '    }\n' +
-                        '  };\n' +
-                        '  setInterval(' + d5 + ', 1000);\n' +
-                        '})();\n' +
-                        '<' + '/script>\n';
-                
-                    /* ═══════════════════════════════════════════════════════════
-                       BUILD DECRYPTOR HTML (user app)
-                       ═══════════════════════════════════════════════════════════ */
-                    var parts = [
-                        '<!DOCTYPE html>',
-                        '<html lang="en">',
-                        '<head>',
-                        '<meta charset="UTF-8">',
-                        '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">',
-                        '<meta name="mobile-web-app-capable" content="yes">',
-                        '<meta name="apple-mobile-web-app-capable" content="yes">',
-                        '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">',
-                        '<meta name="theme-color" content="#0b0b1a">',
-                        '<meta name="referrer" content="strict-origin-when-cross-origin">',
-                        '<meta http-equiv="X-Content-Type-Options" content="nosniff">',
-                        '<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">',
-                        '<meta http-equiv="Permissions-Policy" content="geolocation=(self), microphone=(), camera=()">',
-                        '<title id="pageTitle">Loading...</title>',
-                        '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
-                        '<style>',
-                        '*{margin:0;padding:0;box-sizing:border-box;}',
-                        'html,body{width:100%;min-height:100vh;}',
-                        'body{background:#05050f;color:#fff;font-family:"Courier New",monospace;overflow-x:hidden;}',
-                        '.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,#0b0b1a 0%,#000 100%);z-index:9999;}',
-                        '.spinner{width:60px;height:60px;border:4px solid rgba(0,240,255,0.15);border-top-color:#00f0ff;border-radius:50%;animation:spin 1s linear infinite;}',
-                        '@keyframes spin{to{transform:rotate(360deg);}}',
-                        '.txt{color:#00f0ff;font-size:14px;letter-spacing:3px;text-transform:uppercase;}',
-                        '.sub{color:#6a6a8a;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:8px;}',
-                        '.err{padding:60px 30px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;}',
-                        '.err-icon{font-size:72px;}',
-                        '.err h2{color:#ff0064;font-size:24px;letter-spacing:3px;text-transform:uppercase;}',
-                        '.err p{color:#b0b0d0;font-size:13px;line-height:1.7;max-width:500px;}',
-                        '.bundle-wrap{max-width:1100px;margin:0 auto;padding:30px 20px;}',
-                        '.bundle-title{color:#00f0ff;text-align:center;font-size:22px;letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;font-family:"Orbitron",sans-serif;}',
-                        '.file-card{background:rgba(0,240,255,0.04);border-left:4px solid #00f0ff;border-radius:10px;padding:18px;margin-bottom:16px;}',
-                        '.file-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;}',
-                        '.file-name{color:#ffd700;font-weight:bold;font-size:14px;}',
-                        '.file-lang{background:#00f0ff;color:#000;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:bold;text-transform:uppercase;}',
-                        '.file-content{background:#000;color:#00ff64;padding:14px;border-radius:8px;font-family:"Courier New",monospace;font-size:12px;line-height:1.5;max-height:400px;overflow:auto;white-space:pre-wrap;word-break:break-word;}',
-                        '.dl-btn{background:linear-gradient(135deg,#00f0ff,#b400ff);border:none;padding:10px 20px;border-radius:8px;color:#000;font-weight:bold;cursor:pointer;margin-top:12px;font-family:inherit;letter-spacing:1px;text-transform:uppercase;font-size:11px;}',
-                        '.dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,240,255,0.3);}',
-                        '<' + '/style>',
-                        '<' + '/head>',
-                        '<body>',
-                        '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
-                        decoyFunctions,
-                        antiDebug,
-                        '<script>',
-                        'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
-                        'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
-                        'function showError(msg){document.title="Error";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;margin:0;";var err="<div class=\\"err\\">";err+="<div class=\\"err-icon\\">❌<\\/div>";err+="<h2>Decryption Failed<\\/h2>";err+="<p>"+msg+"<\\/p>";err+="<\\/div>";document.body.innerHTML=err;}',
-                        'function showKeyMissingError(){document.title="Key File Missing";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:monospace;";var h="<div style=\\"text-align:center;padding:40px 20px;max-width:600px;\\">";h+="<div style=\\"font-size:80px;margin-bottom:24px;\\">🔐<\\/div>";h+="<div style=\\"font-size:24px;letter-spacing:4px;text-transform:uppercase;color:#ff0064;margin-bottom:20px;font-weight:bold;\\">Key File Missing<\\/div>";h+="<div style=\\"color:#b0b0d0;font-size:14px;line-height:2;margin-bottom:24px;\\">";h+="Required files not found in this folder.<br><br>";h+="Make sure <b style=\\"color:#ffd700;\\">BOTH</b> files are in the <b style=\\"color:#ffd700;\\">SAME folder</b>.<\\/div><\\/div>";document.body.innerHTML=h;}',
-                        'function extractTitle(html){var m=html.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);return m?m[1].trim():"Original Web";}',
-                        'function extractFavicon(html){var m=html.match(/<link[^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\'][^>]*href=["\']([^"\']+)["\']/i);if(m)return m[1];m=html.match(/<link[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\']/i);return m?m[1]:null;}',
-                        '(function(){var a=' + encodedKeyFileName + ',b="",c=0;for(c=0;c<a.length;c++){b+=String.fromCharCode((a[c]^0x3C)^0x5A);}var d=b.split("").reverse().join("");var e=JSON.parse(atob(d)),f="",g=0;for(g=0;g<e.length;g++){f+=String.fromCharCode((e[g]^0x3C)^0x5A);}var h=f;var s=document.createElement("script");s.src=h;s.async=false;document.head.appendChild(s);})();',
-                        'function applyOriginalBranding(html){var title=extractTitle(html);document.title=title;var fav=extractFavicon(html);if(fav){var link=document.querySelector("link[rel*=\'icon\']")||document.createElement("link");link.rel="icon";link.href=fav;document.head.appendChild(link);}}',
-                        'function injectBlocker(html){html=html.replace(/<noscript[\\s\\S]*?<\\/noscript>/gi,"");html=html.replace(/<meta[^>]*http-equiv=["\']refresh["\'][^>]*>/gi,"");var css="<style>"+"*{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;}"+"input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text;}"+"<\\/style>";var js="<scr"+"ipt>"+"(function(){"+"function isEd(el){if(!el||!el.tagName)return false;var t=el.tagName.toLowerCase();return t===\'input\'||t===\'textarea\'||t===\'select\'||el.isContentEditable;}"+"document.addEventListener(\'contextmenu\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'selectstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'copy\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'cut\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'dragstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'keydown\',function(e){"+"var t=e.target;var tag=t&&t.tagName?t.tagName.toLowerCase():\'\';"+"var ed=(tag===\'input\'||tag===\'textarea\'||tag===\'select\'||(t&&t.isContentEditable));"+"if(e.key===\'F12\'||e.keyCode===123){e.preventDefault();return false;}"+"if(e.ctrlKey&&e.shiftKey&&(e.key===\'I\'||e.key===\'J\'||e.key===\'C\'||e.keyCode===73||e.keyCode===74||e.keyCode===67)){e.preventDefault();return false;}"+"if(e.ctrlKey&&(e.key===\'U\'||e.keyCode===85)){e.preventDefault();return false;}"+"if(e.ctrlKey&&!ed&&(e.key===\'C\'||e.key===\'A\'||e.key===\'S\'||e.keyCode===67||e.keyCode===65||e.keyCode===83)){e.preventDefault();return false;}"+"if(!ed&&(e.key===\'Backspace\'||e.key===\'Tab\')){e.preventDefault();return false;}"+"},{capture:true});"+"})();"+"<\\/scr"+"ipt>";if(html.indexOf("</head>")!==-1){html=html.replace("</head>",css+"</head>");}else{html=css+html;}if(html.indexOf("</body>")!==-1){html=html.replace("</body>",js+"</body>");}else{html=html+js;}return html;}',
-                        'function renderHTML(htmlContent){var loader=document.getElementById("loader");if(loader)loader.style.display="none";applyOriginalBranding(htmlContent);var finalHTML=injectBlocker(htmlContent);document.open();document.write(finalHTML);document.close();}',
-                        'function renderText(textContent){document.title="Decrypted Text";document.body.innerHTML="";document.body.style.cssText="background:#000;color:#00ff64;font-family:\\"Courier New\\",monospace;padding:20px;margin:0;font-size:13px;line-height:1.6;";var pre=document.createElement("pre");pre.style.cssText="margin:0;white-space:pre-wrap;word-break:break-word;";pre.textContent=textContent;document.body.appendChild(pre);}',
-                        'function renderBundle(bundle){document.title="Bundle ("+bundle.__fileCount+" Files)";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;padding:20px;margin:0;min-height:100vh;";var h="<div class=\\"bundle-wrap\\">";h+="<div class=\\"bundle-title\\">📦 Multi-File Bundle ("+bundle.__fileCount+" files)<\\/div>";Object.keys(bundle.files).forEach(function(name){var f=bundle.files[name];h+="<div class=\\"file-card\\">";h+="<div class=\\"file-head\\"><span class=\\"file-name\\">📄 "+name+"<\\/span><span class=\\"file-lang\\">"+(f.lang||"?").toUpperCase()+"<\\/span><\\/div>";h+="<pre class=\\"file-content\\">"+f.content.replace(/</g,"&lt;")+"<\\/pre>";h+="<button class=\\"dl-btn\\" data-name=\\""+name+"\\">⬇ Download "+name+"<\\/button>";h+="<\\/div>";});h+="<\\/div>";document.body.innerHTML=h;document.body.querySelectorAll(".dl-btn").forEach(function(b){b.addEventListener("click",function(){var name=this.getAttribute("data-name");var f=bundle.files[name];var blob=new Blob([f.content],{type:"text/plain;charset=utf-8"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();});});}',
-                        'ready(function(){' +
-                        'if(typeof CryptoJS==="undefined"){showError("CryptoJS library failed to load. Check your internet connection.");return;}' +
-                        'setTimeout(function(){' +
-                        'var R = window.__realDecrypt;' +
-                        'if(!R || typeof R.verify !== "function"){showKeyMissingError();return;}' +
-                        'var DT="' + DECRYPTOR_TOKEN + '";' +
-                        'if(!R.verify(DT)){showError("Token invalid or already used");return;}' +
-                        'try{' +
-                        'var parts=ENCRYPTED_DATA.split(":");' +
-                        'var iv=parts[1];var ct=parts[2];var hm=parts[3];' +
-                        'if(!R.hmac(iv+":"+ct, hm)){throw new Error("Integrity check failed");}' +
-                        'var dec=R.aes(ct, iv);' +
-                        'if(!dec||dec.length===0){throw new Error("Decryption failed");}' +
-                        'R.wipe();' +
-                        'try{ delete window.__realDecrypt; }catch(e){}' +
-                        'var isBundle=false,bundle=null;' +
-                        'try{var p=JSON.parse(dec);if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}}catch(e){}' +
-                        'if(isBundle){renderBundle(bundle);}' +
-                        'else{' +
-                        'var trimmed=dec.trim();' +
-                        'var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);' +
-                        'if(isHTML){renderHTML(dec);}else{renderText(dec);}' +
-                        '}' +
-                        '}catch(e){showError(e.message);}' +
-                        '},500);});',
-                        '<' + '/script>',
-                        '<' + '/body>',
-                        '<' + '/html>'
-                    ];
-                
-                    var html = parts.join('\n');
-                
-                    /* ═══════════════════════════════════════════════════════════
-                       STEP 2: index.html content banao
-                       ═══════════════════════════════════════════════════════════ */
-                    var indexHtmlContent =
-                        '<!DOCTYPE html>\n' +
-                        '<html lang="en">\n' +
-                        '<head>\n' +
-                        '<meta charset="UTF-8">\n' +
-                        '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">\n' +
-                        '<meta name="mobile-web-app-capable" content="yes">\n' +
-                        '<meta name="apple-mobile-web-app-capable" content="yes">\n' +
-                        '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n' +
-                        '<meta name="theme-color" content="#0b0b1a">\n' +
-                        '<title>Launching App...</title>\n' +
-                        '<style>\n' +
-                        '*{margin:0;padding:0;box-sizing:border-box;}\n' +
-                        'html,body{width:100%;height:100%;overflow:hidden;background:#05050f;}\n' +
-                        '.wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;font-family:"Courier New",monospace;}\n' +
-                        '.spinner{width:60px;height:60px;border:4px solid rgba(0,240,255,0.15);border-top-color:#00f0ff;border-radius:50%;animation:spin 1s linear infinite;}\n' +
-                        '@keyframes spin{to{transform:rotate(360deg);}}\n' +
-                        '.txt{color:#00f0ff;font-size:14px;letter-spacing:3px;text-transform:uppercase;}\n' +
-                        '.sub{color:#6a6a8a;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:8px;}\n' +
-                        '<' + '/style>\n' +
-                        '<' + '/head>\n' +
-                        '<body>\n' +
-                        '<div class="wrap">\n' +
-                        '<div class="spinner"><' + '/div>\n' +
-                        '<div class="txt">Launching App...<' + '/div>\n' +
-                        '<div class="sub">Please wait<' + '/div>\n' +
-                        '<' + '/div>\n' +
-                        '<script>\n' +
-                        '(function(){\n' +
-                        '  var target = "' + userAppFileName + '";\n' +
-                        '  setTimeout(function(){\n' +
-                        '    window.location.replace(target);\n' +
-                        '  }, 800);\n' +
-                        '})();\n' +
-                        '<' + '/script>\n' +
-                        '<' + '/body>\n' +
-                        '<' + '/html>';
-                
-                    /* ═══════════════════════════════════════════════════════════
-                       STEP 3: Teeno files download karo
-                       ═══════════════════════════════════════════════════════════ */
-                
-                    // File 1: index.html
-                    var indexBlob = new Blob([indexHtmlContent], { type: 'text/html;charset=utf-8' });
-                    var indexUrl = URL.createObjectURL(indexBlob);
-                    var indexLink = document.createElement('a');
-                    indexLink.href = indexUrl;
-                    indexLink.download = 'index.html';
-                    indexLink.click();
-                
-                    // File 2: Key file
-                    setTimeout(function() {
-                        var keyBlob = new Blob([keyFileContent], { type: 'text/javascript;charset=utf-8' });
-                        var keyUrl = URL.createObjectURL(keyBlob);
-                        var keyLink = document.createElement('a');
-                        keyLink.href = keyUrl;
-                        keyLink.download = keyFileName;
-                        keyLink.click();
-                        setTimeout(function() { URL.revokeObjectURL(keyUrl); }, 30000);
-                    }, 300);
-                
-                    // File 3: User ki app file (decrypted HTML)
-                    setTimeout(function() {
-                        var appBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
-                        var appUrl = URL.createObjectURL(appBlob);
-                        var appLink = document.createElement('a');
-                        appLink.href = appUrl;
-                        appLink.download = userAppFileName;
-                        appLink.click();
-                        setTimeout(function() { URL.revokeObjectURL(appUrl); }, 30000);
-                    }, 600);
-                
-                    setTimeout(function() { URL.revokeObjectURL(indexUrl); }, 30000);
-                
-                    showStatus('success', '🎁 3 files downloaded! Open index.html to launch.');
-                    toast('3 files downloaded successfully!', 'success');
-                
-                    setTimeout(function() {
-                        showKeyModal(keyFileName, keyFileContent, userAppFileName);
-                    }, 1200);
-                };
+                window.downloadDecryptor = function() {
+                        var outEl = document.getElementById('outputEnc');
+                        if (!outEl || !outEl.value) {
+                            toast('Encrypt first!', 'error');
+                            return;
+                        }
+                    
+                        if (!KEY_MANAGER.isReady() || !KEY_MANAGER.getKey()) {
+                            state._pendingAction = 'downloadDecryptor';
+                            openPwdModal('reveal');
+                            toast('Enter password first, then decryptor will be created', 'info');
+                            return;
+                        }
+                    
+                        var fullKey = KEY_MANAGER.getKey();
+                        if (!fullKey || fullKey.length < 30) {
+                            toast('Key not found. Please unlock first.', 'error');
+                            return;
+                        }
+                    
+                        var encData = outEl.value;
+                        var fullKeyString = fullKey;
+                    
+                        /* ─── Random helpers ─── */
+                        function rndHex(len) {
+                            var c = 'abcdef0123456789';
+                            var s = '';
+                            for (var i = 0; i < (len || 16); i++) s += c.charAt(Math.floor(Math.random() * c.length));
+                            return s;
+                        }
+                        function rv(len) {
+                            var c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                            var s = '';
+                            for (var i = 0; i < (len || 6); i++) s += c.charAt(Math.floor(Math.random() * c.length));
+                            return s;
+                        }
+                        function pickRandom(arr) {
+                            return arr[Math.floor(Math.random() * arr.length)];
+                        }
+                    
+                        /* ═══════════════════════════════════════════════════════════
+                           STEP 1: User se app file ka naam poochho
+                           ═══════════════════════════════════════════════════════════ */
+                        var userAppName = prompt(
+                            '📄 Apni decrypted app file ka naam likho:\n\n' +
+                            '(Example: my-gyidi-app ya gyidi-bazar)\n' +
+                            '.html automatically add ho jayega',
+                            'gyidi-app'
+                        );
+                    
+                        if (!userAppName || userAppName.trim() === '') {
+                            userAppName = 'gyidi-app';
+                        }
+                        userAppName = userAppName.trim().replace(/[^a-zA-Z0-9_-]/g, '');
+                        if (!userAppName) userAppName = 'gyidi-app';
+                        var userAppFileName = userAppName + '.html';
+                    
+                        /* ─── Key file name ─── */
+                        var typePrefixes = ['sk','vx','ky','zn','qm','pl','rt','jw','bd','fh',
+                                            'gc','mn','tp','ws','xr','yv','az','ce','dg','ei',
+                                            'fj','hk','lo','nu','op','qr','st','uv','wx','yz'];
+                        var securityThemes = ['protection','security','shield','guard','defense',
+                                              'armor','fortress','sentinel','watch','sentry',
+                                              'vault','cipher','crypt','secure','safe',
+                                              'barrier','bulwark','rampart','bastion','citadel',
+                                              'stronghold','keep','tower','gate','lock',
+                                              'seal','ward','safeguard','guardian','preserver'];
+                        var roleWords = ['key','server','module','engine','core',
+                                         'loader','handler','worker','runner','driver',
+                                         'helper','utility','service','agent','daemon',
+                                         'process','thread','task','job','routine',
+                                         'system','framework','runtime','kernel','shell',
+                                         'interface','bridge','adapter','connector','linker'];
+                    
+                        var keyFileName = pickRandom(typePrefixes) + '-' +
+                                          pickRandom(securityThemes) + '-' +
+                                          rndHex(8) + '-' +
+                                          pickRandom(roleWords) + '-' +
+                                          rndHex(10) + '.js';
+                    
+                        /* ═══════════════════════════════════════════════════════════
+                           7-LAYER OBFUSCATION
+                           ═══════════════════════════════════════════════════════════ */
+                        var s1 = (Date.now() % 251) + 1;
+                        var s2 = (Math.floor(Math.random() * 251)) + 1;
+                        var s3 = (Math.floor(Math.random() * 251)) + 1;
+                        var s4 = (Math.floor(Math.random() * 251)) + 1;
+                    
+                        var L1 = [];
+                        for (var i = 0; i < fullKeyString.length; i++) {
+                            L1.push((fullKeyString.charCodeAt(i) ^ 0x5A) ^ s1);
+                        }
+                    
+                        var L2 = [];
+                        for (var j = 0; j < L1.length; j++) {
+                            L2.push((L1[j] + s2) % 256);
+                        }
+                    
+                        var L3 = [];
+                        for (var k = 0; k < L2.length; k++) {
+                            L3.push(L2[k] ^ s3);
+                        }
+                    
+                        var even = [], odd = [];
+                        for (var m = 0; m < L3.length; m++) {
+                            if (m % 2 === 0) even.push(L3[m]);
+                            else odd.push(L3[m]);
+                        }
+                        var L4 = even.concat(odd);
+                    
+                        var padding = [];
+                        var padCount = (Math.floor(Math.random() * 10) + 5);
+                        for (var p = 0; p < padCount; p++) {
+                            padding.push(Math.floor(Math.random() * 256));
+                        }
+                        var L5 = padding.concat(L4);
+                    
+                        var bin = '';
+                        for (var b = 0; b < L5.length; b++) {
+                            bin += String.fromCharCode(L5[b]);
+                        }
+                        var L6 = btoa(bin);
+                    
+                        var L7 = L6.split('').reverse().join('');
+                        var obf = [];
+                        for (var bi = 0; bi < L7.length; bi++) {
+                            obf.push((L7.charCodeAt(bi) ^ 0x5A) ^ s4);
+                        }
+                        var byteArrayString = '[' + obf.join(',') + ']';
+                    
+                        var _nameBytes = [];
+                        for (var ni = 0; ni < keyFileName.length; ni++) {
+                            _nameBytes.push((keyFileName.charCodeAt(ni) ^ 0x5A) ^ 0x3C);
+                        }
+                        var _nameB64 = btoa(JSON.stringify(_nameBytes));
+                        var _nameRev = _nameB64.split('').reverse().join('');
+                        var _nameObf = [];
+                        for (var nb = 0; nb < _nameRev.length; nb++) {
+                            _nameObf.push((_nameRev.charCodeAt(nb) ^ 0x5A) ^ 0x3C);
+                        }
+                        var encodedKeyFileName = JSON.stringify(_nameObf);
+                    
+                        var qA = rv(6), qB = rv(7), qC = rv(5), qD = rv(6), qE = rv(8);
+                        var qF = rv(6), qG = rv(5), qH = rv(4), qI = rv(4), qJ = rv(5);
+                        var qK = rv(5), qL = rv(5), qM = rv(5), qN = rv(4), qO = rv(5);
+                    
+                        var DECRYPTOR_TOKEN = 'TK' + rndHex(12) + '_' + rndHex(8) + '_' + Date.now().toString(36);
+                    
+                        /* ═══════════════════════════════════════════════════════════
+                           KEY FILE CONTENT
+                           ═══════════════════════════════════════════════════════════ */
+                        var keyFileContent =
+                            '(function(){\n' +
+                            '"use strict";\n' +
+                            'try{\n' +
+                            'var S1=' + s1 + ',S2=' + s2 + ',S3=' + s3 + ',S4=' + s4 + ';\n' +
+                            'var ' + qN + '=' + padCount + ';\n' +
+                            'var ' + qA + '=' + byteArrayString + ';\n' +
+                            'var ' + qB + '="";\n' +
+                            'for(var ' + qC + '=0;' + qC + '<' + qA + '.length;' + qC + '++){\n' +
+                            qB + '+=String.fromCharCode((' + qA + '[' + qC + ']^0x5A)^S4);\n' +
+                            '}\n' +
+                            'var ' + qD + '=' + qB + ';\n' +
+                            'function ' + qE + '(s){\n' +
+                            'var ' + qF + '=s.split("").reverse().join("");\n' +
+                            'var ' + qG + '=atob(' + qF + ');\n' +
+                            'var ' + qH + '=[];\n' +
+                            'for(var ' + qI + '=0;' + qI + '<' + qG + '.length;' + qI + '++){\n' +
+                            qH + '.push(' + qG + '.charCodeAt(' + qI + '));\n' +
+                            '}\n' +
+                            'var ' + qK + '=' + qH + '.slice(' + qN + ');\n' +
+                            'var ' + qL + '=' + qK + '.slice(0,Math.ceil(' + qK + '.length/2));\n' +
+                            'var ' + qM + '=' + qK + '.slice(Math.ceil(' + qK + '.length/2));\n' +
+                            'var ' + qJ + '=[];\n' +
+                            'for(var i=0;i<' + qK + '.length;i++){\n' +
+                            'if(i%2===0)' + qJ + '.push(' + qL + '[Math.floor(i/2)]);\n' +
+                            'else ' + qJ + '.push(' + qM + '[Math.floor(i/2)]);\n' +
+                            '}\n' +
+                            'var ' + qH + '=[];\n' +
+                            'for(var q=0;q<' + qJ + '.length;q++){\n' +
+                            qH + '.push(' + qJ + '[q]^S3);\n' +
+                            '}\n' +
+                            'var ' + qO + '=[];\n' +
+                            'for(var r=0;r<' + qH + '.length;r++){\n' +
+                            'var sh=(' + qH + '[r]-S2+256)%256;\n' +
+                            qO + '.push(sh^S1);\n' +
+                            '}\n' +
+                            'var res="";\n' +
+                            'for(var f=0;f<' + qO + '.length;f++){\n' +
+                            'res+=String.fromCharCode(' + qO + '[f]^0x5A);\n' +
+                            '}\n' +
+                            'return res;\n' +
+                            '}\n' +
+                            'var REALKEY=' + qE + '(' + qD + ');\n' +
+                            'if(!REALKEY||REALKEY.length<30){return;}\n' +
+                            'window._0xSECRET="NightOrbitGyidi_houperSecret_"+Math.random().toString(36).substring(2,20);\n' +
+                            'window.__dx={a:true,v:function(){return false;},h:function(){return false;},d:function(){return "DECOY";},w:function(){window._0xSECRET=null;window.__dx=null;}};\n' +
+                            'var _TOKEN="' + DECRYPTOR_TOKEN + '";\n' +
+                            'var _used=false;\n' +
+                            'var _wiped=false;\n' +
+                            'var __realDecrypt={\n' +
+                            'verify:function(t){if(_wiped||_used)return false;if(t!==_TOKEN)return false;_used=true;return true;},\n' +
+                            'hmac:function(data,expected){if(_wiped)return false;try{var c=CryptoJS.HmacSHA256(data,REALKEY).toString();if(c.length!==expected.length)return false;var diff=0;for(var i=0;i<c.length;i++){diff|=c.charCodeAt(i)^expected.charCodeAt(i);}return diff===0;}catch(e){return false;}},\n' +
+                            'aes:function(ct,iv){if(_wiped)throw new Error("e");try{var v=CryptoJS.enc.Hex.parse(iv);return CryptoJS.AES.decrypt(ct,REALKEY,{iv:v,mode:CryptoJS.mode.CBC,padding:CryptoJS.pad.Pkcs7}).toString(CryptoJS.enc.Utf8);}catch(e){throw new Error("d");}},\n' +
+                            'wipe:function(){REALKEY=null;_TOKEN=null;_used=true;_wiped=true;try{delete window.__realDecrypt;}catch(e){}window._0xSECRET=null;window.__dx=null;},\n' +
+                            'isAlive:function(){return !_wiped;}\n' +
+                            '};\n' +
+                            'try{Object.defineProperty(window,"__realDecrypt",{value:__realDecrypt,enumerable:false,writable:false,configurable:false});}catch(e){window.__realDecrypt=__realDecrypt;}\n' +
+                            '}catch(g){try{window._0xSECRET="";window.__dx=null;}catch(g2){}}\n' +
+                            '})();\n';
+                    
+                        var d1 = rv(8), d2 = rv(8), d3 = rv(8);
+                        var d4 = rv(8), d5 = rv(8), d6 = rv(8);
+                    
+                        var decoyFunctions =
+                            '<script>\n' +
+                            '(function(){\n' +
+                            '  var ' + d1 + ' = [];\n' +
+                            '  var ' + d2 + ' = {};\n' +
+                            '  var ' + d3 + ' = function(x){ return x; };\n' +
+                            '  window.__init = ' + d3 + ';\n' +
+                            '  try { ' + d1 + '.push(Date.now()); } catch(e) {}\n' +
+                            '  try { ' + d2 + '.start = 1; } catch(e) {}\n' +
+                            '})();\n' +
+                            '<' + '/script>\n';
+                    
+                        var antiDebug =
+                            '<script>\n' +
+                            '(function(){\n' +
+                            '  var ' + d4 + ' = 0;\n' +
+                            '  var ' + d5 + ' = function(){\n' +
+                            '    var ' + d6 + ' = new Date();\n' +
+                            '    debugger;\n' +
+                            '    if(new Date() - ' + d6 + ' > 100){\n' +
+                            '      ' + d4 + '++;\n' +
+                            '      if(' + d4 + ' > 3){ document.body.innerHTML = ""; }\n' +
+                            '    }\n' +
+                            '  };\n' +
+                            '  setInterval(' + d5 + ', 1000);\n' +
+                            '})();\n' +
+                            '<' + '/script>\n';
+                    
+                        /* ═══════════════════════════════════════════════════════════
+                           BUILD DECRYPTOR HTML (index.html)
+                           ═══════════════════════════════════════════════════════════ */
+                        var parts = [
+                            '<!DOCTYPE html>',
+                            '<html lang="en">',
+                            '<head>',
+                            '<meta charset="UTF-8">',
+                            '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">',
+                            '<meta name="mobile-web-app-capable" content="yes">',
+                            '<meta name="apple-mobile-web-app-capable" content="yes">',
+                            '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">',
+                            '<meta name="theme-color" content="#0b0b1a">',
+                            '<meta name="referrer" content="strict-origin-when-cross-origin">',
+                            '<meta http-equiv="X-Content-Type-Options" content="nosniff">',
+                            '<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">',
+                            '<meta http-equiv="Permissions-Policy" content="geolocation=(self), microphone=(), camera=()">',
+                            '<title id="pageTitle">Loading...</title>',
+                            '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
+                            '<style>',
+                            '*{margin:0;padding:0;box-sizing:border-box;}',
+                            'html,body{width:100%;min-height:100vh;}',
+                            'body{background:#05050f;color:#fff;font-family:"Courier New",monospace;overflow-x:hidden;}',
+                            '.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,#0b0b1a 0%,#000 100%);z-index:9999;}',
+                            '.spinner{width:60px;height:60px;border:4px solid rgba(0,240,255,0.15);border-top-color:#00f0ff;border-radius:50%;animation:spin 1s linear infinite;}',
+                            '@keyframes spin{to{transform:rotate(360deg);}}',
+                            '.txt{color:#00f0ff;font-size:14px;letter-spacing:3px;text-transform:uppercase;}',
+                            '.sub{color:#6a6a8a;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:8px;}',
+                            '.err{padding:60px 30px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;}',
+                            '.err-icon{font-size:72px;}',
+                            '.err h2{color:#ff0064;font-size:24px;letter-spacing:3px;text-transform:uppercase;}',
+                            '.err p{color:#b0b0d0;font-size:13px;line-height:1.7;max-width:500px;}',
+                            '.bundle-wrap{max-width:1100px;margin:0 auto;padding:30px 20px;}',
+                            '.bundle-title{color:#00f0ff;text-align:center;font-size:22px;letter-spacing:3px;text-transform:uppercase;margin-bottom:24px;font-family:"Orbitron",sans-serif;}',
+                            '.file-card{background:rgba(0,240,255,0.04);border-left:4px solid #00f0ff;border-radius:10px;padding:18px;margin-bottom:16px;}',
+                            '.file-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;}',
+                            '.file-name{color:#ffd700;font-weight:bold;font-size:14px;}',
+                            '.file-lang{background:#00f0ff;color:#000;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:bold;text-transform:uppercase;}',
+                            '.file-content{background:#000;color:#00ff64;padding:14px;border-radius:8px;font-family:"Courier New",monospace;font-size:12px;line-height:1.5;max-height:400px;overflow:auto;white-space:pre-wrap;word-break:break-word;}',
+                            '.dl-btn{background:linear-gradient(135deg,#00f0ff,#b400ff);border:none;padding:10px 20px;border-radius:8px;color:#000;font-weight:bold;cursor:pointer;margin-top:12px;font-family:inherit;letter-spacing:1px;text-transform:uppercase;font-size:11px;}',
+                            '.dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,240,255,0.3);}',
+                            '<' + '/style>',
+                            '<' + '/head>',
+                            '<body>',
+                            '<div class="loader" id="loader"><div class="spinner"><' + '/div><div class="txt">Decrypting...<' + '/div><div class="sub">Please wait<' + '/div><' + '/div>',
+                            decoyFunctions,
+                            antiDebug,
+                            '<script>',
+                            'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
+                            'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
+                            'function showError(msg){document.title="Error";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;margin:0;";var err="<div class=\\"err\\">";err+="<div class=\\"err-icon\\">❌<\\/div>";err+="<h2>Decryption Failed<\\/h2>";err+="<p>"+msg+"<\\/p>";err+="<\\/div>";document.body.innerHTML=err;}',
+                            'function showKeyMissingError(){document.title="Key File Missing";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:monospace;";var h="<div style=\\"text-align:center;padding:40px 20px;max-width:600px;\\">";h+="<div style=\\"font-size:80px;margin-bottom:24px;\\">🔐<\\/div>";h+="<div style=\\"font-size:24px;letter-spacing:4px;text-transform:uppercase;color:#ff0064;margin-bottom:20px;font-weight:bold;\\">Key File Missing<\\/div>";h+="<div style=\\"color:#b0b0d0;font-size:14px;line-height:2;margin-bottom:24px;\\">";h+="Required files not found in this folder.<br><br>";h+="Make sure <b style=\\"color:#ffd700;\\">BOTH</b> files are in the <b style=\\"color:#ffd700;\\">SAME folder</b>.<\\/div><\\/div>";document.body.innerHTML=h;}',
+                            'function extractTitle(html){var m=html.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);return m?m[1].trim():"Original Web";}',
+                            'function extractFavicon(html){var m=html.match(/<link[^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\'][^>]*href=["\']([^"\']+)["\']/i);if(m)return m[1];m=html.match(/<link[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\']/i);return m?m[1]:null;}',
+                            '(function(){var a=' + encodedKeyFileName + ',b="",c=0;for(c=0;c<a.length;c++){b+=String.fromCharCode((a[c]^0x3C)^0x5A);}var d=b.split("").reverse().join("");var e=JSON.parse(atob(d)),f="",g=0;for(g=0;g<e.length;g++){f+=String.fromCharCode((e[g]^0x3C)^0x5A);}var h=f;var s=document.createElement("script");s.src=h;s.async=false;document.head.appendChild(s);})();',
+                            'function applyOriginalBranding(html){var title=extractTitle(html);document.title=title;var fav=extractFavicon(html);if(fav){var link=document.querySelector("link[rel*=\'icon\']")||document.createElement("link");link.rel="icon";link.href=fav;document.head.appendChild(link);}}',
+                            'function injectBlocker(html){html=html.replace(/<noscript[\\s\\S]*?<\\/noscript>/gi,"");html=html.replace(/<meta[^>]*http-equiv=["\']refresh["\'][^>]*>/gi,"");var css="<style>"+"*{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;}"+"input,textarea,select{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text;}"+"<\\/style>";var js="<scr"+"ipt>"+"(function(){"+"function isEd(el){if(!el||!el.tagName)return false;var t=el.tagName.toLowerCase();return t===\'input\'||t===\'textarea\'||t===\'select\'||el.isContentEditable;}"+"document.addEventListener(\'contextmenu\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'selectstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'copy\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'cut\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'dragstart\',function(e){if(isEd(e.target))return true;e.preventDefault();return false;},{capture:true});"+"document.addEventListener(\'keydown\',function(e){"+"var t=e.target;var tag=t&&t.tagName?t.tagName.toLowerCase():\'\';"+"var ed=(tag===\'input\'||tag===\'textarea\'||tag===\'select\'||(t&&t.isContentEditable));"+"if(e.key===\'F12\'||e.keyCode===123){e.preventDefault();return false;}"+"if(e.ctrlKey&&e.shiftKey&&(e.key===\'I\'||e.key===\'J\'||e.key===\'C\'||e.keyCode===73||e.keyCode===74||e.keyCode===67)){e.preventDefault();return false;}"+"if(e.ctrlKey&&(e.key===\'U\'||e.keyCode===85)){e.preventDefault();return false;}"+"if(e.ctrlKey&&!ed&&(e.key===\'C\'||e.key===\'A\'||e.key===\'S\'||e.keyCode===67||e.keyCode===65||e.keyCode===83)){e.preventDefault();return false;}"+"if(!ed&&(e.key===\'Backspace\'||e.key===\'Tab\')){e.preventDefault();return false;}"+"},{capture:true});"+"})();"+"<\\/scr"+"ipt>";if(html.indexOf("</head>")!==-1){html=html.replace("</head>",css+"</head>");}else{html=css+html;}if(html.indexOf("</body>")!==-1){html=html.replace("</body>",js+"</body>");}else{html=html+js;}return html;}',
+                    
+                            /* ✅ ANTI-KEY-THEFT: Override console methods + Function constructor */
+                            'function injectSecurityShield(){' +
+                              'try{' +
+                                /* Block console access to prevent key theft via console */
+                                'var _noop=function(){return undefined;};' +
+                                'try{Object.defineProperty(window,"console",{value:{log:_noop,warn:_noop,error:_noop,info:_noop,debug:_noop,dir:_noop,table:_noop,trace:_noop,assert:_noop,count:_noop,group:_noop,groupEnd:_noop,time:_noop,timeEnd:_noop,profile:_noop,profileEnd:_noop},writable:false,configurable:false});}catch(e){}' +
+                                /* Block Function constructor to prevent dynamic code eval */
+                                'try{var _OrigFunc=Function;Object.defineProperty(window,"Function",{value:function(){throw new Error("Blocked");},writable:false,configurable:false});}catch(e){}' +
+                                /* Block eval */
+                                'try{Object.defineProperty(window,"eval",{value:function(){throw new Error("Blocked");},writable:false,configurable:false});}catch(e){}' +
+                                /* Block setTimeout/setInterval with string args */
+                                'try{var _origST=window.setTimeout;window.setTimeout=function(fn,delay){if(typeof fn==="string"){throw new Error("Blocked");}return _origST.apply(this,arguments);};}catch(e){}' +
+                                'try{var _origSI=window.setInterval;window.setInterval=function(fn,delay){if(typeof fn==="string"){throw new Error("Blocked");}return _origSI.apply(this,arguments);};}catch(e){}' +
+                                /* Block Function.prototype.constructor */
+                                'try{Object.defineProperty(Function.prototype,"constructor",{value:function(){throw new Error("Blocked");},writable:false,configurable:false});}catch(e){}' +
+                                /* Block debugger from inspecting REALKEY */
+                                'try{var _origDefine=Object.defineProperty;Object.defineProperty=function(obj,prop,desc){if(prop==="__realDecrypt"||prop==="_0xSECRET"||prop==="REALKEY"){return obj;}return _origDefine.call(Object,obj,prop,desc);};}catch(e){}' +
+                              '}catch(e){}' +
+                            '}',
+                    
+                            /* ✅ MAIN DECRYPT + AUTO-SAVE + REDIRECT */
+                            'function renderHTML(htmlContent){' +
+                              'var loader=document.getElementById("loader");' +
+                              'if(loader)loader.style.display="none";' +
+                              'applyOriginalBranding(htmlContent);' +
+                              'var finalHTML=injectBlocker(htmlContent);' +
+                    
+                              /* 🔒 Inject security shield FIRST */
+                              'injectSecurityShield();' +
+                    
+                              /* ✅ Save decrypted HTML to user-app.html */
+                              'try{' +
+                                'var blob=new Blob([finalHTML],{type:"text/html;charset=utf-8"});' +
+                                'var url=URL.createObjectURL(blob);' +
+                                'var a=document.createElement("a");' +
+                                'a.href=url;' +
+                                'a.download="' + userAppFileName + '";' +
+                                'a.click();' +
+                                'setTimeout(function(){URL.revokeObjectURL(url);},30000);' +
+                                /* ✅ Redirect to user-app.html after download */
+                                'setTimeout(function(){' +
+                                  'window.location.href="' + userAppFileName + '";' +
+                                '},1500);' +
+                              '}catch(e){' +
+                                /* Fallback: render on same page */
+                                'document.open();document.write(finalHTML);document.close();' +
+                              '}' +
+                            '}',
+                            'function renderText(textContent){document.title="Decrypted Text";document.body.innerHTML="";document.body.style.cssText="background:#000;color:#00ff64;font-family:\\"Courier New\\",monospace;padding:20px;margin:0;font-size:13px;line-height:1.6;";var pre=document.createElement("pre");pre.style.cssText="margin:0;white-space:pre-wrap;word-break:break-word;";pre.textContent=textContent;document.body.appendChild(pre);}',
+                            'function renderBundle(bundle){document.title="Bundle ("+bundle.__fileCount+" Files)";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;padding:20px;margin:0;min-height:100vh;";var h="<div class=\\"bundle-wrap\\">";h+="<div class=\\"bundle-title\\">📦 Multi-File Bundle ("+bundle.__fileCount+" files)<\\/div>";Object.keys(bundle.files).forEach(function(name){var f=bundle.files[name];h+="<div class=\\"file-card\\">";h+="<div class=\\"file-head\\"><span class=\\"file-name\\">📄 "+name+"<\\/span><span class=\\"file-lang\\">"+(f.lang||"?").toUpperCase()+"<\\/span><\\/div>";h+="<pre class=\\"file-content\\">"+f.content.replace(/</g,"&lt;")+"<\\/pre>";h+="<button class=\\"dl-btn\\" data-name=\\""+name+"\\">⬇ Download "+name+"<\\/button>";h+="<\\/div>";});h+="<\\/div>";document.body.innerHTML=h;document.body.querySelectorAll(".dl-btn").forEach(function(b){b.addEventListener("click",function(){var name=this.getAttribute("data-name");var f=bundle.files[name];var blob=new Blob([f.content],{type:"text/plain;charset=utf-8"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();});});}',
+                            'ready(function(){' +
+                            'if(typeof CryptoJS==="undefined"){showError("CryptoJS library failed to load. Check your internet connection.");return;}' +
+                            'setTimeout(function(){' +
+                            'var R = window.__realDecrypt;' +
+                            'if(!R || typeof R.verify !== "function"){showKeyMissingError();return;}' +
+                            'var DT="' + DECRYPTOR_TOKEN + '";' +
+                            'if(!R.verify(DT)){showError("Token invalid or already used");return;}' +
+                            'try{' +
+                            'var parts=ENCRYPTED_DATA.split(":");' +
+                            'var iv=parts[1];var ct=parts[2];var hm=parts[3];' +
+                            'if(!R.hmac(iv+":"+ct, hm)){throw new Error("Integrity check failed");}' +
+                            'var dec=R.aes(ct, iv);' +
+                            'if(!dec||dec.length===0){throw new Error("Decryption failed");}' +
+                            /* ✅ WIPE KEY IMMEDIATELY */
+                            'R.wipe();' +
+                            'try{ delete window.__realDecrypt; }catch(e){}' +
+                            'window._0xSECRET=null;' +
+                            'window.__dx=null;' +
+                            'var isBundle=false,bundle=null;' +
+                            'try{var p=JSON.parse(dec);if(p&&p.__type==="multi-file-bundle"){isBundle=true;bundle=p;}}catch(e){}' +
+                            'if(isBundle){renderBundle(bundle);}' +
+                            'else{' +
+                            'var trimmed=dec.trim();' +
+                            'var isHTML=/^\\s*<!DOCTYPE\\s+html/i.test(trimmed)||/<html[\\s>]/i.test(trimmed)||/<head[\\s>]/i.test(trimmed)||/<body[\\s>]/i.test(trimmed)||/<div[\\s>]/i.test(trimmed);' +
+                            'if(isHTML){renderHTML(dec);}else{renderText(dec);}' +
+                            '}' +
+                            '}catch(e){showError(e.message);}' +
+                            '},500);});',
+                            '<' + '/script>',
+                            '<' + '/body>',
+                            '<' + '/html>'
+                        ];
+                    
+                        var html = parts.join('\n');
+                    
+                        /* ═══════════════════════════════════════════════════════════
+                           STEP 2: SIRF 2 FILES DOWNLOAD KARO
+                           File 1: index.html (decryptor)
+                           File 2: [key].js (key file)
+                           File 3: user-app.html (auto-generate hoga runtime par)
+                           ═══════════════════════════════════════════════════════════ */
+                    
+                        // File 1: index.html
+                        var indexBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
+                        var indexUrl = URL.createObjectURL(indexBlob);
+                        var indexLink = document.createElement('a');
+                        indexLink.href = indexUrl;
+                        indexLink.download = 'index.html';
+                        indexLink.click();
+                    
+                        // File 2: Key file
+                        setTimeout(function() {
+                            var keyBlob = new Blob([keyFileContent], { type: 'text/javascript;charset=utf-8' });
+                            var keyUrl = URL.createObjectURL(keyBlob);
+                            var keyLink = document.createElement('a');
+                            keyLink.href = keyUrl;
+                            keyLink.download = keyFileName;
+                            keyLink.click();
+                            setTimeout(function() { URL.revokeObjectURL(keyUrl); }, 30000);
+                        }, 300);
+                    
+                        setTimeout(function() { URL.revokeObjectURL(indexUrl); }, 30000);
+                    
+                        showStatus('success', '🎁 2 files downloaded! Open index.html to launch.');
+                        toast('2 files downloaded successfully!', 'success');
+                    
+                        setTimeout(function() {
+                            showKeyModal(keyFileName, keyFileContent, userAppFileName);
+                        }, 1200);
+                    };
             
             /* ═══════════════════════════════════════════════════════════
                KEY FILE MODAL
