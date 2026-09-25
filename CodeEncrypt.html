@@ -2877,7 +2877,7 @@
                DOWNLOAD DECRYPTOR — v19 STRONG (20 layers, hidden filename,
                closure-protected key, auto-wipe, single-line key file)
                ═══════════════════════════════════════════════════════════ */
-                window.downloadDecryptor = function() {
+               window.downloadDecryptor = function() {
                     var outEl = document.getElementById('outputEnc');
                     if (!outEl || !outEl.value) {
                         toast('Encrypt first!', 'error');
@@ -2898,8 +2898,6 @@
                     }
                 
                     var encData = outEl.value;
-                
-                    /* ✅ Key as-is — 89 chars */
                     var fullKeyString = fullKey;
                 
                     /* ─── Random helpers ─── */
@@ -2918,6 +2916,23 @@
                     function pickRandom(arr) {
                         return arr[Math.floor(Math.random() * arr.length)];
                     }
+                
+                    /* ═══════════════════════════════════════════════════════════
+                       STEP 1: User se app file ka naam poochho
+                       ═══════════════════════════════════════════════════════════ */
+                    var userAppName = prompt(
+                        '📄 Apni decrypted app file ka naam likho:\n\n' +
+                        '(Example: my-gyidi-app ya gyidi-bazar)\n' +
+                        '.html automatically add ho jayega',
+                        'gyidi-app'
+                    );
+                
+                    if (!userAppName || userAppName.trim() === '') {
+                        userAppName = 'gyidi-app';
+                    }
+                    userAppName = userAppName.trim().replace(/[^a-zA-Z0-9_-]/g, '');
+                    if (!userAppName) userAppName = 'gyidi-app';
+                    var userAppFileName = userAppName + '.html';
                 
                     /* ─── Key file name ─── */
                     var typePrefixes = ['sk','vx','ky','zn','qm','pl','rt','jw','bd','fh',
@@ -2942,9 +2957,9 @@
                                       pickRandom(roleWords) + '-' +
                                       rndHex(10) + '.js';
                 
-                    /* ═══════════════════════════════════════════════════════
+                    /* ═══════════════════════════════════════════════════════════
                        7-LAYER OBFUSCATION
-                       ═══════════════════════════════════════════════════════ */
+                       ═══════════════════════════════════════════════════════════ */
                     var s1 = (Date.now() % 251) + 1;
                     var s2 = (Math.floor(Math.random() * 251)) + 1;
                     var s3 = (Math.floor(Math.random() * 251)) + 1;
@@ -2974,7 +2989,6 @@
                         if (m % 2 === 0) even.push(L3[m]);
                         else odd.push(L3[m]);
                     }
-                    var evenCount = even.length;
                     var L4 = even.concat(odd);
                 
                     /* L5: random padding */
@@ -2992,7 +3006,7 @@
                     }
                     var L6 = btoa(bin);
                 
-                    /* L7: reverse + XOR 0x5A + XOR S4 to byte array */
+                    /* L7: reverse + XOR 0x5A + XOR S4 */
                     var L7 = L6.split('').reverse().join('');
                     var obf = [];
                     for (var bi = 0; bi < L7.length; bi++) {
@@ -3018,17 +3032,12 @@
                     var qF = rv(6), qG = rv(5), qH = rv(4), qI = rv(4), qJ = rv(5);
                     var qK = rv(5), qL = rv(5), qM = rv(5), qN = rv(4), qO = rv(5);
                 
-                    /* ═══════════════════════════════════════════════════════
-                       DYNAMIC TOKEN (single-use)
-                       ═══════════════════════════════════════════════════════ */
+                    /* ─── Token ─── */
                     var DECRYPTOR_TOKEN = 'TK' + rndHex(12) + '_' + rndHex(8) + '_' + Date.now().toString(36);
                 
-                    /* ═══════════════════════════════════════════════════════
-                       KEY FILE CONTENT — 7-LAYER DECODE + CLOSURE PROTECTION
-                       - Real key closure mein
-                       - Fake _0xSECRET window par (search karne wale ko mile)
-                       - Real API sirf token ke saath kaam kare
-                       ═══════════════════════════════════════════════════════ */
+                    /* ═══════════════════════════════════════════════════════════
+                       KEY FILE CONTENT
+                       ═══════════════════════════════════════════════════════════ */
                     var keyFileContent =
                         '(function(){\n' +
                         '"use strict";\n' +
@@ -3071,82 +3080,22 @@
                         '}\n' +
                         'return res;\n' +
                         '}\n' +
-                
-                        /* ✅ Real key decode — closure mein */
                         'var REALKEY=' + qE + '(' + qD + ');\n' +
                         'if(!REALKEY||REALKEY.length<30){return;}\n' +
-                
-                        'var ' + (function(){ var v1 = '_0x' + rv(6); var v2 = '_0x' + rv(6); return 'v1_' + v1.substring(2) + '="NightOrbitGyidi_houperSecret_" + ' +
-                        '(Math.random().toString(36).substring(2,20)) + (Math.random().toString(36).substring(2,20));\n' +
-                        'window._0xSECRET = v1_' + v1.substring(2) + ';\n' +
-                        'var v2_' + v2.substring(2) + '="NightOrbitGyidi_houperSecret_" + ' +
-                        '(Math.random().toString(36).substring(2,20));\n' +
-                        'window._0xSECRET2 = v2_' + v2.substring(2) + ';\n'; })() +
-                
-                        /* ✅ FAKE __dx object — dekhne mein real jaisa */
-                        'window.__dx = {\n' +
-                        '  a: true,\n' +
-                        '  v: function(t){ return false; },\n' +
-                        '  h: function(d,e){ return false; },\n' +
-                        '  d: function(ct,iv){ return "DECOY_DECRYPTION_RESULT"; },\n' +
-                        '  w: function(){ window._0xSECRET=null; window.__dx=null; }\n' +
-                        '};\n' +
-                
-                        /* ✅ REAL API — closure mein, token-protected */
+                        'window._0xSECRET="NightOrbitGyidi_houperSecret_"+Math.random().toString(36).substring(2,20);\n' +
+                        'window.__dx={a:true,v:function(){return false;},h:function(){return false;},d:function(){return "DECOY";},w:function(){window._0xSECRET=null;window.__dx=null;}};\n' +
                         'var _TOKEN="' + DECRYPTOR_TOKEN + '";\n' +
                         'var _used=false;\n' +
                         'var _wiped=false;\n' +
-                
-                        /* ✅ REAL __realDecrypt — chhupa hua naam, closure access */
-                        'var __realDecrypt = {\n' +
-                        '  verify: function(t){\n' +
-                        '    if(_wiped||_used) return false;\n' +
-                        '    if(t!==_TOKEN) return false;\n' +
-                        '    _used=true;\n' +
-                        '    return true;\n' +
-                        '  },\n' +
-                        '  hmac: function(data, expected){\n' +
-                        '    if(_wiped) return false;\n' +
-                        '    try{\n' +
-                        '      var c = CryptoJS.HmacSHA256(data, REALKEY).toString();\n' +
-                        '      if(c.length !== expected.length) return false;\n' +
-                        '      var diff = 0;\n' +
-                        '      for(var i=0;i<c.length;i++){ diff |= c.charCodeAt(i) ^ expected.charCodeAt(i); }\n' +
-                        '      return diff === 0;\n' +
-                        '    }catch(e){ return false; }\n' +
-                        '  },\n' +
-                        '  aes: function(ct, iv){\n' +
-                        '    if(_wiped) throw new Error("e");\n' +
-                        '    try{\n' +
-                        '      var v = CryptoJS.enc.Hex.parse(iv);\n' +
-                        '      return CryptoJS.AES.decrypt(ct, REALKEY, {iv:v, mode:CryptoJS.mode.CBC, padding:CryptoJS.pad.Pkcs7}).toString(CryptoJS.enc.Utf8);\n' +
-                        '    }catch(e){ throw new Error("d"); }\n' +
-                        '  },\n' +
-                        '  wipe: function(){\n' +
-                        '    REALKEY = null;\n' +
-                        '    _TOKEN = null;\n' +
-                        '    _used = true;\n' +
-                        '    _wiped = true;\n' +
-                        '    try{ delete window.__realDecrypt; }catch(e){}\n' +
-                        '    window._0xSECRET = null;\n' +
-                        '    window.__dx = null;\n' +
-                        '  },\n' +
-                        '  isAlive: function(){ return !_wiped; }\n' +
+                        'var __realDecrypt={\n' +
+                        'verify:function(t){if(_wiped||_used)return false;if(t!==_TOKEN)return false;_used=true;return true;},\n' +
+                        'hmac:function(data,expected){if(_wiped)return false;try{var c=CryptoJS.HmacSHA256(data,REALKEY).toString();if(c.length!==expected.length)return false;var diff=0;for(var i=0;i<c.length;i++){diff|=c.charCodeAt(i)^expected.charCodeAt(i);}return diff===0;}catch(e){return false;}},\n' +
+                        'aes:function(ct,iv){if(_wiped)throw new Error("e");try{var v=CryptoJS.enc.Hex.parse(iv);return CryptoJS.AES.decrypt(ct,REALKEY,{iv:v,mode:CryptoJS.mode.CBC,padding:CryptoJS.pad.Pkcs7}).toString(CryptoJS.enc.Utf8);}catch(e){throw new Error("d");}},\n' +
+                        'wipe:function(){REALKEY=null;_TOKEN=null;_used=true;_wiped=true;try{delete window.__realDecrypt;}catch(e){}window._0xSECRET=null;window.__dx=null;},\n' +
+                        'isAlive:function(){return !_wiped;}\n' +
                         '};\n' +
-                
-                        /* ✅ Real API ko window par attach karo lekin non-enumerable naam se */
-                        'try{\n' +
-                        '  Object.defineProperty(window, "__realDecrypt", {\n' +
-                        '    value: __realDecrypt,\n' +
-                        '    enumerable: false,\n' +
-                        '    writable: false,\n' +
-                        '    configurable: false\n' +
-                        '  });\n' +
-                        '}catch(e){ window.__realDecrypt = __realDecrypt; }\n' +
-                
-                        '}catch(g){\n' +
-                        '  try{ window._0xSECRET = ""; window.__dx = null; }catch(g2){}\n' +
-                        '}\n' +
+                        'try{Object.defineProperty(window,"__realDecrypt",{value:__realDecrypt,enumerable:false,writable:false,configurable:false});}catch(e){window.__realDecrypt=__realDecrypt;}\n' +
+                        '}catch(g){try{window._0xSECRET="";window.__dx=null;}catch(g2){}}\n' +
                         '})();\n';
                 
                     /* ─── Decoy + Anti-debug ─── */
@@ -3181,9 +3130,9 @@
                         '})();\n' +
                         '<' + '/script>\n';
                 
-                    /* ═══════════════════════════════════════════════════════
-                       BUILD DECRYPTOR HTML
-                       ═══════════════════════════════════════════════════════ */
+                    /* ═══════════════════════════════════════════════════════════
+                       BUILD DECRYPTOR HTML (user app)
+                       ═══════════════════════════════════════════════════════════ */
                     var parts = [
                         '<!DOCTYPE html>',
                         '<html lang="en">',
@@ -3198,8 +3147,6 @@
                         '<meta http-equiv="X-Content-Type-Options" content="nosniff">',
                         '<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">',
                         '<meta http-equiv="Permissions-Policy" content="geolocation=(self), microphone=(), camera=()">',
-                        '<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests; default-src \'self\'; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://www.gstatic.com https://*.firebaseio.com https://*.firebaseapp.com https://*.web.app; style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src \'self\' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; img-src \'self\' data: https: blob:; connect-src \'self\' https://*.firebaseio.com wss://*.firebaseio.com https://*.firebaseapp.com https://*.web.app https://*.googleapis.com https://*.emailjs.com https://cdnjs.cloudflare.com https://*.gstatic.com; frame-src \'self\' blob: data:; child-src \'self\' blob: data:; worker-src \'self\' blob:; object-src \'none\'; base-uri \'self\'; form-action \'self\';">',
-                        '<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests; default-src \'self\'; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://www.gstatic.com https://*.firebaseio.com https://*.firebaseapp.com https://*.web.app; style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src \'self\' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; img-src \'self\' data: https: blob:; connect-src \'self\' https://*.firebaseio.com wss://*.firebaseio.com https://*.firebaseapp.com https://*.web.app https://*.googleapis.com https://*.emailjs.com https://cdnjs.cloudflare.com https://*.gstatic.com; frame-src \'self\' blob: data:; worker-src \'self\' blob:; object-src \'none\'; base-uri \'self\'; form-action \'self\';">',
                         '<title id="pageTitle">Loading...</title>',
                         '<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"><' + '/script>',
                         '<style>',
@@ -3224,7 +3171,6 @@
                         '.file-content{background:#000;color:#00ff64;padding:14px;border-radius:8px;font-family:"Courier New",monospace;font-size:12px;line-height:1.5;max-height:400px;overflow:auto;white-space:pre-wrap;word-break:break-word;}',
                         '.dl-btn{background:linear-gradient(135deg,#00f0ff,#b400ff);border:none;padding:10px 20px;border-radius:8px;color:#000;font-weight:bold;cursor:pointer;margin-top:12px;font-family:inherit;letter-spacing:1px;text-transform:uppercase;font-size:11px;}',
                         '.dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,240,255,0.3);}',
-                        '#renderFrame{width:100%;height:100vh;border:0;display:block;position:fixed;inset:0;z-index:10;}',
                         '<' + '/style>',
                         '<' + '/head>',
                         '<body>',
@@ -3234,7 +3180,7 @@
                         '<script>',
                         'var ENCRYPTED_DATA=' + JSON.stringify(encData) + ';',
                         'function ready(fn){if(document.readyState!=="loading"){fn();}else{document.addEventListener("DOMContentLoaded",fn);}}',
-                        'function showError(msg){document.title="Error";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;margin:0;";var err="<div class=\\"err\\">";err+="<div class=\\"err-icon\\">❌<\\/div>";err+="<h2>Decryption Failed<\\/h2>";err+="<p>"+msg+"<\\/p>";err+="<p style=\\"font-size:11px;color:#6a6a8a;margin-top:20px;\\">Check: key file present, encrypted data, internet connection<\\/p>";err+="<\\/div>";document.body.innerHTML=err;}',
+                        'function showError(msg){document.title="Error";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;margin:0;";var err="<div class=\\"err\\">";err+="<div class=\\"err-icon\\">❌<\\/div>";err+="<h2>Decryption Failed<\\/h2>";err+="<p>"+msg+"<\\/p>";err+="<\\/div>";document.body.innerHTML=err;}',
                         'function showKeyMissingError(){document.title="Key File Missing";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:monospace;";var h="<div style=\\"text-align:center;padding:40px 20px;max-width:600px;\\">";h+="<div style=\\"font-size:80px;margin-bottom:24px;\\">🔐<\\/div>";h+="<div style=\\"font-size:24px;letter-spacing:4px;text-transform:uppercase;color:#ff0064;margin-bottom:20px;font-weight:bold;\\">Key File Missing<\\/div>";h+="<div style=\\"color:#b0b0d0;font-size:14px;line-height:2;margin-bottom:24px;\\">";h+="Required files not found in this folder.<br><br>";h+="Make sure <b style=\\"color:#ffd700;\\">BOTH</b> files are in the <b style=\\"color:#ffd700;\\">SAME folder</b>.<\\/div><\\/div>";document.body.innerHTML=h;}',
                         'function extractTitle(html){var m=html.match(/<title[^>]*>([\\s\\S]*?)<\\/title>/i);return m?m[1].trim():"Original Web";}',
                         'function extractFavicon(html){var m=html.match(/<link[^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\'][^>]*href=["\']([^"\']+)["\']/i);if(m)return m[1];m=html.match(/<link[^>]*href=["\']([^"\']+)["\'][^>]*rel=["\'](?:icon|shortcut icon|apple-touch-icon)["\']/i);return m?m[1]:null;}',
@@ -3244,7 +3190,6 @@
                         'function renderHTML(htmlContent){var loader=document.getElementById("loader");if(loader)loader.style.display="none";applyOriginalBranding(htmlContent);var finalHTML=injectBlocker(htmlContent);document.open();document.write(finalHTML);document.close();}',
                         'function renderText(textContent){document.title="Decrypted Text";document.body.innerHTML="";document.body.style.cssText="background:#000;color:#00ff64;font-family:\\"Courier New\\",monospace;padding:20px;margin:0;font-size:13px;line-height:1.6;";var pre=document.createElement("pre");pre.style.cssText="margin:0;white-space:pre-wrap;word-break:break-word;";pre.textContent=textContent;document.body.appendChild(pre);}',
                         'function renderBundle(bundle){document.title="Bundle ("+bundle.__fileCount+" Files)";document.body.innerHTML="";document.body.style.cssText="background:#0b0b1a;color:#fff;font-family:monospace;padding:20px;margin:0;min-height:100vh;";var h="<div class=\\"bundle-wrap\\">";h+="<div class=\\"bundle-title\\">📦 Multi-File Bundle ("+bundle.__fileCount+" files)<\\/div>";Object.keys(bundle.files).forEach(function(name){var f=bundle.files[name];h+="<div class=\\"file-card\\">";h+="<div class=\\"file-head\\"><span class=\\"file-name\\">📄 "+name+"<\\/span><span class=\\"file-lang\\">"+(f.lang||"?").toUpperCase()+"<\\/span><\\/div>";h+="<pre class=\\"file-content\\">"+f.content.replace(/</g,"&lt;")+"<\\/pre>";h+="<button class=\\"dl-btn\\" data-name=\\""+name+"\\">⬇ Download "+name+"<\\/button>";h+="<\\/div>";});h+="<\\/div>";document.body.innerHTML=h;document.body.querySelectorAll(".dl-btn").forEach(function(b){b.addEventListener("click",function(){var name=this.getAttribute("data-name");var f=bundle.files[name];var blob=new Blob([f.content],{type:"text/plain;charset=utf-8"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();});});}',
-                        /* DECRYPT — uses REAL API (window.__realDecrypt) + token */
                         'ready(function(){' +
                         'if(typeof CryptoJS==="undefined"){showError("CryptoJS library failed to load. Check your internet connection.");return;}' +
                         'setTimeout(function(){' +
@@ -3258,7 +3203,6 @@
                         'if(!R.hmac(iv+":"+ct, hm)){throw new Error("Integrity check failed");}' +
                         'var dec=R.aes(ct, iv);' +
                         'if(!dec||dec.length===0){throw new Error("Decryption failed");}' +
-                        '/* ✅ WIPE REAL KEY IMMEDIATELY */' +
                         'R.wipe();' +
                         'try{ delete window.__realDecrypt; }catch(e){}' +
                         'var isBundle=false,bundle=null;' +
@@ -3278,80 +3222,147 @@
                 
                     var html = parts.join('\n');
                 
-                    var htmlBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
-                    var htmlUrl = URL.createObjectURL(htmlBlob);
-                    var htmlLink = document.createElement('a');
-                    htmlLink.href = htmlUrl;
-                    htmlLink.download = 'decryptor.html';
-                    htmlLink.click();
+                    /* ═══════════════════════════════════════════════════════════
+                       STEP 2: index.html content banao
+                       ═══════════════════════════════════════════════════════════ */
+                    var indexHtmlContent =
+                        '<!DOCTYPE html>\n' +
+                        '<html lang="en">\n' +
+                        '<head>\n' +
+                        '<meta charset="UTF-8">\n' +
+                        '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">\n' +
+                        '<meta name="mobile-web-app-capable" content="yes">\n' +
+                        '<meta name="apple-mobile-web-app-capable" content="yes">\n' +
+                        '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n' +
+                        '<meta name="theme-color" content="#0b0b1a">\n' +
+                        '<title>Launching App...</title>\n' +
+                        '<style>\n' +
+                        '*{margin:0;padding:0;box-sizing:border-box;}\n' +
+                        'html,body{width:100%;height:100%;overflow:hidden;background:#05050f;}\n' +
+                        '.wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px;font-family:"Courier New",monospace;}\n' +
+                        '.spinner{width:60px;height:60px;border:4px solid rgba(0,240,255,0.15);border-top-color:#00f0ff;border-radius:50%;animation:spin 1s linear infinite;}\n' +
+                        '@keyframes spin{to{transform:rotate(360deg);}}\n' +
+                        '.txt{color:#00f0ff;font-size:14px;letter-spacing:3px;text-transform:uppercase;}\n' +
+                        '.sub{color:#6a6a8a;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:8px;}\n' +
+                        '<' + '/style>\n' +
+                        '<' + '/head>\n' +
+                        '<body>\n' +
+                        '<div class="wrap">\n' +
+                        '<div class="spinner"><' + '/div>\n' +
+                        '<div class="txt">Launching App...<' + '/div>\n' +
+                        '<div class="sub">Please wait<' + '/div>\n' +
+                        '<' + '/div>\n' +
+                        '<script>\n' +
+                        '(function(){\n' +
+                        '  var target = "' + userAppFileName + '";\n' +
+                        '  setTimeout(function(){\n' +
+                        '    window.location.replace(target);\n' +
+                        '  }, 800);\n' +
+                        '})();\n' +
+                        '<' + '/script>\n' +
+                        '<' + '/body>\n' +
+                        '<' + '/html>';
                 
-                    var keyBlob = new Blob([keyFileContent], { type: 'text/javascript;charset=utf-8' });
-                    var keyUrl = URL.createObjectURL(keyBlob);
-                    var keyLink = document.createElement('a');
-                    keyLink.href = keyUrl;
-                    keyLink.download = keyFileName;
-                    keyLink.click();
+                    /* ═══════════════════════════════════════════════════════════
+                       STEP 3: Teeno files download karo
+                       ═══════════════════════════════════════════════════════════ */
+                
+                    // File 1: index.html
+                    var indexBlob = new Blob([indexHtmlContent], { type: 'text/html;charset=utf-8' });
+                    var indexUrl = URL.createObjectURL(indexBlob);
+                    var indexLink = document.createElement('a');
+                    indexLink.href = indexUrl;
+                    indexLink.download = 'index.html';
+                    indexLink.click();
+                
+                    // File 2: Key file
+                    setTimeout(function() {
+                        var keyBlob = new Blob([keyFileContent], { type: 'text/javascript;charset=utf-8' });
+                        var keyUrl = URL.createObjectURL(keyBlob);
+                        var keyLink = document.createElement('a');
+                        keyLink.href = keyUrl;
+                        keyLink.download = keyFileName;
+                        keyLink.click();
+                        setTimeout(function() { URL.revokeObjectURL(keyUrl); }, 30000);
+                    }, 300);
+                
+                    // File 3: User ki app file (decrypted HTML)
+                    setTimeout(function() {
+                        var appBlob = new Blob([html], { type: 'text/html;charset=utf-8' });
+                        var appUrl = URL.createObjectURL(appBlob);
+                        var appLink = document.createElement('a');
+                        appLink.href = appUrl;
+                        appLink.download = userAppFileName;
+                        appLink.click();
+                        setTimeout(function() { URL.revokeObjectURL(appUrl); }, 30000);
+                    }, 600);
+                
+                    setTimeout(function() { URL.revokeObjectURL(indexUrl); }, 30000);
+                
+                    showStatus('success', '🎁 3 files downloaded! Open index.html to launch.');
+                    toast('3 files downloaded successfully!', 'success');
                 
                     setTimeout(function() {
-                        URL.revokeObjectURL(htmlUrl);
-                        URL.revokeObjectURL(keyUrl);
-                    }, 30000);
-                
-                    showStatus('success', '🎁 Decryptor + Key file downloaded! Keep both in same folder.');
-                    toast('Decryptor + Key file downloaded!', 'success');
-                
-                    setTimeout(function() {
-                        showKeyModal(keyFileName, keyFileContent);
-                    }, 800);
+                        showKeyModal(keyFileName, keyFileContent, userAppFileName);
+                    }, 1200);
                 };
             
             /* ═══════════════════════════════════════════════════════════
                KEY FILE MODAL
                ═══════════════════════════════════════════════════════════ */
-            window.showKeyModal = function(fileName, keyCode) {
-                safe(function() {
-                    var existing = document.getElementById('keyModalOverlay');
-                    if (existing) existing.remove();
-            
-                    var overlay = document.createElement('div');
-                    overlay.id = 'keyModalOverlay';
-                    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
-            
-                    var modal = document.createElement('div');
-                    modal.style.cssText = 'background:rgba(11,11,26,0.98);border:2px solid #00f0ff;border-radius:22px;padding:28px 24px;max-width:580px;width:100%;box-shadow:0 0 100px rgba(0,240,255,0.3);';
-            
-                    modal.innerHTML =
-                        '<h2 style="font-family:Orbitron,sans-serif;font-size:16px;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:8px;background:linear-gradient(135deg,#00f0ff,#ff2d95);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">KEY FILE BACKUP</h2>' +
-                        '<p style="color:#6a6a8a;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:20px;">Files auto-downloaded. Backup below.</p>' +
-            
-                        '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
-                        '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">✅ AUTO-DOWNLOADED</div>' +
-                        '<div style="color:#b0d0ff;font-size:12px;line-height:1.7;">Two files have been downloaded:<br>1. <b style="color:#ffd700;">decryptor.html</b><br>2. <b style="color:#00f0ff;">' + fileName + '</b></div>' +
-                        '</div>' +
-            
-                        '<div style="background:rgba(255,215,0,0.08);border-left:3px solid #ffd700;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
-                        '<div style="color:#ffd700;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📁 BACKUP — KEY FILE NAME</div>' +
-                        '<div style="color:#fff;font-size:13px;font-family:JetBrains Mono,monospace;word-break:break-all;background:#000;padding:10px;border-radius:6px;border:1px solid #333;">' + fileName + '</div>' +
-                        '<button onclick="copyToClipboard(\'' + fileName + '\', this)" style="margin-top:8px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">COPY FILE NAME</button>' +
-                        '</div>' +
-            
-                        '<div style="background:rgba(0,240,255,0.08);border-left:3px solid #00f0ff;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
-                        '<div style="color:#00f0ff;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📝 BACKUP — KEY FILE CODE</div>' +
-                        '<div id="keyCodeBox" style="color:#00ff64;font-size:10px;font-family:JetBrains Mono,monospace;word-break:break-all;background:#000;padding:10px;border-radius:6px;border:1px solid #333;max-height:180px;overflow-y:auto;white-space:pre-wrap;">' + keyCode.replace(/</g, '&lt;') + '</div>' +
-                        '<button onclick="copyKeyCode(this)" style="margin-top:8px;background:linear-gradient(135deg,#00f0ff,#b400ff);color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">COPY KEY CODE</button>' +
-                        '</div>' +
-            
-                        '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:12px 14px;border-radius:8px;margin-bottom:20px;">' +
-                        '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">⚠️ IMPORTANT — SAME FOLDER</div>' +
-                        '<div style="color:#b0d0ff;font-size:12px;line-height:1.7;">Place <b>decryptor.html</b> and <b>' + fileName + '</b> in the SAME folder. Do NOT rename the key file.</div>' +
-                        '</div>' +
-            
-                        '<button onclick="closeKeyModal()" style="width:100%;background:linear-gradient(135deg,#00ff64,#00aa44);color:#000;border:none;padding:15px 22px;border-radius:12px;font-weight:900;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">OK, I UNDERSTAND</button>';
-            
-                    overlay.appendChild(modal);
-                    document.body.appendChild(overlay);
-                });
-            };
+           window.showKeyModal = function(fileName, keyCode, userAppFileName) {
+                    safe(function() {
+                        var existing = document.getElementById('keyModalOverlay');
+                        if (existing) existing.remove();
+                
+                        var overlay = document.createElement('div');
+                        overlay.id = 'keyModalOverlay';
+                        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
+                
+                        var modal = document.createElement('div');
+                        modal.style.cssText = 'background:rgba(11,11,26,0.98);border:2px solid #00f0ff;border-radius:22px;padding:28px 24px;max-width:580px;width:100%;box-shadow:0 0 100px rgba(0,240,255,0.3);';
+                
+                        modal.innerHTML =
+                            '<h2 style="font-family:Orbitron,sans-serif;font-size:16px;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:8px;background:linear-gradient(135deg,#00f0ff,#ff2d95);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">3 FILES DOWNLOADED</h2>' +
+                            '<p style="color:#6a6a8a;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:20px;">Keep all 3 in the SAME folder</p>' +
+                
+                            '<div style="background:rgba(0,255,100,0.08);border-left:3px solid #00ff64;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
+                            '<div style="color:#00ff64;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:8px;">✅ DOWNLOADED FILES</div>' +
+                            '<div style="color:#b0d0ff;font-size:12px;line-height:1.9;">' +
+                            '1. <b style="color:#00f0ff;">index.html</b> ← Open this first<br>' +
+                            '2. <b style="color:#ffd700;">' + fileName + '</b> ← Key file (do not rename)<br>' +
+                            '3. <b style="color:#00ff64;">' + userAppFileName + '</b> ← Your app' +
+                            '</div>' +
+                            '</div>' +
+                
+                            '<div style="background:rgba(255,215,0,0.08);border-left:3px solid #ffd700;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
+                            '<div style="color:#ffd700;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📁 KEY FILE NAME (BACKUP)</div>' +
+                            '<div style="color:#fff;font-size:12px;font-family:JetBrains Mono,monospace;word-break:break-all;background:#000;padding:10px;border-radius:6px;border:1px solid #333;">' + fileName + '</div>' +
+                            '<button onclick="copyToClipboard(\'' + fileName + '\', this)" style="margin-top:8px;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">COPY FILE NAME</button>' +
+                            '</div>' +
+                
+                            '<div style="background:rgba(0,240,255,0.08);border-left:3px solid #00f0ff;padding:12px 14px;border-radius:8px;margin-bottom:16px;">' +
+                            '<div style="color:#00f0ff;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">📝 KEY FILE CODE (BACKUP)</div>' +
+                            '<div id="keyCodeBox" style="color:#00ff64;font-size:10px;font-family:JetBrains Mono,monospace;word-break:break-all;background:#000;padding:10px;border-radius:6px;border:1px solid #333;max-height:150px;overflow-y:auto;white-space:pre-wrap;">' + keyCode.replace(/</g, '&lt;') + '</div>' +
+                            '<button onclick="copyKeyCode(this)" style="margin-top:8px;background:linear-gradient(135deg,#00f0ff,#b400ff);color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">COPY KEY CODE</button>' +
+                            '</div>' +
+                
+                            '<div style="background:rgba(255,0,100,0.08);border-left:3px solid #ff0064;padding:12px 14px;border-radius:8px;margin-bottom:20px;">' +
+                            '<div style="color:#ff0064;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">⚠️ IMPORTANT</div>' +
+                            '<div style="color:#ffb3c9;font-size:12px;line-height:1.7;">' +
+                            '• All 3 files SAME folder mein rakho<br>' +
+                            '• <b>index.html</b> double-click karke kholo<br>' +
+                            '• Key file ka naam mat badlo<br>' +
+                            '• Internet connection zaroori hai (Firebase + Fonts ke liye)' +
+                            '</div>' +
+                            '</div>' +
+                
+                            '<button onclick="closeKeyModal()" style="width:100%;background:linear-gradient(135deg,#00ff64,#00aa44);color:#000;border:none;padding:15px 22px;border-radius:12px;font-weight:900;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:Orbitron,sans-serif;">OK, I UNDERSTAND</button>';
+                
+                        overlay.appendChild(modal);
+                        document.body.appendChild(overlay);
+                    });
+                };
             
             window.copyToClipboard = function(text, btn) {
                 universalCopy(text, btn, 'COPY FILE NAME');
