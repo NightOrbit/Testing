@@ -453,6 +453,10 @@ button {
     box-shadow: 0 6px 20px rgba(0, 240, 255, 0.25);
     position: relative;
     overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 button:hover:not(:disabled) {
@@ -465,6 +469,8 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 button.green { background: linear-gradient(135deg, var(--green), #00aa44); }
 button.danger { background: linear-gradient(135deg, var(--red), #c00040); color: #fff; }
 button.secondary { background: linear-gradient(135deg, var(--gold), var(--orange)); }
+button.pink { background: linear-gradient(135deg, var(--pink), var(--purple)); color: #fff; }
+button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
 
 .btn-row {
     display: flex;
@@ -742,7 +748,7 @@ button.secondary { background: linear-gradient(135deg, var(--gold), var(--orange
     <div class="brand">
         <span class="logo">🌌</span>
         <span class="title">NightOrbit</span>
-        <span class="title-ver">MINIFY v2</span>
+        <span class="title-ver">MINIFY v3</span>
     </div>
     <div class="topbar-actions">
         <a href="Dashboard.html" class="topbar-btn dashboard">
@@ -766,7 +772,7 @@ button.secondary { background: linear-gradient(135deg, var(--gold), var(--orange
 
     <div class="header-card">
         <h1>⚡ Minify JS File</h1>
-        <div class="subtitle">NightOrbit CodeForge · JavaScript Minifier &amp; Cleaner · v2 Heavy</div>
+        <div class="subtitle">NightOrbit CodeForge · JavaScript Minifier &amp; Cleaner · v3 Heavy</div>
         <div class="header-stats">
             <span class="header-stat"><i class="fa-solid fa-file-code"></i> .js Output</span>
             <span class="header-stat"><i class="fa-solid fa-bolt"></i> Auto Extract</span>
@@ -795,8 +801,8 @@ button.secondary { background: linear-gradient(135deg, var(--gold), var(--orange
             </div>
             <div class="guide-step">
                 <div class="step-num">4</div>
-                <div class="step-title">Minify &amp; Download</div>
-                <div class="step-desc">Click <strong>MINIFY &amp; DOWNLOAD</strong>. The tool cleans, minifies, and downloads your file instantly.</div>
+                <div class="step-title">Create &amp; Test</div>
+                <div class="step-desc">Click <strong>CREATE JS FILE</strong> to minify &amp; download. Use <strong>TEST SCRIPT</strong> to preview output first.</div>
             </div>
         </div>
         <div class="guide-note">
@@ -872,12 +878,13 @@ button.secondary { background: linear-gradient(135deg, var(--gold), var(--orange
         </div>
     </div>
 
+    <!-- TOP BUTTONS: Create JS File, Test Script, Clear -->
     <div class="btn-row">
         <button class="green" onclick="createJsFile()">
-            <i class="fa-solid fa-file-export"></i> MINIFY &amp; DOWNLOAD
+            <i class="fa-solid fa-file-export"></i> CREATE JS FILE
         </button>
-        <button class="secondary" onclick="previewOutput()">
-            <i class="fa-solid fa-eye"></i> PREVIEW
+        <button class="cyan" onclick="testScript()">
+            <i class="fa-solid fa-flask"></i> TEST SCRIPT
         </button>
         <button class="danger" onclick="clearAll()">
             <i class="fa-solid fa-trash"></i> CLEAR
@@ -889,6 +896,17 @@ button.secondary { background: linear-gradient(135deg, var(--gold), var(--orange
     <div class="section" id="outputSection" style="display:none;">
         <label>⚡ Minified Output <span class="badge" style="background:rgba(0,255,100,0.15);color:#00ff64;padding:4px 12px;border-radius:20px;font-size:9px;font-weight:800;letter-spacing:1.5px;">READY</span></label>
         <textarea id="outputCode" class="huge" readonly></textarea>
+
+        <!-- BOTTOM BUTTONS: Download, Copy -->
+        <div class="btn-row">
+            <button class="secondary" onclick="downloadOutput()">
+                <i class="fa-solid fa-download"></i> DOWNLOAD .JS
+            </button>
+            <button class="pink" onclick="copyOutput()">
+                <i class="fa-solid fa-copy"></i> COPY OUTPUT
+            </button>
+        </div>
+
         <div class="stats-grid">
             <div class="stat-card"><div class="stat-label">Original</div><div class="stat-value" id="statOriginal">0 B</div></div>
             <div class="stat-card"><div class="stat-label">Minified</div><div class="stat-value gold" id="statMinified">0 B</div></div>
@@ -905,24 +923,20 @@ button.secondary { background: linear-gradient(135deg, var(--gold), var(--orange
 (function(){
 'use strict';
 
-/* ═══════════════════════════════════════════════════════════════
-   CONFIG
-   ═══════════════════════════════════════════════════════════════ */
 var CONFIG = {
-    CHUNK_SIZE: 500 * 1024,        /* 500KB chunks */
-    CHUNK_THRESHOLD: 1024 * 1024,  /* 1MB threshold */
+    CHUNK_SIZE: 500 * 1024,
+    CHUNK_THRESHOLD: 1024 * 1024,
     UI_YIELD_MS: 12
 };
 
 var STATE = {
     dom: {},
     isProcessing: false,
-    lastOutput: ''
+    lastOutput: '',
+    lastFileName: ''
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   UTILS
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ UTILS ═══ */
 var Utils = {
     bytes: function(n) {
         if (!n) return '0 B';
@@ -937,21 +951,10 @@ var Utils = {
     },
     escapeHtml: function(str) {
         return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    },
-    yield: function() {
-        return new Promise(function(resolve) {
-            if (typeof requestAnimationFrame === 'function') {
-                requestAnimationFrame(function(){ resolve(); });
-            } else {
-                setTimeout(resolve, CONFIG.UI_YIELD_MS);
-            }
-        });
     }
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   UI
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ UI ═══ */
 var UI = {
     cache: function() {
         var ids = [
@@ -997,9 +1000,7 @@ var UI = {
     }
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   DETECT INPUT TYPE
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ DETECT ═══ */
 function detectInputType(code) {
     if (!code || !code.trim()) return { type: 'empty' };
     var t = code.trim();
@@ -1010,9 +1011,7 @@ function detectInputType(code) {
     return { type: 'js' };
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   EXTRACT JS FROM HTML
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ EXTRACT JS FROM HTML ═══ */
 function extractJsFromHtml(code) {
     if (!code) return '';
     var scripts = [];
@@ -1040,9 +1039,7 @@ function stripHtmlTags(code) {
     return r;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   ADVANCED COMMENT STRIPPER
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ COMMENT STRIPPER ═══ */
 function stripJsComments(code) {
     if (!code) return '';
     var out = [], i = 0, len = code.length, state = 'code';
@@ -1129,9 +1126,7 @@ function stripJsComments(code) {
     return out.join('');
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   HEAVY MINIFIER — chunk-aware, 500K+ lines safe
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ HEAVY MINIFIER ═══ */
 function heavyMinify(code) {
     if (!code) return '';
     var noComments = stripJsComments(code);
@@ -1215,13 +1210,10 @@ function heavyMinify(code) {
     return out.join('').trim();
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   INLINE JS — single-line bundle, comments auto-removed
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ INLINE JS ═══ */
 function inlineJs(code) {
     if (!code) return '';
     var noComments = stripJsComments(code);
-    /* Collapse newlines/tabs/multi-spaces into single space or semicolons */
     var result = noComments
         .replace(/\r\n/g, '\n')
         .replace(/\r/g, '\n')
@@ -1229,7 +1221,6 @@ function inlineJs(code) {
         .replace(/[ \t]+/g, ' ')
         .trim();
 
-    /* Convert newlines to space, but keep safety: if line doesn't end with ; { } , ) ; then add ; */
     var lines = result.split('\n');
     var bundle = [];
     for (var i = 0; i < lines.length; i++) {
@@ -1245,9 +1236,7 @@ function inlineJs(code) {
     return bundle.join(' ').replace(/\s+/g, ' ').trim();
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   ANALYZE INPUT
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ ANALYZE ═══ */
 function analyzeInput() {
     var code = STATE.dom.inputCode ? STATE.dom.inputCode.value : '';
     var stats = STATE.dom.inputStats;
@@ -1268,9 +1257,7 @@ function analyzeInput() {
     if (STATE.dom.statLang) STATE.dom.statLang.textContent = label;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   PREPARE CODE — async chunked for 500K+ lines
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ PREPARE ═══ */
 function prepareCode(raw) {
     var result = {
         original: raw,
@@ -1298,7 +1285,6 @@ function prepareCode(raw) {
         return result;
     }
 
-    /* ─── Inline mode: comments ALWAYS removed ─── */
     var doInline = STATE.dom.optInline ? STATE.dom.optInline.checked : false;
 
     if (doInline) {
@@ -1310,7 +1296,6 @@ function prepareCode(raw) {
         return result;
     }
 
-    /* ─── Normal mode: optional comment removal ─── */
     var removeHints = STATE.dom.optHints ? STATE.dom.optHints.checked : false;
     if (removeHints && result.extracted) {
         result.extracted = stripJsComments(result.extracted);
@@ -1331,9 +1316,7 @@ function prepareCode(raw) {
     return result;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   BUILD SUCCESS MESSAGE
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ SUCCESS MSG ═══ */
 function buildSuccessMessage(result, downloaded, fileName) {
     var lines = [];
 
@@ -1369,9 +1352,7 @@ function buildSuccessMessage(result, downloaded, fileName) {
     return lines.join('\n');
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   GET FILE NAME
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ FILE NAME ═══ */
 function getFileName() {
     var nameInput = STATE.dom.fileName;
     var name = nameInput ? nameInput.value.trim() : '';
@@ -1386,9 +1367,22 @@ function getFileName() {
     return name;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   CREATE JS FILE (Minify & Download)
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ UPDATE OUTPUT PANEL ═══ */
+function updateOutputPanel(result, fileName) {
+    if (STATE.dom.outputSection) STATE.dom.outputSection.style.display = 'block';
+    if (STATE.dom.outputCode) STATE.dom.outputCode.value = result.processed;
+    if (STATE.dom.statOriginal) STATE.dom.statOriginal.textContent = Utils.bytes(result.extractedSize);
+    if (STATE.dom.statMinified) STATE.dom.statMinified.textContent = Utils.bytes(result.finalSize);
+    if (STATE.dom.statSaved) STATE.dom.statSaved.textContent = Utils.bytes(result.extractedSize - result.finalSize);
+    if (STATE.dom.statRatio) {
+        var r = result.extractedSize > 0 ? (result.finalSize / result.extractedSize).toFixed(2) + 'x' : '—';
+        STATE.dom.statRatio.textContent = r;
+    }
+    STATE.lastOutput = result.processed;
+    STATE.lastFileName = fileName || 'nightorbit-script';
+}
+
+/* ═══ CREATE JS FILE (Minify & Download) ═══ */
 window.createJsFile = function() {
     if (STATE.isProcessing) return;
     var raw = STATE.dom.inputCode ? STATE.dom.inputCode.value : '';
@@ -1401,7 +1395,6 @@ window.createJsFile = function() {
     UI.hideStatus();
     UI.toast('Processing... please wait', 'info', 2000);
 
-    /* Defer heavy work so toast renders */
     setTimeout(function() {
         try {
             var result = prepareCode(raw);
@@ -1413,9 +1406,10 @@ window.createJsFile = function() {
                 return;
             }
 
-            STATE.lastOutput = result.processed;
             var fileName = getFileName();
+            updateOutputPanel(result, fileName);
 
+            /* Download */
             var blob = new Blob([result.processed], { type: 'application/javascript' });
             var url = URL.createObjectURL(blob);
             var a = document.createElement('a');
@@ -1426,20 +1420,9 @@ window.createJsFile = function() {
             document.body.removeChild(a);
             setTimeout(function() { URL.revokeObjectURL(url); }, 1500);
 
-            if (STATE.dom.outputSection) STATE.dom.outputSection.style.display = 'block';
-            if (STATE.dom.outputCode) STATE.dom.outputCode.value = result.processed;
-            if (STATE.dom.statOriginal) STATE.dom.statOriginal.textContent = Utils.bytes(result.extractedSize);
-            if (STATE.dom.statMinified) STATE.dom.statMinified.textContent = Utils.bytes(result.finalSize);
-            if (STATE.dom.statSaved) STATE.dom.statSaved.textContent = Utils.bytes(result.extractedSize - result.finalSize);
-            if (STATE.dom.statRatio) {
-                var r = result.extractedSize > 0 ? (result.finalSize / result.extractedSize).toFixed(2) + 'x' : '—';
-                STATE.dom.statRatio.textContent = r;
-            }
-
             UI.status('success', buildSuccessMessage(result, true, fileName));
             UI.toast('File created and downloaded: ' + fileName + '.js', 'success', 4000);
         } catch (err) {
-            /* Silent — no error banner to user */
             UI.toast('Processing completed with warnings', 'warn', 4000);
         } finally {
             STATE.isProcessing = false;
@@ -1447,10 +1430,8 @@ window.createJsFile = function() {
     }, 50);
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   PREVIEW ONLY
-   ═══════════════════════════════════════════════════════════════ */
-window.previewOutput = function() {
+/* ═══ TEST SCRIPT (Preview only) ═══ */
+window.testScript = function() {
     var raw = STATE.dom.inputCode ? STATE.dom.inputCode.value : '';
     if (!raw.trim()) {
         UI.toast('Please paste code first', 'warn');
@@ -1458,7 +1439,7 @@ window.previewOutput = function() {
     }
 
     UI.hideStatus();
-    UI.toast('Generating preview...', 'info', 2000);
+    UI.toast('Testing script...', 'info', 2000);
 
     setTimeout(function() {
         try {
@@ -1470,17 +1451,8 @@ window.previewOutput = function() {
                 return;
             }
 
-            STATE.lastOutput = result.processed;
-
-            if (STATE.dom.outputSection) STATE.dom.outputSection.style.display = 'block';
-            if (STATE.dom.outputCode) STATE.dom.outputCode.value = result.processed;
-            if (STATE.dom.statOriginal) STATE.dom.statOriginal.textContent = Utils.bytes(result.extractedSize);
-            if (STATE.dom.statMinified) STATE.dom.statMinified.textContent = Utils.bytes(result.finalSize);
-            if (STATE.dom.statSaved) STATE.dom.statSaved.textContent = Utils.bytes(result.extractedSize - result.finalSize);
-            if (STATE.dom.statRatio) {
-                var r = result.extractedSize > 0 ? (result.finalSize / result.extractedSize).toFixed(2) + 'x' : '—';
-                STATE.dom.statRatio.textContent = r;
-            }
+            var fileName = getFileName();
+            updateOutputPanel(result, fileName);
 
             var msg = [];
             if (result.wasHtml) msg.push('✓ HTML detected — JavaScript extracted.');
@@ -1492,23 +1464,76 @@ window.previewOutput = function() {
                 msg.push('✓ Minified: ' + Utils.bytes(result.extractedSize) + ' → ' + Utils.bytes(result.finalSize) + ' (' + pct + '% saved)');
             }
             msg.push('');
-            msg.push('Preview ready — scroll down to view.');
+            msg.push('✅ Test successful — output ready.');
+            msg.push('Preview generated below.');
 
             UI.status('success', msg.join('\n'));
-            UI.toast('Preview generated', 'success', 3000);
+            UI.toast('Test successful', 'success', 3000);
 
             if (STATE.dom.outputSection) {
                 STATE.dom.outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         } catch (err) {
-            UI.toast('Preview completed with warnings', 'warn', 4000);
+            UI.toast('Test completed with warnings', 'warn', 4000);
         }
     }, 50);
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   INLINE ↔ COMMENTS INTERACTION
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ DOWNLOAD OUTPUT (bottom button) ═══ */
+window.downloadOutput = function() {
+    var out = STATE.lastOutput;
+    if (!out || !out.trim()) {
+        UI.toast('No output to download. Create JS file first.', 'warn', 4000);
+        return;
+    }
+    var fileName = STATE.lastFileName || 'nightorbit-script';
+    var blob = new Blob([out], { type: 'application/javascript' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = fileName + '.js';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 1500);
+    UI.toast('Downloaded: ' + fileName + '.js', 'success', 3000);
+};
+
+/* ═══ COPY OUTPUT (bottom button) ═══ */
+window.copyOutput = function() {
+    var out = STATE.lastOutput;
+    if (!out || !out.trim()) {
+        UI.toast('No output to copy. Create JS file first.', 'warn', 4000);
+        return;
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(out).then(function() {
+            UI.toast('Output copied to clipboard', 'success', 3000);
+        }).catch(function() {
+            fallbackCopy(out);
+        });
+    } else {
+        fallbackCopy(out);
+    }
+};
+
+function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        UI.toast('Output copied to clipboard', 'success', 3000);
+    } catch (e) {
+        UI.toast('Copy failed', 'warn', 3000);
+    }
+    document.body.removeChild(ta);
+}
+
+/* ═══ INLINE ↔ COMMENTS BINDING ═══ */
 function bindInlineToggle() {
     var inlineChk = STATE.dom.optInline;
     var hintsChk = STATE.dom.optHints;
@@ -1518,7 +1543,6 @@ function bindInlineToggle() {
 
     inlineChk.addEventListener('change', function() {
         if (inlineChk.checked) {
-            /* Inline ON → force comments remove + minify */
             if (hintsChk) { hintsChk.checked = true; hintsChk.disabled = true; }
             if (minifyChk) { minifyChk.checked = true; }
         } else {
@@ -1527,9 +1551,7 @@ function bindInlineToggle() {
     });
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   CLEAR
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ CLEAR ═══ */
 window.clearAll = function() {
     if (STATE.dom.inputCode) STATE.dom.inputCode.value = '';
     if (STATE.dom.outputCode) STATE.dom.outputCode.value = '';
@@ -1540,13 +1562,12 @@ window.clearAll = function() {
     if (STATE.dom.optInline) STATE.dom.optInline.checked = false;
     if (STATE.dom.fileName) STATE.dom.fileName.value = 'nightorbit-script';
     STATE.lastOutput = '';
+    STATE.lastFileName = '';
     UI.hideStatus();
     UI.toast('Cleared', 'info');
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   LOGOUT
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ LOGOUT ═══ */
 window.doLogout = function() {
     try {
         if (typeof firebase !== 'undefined' && firebase.auth) {
@@ -1563,9 +1584,7 @@ window.doLogout = function() {
     }
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   INIT
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══ INIT ═══ */
 function init() {
     UI.cache();
     var input = STATE.dom.inputCode;
@@ -1588,7 +1607,7 @@ function init() {
             });
         }
     } catch (e) {}
-    UI.toast('Minify JS File v2 ready', 'success', 2500);
+    UI.toast('Minify JS File v3 ready', 'success', 2500);
 }
 
 if (document.readyState === 'loading') {
