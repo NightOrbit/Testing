@@ -2515,10 +2515,20 @@
                             }
                         }
                         
-                        if (pwdCancelBtn) {
+                if (pwdCancelBtn) {
                             pwdCancelBtn.addEventListener('click', function() {
                                 state._pendingAction = null;
                                 closePwdModal();
+                            });
+                        }
+                        
+                        /* ✅ Backdrop click par bhi action clear karo */
+                        if (pwdOverlay) {
+                            pwdOverlay.addEventListener('click', function(e) {
+                                if (e.target === pwdOverlay) {
+                                    state._pendingAction = null;
+                                    closePwdModal();
+                                }
                             });
                         }
                         
@@ -2706,18 +2716,19 @@
                                 }
                                 var reader = new FileReader();
                                 reader.onload = function(ev) {
-                                    safe(function() {
-                                        var content = ev.target.result;
-                                        var ext = (file.name.split('.').pop() || '').toLowerCase();
-                                        state.uploadedFiles[file.name] = {
-                                            content: content,
-                                            lang: ext,
-                                            size: file.size
-                                        };
-                                        renderFileList();
-                                        updateProgress();
-                                    });
-                                };
+                                        safe(function() {
+                                            var content = ev.target.result;
+                                            var ext = (file.name.split('.').pop() || '').toLowerCase();
+                                            var detected = detectLanguage(content);
+                                            state.uploadedFiles[file.name] = {
+                                                content: content,
+                                                lang: detected !== 'txt' ? detected : ext,
+                                                size: file.size
+                                            };
+                                            renderFileList();
+                                            updateProgress();
+                                        });
+                                    };
                                 reader.readAsText(file);
                             });
                         }
@@ -3446,17 +3457,25 @@
                            LOGOUT
                            ═══════════════════════════════════════════════════════════ */
                         window.doLogout = function() {
-                            try {
-                                KEY_MANAGER.clear();
-                                if (window.AuthGuard && AuthGuard.logout) AuthGuard.logout();
-                                else if (window.firebase && firebase.auth) firebase.auth().signOut().then(function() {
-                                    window.location.href = 'index.html';
-                                });
-                                else window.location.href = 'index.html';
-                            } catch (e) {
-                                window.location.href = 'index.html';
-                            }
-                        };
+                                        function _goto() { window.location.href = 'index.html'; }
+                                        try {
+                                            if (window.AuthGuard && AuthGuard.logout) {
+                                                Promise.resolve(AuthGuard.logout())
+                                                    .then(function() { KEY_MANAGER.clear(); _goto(); })
+                                                    .catch(function() { KEY_MANAGER.clear(); _goto(); });
+                                            } else if (window.firebase && firebase.auth) {
+                                                firebase.auth().signOut()
+                                                    .then(function() { KEY_MANAGER.clear(); _goto(); })
+                                                    .catch(function() { KEY_MANAGER.clear(); _goto(); });
+                                            } else {
+                                                KEY_MANAGER.clear();
+                                                _goto();
+                                            }
+                                        } catch (e) {
+                                            try { KEY_MANAGER.clear(); } catch (e2) {}
+                                            _goto();
+                                        }
+                                    };
                         
                         /* ═══════════════════════════════════════════════════════════
                            AUTH HANDLING
