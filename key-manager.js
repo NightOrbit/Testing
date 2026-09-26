@@ -325,76 +325,126 @@ var KEY_MANAGER = {
         }
     },
 
-    decryptKey: function(encryptedKey, password) {
-        try {
-            var parts = encryptedKey.split(':');
-
-            if (parts[0] === 'v2' && parts.length === 5) {
-                var aesSalt = CryptoJS.enc.Hex.parse(parts[1]);
-                var iv = CryptoJS.enc.Hex.parse(parts[2]);
-                var ciphertext = parts[3];
-                var storedHmac = parts[4];
-
-                var hmacKey = CryptoJS.PBKDF2(password, aesSalt, {
-                    keySize: 256 / 32,
-                    iterations: this._AES_KEY_ITER,
-                    hasher: CryptoJS.algo.SHA256
-                });
-                var computedHmac = CryptoJS.HmacSHA256(
-                    parts[1] + ':' + parts[2] + ':' + ciphertext,
-                    hmacKey
-                ).toString();
-
-                if (!this._timingSafeEqual(storedHmac, computedHmac)) {
-                    throw new Error('Integrity check failed');
-                }
-
-                var aesKey = this._deriveAESKey(password, aesSalt);
-                var decrypted = CryptoJS.AES.decrypt(ciphertext, aesKey, {
-                    iv: iv,
-                    mode: CryptoJS.mode.CBC,
-                    padding: CryptoJS.pad.Pkcs7
-                }).toString(CryptoJS.enc.Utf8);
-
-                if (!decrypted || decrypted.length === 0) {
-                    throw new Error('Decryption failed');
-                }
-                return decrypted;
-            }
-
-            if (parts.length === 3) {
-                var aesSalt2 = CryptoJS.enc.Hex.parse(parts[0]);
-                var iv2 = CryptoJS.enc.Hex.parse(parts[1]);
-                var ciphertext2 = parts[2];
-
-                var aesKey2 = this._deriveAESKey(password, aesSalt2);
-                var decrypted2 = CryptoJS.AES.decrypt(ciphertext2, aesKey2, {
-                    iv: iv2,
-                    mode: CryptoJS.mode.CBC,
-                    padding: CryptoJS.pad.Pkcs7
-                }).toString(CryptoJS.enc.Utf8);
-
-                if (!decrypted2 || decrypted2.length === 0) {
-                    throw new Error('Decryption failed');
-                }
-                return decrypted2;
-            }
-
-            throw new Error('Invalid format');
-        } catch (e) {
-            throw new Error('Wrong password');
-        }
-    },
-
-    _decryptKeyLegacy: function(encryptedKey, password) {
-        try {
-            var decrypted = CryptoJS.AES.decrypt(encryptedKey, password).toString(CryptoJS.enc.Utf8);
-            if (!decrypted || decrypted.length === 0) throw new Error('Decryption failed');
-            return decrypted;
-        } catch (e) {
-            throw new Error('Wrong password');
-        }
-    },
+      decryptKey: function(encryptedKey, password) {
+          try {
+              var parts = encryptedKey.split(':');
+      
+              /* ═══════════════════════════════════════════════════════
+                 ✅ v3 FORMAT — SEPARATE KEYS + HMAC (aapke Firebase ka format)
+                 Format: v3:salt:iv:ciphertext:hmac
+                 ═══════════════════════════════════════════════════════ */
+              if (parts[0] === 'v3' && parts.length === 5) {
+                  var v3Salt = CryptoJS.enc.Hex.parse(parts[1]);
+                  var v3Iv = CryptoJS.enc.Hex.parse(parts[2]);
+                  var v3Ciphertext = parts[3];
+                  var v3StoredHmac = parts[4];
+      
+                  /* Step 1: HMAC verify — same salt se hmac key derive */
+                  var v3HmacKey = CryptoJS.PBKDF2(password, v3Salt, {
+                      keySize: 256 / 32,
+                      iterations: this._AES_KEY_ITER,
+                      hasher: CryptoJS.algo.SHA256
+                  });
+                  var v3ComputedHmac = CryptoJS.HmacSHA256(
+                      parts[1] + ':' + parts[2] + ':' + v3Ciphertext,
+                      v3HmacKey
+                  ).toString();
+      
+                  if (!this._timingSafeEqual(v3StoredHmac, v3ComputedHmac)) {
+                      throw new Error('Integrity check failed');
+                  }
+      
+                  /* Step 2: AES decrypt — same salt se aes key derive */
+                  var v3AesKey = CryptoJS.PBKDF2(password, v3Salt, {
+                      keySize: 256 / 32,
+                      iterations: this._AES_KEY_ITER,
+                      hasher: CryptoJS.algo.SHA256
+                  });
+                  var v3Decrypted = CryptoJS.AES.decrypt(v3Ciphertext, v3AesKey, {
+                      iv: v3Iv,
+                      mode: CryptoJS.mode.CBC,
+                      padding: CryptoJS.pad.Pkcs7
+                  }).toString(CryptoJS.enc.Utf8);
+      
+                  if (!v3Decrypted || v3Decrypted.length === 0) {
+                      throw new Error('Decryption failed');
+                  }
+                  return v3Decrypted;
+              }
+      
+              /* ═══════════════════════════════════════════════════════
+                 v2 FORMAT — HMAC
+                 ═══════════════════════════════════════════════════════ */
+              if (parts[0] === 'v2' && parts.length === 5) {
+                  var aesSalt = CryptoJS.enc.Hex.parse(parts[1]);
+                  var iv = CryptoJS.enc.Hex.parse(parts[2]);
+                  var ciphertext = parts[3];
+                  var storedHmac = parts[4];
+      
+                  var hmacKey = CryptoJS.PBKDF2(password, aesSalt, {
+                      keySize: 256 / 32,
+                      iterations: this._AES_KEY_ITER,
+                      hasher: CryptoJS.algo.SHA256
+                  });
+                  var computedHmac = CryptoJS.HmacSHA256(
+                      parts[1] + ':' + parts[2] + ':' + ciphertext,
+                      hmacKey
+                  ).toString();
+      
+                  if (!this._timingSafeEqual(storedHmac, computedHmac)) {
+                      throw new Error('Integrity check failed');
+                  }
+      
+                  var aesKey = this._deriveAESKey(password, aesSalt);
+                  var decrypted = CryptoJS.AES.decrypt(ciphertext, aesKey, {
+                      iv: iv,
+                      mode: CryptoJS.mode.CBC,
+                      padding: CryptoJS.pad.Pkcs7
+                  }).toString(CryptoJS.enc.Utf8);
+      
+                  if (!decrypted || decrypted.length === 0) {
+                      throw new Error('Decryption failed');
+                  }
+                  return decrypted;
+              }
+      
+              /* ═══════════════════════════════════════════════════════
+                 v1 FORMAT — LEGACY (no HMAC)
+                 ═══════════════════════════════════════════════════════ */
+              if (parts.length === 3) {
+                  var aesSalt2 = CryptoJS.enc.Hex.parse(parts[0]);
+                  var iv2 = CryptoJS.enc.Hex.parse(parts[1]);
+                  var ciphertext2 = parts[2];
+      
+                  var aesKey2 = this._deriveAESKey(password, aesSalt2);
+                  var decrypted2 = CryptoJS.AES.decrypt(ciphertext2, aesKey2, {
+                      iv: iv2,
+                      mode: CryptoJS.mode.CBC,
+                      padding: CryptoJS.pad.Pkcs7
+                  }).toString(CryptoJS.enc.Utf8);
+      
+                  if (!decrypted2 || decrypted2.length === 0) {
+                      throw new Error('Decryption failed');
+                  }
+                  return decrypted2;
+              }
+      
+              throw new Error('Invalid format: ' + parts[0]);
+          } catch (e) {
+              if (window.console) console.error('decryptKey error:', e.message, 'format:', encryptedKey.substring(0, 20));
+              throw new Error('Wrong password');
+          }
+      },
+   
+       _decryptKeyLegacy: function(encryptedKey, password) {
+           try {
+               var decrypted = CryptoJS.AES.decrypt(encryptedKey, password).toString(CryptoJS.enc.Utf8);
+               if (!decrypted || decrypted.length === 0) throw new Error('Decryption failed');
+               return decrypted;
+           } catch (e) {
+               throw new Error('Wrong password');
+           }
+       },
 
     /* ═══════════════════════════════════════════════════════
        PASSWORD VALIDATION (✅ FIX #5: zxcvbn fail-closed)
@@ -771,7 +821,8 @@ var KEY_MANAGER = {
                     migrated: false
                 };
             } catch (e) {
-                throw new Error('Incorrect password');
+                if (window.console) console.error('Unlock error (real):', e.message);
+                throw new Error('Incorrect password: ' + e.message);
             }
         });
     },
