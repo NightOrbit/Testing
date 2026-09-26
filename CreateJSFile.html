@@ -748,7 +748,7 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
     <div class="brand">
         <span class="logo">🌌</span>
         <span class="title">NightOrbit</span>
-        <span class="title-ver">MINIFY v3</span>
+        <span class="title-ver">MINIFY v4</span>
     </div>
     <div class="topbar-actions">
         <a href="Dashboard.html" class="topbar-btn dashboard">
@@ -772,7 +772,7 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
 
     <div class="header-card">
         <h1>⚡ Minify JS File</h1>
-        <div class="subtitle">NightOrbit CodeForge · JavaScript Minifier &amp; Cleaner · v3 Heavy</div>
+        <div class="subtitle">NightOrbit CodeForge · JavaScript Minifier &amp; Cleaner · v4 Heavy</div>
         <div class="header-stats">
             <span class="header-stat"><i class="fa-solid fa-file-code"></i> .js Output</span>
             <span class="header-stat"><i class="fa-solid fa-bolt"></i> Auto Extract</span>
@@ -801,8 +801,8 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
             </div>
             <div class="guide-step">
                 <div class="step-num">4</div>
-                <div class="step-title">Create &amp; Test</div>
-                <div class="step-desc">Click <strong>CREATE JS FILE</strong> to minify &amp; download. Use <strong>TEST SCRIPT</strong> to preview output first.</div>
+                <div class="step-title">Generate &amp; Download</div>
+                <div class="step-desc">Click <strong>CREATE JS FILE</strong> to generate output. Then use the <strong>DOWNLOAD</strong> or <strong>COPY</strong> button in the output section.</div>
             </div>
         </div>
         <div class="guide-note">
@@ -878,13 +878,10 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
         </div>
     </div>
 
-    <!-- TOP BUTTONS: Create JS File, Test Script, Clear -->
+    <!-- TOP BUTTONS: Create JS File, Clear -->
     <div class="btn-row">
         <button class="green" onclick="createJsFile()">
             <i class="fa-solid fa-file-export"></i> CREATE JS FILE
-        </button>
-        <button class="cyan" onclick="testScript()">
-            <i class="fa-solid fa-flask"></i> TEST SCRIPT
         </button>
         <button class="danger" onclick="clearAll()">
             <i class="fa-solid fa-trash"></i> CLEAR
@@ -1317,7 +1314,7 @@ function prepareCode(raw) {
 }
 
 /* ═══ SUCCESS MSG ═══ */
-function buildSuccessMessage(result, downloaded, fileName) {
+function buildSuccessMessage(result) {
     var lines = [];
 
     if (result.wasHtml) {
@@ -1345,9 +1342,7 @@ function buildSuccessMessage(result, downloaded, fileName) {
     }
 
     lines.push('');
-    if (downloaded) {
-        lines.push('✓ File downloaded: ' + fileName + '.js');
-    }
+    lines.push('✓ Output ready — use DOWNLOAD or COPY buttons below.');
 
     return lines.join('\n');
 }
@@ -1382,7 +1377,7 @@ function updateOutputPanel(result, fileName) {
     STATE.lastFileName = fileName || 'nightorbit-script';
 }
 
-/* ═══ CREATE JS FILE (Minify & Download) ═══ */
+/* ═══ CREATE JS FILE (Generate output only — NO download) ═══ */
 window.createJsFile = function() {
     if (STATE.isProcessing) return;
     var raw = STATE.dom.inputCode ? STATE.dom.inputCode.value : '';
@@ -1409,19 +1404,12 @@ window.createJsFile = function() {
             var fileName = getFileName();
             updateOutputPanel(result, fileName);
 
-            /* Download */
-            var blob = new Blob([result.processed], { type: 'application/javascript' });
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = fileName + '.js';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(function() { URL.revokeObjectURL(url); }, 1500);
+            UI.status('success', buildSuccessMessage(result));
+            UI.toast('Output generated — use DOWNLOAD or COPY button', 'success', 4000);
 
-            UI.status('success', buildSuccessMessage(result, true, fileName));
-            UI.toast('File created and downloaded: ' + fileName + '.js', 'success', 4000);
+            if (STATE.dom.outputSection) {
+                STATE.dom.outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         } catch (err) {
             UI.toast('Processing completed with warnings', 'warn', 4000);
         } finally {
@@ -1430,60 +1418,11 @@ window.createJsFile = function() {
     }, 50);
 };
 
-/* ═══ TEST SCRIPT (Preview only) ═══ */
-window.testScript = function() {
-    var raw = STATE.dom.inputCode ? STATE.dom.inputCode.value : '';
-    if (!raw.trim()) {
-        UI.toast('Please paste code first', 'warn');
-        return;
-    }
-
-    UI.hideStatus();
-    UI.toast('Testing script...', 'info', 2000);
-
-    setTimeout(function() {
-        try {
-            var result = prepareCode(raw);
-
-            if (!result.processed || !result.processed.trim()) {
-                UI.status('warn', '⚠ No JavaScript code found in input.');
-                UI.toast('No JavaScript found', 'warn', 4000);
-                return;
-            }
-
-            var fileName = getFileName();
-            updateOutputPanel(result, fileName);
-
-            var msg = [];
-            if (result.wasHtml) msg.push('✓ HTML detected — JavaScript extracted.');
-            if (result.inlined) msg.push('✓ Inline mode — comments auto-removed, single-line output.');
-            else if (result.hintsRemoved) msg.push('✓ Comments removed.');
-            if (result.minified) {
-                var saved = result.extractedSize - result.finalSize;
-                var pct = result.extractedSize > 0 ? ((saved / result.extractedSize) * 100).toFixed(1) : '0';
-                msg.push('✓ Minified: ' + Utils.bytes(result.extractedSize) + ' → ' + Utils.bytes(result.finalSize) + ' (' + pct + '% saved)');
-            }
-            msg.push('');
-            msg.push('✅ Test successful — output ready.');
-            msg.push('Preview generated below.');
-
-            UI.status('success', msg.join('\n'));
-            UI.toast('Test successful', 'success', 3000);
-
-            if (STATE.dom.outputSection) {
-                STATE.dom.outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        } catch (err) {
-            UI.toast('Test completed with warnings', 'warn', 4000);
-        }
-    }, 50);
-};
-
 /* ═══ DOWNLOAD OUTPUT (bottom button) ═══ */
 window.downloadOutput = function() {
     var out = STATE.lastOutput;
     if (!out || !out.trim()) {
-        UI.toast('No output to download. Create JS file first.', 'warn', 4000);
+        UI.toast('No output to download. Generate output first.', 'warn', 4000);
         return;
     }
     var fileName = STATE.lastFileName || 'nightorbit-script';
@@ -1503,7 +1442,7 @@ window.downloadOutput = function() {
 window.copyOutput = function() {
     var out = STATE.lastOutput;
     if (!out || !out.trim()) {
-        UI.toast('No output to copy. Create JS file first.', 'warn', 4000);
+        UI.toast('No output to copy. Generate output first.', 'warn', 4000);
         return;
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1607,7 +1546,7 @@ function init() {
             });
         }
     } catch (e) {}
-    UI.toast('Minify JS File v3 ready', 'success', 2500);
+    UI.toast('Minify JS File v4 ready', 'success', 2500);
 }
 
 if (document.readyState === 'loading') {
