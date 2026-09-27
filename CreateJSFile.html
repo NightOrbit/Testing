@@ -11,7 +11,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 <script src="auth-guard.js"></script>
 
-<!-- Terser — Professional JS Minifier (used by Webpack, Vite, esbuild) -->
+<!-- Terser — Professional JS Minifier -->
 <script src="https://cdn.jsdelivr.net/npm/terser@5.31.0/dist/bundle.min.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -751,7 +751,7 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
     <div class="brand">
         <span class="logo">🌌</span>
         <span class="title">NightOrbit</span>
-        <span class="title-ver">MINIFY v5</span>
+        <span class="title-ver">MINIFY v6</span>
     </div>
     <div class="topbar-actions">
         <a href="Dashboard.html" class="topbar-btn dashboard">
@@ -775,7 +775,7 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
 
     <div class="header-card">
         <h1>⚡ Minify JS File</h1>
-        <div class="subtitle">NightOrbit CodeForge · JavaScript Minifier &amp; Cleaner · v5 Advanced</div>
+        <div class="subtitle">NightOrbit CodeForge · JavaScript Minifier &amp; Cleaner · v6 ULTRA</div>
         <div class="header-stats">
             <span class="header-stat"><i class="fa-solid fa-file-code"></i> .js Output</span>
             <span class="header-stat"><i class="fa-solid fa-bolt"></i> Terser Engine</span>
@@ -881,7 +881,6 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
         </div>
     </div>
 
-    <!-- TOP BUTTONS: Create JS File, Clear -->
     <div class="btn-row">
         <button class="green" onclick="createJsFile()">
             <i class="fa-solid fa-file-export"></i> CREATE JS FILE
@@ -897,7 +896,6 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
         <label>⚡ Minified Output <span class="badge" style="background:rgba(0,255,100,0.15);color:#00ff64;padding:4px 12px;border-radius:20px;font-size:9px;font-weight:800;letter-spacing:1.5px;">READY</span></label>
         <textarea id="outputCode" class="huge" readonly></textarea>
 
-        <!-- BOTTOM BUTTONS: Download, Copy -->
         <div class="btn-row">
             <button class="secondary" onclick="downloadOutput()">
                 <i class="fa-solid fa-download"></i> DOWNLOAD .JS
@@ -923,12 +921,6 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
 (function(){
 'use strict';
 
-var CONFIG = {
-    CHUNK_SIZE: 500 * 1024,
-    CHUNK_THRESHOLD: 1024 * 1024,
-    UI_YIELD_MS: 12
-};
-
 var STATE = {
     dom: {},
     isProcessing: false,
@@ -936,7 +928,9 @@ var STATE = {
     lastFileName: ''
 };
 
-/* ═══ UTILS ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   UTILS
+   ═══════════════════════════════════════════════════════════════ */
 var Utils = {
     bytes: function(n) {
         if (!n) return '0 B';
@@ -954,7 +948,9 @@ var Utils = {
     }
 };
 
-/* ═══ UI ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   UI
+   ═══════════════════════════════════════════════════════════════ */
 var UI = {
     cache: function() {
         var ids = [
@@ -1000,7 +996,9 @@ var UI = {
     }
 };
 
-/* ═══ DETECT INPUT TYPE ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   DETECT INPUT TYPE
+   ═══════════════════════════════════════════════════════════════ */
 function detectInputType(code) {
     if (!code || !code.trim()) return { type: 'empty' };
     var t = code.trim();
@@ -1011,7 +1009,9 @@ function detectInputType(code) {
     return { type: 'js' };
 }
 
-/* ═══ EXTRACT JS FROM HTML ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   EXTRACT JS FROM HTML
+   ═══════════════════════════════════════════════════════════════ */
 function extractJsFromHtml(code) {
     if (!code) return '';
     var scripts = [];
@@ -1040,87 +1040,79 @@ function stripHtmlTags(code) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   ADVANCED COMMENT STRIPPER — Full State Machine
-   Handles: line/block comments, strings (' " `), templates with
-   ${} interpolation, regex literals with classes, escapes.
+   ADVANCED STATE-MACHINE COMMENT STRIPPER — JavaScript
+   8 states: code, line, block, single, double, template, regex, regex-class
+   NEVER touches anything inside a string/template/regex.
    ═══════════════════════════════════════════════════════════════ */
 function stripJsComments(code) {
     if (!code) return '';
     var out = [];
     var i = 0;
     var len = code.length;
-    var state = 'code'; /* code | line | block | single | double | template | regex | regex-class */
+    var state = 'code';
     var lastNonWs = '';
     var tailBuffer = '';
 
     while (i < len) {
         var ch = code[i];
-        var nx = code[i+1];
+        var nx = code[i + 1];
 
-        /* ── Line comment ── */
         if (state === 'line') {
             if (ch === '\n') { state = 'code'; out.push(ch); }
             i++;
             continue;
         }
 
-        /* ── Block comment ── */
         if (state === 'block') {
             if (ch === '*' && nx === '/') { state = 'code'; i += 2; continue; }
             i++;
             continue;
         }
 
-        /* ── Single-quote string ── */
         if (state === 'single') {
             out.push(ch);
-            if (ch === '\\' && i+1 < len) { out.push(code[i+1]); i += 2; continue; }
+            if (ch === '\\' && i + 1 < len) { out.push(code[i + 1]); i += 2; continue; }
             if (ch === "'") state = 'code';
             i++;
             continue;
         }
 
-        /* ── Double-quote string ── */
         if (state === 'double') {
             out.push(ch);
-            if (ch === '\\' && i+1 < len) { out.push(code[i+1]); i += 2; continue; }
+            if (ch === '\\' && i + 1 < len) { out.push(code[i + 1]); i += 2; continue; }
             if (ch === '"') state = 'code';
             i++;
             continue;
         }
 
-        /* ── Template literal ── */
         if (state === 'template') {
             out.push(ch);
-            if (ch === '\\' && i+1 < len) { out.push(code[i+1]); i += 2; continue; }
+            if (ch === '\\' && i + 1 < len) { out.push(code[i + 1]); i += 2; continue; }
             if (ch === '`') state = 'code';
             i++;
             continue;
         }
 
-        /* ── Regex literal ── */
         if (state === 'regex') {
             out.push(ch);
-            if (ch === '\\' && i+1 < len) { out.push(code[i+1]); i += 2; continue; }
+            if (ch === '\\' && i + 1 < len) { out.push(code[i + 1]); i += 2; continue; }
             if (ch === '[') state = 'regex-class';
             else if (ch === '/') {
                 state = 'code';
-                while (i+1 < len && /[gimsuy]/.test(code[i+1])) { i++; out.push(code[i]); }
+                while (i + 1 < len && /[gimsuy]/.test(code[i + 1])) { i++; out.push(code[i]); }
             }
             i++;
             continue;
         }
 
-        /* ── Regex character class ── */
         if (state === 'regex-class') {
             out.push(ch);
-            if (ch === '\\' && i+1 < len) { out.push(code[i+1]); i += 2; continue; }
+            if (ch === '\\' && i + 1 < len) { out.push(code[i + 1]); i += 2; continue; }
             if (ch === ']') state = 'regex';
             i++;
             continue;
         }
 
-        /* ── CODE state — detect comment/string starts ── */
         if (ch === '/' && nx === '/') { state = 'line'; i += 2; continue; }
         if (ch === '/' && nx === '*') { state = 'block'; i += 2; continue; }
 
@@ -1128,7 +1120,6 @@ function stripJsComments(code) {
         if (ch === '"') { state = 'double'; out.push(ch); i++; lastNonWs = ch; continue; }
         if (ch === '`') { state = 'template'; out.push(ch); i++; lastNonWs = ch; continue; }
 
-        /* ── Regex detection heuristic ── */
         if (ch === '/') {
             var prev = lastNonWs;
             var prevIsRegexStart = (prev === '') ||
@@ -1153,8 +1144,8 @@ function stripJsComments(code) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   INLINE JS — Advanced: convert multi-line JS to single line safely
-   Keeps strings/templates/regex intact, adds semicolons where needed.
+   INLINE JS — Advanced state-machine, converts multi-line to single
+   Handles strings, templates, regex, ASI correctly.
    ═══════════════════════════════════════════════════════════════ */
 function inlineJs(code) {
     if (!code) return '';
@@ -1167,42 +1158,45 @@ function inlineJs(code) {
 
     while (i < len) {
         var ch = noComments[i];
-        var nx = noComments[i+1];
+        var nx = noComments[i + 1];
 
+        /* ── String/template/regex state: copy verbatim ── */
         if (state === 'single' || state === 'double' || state === 'template' ||
             state === 'regex' || state === 'regex-class') {
             out.push(ch);
-            if (ch === '\\' && i+1 < len) { out.push(noComments[i+1]); i += 2; continue; }
+            if (ch === '\\' && i + 1 < len) { out.push(noComments[i + 1]); i += 2; continue; }
             if (state === 'single' && ch === "'") state = 'code';
             else if (state === 'double' && ch === '"') state = 'code';
             else if (state === 'template' && ch === '`') state = 'code';
+            else if (state === 'regex' && ch === '[') state = 'regex-class';
             else if (state === 'regex' && ch === '/') {
                 state = 'code';
-                while (i+1 < len && /[gimsuy]/.test(noComments[i+1])) { i++; out.push(noComments[i]); }
+                while (i + 1 < len && /[gimsuy]/.test(noComments[i + 1])) { i++; out.push(noComments[i]); }
             }
-            else if (state === 'regex' && ch === '[') state = 'regex-class';
             else if (state === 'regex-class' && ch === ']') state = 'regex';
             i++;
             continue;
         }
 
-        /* Newlines: convert to semicolon IF the previous char is not one of ; { } , ( ) : */
+        /* ── Newline: convert to ';' or ' ' based on ASI safety ── */
         if (ch === '\n' || ch === '\r') {
-            /* Look ahead to next non-whitespace */
             var j = i + 1;
             while (j < len && /\s/.test(noComments[j])) j++;
-            var nextCh = noComments[j];
+            var nextCh = noComments[j] || '';
+            var prevCh = lastNonWs;
 
-            if (lastNonWs && nextCh) {
-                var needSemi = !/[;{}(),:\[\]+\-*\/%&|^!?=<>~]/.test(lastNonWs) &&
-                               !/[;{}(),:\[\]+\-*\/%&|^!?=<>~]/.test(nextCh);
-                if (needSemi) {
-                    out.push(';');
-                } else if (/[A-Za-z0-9_$]/.test(lastNonWs) && /[A-Za-z0-9_$]/.test(nextCh)) {
+            if (prevCh && nextCh) {
+                /* Both sides alphanumeric → need space */
+                if (/[A-Za-z0-9_$]/.test(prevCh) && /[A-Za-z0-9_$]/.test(nextCh)) {
                     out.push(' ');
                 }
+                /* Neither side is a boundary token → insert ';' for ASI safety */
+                else if (!/[;{}(),:\[\]+\-*\/%&|^!?=<>~]/.test(prevCh) &&
+                         !/[;{}(),:\[\]+\-*\/%&|^!?=<>~]/.test(nextCh)) {
+                    out.push(';');
+                }
             }
-            i++;
+            i = j;
             continue;
         }
 
@@ -1215,9 +1209,9 @@ function inlineJs(code) {
         }
 
         if (ch === '/') {
-            var prev = lastNonWs;
-            var prevIsRegexStart = (prev === '') ||
-                /[=(:,;!&|?{}\[\]<>+\-*%^~]/.test(prev) ||
+            var prevChar = lastNonWs;
+            var prevIsRegexStart = (prevChar === '') ||
+                /[=(:,;!&|?{}\[\]<>+\-*%^~]/.test(prevChar) ||
                 /\b(return|typeof|instanceof|in|of|new|delete|void|do|else|case|throw|yield|await)\s*$/.test(out.join('').slice(-40));
             if (prevIsRegexStart && nx !== '/' && nx !== '*') {
                 state = 'regex';
@@ -1228,11 +1222,10 @@ function inlineJs(code) {
         }
 
         if (/\s/.test(ch)) {
-            /* Collapse whitespace */
-            if (out.length && out[out.length-1] !== ' ' && i+1 < len) {
+            if (out.length && out[out.length - 1] !== ' ' && i + 1 < len) {
                 var j2 = i + 1;
                 while (j2 < len && /\s/.test(noComments[j2])) j2++;
-                var nx2 = noComments[j2];
+                var nx2 = noComments[j2] || '';
                 if (/[A-Za-z0-9_$]/.test(lastNonWs) && /[A-Za-z0-9_$]/.test(nx2)) {
                     out.push(' ');
                 }
@@ -1246,21 +1239,96 @@ function inlineJs(code) {
         i++;
     }
 
+    var result = out.join('');
+    result = result.replace(/[ \t]+/g, ' ').trim();
+    return result;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INTERNAL MINIFIER — Fallback (state-machine safe)
+   ═══════════════════════════════════════════════════════════════ */
+function internalMinify(code) {
+    if (!code) return '';
+    var noComments = stripJsComments(code);
+    var out = [];
+    var i = 0;
+    var len = noComments.length;
+    var state = 'code';
+    var lastNonWs = '';
+
+    while (i < len) {
+        var ch = noComments[i];
+        var nx = noComments[i + 1];
+
+        if (state === 'single' || state === 'double' || state === 'template' ||
+            state === 'regex' || state === 'regex-class') {
+            out.push(ch);
+            if (ch === '\\' && i + 1 < len) { out.push(noComments[i + 1]); i += 2; continue; }
+            if (state === 'single' && ch === "'") state = 'code';
+            else if (state === 'double' && ch === '"') state = 'code';
+            else if (state === 'template' && ch === '`') state = 'code';
+            else if (state === 'regex' && ch === '[') state = 'regex-class';
+            else if (state === 'regex' && ch === '/') {
+                state = 'code';
+                while (i + 1 < len && /[gimsuy]/.test(noComments[i + 1])) { i++; out.push(noComments[i]); }
+            }
+            else if (state === 'regex-class' && ch === ']') state = 'regex';
+            i++;
+            continue;
+        }
+
+        if (ch === "'" || ch === '"' || ch === '`') {
+            state = ch === "'" ? 'single' : ch === '"' ? 'double' : 'template';
+            out.push(ch);
+            i++;
+            lastNonWs = ch;
+            continue;
+        }
+
+        if (ch === '/') {
+            var prevChar = lastNonWs;
+            var prevIsRegexStart = (prevChar === '') ||
+                /[=(:,;!&|?{}\[\]<>+\-*%^~]/.test(prevChar) ||
+                /\b(return|typeof|instanceof|in|of|new|delete|void|do|else|case|throw|yield|await)\s*$/.test(out.join('').slice(-40));
+            if (prevIsRegexStart && nx !== '/' && nx !== '*') {
+                state = 'regex';
+                out.push(ch);
+                i++;
+                continue;
+            }
+        }
+
+        if (/\s/.test(ch)) {
+            var j = i + 1;
+            while (j < len && /\s/.test(noComments[j])) j++;
+            var nextCh = noComments[j] || '';
+            if (out.length && out[out.length - 1] !== ' ' && nextCh) {
+                if (/[A-Za-z0-9_$]/.test(lastNonWs) && /[A-Za-z0-9_$]/.test(nextCh)) {
+                    out.push(' ');
+                }
+            }
+            i = j;
+            continue;
+        }
+
+        out.push(ch);
+        if (!/\s/.test(ch)) lastNonWs = ch;
+        i++;
+    }
+
     return out.join('').trim();
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   TERSER-BASED MINIFIER — Professional Grade
-   Falls back to internal safe minifier if Terser unavailable.
+   TERSER MINIFY (async Promise)
    ═══════════════════════════════════════════════════════════════ */
 function terserMinify(code) {
-    if (!code) return '';
+    if (!code) return null;
     if (typeof Terser === 'undefined' || typeof Terser.minify !== 'function') {
-        return null; /* signal fallback needed */
+        return null;
     }
     try {
-        /* Terser.minify returns a Promise in v5 */
-        var result = Terser.minify(code, {
+        return Terser.minify(code, {
             compress: {
                 defaults: true,
                 drop_console: false,
@@ -1284,94 +1352,14 @@ function terserMinify(code) {
             keep_classnames: true,
             keep_fnames: false
         });
-        return result; /* Promise */
     } catch (e) {
         return null;
     }
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   INTERNAL MINIFIER — Fallback if Terser fails/unavailable
-   Only collapses whitespace safely. Does NOT rename or transform.
+   ANALYZE
    ═══════════════════════════════════════════════════════════════ */
-function internalMinify(code) {
-    if (!code) return '';
-    var out = [];
-    var i = 0;
-    var len = code.length;
-    var state = 'code';
-    var lastNonWs = '';
-
-    while (i < len) {
-        var ch = code[i];
-        var nx = code[i+1];
-
-        if (state === 'single' || state === 'double' || state === 'template') {
-            out.push(ch);
-            if (ch === '\\' && i+1 < len) { out.push(code[i+1]); i += 2; continue; }
-            if (state === 'single' && ch === "'") state = 'code';
-            else if (state === 'double' && ch === '"') state = 'code';
-            else if (state === 'template' && ch === '`') state = 'code';
-            i++;
-            continue;
-        }
-
-        if (state === 'regex' || state === 'regex-class') {
-            out.push(ch);
-            if (ch === '\\' && i+1 < len) { out.push(code[i+1]); i += 2; continue; }
-            if (state === 'regex' && ch === '[') state = 'regex-class';
-            else if (state === 'regex' && ch === '/') {
-                state = 'code';
-                while (i+1 < len && /[gimsuy]/.test(code[i+1])) { i++; out.push(code[i]); }
-            }
-            else if (state === 'regex-class' && ch === ']') state = 'regex';
-            i++;
-            continue;
-        }
-
-        if (ch === "'" || ch === '"' || ch === '`') {
-            state = ch === "'" ? 'single' : ch === '"' ? 'double' : 'template';
-            out.push(ch);
-            i++;
-            lastNonWs = ch;
-            continue;
-        }
-
-        if (ch === '/') {
-            var prev = lastNonWs;
-            var prevIsRegexStart = (prev === '') ||
-                /[=(:,;!&|?{}\[\]<>+\-*%^~]/.test(prev) ||
-                /\b(return|typeof|instanceof|in|of|new|delete|void|do|else|case|throw|yield|await)\s*$/.test(out.join('').slice(-40));
-            if (prevIsRegexStart && nx !== '/' && nx !== '*') {
-                state = 'regex';
-                out.push(ch);
-                i++;
-                continue;
-            }
-        }
-
-        if (/\s/.test(ch)) {
-            var j = i + 1;
-            while (j < len && /\s/.test(code[j])) j++;
-            var nextCh = code[j];
-            if (out.length && out[out.length-1] !== ' ' && nextCh) {
-                if (/[A-Za-z0-9_$]/.test(lastNonWs) && /[A-Za-z0-9_$]/.test(nextCh)) {
-                    out.push(' ');
-                }
-            }
-            i = j;
-            continue;
-        }
-
-        out.push(ch);
-        if (!/\s/.test(ch)) lastNonWs = ch;
-        i++;
-    }
-
-    return out.join('').trim();
-}
-
-/* ═══ ANALYZE ═══ */
 function analyzeInput() {
     var code = STATE.dom.inputCode ? STATE.dom.inputCode.value : '';
     var stats = STATE.dom.inputStats;
@@ -1392,11 +1380,12 @@ function analyzeInput() {
     if (STATE.dom.statLang) STATE.dom.statLang.textContent = label;
 }
 
-/* ═══ PREPARE (async — uses Terser with fallback) ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   PREPARE (async)
+   ═══════════════════════════════════════════════════════════════ */
 function prepareCode(raw) {
     return new Promise(function(resolve) {
         var result = {
-            original: raw,
             extracted: '',
             processed: '',
             wasHtml: false,
@@ -1426,7 +1415,7 @@ function prepareCode(raw) {
         var doMinify = STATE.dom.optMinify ? STATE.dom.optMinify.checked : true;
         var removeHints = STATE.dom.optHints ? STATE.dom.optHints.checked : false;
 
-        /* ── Inline mode ── */
+        /* ── INLINE MODE ── */
         if (doInline) {
             result.inlined = true;
             result.hintsRemoved = true;
@@ -1438,7 +1427,7 @@ function prepareCode(raw) {
             return;
         }
 
-        /* ── Optional comment removal ── */
+        /* ── OPTIONAL COMMENT REMOVAL ── */
         if (removeHints) {
             result.extracted = stripJsComments(result.extracted);
             result.hintsRemoved = true;
@@ -1446,17 +1435,16 @@ function prepareCode(raw) {
 
         result.extractedSize = Utils.sizeOf(result.extracted);
 
-        /* ── Minify (Terser preferred) ── */
+        /* ── MINIFY (Terser preferred, internal fallback) ── */
         if (doMinify) {
-            var terserResult = terserMinify(result.extracted);
-            if (terserResult && typeof terserResult.then === 'function') {
-                terserResult.then(function(minified) {
+            var terserPromise = terserMinify(result.extracted);
+            if (terserPromise && typeof terserPromise.then === 'function') {
+                terserPromise.then(function(minified) {
                     if (minified && minified.code && minified.code.trim()) {
                         result.processed = minified.code;
                         result.minified = true;
                         result.minifierUsed = 'terser';
                     } else {
-                        /* Terser returned empty — fallback */
                         result.processed = internalMinify(result.extracted);
                         result.minified = true;
                         result.minifierUsed = 'internal';
@@ -1472,7 +1460,6 @@ function prepareCode(raw) {
                 });
                 return;
             } else {
-                /* Terser unavailable — use internal */
                 result.processed = internalMinify(result.extracted);
                 result.minified = true;
                 result.minifierUsed = 'internal';
@@ -1486,7 +1473,9 @@ function prepareCode(raw) {
     });
 }
 
-/* ═══ SUCCESS MSG ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   SUCCESS MESSAGE
+   ═══════════════════════════════════════════════════════════════ */
 function buildSuccessMessage(result) {
     var lines = [];
 
@@ -1520,7 +1509,9 @@ function buildSuccessMessage(result) {
     return lines.join('\n');
 }
 
-/* ═══ FILE NAME ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   FILE NAME
+   ═══════════════════════════════════════════════════════════════ */
 function getFileName() {
     var nameInput = STATE.dom.fileName;
     var name = nameInput ? nameInput.value.trim() : '';
@@ -1535,7 +1526,9 @@ function getFileName() {
     return name;
 }
 
-/* ═══ UPDATE OUTPUT PANEL ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   UPDATE OUTPUT PANEL
+   ═══════════════════════════════════════════════════════════════ */
 function updateOutputPanel(result, fileName) {
     if (STATE.dom.outputSection) STATE.dom.outputSection.style.display = 'block';
     if (STATE.dom.outputCode) STATE.dom.outputCode.value = result.processed;
@@ -1550,7 +1543,9 @@ function updateOutputPanel(result, fileName) {
     STATE.lastFileName = fileName || 'nightorbit-script';
 }
 
-/* ═══ CREATE JS FILE (Generate output only) ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   CREATE JS FILE (Generate output only — no download)
+   ═══════════════════════════════════════════════════════════════ */
 window.createJsFile = function() {
     if (STATE.isProcessing) return;
     var raw = STATE.dom.inputCode ? STATE.dom.inputCode.value : '';
@@ -1589,7 +1584,9 @@ window.createJsFile = function() {
     }, 50);
 };
 
-/* ═══ DOWNLOAD OUTPUT ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   DOWNLOAD OUTPUT
+   ═══════════════════════════════════════════════════════════════ */
 window.downloadOutput = function() {
     var out = STATE.lastOutput;
     if (!out || !out.trim()) {
@@ -1609,7 +1606,9 @@ window.downloadOutput = function() {
     UI.toast('Downloaded: ' + fileName + '.js', 'success', 3000);
 };
 
-/* ═══ COPY OUTPUT ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   COPY OUTPUT
+   ═══════════════════════════════════════════════════════════════ */
 window.copyOutput = function() {
     var out = STATE.lastOutput;
     if (!out || !out.trim()) {
@@ -1643,7 +1642,9 @@ function fallbackCopy(text) {
     document.body.removeChild(ta);
 }
 
-/* ═══ INLINE ↔ COMMENTS BINDING ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   INLINE ↔ COMMENTS BINDING
+   ═══════════════════════════════════════════════════════════════ */
 function bindInlineToggle() {
     var inlineChk = STATE.dom.optInline;
     var hintsChk = STATE.dom.optHints;
@@ -1661,7 +1662,9 @@ function bindInlineToggle() {
     });
 }
 
-/* ═══ CLEAR ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   CLEAR
+   ═══════════════════════════════════════════════════════════════ */
 window.clearAll = function() {
     if (STATE.dom.inputCode) STATE.dom.inputCode.value = '';
     if (STATE.dom.outputCode) STATE.dom.outputCode.value = '';
@@ -1677,7 +1680,9 @@ window.clearAll = function() {
     UI.toast('Cleared', 'info');
 };
 
-/* ═══ LOGOUT ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   LOGOUT
+   ═══════════════════════════════════════════════════════════════ */
 window.doLogout = function() {
     try {
         if (typeof firebase !== 'undefined' && firebase.auth) {
@@ -1694,7 +1699,9 @@ window.doLogout = function() {
     }
 };
 
-/* ═══ INIT ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════════════════ */
 function init() {
     UI.cache();
     var input = STATE.dom.inputCode;
@@ -1717,7 +1724,7 @@ function init() {
             });
         }
     } catch (e) {}
-    UI.toast('Minify JS File v5 (Terser) ready', 'success', 2500);
+    UI.toast('Minify JS File v6 ULTRA ready', 'success', 2500);
 }
 
 if (document.readyState === 'loading') {
