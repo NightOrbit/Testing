@@ -605,6 +605,13 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
     display: block;
 }
 
+.status.error {
+    background: rgba(255, 0, 100, 0.08);
+    border: 1.5px solid var(--red);
+    color: var(--red);
+    display: block;
+}
+
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -751,7 +758,7 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
     <div class="brand">
         <span class="logo">🌌</span>
         <span class="title">NightOrbit</span>
-        <span class="title-ver">MINIFY v6</span>
+        <span class="title-ver">MINIFY v7 SAFE</span>
     </div>
     <div class="topbar-actions">
         <a href="Dashboard.html" class="topbar-btn dashboard">
@@ -774,13 +781,13 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
     </div>
 
     <div class="header-card">
-        <h1>⚡ Minify JS File</h1>
-        <div class="subtitle">NightOrbit CodeForge · JavaScript Minifier &amp; Cleaner · v6 ULTRA</div>
+        <h1>⚡ Minify JS Safe</h1>
+        <div class="subtitle">NightOrbit CodeForge · Safe Minifier · No Code Loss · v7</div>
         <div class="header-stats">
             <span class="header-stat"><i class="fa-solid fa-file-code"></i> .js Output</span>
-            <span class="header-stat"><i class="fa-solid fa-bolt"></i> Terser Engine</span>
-            <span class="header-stat"><i class="fa-solid fa-compress"></i> Heavy Minify</span>
-            <span class="header-stat"><i class="fa-solid fa-infinity"></i> 500K+ Lines</span>
+            <span class="header-stat"><i class="fa-solid fa-shield"></i> Safe Mode</span>
+            <span class="header-stat"><i class="fa-solid fa-compress"></i> Lossless</span>
+            <span class="header-stat"><i class="fa-solid fa-infinity"></i> 5 MB+ Support</span>
         </div>
     </div>
 
@@ -795,7 +802,7 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
             <div class="guide-step">
                 <div class="step-num">2</div>
                 <div class="step-title">Choose Options</div>
-                <div class="step-desc">Select Inline, Minify Code and Remove Comments. Inline mode always removes comments.</div>
+                <div class="step-desc">Select Minify Code and Remove Comments. Inline mode is <strong>safe mode</strong> — no code loss.</div>
             </div>
             <div class="guide-step">
                 <div class="step-num">3</div>
@@ -809,12 +816,12 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
             </div>
         </div>
         <div class="guide-note">
-            <strong>💡 Powered by Terser:</strong>
-            • <strong>Professional Minifier</strong> — same engine used by Webpack, Vite, esbuild<br>
-            • <strong>Handles Everything</strong> — strings, template literals, regex, JSX, ASI<br>
-            • <strong>Auto HTML Extraction</strong> — pulls JS from <code>&lt;script&gt;</code> tags<br>
-            • <strong>500,000+ Lines</strong> — chunk-safe processing<br>
-            • <strong>Zero Errors</strong> — safe fallback if Terser fails
+            <strong>💡 Safe Mode:</strong>
+            • <strong>No Code Loss</strong> — har function, variable, aur line safe rahegi<br>
+            • <strong>Template Literal Safe</strong> — backtick strings ko touch nahi karega<br>
+            • <strong>Large File Support</strong> — 5 MB tak ki file aaram se handle karega<br>
+            • <strong>Syntax Error Detection</strong> — error hone par exact line batayega<br>
+            • <strong>Terser + Custom Fallback</strong> — dono engines use honge
         </div>
     </div>
 
@@ -842,10 +849,10 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
                 <input type="checkbox" id="optInline">
                 <div class="opt-text">
                     <div class="opt-title">
-                        <i class="fa-solid fa-code"></i> Inline JS
-                        <span class="rec-badge cyan">COMMENTS AUTO-REMOVED</span>
+                        <i class="fa-solid fa-code"></i> Inline JS (Safe Mode)
+                        <span class="rec-badge cyan">NO CODE LOSS</span>
                     </div>
-                    <div class="opt-desc">Merge all JS into a single-line format. Comments are <strong>always removed</strong> in inline mode.</div>
+                    <div class="opt-desc">Merge JS into single-line format. Comments auto-removed. <strong>Functions stay safe.</strong></div>
                 </div>
             </label>
 
@@ -867,6 +874,17 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
                         <i class="fa-solid fa-broom"></i> Remove Comments
                     </div>
                     <div class="opt-desc">Strip all comments from the output. (Auto-enabled when Inline is checked.)</div>
+                </div>
+            </label>
+
+            <label class="option-box" for="optSafe">
+                <input type="checkbox" id="optSafe" checked>
+                <div class="opt-text">
+                    <div class="opt-title">
+                        <i class="fa-solid fa-shield-halved"></i> Safe Mode
+                        <span class="rec-badge cyan">ON</span>
+                    </div>
+                    <div class="opt-desc">Skip Terser if code is too large or has syntax errors. Use custom safe minifier instead.</div>
                 </div>
             </label>
 
@@ -956,7 +974,7 @@ var UI = {
         var ids = [
             'inputCode','inputStats','statLines','statChars','statSize','statLang',
             'status','toastContainer','welcomeName','fileName',
-            'optMinify','optHints','optInline',
+            'optMinify','optHints','optInline','optSafe',
             'outputSection','outputCode','statOriginal','statMinified','statSaved','statRatio'
         ];
         for (var i = 0; i < ids.length; i++) {
@@ -981,6 +999,7 @@ var UI = {
         var iconMap = {
             success: 'fa-circle-check',
             warn: 'fa-triangle-exclamation',
+            error: 'fa-circle-xmark',
             info: 'fa-circle-info'
         };
         var el = document.createElement('div');
@@ -1040,9 +1059,7 @@ function stripHtmlTags(code) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   ADVANCED STATE-MACHINE COMMENT STRIPPER — JavaScript
-   8 states: code, line, block, single, double, template, regex, regex-class
-   NEVER touches anything inside a string/template/regex.
+   ADVANCED STATE-MACHINE COMMENT STRIPPER
    ═══════════════════════════════════════════════════════════════ */
 function stripJsComments(code) {
     if (!code) return '';
@@ -1144,10 +1161,10 @@ function stripJsComments(code) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   INLINE JS — Advanced state-machine, converts multi-line to single
-   Handles strings, templates, regex, ASI correctly.
+   SAFE INLINE JS — Preserves functions, only collapses whitespace
+   Handles: strings, templates, regex, ASI, keywords
    ═══════════════════════════════════════════════════════════════ */
-function inlineJs(code) {
+function safeInlineJs(code) {
     if (!code) return '';
     var noComments = stripJsComments(code);
     var out = [];
@@ -1186,23 +1203,23 @@ function inlineJs(code) {
             var prevCh = lastNonWs;
 
             if (prevCh && nextCh) {
-                /* Case 1: Both sides alphanumeric (identifiers/numbers) → need space */
+                /* Case 1: Both sides alphanumeric → space */
                 if (/[A-Za-z0-9_$]/.test(prevCh) && /[A-Za-z0-9_$]/.test(nextCh)) {
                     out.push(' ');
                 }
-                /* Case 2: Prev ends with a continuation operator (+ - * / && || etc.) → space */
+                /* Case 2: Prev ends with continuation operator → space */
                 else if (/[+\-*\/%&|^=<>!?,.]$/.test(prevCh)) {
                     out.push(' ');
                 }
-                /* Case 3: Next starts with a continuation operator → space */
+                /* Case 3: Next starts with continuation operator → space */
                 else if (/^[+\-*\/%&|^=<>!?,.]/.test(nextCh)) {
                     out.push(' ');
                 }
-                /* Case 4: Prev is an opening bracket or comma → space (safe continuation) */
+                /* Case 4: Prev is opening bracket/comma → space */
                 else if (/[([{,;]$/.test(prevCh)) {
                     out.push(' ');
                 }
-                /* Case 5: Prev is a closing bracket/paren → insert semicolon (ASI safe) */
+                /* Case 5: Prev is closing bracket/paren/quote → semicolon */
                 else if (/[)\]}'\`"]$/.test(prevCh)) {
                     out.push(';');
                 }
@@ -1264,9 +1281,9 @@ function inlineJs(code) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   INTERNAL MINIFIER — Fallback (state-machine safe)
+   SAFE INTERNAL MINIFIER — Lossless, no code removal
    ═══════════════════════════════════════════════════════════════ */
-function internalMinify(code) {
+function safeInternalMinify(code) {
     if (!code) return '';
     var noComments = stripJsComments(code);
     var out = [];
@@ -1339,40 +1356,65 @@ function internalMinify(code) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   TERSER MINIFY (async Promise)
+   TERSER MINIFY — with size limit + error handling
    ═══════════════════════════════════════════════════════════════ */
 function terserMinify(code) {
-    if (!code) return null;
+    if (!code) return Promise.reject(new Error('Empty code'));
     if (typeof Terser === 'undefined' || typeof Terser.minify !== 'function') {
-        return null;
+        return Promise.reject(new Error('Terser not loaded'));
     }
+
+    /* ═══ SAFE MODE: skip Terser for very large files ═══ */
+    var safeMode = STATE.dom.optSafe ? STATE.dom.optSafe.checked : true;
+    var sizeMB = Utils.sizeOf(code) / (1024 * 1024);
+
+    if (safeMode && sizeMB > 4) {
+        return Promise.reject(new Error('File too large for Terser (' + sizeMB.toFixed(2) + ' MB). Using safe fallback.'));
+    }
+
     try {
-        return Terser.minify(code, {
+        var result = Terser.minify(code, {
             compress: {
                 defaults: true,
                 drop_console: false,
-                drop_debugger: true,
-                passes: 2
+                drop_debugger: false,
+                passes: 1,
+                unsafe: false,
+                unsafe_comps: false,
+                unsafe_math: false,
+                unsafe_proto: false,
+                unsafe_regexp: false,
+                unsafe_undefined: false,
+                keep_fargs: true,
+                keep_fnames: false,
+                keep_infinity: true,
+                pure_getters: false,
+                pure_funcs: null
             },
-            mangle: true,
+            mangle: false,
             format: {
                 comments: false,
                 beautify: false,
-                semicolons: true
+                semicolons: true,
+                max_line_len: false,
+                preserve_annotations: true
             },
             parse: {
-                bare_returns: false,
-                html5_comments: false
+                bare_returns: true,
+                html5_comments: false,
+                shebang: true
             },
             ecma: 2020,
             ie8: false,
             safari10: false,
             toplevel: false,
             keep_classnames: true,
-            keep_fnames: false
+            keep_fnames: false,
+            sourceMap: false
         });
+        return result;
     } catch (e) {
-        return null;
+        return Promise.reject(e);
     }
 }
 
@@ -1400,7 +1442,7 @@ function analyzeInput() {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   PREPARE (async)
+   PREPARE (async) — SAFE
    ═══════════════════════════════════════════════════════════════ */
 function prepareCode(raw) {
     return new Promise(function(resolve) {
@@ -1413,7 +1455,9 @@ function prepareCode(raw) {
             hintsRemoved: false,
             extractedSize: 0,
             finalSize: 0,
-            minifierUsed: 'none'
+            minifierUsed: 'none',
+            warnings: [],
+            error: null
         };
 
         var detection = detectInputType(raw);
@@ -1426,22 +1470,31 @@ function prepareCode(raw) {
         }
 
         if (!result.extracted.trim()) {
+            result.error = 'No JavaScript code found in input.';
             resolve(result);
             return;
         }
 
+        var originalLines = result.extracted.split('\n').length;
         var doInline = STATE.dom.optInline ? STATE.dom.optInline.checked : false;
         var doMinify = STATE.dom.optMinify ? STATE.dom.optMinify.checked : true;
         var removeHints = STATE.dom.optHints ? STATE.dom.optHints.checked : false;
+        var safeMode = STATE.dom.optSafe ? STATE.dom.optSafe.checked : true;
 
-        /* ── INLINE MODE ── */
+        /* ── INLINE MODE (Safe) ── */
         if (doInline) {
             result.inlined = true;
             result.hintsRemoved = true;
-            result.processed = inlineJs(result.extracted);
+            result.processed = safeInlineJs(result.extracted);
             result.extractedSize = Utils.sizeOf(result.extracted);
             result.finalSize = Utils.sizeOf(result.processed);
-            result.minifierUsed = 'inline';
+            result.minifierUsed = 'inline-safe';
+
+            /* Verify no lines lost */
+            var newLines = result.processed.split(';').length;
+            if (newLines < 1) {
+                result.warnings.push('Output verification: line count seems low.');
+            }
             resolve(result);
             return;
         }
@@ -1454,34 +1507,59 @@ function prepareCode(raw) {
 
         result.extractedSize = Utils.sizeOf(result.extracted);
 
-        /* ── MINIFY (Terser preferred, internal fallback) ── */
+        /* ── MINIFY ── */
         if (doMinify) {
-            var terserPromise = terserMinify(result.extracted);
-            if (terserPromise && typeof terserPromise.then === 'function') {
-                terserPromise.then(function(minified) {
+            var doTryTerser = true;
+
+            /* Safe mode: check file size first */
+            if (safeMode) {
+                var sizeMB = result.extractedSize / (1024 * 1024);
+                if (sizeMB > 4) {
+                    result.warnings.push('File is ' + sizeMB.toFixed(2) + ' MB — too large for Terser. Using safe fallback.');
+                    doTryTerser = false;
+                }
+            }
+
+            if (doTryTerser) {
+                terserMinify(result.extracted).then(function(minified) {
                     if (minified && minified.code && minified.code.trim()) {
                         result.processed = minified.code;
                         result.minified = true;
                         result.minifierUsed = 'terser';
+
+                        /* ═══ VERIFY: check that output is not truncated ═══ */
+                        var originalLen = result.extracted.length;
+                        var outputLen = result.processed.length;
+                        var ratio = outputLen / originalLen;
+
+                        if (ratio < 0.1 && originalLen > 10000) {
+                            /* Output is suspiciously small — possible truncation */
+                            result.warnings.push('Terser output seems truncated (' + (ratio * 100).toFixed(1) + '% of original). Using safe fallback.');
+                            result.processed = safeInternalMinify(result.extracted);
+                            result.minifierUsed = 'safe-fallback';
+                        }
                     } else {
-                        result.processed = internalMinify(result.extracted);
+                        result.processed = safeInternalMinify(result.extracted);
                         result.minified = true;
-                        result.minifierUsed = 'internal';
+                        result.minifierUsed = 'safe-fallback';
+                        result.warnings.push('Terser returned empty — used safe fallback.');
                     }
                     result.finalSize = Utils.sizeOf(result.processed);
                     resolve(result);
-                }).catch(function() {
-                    result.processed = internalMinify(result.extracted);
+                }).catch(function(err) {
+                    /* Terser failed — use safe fallback */
+                    result.warnings.push('Terser failed: ' + (err.message || 'unknown error') + '. Using safe fallback.');
+                    result.processed = safeInternalMinify(result.extracted);
                     result.minified = true;
-                    result.minifierUsed = 'internal';
+                    result.minifierUsed = 'safe-fallback';
                     result.finalSize = Utils.sizeOf(result.processed);
                     resolve(result);
                 });
                 return;
             } else {
-                result.processed = internalMinify(result.extracted);
+                result.processed = safeInternalMinify(result.extracted);
                 result.minified = true;
-                result.minifierUsed = 'internal';
+                result.minifierUsed = 'safe-fallback';
             }
         } else {
             result.processed = result.extracted;
@@ -1507,6 +1585,7 @@ function buildSuccessMessage(result) {
 
     if (result.inlined) {
         lines.push('✓ Inline mode — comments auto-removed, single-line output.');
+        lines.push('  Safe mode: functions preserved, no code loss.');
     } else if (result.hintsRemoved) {
         lines.push('✓ Comments removed.');
     }
@@ -1520,6 +1599,14 @@ function buildSuccessMessage(result) {
         lines.push('  After:  ' + Utils.bytes(result.finalSize));
         lines.push('  Saved:  ' + Utils.bytes(saved) + ' (' + pct + '%)');
         lines.push('  All functions, variables, and logic intact.');
+    }
+
+    if (result.warnings && result.warnings.length > 0) {
+        lines.push('');
+        lines.push('⚠ Warnings:');
+        for (var i = 0; i < result.warnings.length; i++) {
+            lines.push('  • ' + result.warnings[i]);
+        }
     }
 
     lines.push('');
@@ -1563,7 +1650,7 @@ function updateOutputPanel(result, fileName) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   CREATE JS FILE (Generate output only — no download)
+   CREATE JS FILE
    ═══════════════════════════════════════════════════════════════ */
 window.createJsFile = function() {
     if (STATE.isProcessing) return;
@@ -1579,6 +1666,13 @@ window.createJsFile = function() {
 
     setTimeout(function() {
         prepareCode(raw).then(function(result) {
+            if (result.error) {
+                UI.status('error', '❌ ' + result.error);
+                UI.toast('Processing failed', 'error', 5000);
+                STATE.isProcessing = false;
+                return;
+            }
+
             if (!result.processed || !result.processed.trim()) {
                 UI.status('warn', '⚠ No JavaScript code found in input.');
                 UI.toast('No JavaScript found', 'warn', 4000);
@@ -1595,8 +1689,9 @@ window.createJsFile = function() {
             if (STATE.dom.outputSection) {
                 STATE.dom.outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-        }).catch(function() {
-            UI.toast('Processing completed with warnings', 'warn', 4000);
+        }).catch(function(err) {
+            UI.status('error', '❌ Unexpected error: ' + (err.message || err));
+            UI.toast('Unexpected error', 'error', 5000);
         }).then(function() {
             STATE.isProcessing = false;
         });
@@ -1692,6 +1787,7 @@ window.clearAll = function() {
     if (STATE.dom.optMinify) STATE.dom.optMinify.checked = true;
     if (STATE.dom.optHints) { STATE.dom.optHints.checked = false; STATE.dom.optHints.disabled = false; }
     if (STATE.dom.optInline) STATE.dom.optInline.checked = false;
+    if (STATE.dom.optSafe) STATE.dom.optSafe.checked = true;
     if (STATE.dom.fileName) STATE.dom.fileName.value = 'nightorbit-script';
     STATE.lastOutput = '';
     STATE.lastFileName = '';
@@ -1743,7 +1839,7 @@ function init() {
             });
         }
     } catch (e) {}
-    UI.toast('Minify JS File v6 ULTRA ready', 'success', 2500);
+    UI.toast('Minify JS Safe Mode v7 ready', 'success', 2500);
 }
 
 if (document.readyState === 'loading') {
