@@ -1178,7 +1178,7 @@ function inlineJs(code) {
             continue;
         }
 
-        /* ── Newline: convert to ';' or ' ' based on ASI safety ── */
+        /* ── Newline: smart ASI-safe conversion ── */
         if (ch === '\n' || ch === '\r') {
             var j = i + 1;
             while (j < len && /\s/.test(noComments[j])) j++;
@@ -1186,13 +1186,32 @@ function inlineJs(code) {
             var prevCh = lastNonWs;
 
             if (prevCh && nextCh) {
-                /* Both sides alphanumeric → need space */
+                /* Case 1: Both sides alphanumeric (identifiers/numbers) → need space */
                 if (/[A-Za-z0-9_$]/.test(prevCh) && /[A-Za-z0-9_$]/.test(nextCh)) {
                     out.push(' ');
                 }
-                /* Neither side is a boundary token → insert ';' for ASI safety */
-                else if (!/[;{}(),:\[\]+\-*\/%&|^!?=<>~]/.test(prevCh) &&
-                         !/[;{}(),:\[\]+\-*\/%&|^!?=<>~]/.test(nextCh)) {
+                /* Case 2: Prev ends with a continuation operator (+ - * / && || etc.) → space */
+                else if (/[+\-*\/%&|^=<>!?,.]$/.test(prevCh)) {
+                    out.push(' ');
+                }
+                /* Case 3: Next starts with a continuation operator → space */
+                else if (/^[+\-*\/%&|^=<>!?,.]/.test(nextCh)) {
+                    out.push(' ');
+                }
+                /* Case 4: Prev is an opening bracket or comma → space (safe continuation) */
+                else if (/[([{,;]$/.test(prevCh)) {
+                    out.push(' ');
+                }
+                /* Case 5: Prev is a closing bracket/paren → insert semicolon (ASI safe) */
+                else if (/[)\]}'\`"]$/.test(prevCh)) {
+                    out.push(';');
+                }
+                /* Case 6: Prev ends with keyword return/throw/break/continue → semicolon */
+                else if (/\b(return|throw|break|continue|yield|await)$/.test(out.join('').slice(-40))) {
+                    out.push(';');
+                }
+                /* Case 7: Default safe fallback → semicolon */
+                else {
                     out.push(';');
                 }
             }
