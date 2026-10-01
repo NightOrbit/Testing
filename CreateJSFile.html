@@ -1171,22 +1171,25 @@ function stripJsComments(code) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SAFE INLINE JS — Preserves functions, only collapses whitespace
+   SAFE INLINE JS — v8 FIXED
+   Sirf whitespace collapse karta hai. Koi semicolon force nahi.
    ═══════════════════════════════════════════════════════════════ */
 function safeInlineJs(code) {
     if (!code) return '';
+
     var noComments = stripJsComments(code);
     var out = [];
     var i = 0;
     var len = noComments.length;
     var state = 'code';
     var lastNonWs = '';
+    var tailBuffer = '';
 
     while (i < len) {
         var ch = noComments[i];
         var nx = noComments[i + 1];
 
-        /* ── String/template/regex state: copy verbatim ── */
+        /* ── String / Template / Regex: verbatim copy ── */
         if (state === 'single' || state === 'double' || state === 'template' ||
             state === 'regex' || state === 'regex-class') {
             out.push(ch);
@@ -1204,7 +1207,7 @@ function safeInlineJs(code) {
             continue;
         }
 
-        /* ── Newline: smart ASI-safe conversion ── */
+        /* ── NEWLINE — sirf space ya newline, SEMICOLON NAHI ── */
         if (ch === '\n' || ch === '\r') {
             var j = i + 1;
             while (j < len && /\s/.test(noComments[j])) j++;
@@ -1212,52 +1215,39 @@ function safeInlineJs(code) {
             var prevCh = lastNonWs;
 
             if (prevCh && nextCh) {
-                if (/[A-Za-z0-9_$]/.test(prevCh) && /[A-Za-z0-9_$]/.test(nextCh)) {
-                    out.push(' ');
-                }
-                else if (/[+\-*\/%&|^=<>!?,.]$/.test(prevCh)) {
-                    out.push(' ');
-                }
-                else if (/^[+\-*\/%&|^=<>!?,.]/.test(nextCh)) {
-                    out.push(' ');
-                }
-                else if (/[([{,;]$/.test(prevCh)) {
-                    out.push(' ');
-                }
-                else if (/[)\]}'\`"]$/.test(prevCh)) {
-                    out.push(';');
-                }
-                /* ═══════════════════════════════════════════════════════════
-                   ASI-KEYWORDS FIX (FINAL):
-                   Agar previous word 'return', 'throw', 'break', 'continue',
-                   'yield', ya 'await' hai, to newline preserve karo.
-                   Semicolon MAT lagao — warna JavaScript ASI rule
-                   toot jayega aur undefined return hoga.
-                   ═══════════════════════════════════════════════════════════ */
-                else if (/\b(return|throw|break|continue|yield|await)$/.test(out.join('').slice(-40))) {
+                // ASI keyword → newline preserve (return/throw/break/continue/yield/await)
+                if (/\b(return|throw|break|continue|yield|await)$/.test(tailBuffer)) {
                     out.push('\n');
                 }
+                // Alphanumeric + Alphanumeric → space zaroori
+                else if (/[A-Za-z0-9_$]/.test(prevCh) && /[A-Za-z0-9_$]/.test(nextCh)) {
+                    out.push(' ');
+                }
+                // Baaki sab cases → single space
                 else {
-                    out.push(';');
+                    out.push(' ');
                 }
             }
             i = j;
             continue;
         }
 
+        /* ── String start ── */
         if (ch === "'" || ch === '"' || ch === '`') {
             state = ch === "'" ? 'single' : ch === '"' ? 'double' : 'template';
             out.push(ch);
             i++;
             lastNonWs = ch;
+            tailBuffer = (tailBuffer + ch).slice(-80);
             continue;
         }
 
+        /* ── Regex detection ── */
         if (ch === '/') {
             var prevChar = lastNonWs;
             var prevIsRegexStart = (prevChar === '') ||
                 /[=(:,;!&|?{}\[\]<>+\-*%^~]/.test(prevChar) ||
-                /\b(return|typeof|instanceof|in|of|new|delete|void|do|else|case|throw|yield|await)\s*$/.test(out.join('').slice(-40));
+                /\b(return|typeof|instanceof|in|of|new|delete|void|do|else|case|throw|yield|await)$/.test(tailBuffer);
             if (prevIsRegexStart && nx !== '/' && nx !== '*') {
                 state = 'regex';
                 out.push(ch);
@@ -1266,8 +1256,9 @@ function safeInlineJs(code) {
             }
         }
 
+        /* ── Whitespace collapse ── */
         if (/\s/.test(ch)) {
-            if (out.length && out[out.length - 1] !== ' ' && i + 1 < len) {
+            if (out.length && out[out.length - 1] !== ' ') {
                 var j2 = i + 1;
                 while (j2 < len && /\s/.test(noComments[j2])) j2++;
                 var nx2 = noComments[j2] || '';
@@ -1279,15 +1270,21 @@ function safeInlineJs(code) {
             continue;
         }
 
+        /* ── Normal character ── */
         out.push(ch);
-        if (!/\s/.test(ch)) lastNonWs = ch;
+        if (!/\s/.test(ch)) {
+            lastNonWs = ch;
+            tailBuffer = (tailBuffer + ch).slice(-80);
+        }
         i++;
     }
 
     var result = out.join('');
+    // Sirf extra spaces collapse
     result = result.replace(/[ \t]+/g, ' ').trim();
     return result;
 }
+    
 /* ═══════════════════════════════════════════════════════════════
    SAFE INTERNAL MINIFIER — Lossless, no code removal
    ═══════════════════════════════════════════════════════════════ */
