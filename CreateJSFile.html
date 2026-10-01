@@ -1189,47 +1189,11 @@ function safeInlineJs(code) {
         /* ── String/template/regex state: copy verbatim ── */
         if (state === 'single' || state === 'double' || state === 'template' ||
             state === 'regex' || state === 'regex-class') {
-
-            /* ═══ NEW: Template literal ke andar bhi whitespace collapse karo ═══ */
-            if (state === 'template') {
-                if (ch === '\n' || ch === '\r' || ch === '\t') {
-                    /* Multiple whitespace ko single space mein collapse karo */
-                    var j = i + 1;
-                    while (j < len && /[\s]/.test(noComments[j])) j++;
-                    var nextCh = noComments[j] || '';
-                    var prevCh = out.length > 0 ? out[out.length - 1] : '';
-                    /* Space sirf tab jab zaroori ho */
-                    if (prevCh && nextCh && /[A-Za-z0-9_$]/.test(prevCh) && /[A-Za-z0-9_$]/.test(nextCh)) {
-                        out.push(' ');
-                    } else if (prevCh && nextCh && prevCh !== ' ' && prevCh !== '(' && prevCh !== ':') {
-                        out.push(' ');
-                    }
-                    i = j;
-                    continue;
-                }
-                if (ch === ' ') {
-                    /* Multiple spaces collapse karo */
-                    var k = i + 1;
-                    while (k < len && noComments[k] === ' ') k++;
-                    if (out.length && out[out.length - 1] !== ' ') {
-                        out.push(' ');
-                    }
-                    i = k;
-                    continue;
-                }
-                /* Normal character — copy verbatim */
-                out.push(ch);
-                if (ch === '\\' && i + 1 < len) { out.push(noComments[i + 1]); i += 2; continue; }
-                if (ch === '`') state = 'code';
-                i++;
-                continue;
-            }
-
-            /* Strings aur regex — bilkul verbatim */
             out.push(ch);
             if (ch === '\\' && i + 1 < len) { out.push(noComments[i + 1]); i += 2; continue; }
             if (state === 'single' && ch === "'") state = 'code';
             else if (state === 'double' && ch === '"') state = 'code';
+            else if (state === 'template' && ch === '`') state = 'code';
             else if (state === 'regex' && ch === '[') state = 'regex-class';
             else if (state === 'regex' && ch === '/') {
                 state = 'code';
@@ -1242,35 +1206,42 @@ function safeInlineJs(code) {
 
         /* ── Newline: smart ASI-safe conversion ── */
         if (ch === '\n' || ch === '\r') {
-            var j2 = i + 1;
-            while (j2 < len && /\s/.test(noComments[j2])) j2++;
-            var nextCh2 = noComments[j2] || '';
-            var prevCh2 = lastNonWs;
+            var j = i + 1;
+            while (j < len && /\s/.test(noComments[j])) j++;
+            var nextCh = noComments[j] || '';
+            var prevCh = lastNonWs;
 
-            if (prevCh2 && nextCh2) {
-                if (/[A-Za-z0-9_$]/.test(prevCh2) && /[A-Za-z0-9_$]/.test(nextCh2)) {
+            if (prevCh && nextCh) {
+                if (/[A-Za-z0-9_$]/.test(prevCh) && /[A-Za-z0-9_$]/.test(nextCh)) {
                     out.push(' ');
                 }
-                else if (/[+\-*\/%&|^=<>!?,.]$/.test(prevCh2)) {
+                else if (/[+\-*\/%&|^=<>!?,.]$/.test(prevCh)) {
                     out.push(' ');
                 }
-                else if (/^[+\-*\/%&|^=<>!?,.]/.test(nextCh2)) {
+                else if (/^[+\-*\/%&|^=<>!?,.]/.test(nextCh)) {
                     out.push(' ');
                 }
-                else if (/[([{,;]$/.test(prevCh2)) {
+                else if (/[([{,;]$/.test(prevCh)) {
                     out.push(' ');
                 }
-                else if (/[)\]}'\`"]$/.test(prevCh2)) {
+                else if (/[)\]}'\`"]$/.test(prevCh)) {
                     out.push(';');
                 }
+                /* ═══════════════════════════════════════════════════════════
+                   ASI-KEYWORDS FIX (FINAL):
+                   Agar previous word 'return', 'throw', 'break', 'continue',
+                   'yield', ya 'await' hai, to newline preserve karo.
+                   Semicolon MAT lagao — warna JavaScript ASI rule
+                   toot jayega aur undefined return hoga.
+                   ═══════════════════════════════════════════════════════════ */
                 else if (/\b(return|throw|break|continue|yield|await)$/.test(out.join('').slice(-40))) {
-                    out.push(';');
+                    out.push('\n');
                 }
                 else {
                     out.push(';');
                 }
             }
-            i = j2;
+            i = j;
             continue;
         }
 
@@ -1297,10 +1268,10 @@ function safeInlineJs(code) {
 
         if (/\s/.test(ch)) {
             if (out.length && out[out.length - 1] !== ' ' && i + 1 < len) {
-                var j3 = i + 1;
-                while (j3 < len && /\s/.test(noComments[j3])) j3++;
-                var nx3 = noComments[j3] || '';
-                if (/[A-Za-z0-9_$]/.test(lastNonWs) && /[A-Za-z0-9_$]/.test(nx3)) {
+                var j2 = i + 1;
+                while (j2 < len && /\s/.test(noComments[j2])) j2++;
+                var nx2 = noComments[j2] || '';
+                if (/[A-Za-z0-9_$]/.test(lastNonWs) && /[A-Za-z0-9_$]/.test(nx2)) {
                     out.push(' ');
                 }
             }
@@ -1797,14 +1768,29 @@ function bindInlineToggle() {
 
     if (!inlineChk) return;
 
+    // ═══ INLINE CHANGE — Minify ko uncheck karo ═══
     inlineChk.addEventListener('change', function() {
         if (inlineChk.checked) {
+            // Inline ON → Minify OFF, Comments ON + disabled
             if (hintsChk) { hintsChk.checked = true; hintsChk.disabled = true; }
-            if (minifyChk) { minifyChk.checked = true; }
+            if (minifyChk) { minifyChk.checked = false; minifyChk.disabled = true; }
         } else {
+            // Inline OFF → Minify ON + enabled, Comments enabled
             if (hintsChk) { hintsChk.disabled = false; }
+            if (minifyChk) { minifyChk.disabled = false; minifyChk.checked = true; }
         }
     });
+
+    // ═══ MINIFY CHANGE — Inline ko uncheck karo ═══
+    if (minifyChk) {
+        minifyChk.addEventListener('change', function() {
+            if (minifyChk.checked) {
+                // Minify ON → Inline OFF + enabled, Comments enabled
+                if (inlineChk) { inlineChk.checked = false; inlineChk.disabled = false; }
+                if (hintsChk) { hintsChk.disabled = false; }
+            }
+        });
+    }
 }
 
 /* ═══════════════════════════════════════════════════════════════
