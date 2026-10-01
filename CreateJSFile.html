@@ -1177,100 +1177,37 @@ function stripJsComments(code) {
 function safeInlineJs(code) {
     if (!code) return '';
 
-    // ═══════════════════════════════════════════════════════════════
-    // STEP 1: Comments safely strip karo (template-aware)
-    // ═══════════════════════════════════════════════════════════════
     var noComments = stripJsComments(code);
-
     var out = [];
     var i = 0;
     var len = noComments.length;
     var state = 'code';
     var lastNonWs = '';
     var tailBuffer = '';
-    var braceStack = [];   // { } tracking
-    var parenStack = [];   // ( ) tracking
 
-    // ═══════════════════════════════════════════════════════════════
-    // HELPER FUNCTIONS
-    // ═══════════════════════════════════════════════════════════════
-    function isAsiKeyword() {
-        return /\b(return|throw|break|continue|yield|await)$/.test(tailBuffer);
-    }
-
-    function pushChar(c) {
-        out.push(c);
-        if (c && !/\s/.test(c)) {
-            lastNonWs = c;
-            tailBuffer = (tailBuffer + c).slice(-100);
-        }
-    }
-
-    function isWordChar(c) {
-        return /[A-Za-z0-9_$]/.test(c);
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    // MAIN LOOP
-    // ═══════════════════════════════════════════════════════════════
     while (i < len) {
         var ch = noComments[i];
         var nx = noComments[i + 1];
 
-        // ═══════════════════════════════════════════════════════════
-        // STRING / TEMPLATE / REGEX STATE — verbatim copy
-        // ═══════════════════════════════════════════════════════════
-        if (state === 'single' || state === 'double' ||
-            state === 'template' || state === 'regex' || state === 'regex-class') {
-
+        /* ── String / Template / Regex: verbatim copy ── */
+        if (state === 'single' || state === 'double' || state === 'template' ||
+            state === 'regex' || state === 'regex-class') {
             out.push(ch);
-
-            // Escape sequence — agla char bhi copy karo
-            if (ch === '\\' && i + 1 < len) {
-                out.push(noComments[i + 1]);
-                i += 2;
-                continue;
-            }
-
-            // State transitions
-            if (state === 'single' && ch === "'") {
+            if (ch === '\\' && i + 1 < len) { out.push(noComments[i + 1]); i += 2; continue; }
+            if (state === 'single' && ch === "'") state = 'code';
+            else if (state === 'double' && ch === '"') state = 'code';
+            else if (state === 'template' && ch === '`') state = 'code';
+            else if (state === 'regex' && ch === '[') state = 'regex-class';
+            else if (state === 'regex' && ch === '/') {
                 state = 'code';
-            } else if (state === 'double' && ch === '"') {
-                state = 'code';
-            } else if (state === 'template') {
-                if (ch === '`') {
-                    state = 'code';
-                } else if (ch === '$' && nx === '{') {
-                    // Nested template expression — ${ ... }
-                    out.push('{');
-                    i += 2;
-                    state = 'code';
-                    braceStack.push('template-expr');
-                    pushChar('{');
-                    continue;
-                }
-            } else if (state === 'regex') {
-                if (ch === '[') {
-                    state = 'regex-class';
-                } else if (ch === '/') {
-                    state = 'code';
-                    // Regex flags copy karo
-                    while (i + 1 < len && /[gimsuy]/.test(noComments[i + 1])) {
-                        i++;
-                        out.push(noComments[i]);
-                    }
-                }
-            } else if (state === 'regex-class' && ch === ']') {
-                state = 'regex';
+                while (i + 1 < len && /[gimsuy]/.test(noComments[i + 1])) { i++; out.push(noComments[i]); }
             }
-
+            else if (state === 'regex-class' && ch === ']') state = 'regex';
             i++;
             continue;
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // NEWLINE HANDLING — ASI-SAFE, NO FALSE SEMICOLONS
-        // ═══════════════════════════════════════════════════════════
+        /* ── NEWLINE — sirf space ya newline, SEMICOLON NAHI ── */
         if (ch === '\n' || ch === '\r') {
             var j = i + 1;
             while (j < len && /\s/.test(noComments[j])) j++;
@@ -1278,33 +1215,15 @@ function safeInlineJs(code) {
             var prevCh = lastNonWs;
 
             if (prevCh && nextCh) {
-                // ─── CASE 1: ASI keyword → newline preserve ───
-                if (isAsiKeyword()) {
+                // ASI keyword → newline preserve (return/throw/break/continue/yield/await)
+                if (/\b(return|throw|break|continue|yield|await)$/.test(tailBuffer)) {
                     out.push('\n');
                 }
-                // ─── CASE 2: Word + Word → space zaroori ───
-                else if (isWordChar(prevCh) && isWordChar(nextCh)) {
+                // Alphanumeric + Alphanumeric → space zaroori
+                else if (/[A-Za-z0-9_$]/.test(prevCh) && /[A-Za-z0-9_$]/.test(nextCh)) {
                     out.push(' ');
                 }
-                // ─── CASE 3: Operator pehle → space ───
-                else if (/[+\-*\/%&|^=<>!?,.]$/.test(prevCh)) {
-                    out.push(' ');
-                }
-                // ─── CASE 4: Operator baad → space ───
-                else if (/^[+\-*\/%&|^=<>!?,.]/.test(nextCh)) {
-                    out.push(' ');
-                }
-                // ─── CASE 5: Closing bracket/brace/quote ke baad ───
-                // ⚠️ IMPORTANT: } ke baad ; NAHI lagana
-                else if (/[)\]}'\`"]$/.test(prevCh)) {
-                    // Sirf space — semicolon kabhi nahi
-                    out.push(' ');
-                }
-                // ─── CASE 6: Opening bracket ke baad ───
-                else if (/[([{,;]$/.test(prevCh)) {
-                    out.push(' ');
-                }
-                // ─── DEFAULT ───
+                // Baaki sab cases → single space
                 else {
                     out.push(' ');
                 }
@@ -1313,26 +1232,22 @@ function safeInlineJs(code) {
             continue;
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // STRING / TEMPLATE START
-        // ═══════════════════════════════════════════════════════════
+        /* ── String start ── */
         if (ch === "'" || ch === '"' || ch === '`') {
             state = ch === "'" ? 'single' : ch === '"' ? 'double' : 'template';
             out.push(ch);
             i++;
-            pushChar(ch);
+            lastNonWs = ch;
+            tailBuffer = (tailBuffer + ch).slice(-80);
             continue;
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // REGEX vs DIVISION DETECTION
-        // ═══════════════════════════════════════════════════════════
+        /* ── Regex detection ── */
         if (ch === '/') {
             var prevChar = lastNonWs;
             var prevIsRegexStart = (prevChar === '') ||
                 /[=(:,;!&|?{}\[\]<>+\-*%^~]/.test(prevChar) ||
-                isAsiKeyword();
-
+                /\b(return|typeof|instanceof|in|of|new|delete|void|do|else|case|throw|yield|await)$/.test(tailBuffer);
             if (prevIsRegexStart && nx !== '/' && nx !== '*') {
                 state = 'regex';
                 out.push(ch);
@@ -1341,16 +1256,13 @@ function safeInlineJs(code) {
             }
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // WHITESPACE COLLAPSE
-        // ═══════════════════════════════════════════════════════════
+        /* ── Whitespace collapse ── */
         if (/\s/.test(ch)) {
             if (out.length && out[out.length - 1] !== ' ') {
                 var j2 = i + 1;
                 while (j2 < len && /\s/.test(noComments[j2])) j2++;
                 var nx2 = noComments[j2] || '';
-                // Space sirf tab jab word + word ho
-                if (isWordChar(lastNonWs) && isWordChar(nx2)) {
+                if (/[A-Za-z0-9_$]/.test(lastNonWs) && /[A-Za-z0-9_$]/.test(nx2)) {
                     out.push(' ');
                 }
             }
@@ -1358,37 +1270,18 @@ function safeInlineJs(code) {
             continue;
         }
 
-        // ═══════════════════════════════════════════════════════════
-        // NORMAL CHARACTER — brace/paren tracking
-        // ═══════════════════════════════════════════════════════════
+        /* ── Normal character ── */
         out.push(ch);
-
-        if (ch === '{') {
-            braceStack.push('brace');
-        } else if (ch === '}') {
-            if (braceStack.length > 0) {
-                var popped = braceStack.pop();
-                // Agar template expression close hui
-                if (popped === 'template-expr') {
-                    state = 'template';
-                }
-            }
-        } else if (ch === '(') {
-            parenStack.push('paren');
-        } else if (ch === ')') {
-            if (parenStack.length > 0) parenStack.pop();
-        }
-
         if (!/\s/.test(ch)) {
             lastNonWs = ch;
-            tailBuffer = (tailBuffer + ch).slice(-100);
+            tailBuffer = (tailBuffer + ch).slice(-80);
         }
         i++;
     }
 
     var result = out.join('');
-    // Multiple spaces collapse karo (lekin newlines preserve — ASI ke liye)
-    result = result.replace(/[ \t]{2,}/g, ' ').trim();
+    // Sirf extra spaces collapse
+    result = result.replace(/[ \t]+/g, ' ').trim();
     return result;
 }
     
