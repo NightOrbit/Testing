@@ -1017,19 +1017,29 @@ var UI = {
 
 /* ═══════════════════════════════════════════════════════════════
    DETECT INPUT TYPE
+   --------------------------------------------------------------------------
+   FIX: Ab sirf TOP-LEVEL HTML page detect hoga.
+   - Agar code <!DOCTYPE html> ya <html> se shuru hota hai → HTML page
+   - Agar code JavaScript hai (chahe usme HTML strings hon) → JS
+   Isse JS ke andar wale HTML strings ko touch nahi kiya jayega.
    ═══════════════════════════════════════════════════════════════ */
 function detectInputType(code) {
     if (!code || !code.trim()) return { type: 'empty' };
     var t = code.trim();
-    var hasScript = /<script\b[^>]*>[\s\S]*?<\/script\s*>/i.test(t);
-    var hasHtml = /<!DOCTYPE|<html\b|<head\b|<body\b|<div\b|<span\b|<p\b|<button\b|<meta\b|<link\b/i.test(t);
-    if (hasScript) return { type: 'mixed' };
-    if (hasHtml) return { type: 'html' };
+
+    // Top-level HTML page check — sirf shuru se
+    if (/^<!DOCTYPE\s+html/i.test(t)) return { type: 'html' };
+    if (/^<html\b/i.test(t)) return { type: 'html' };
+
+    // Baaki sab JavaScript hai
     return { type: 'js' };
 }
 
 /* ═══════════════════════════════════════════════════════════════
    EXTRACT JS FROM HTML
+   --------------------------------------------------------------------------
+   Sirf <script> tags ke andar wala JS nikaalo.
+   <script src="..."> wale skip karo.
    ═══════════════════════════════════════════════════════════════ */
 function extractJsFromHtml(code) {
     if (!code) return '';
@@ -1162,7 +1172,6 @@ function stripJsComments(code) {
 
 /* ═══════════════════════════════════════════════════════════════
    SAFE INLINE JS — Preserves functions, only collapses whitespace
-   Handles: strings, templates, regex, ASI, keywords
    ═══════════════════════════════════════════════════════════════ */
 function safeInlineJs(code) {
     if (!code) return '';
@@ -1177,7 +1186,6 @@ function safeInlineJs(code) {
         var ch = noComments[i];
         var nx = noComments[i + 1];
 
-        /* ── String/template/regex state: copy verbatim ── */
         if (state === 'single' || state === 'double' || state === 'template' ||
             state === 'regex' || state === 'regex-class') {
             out.push(ch);
@@ -1195,7 +1203,6 @@ function safeInlineJs(code) {
             continue;
         }
 
-        /* ── Newline: smart ASI-safe conversion ── */
         if (ch === '\n' || ch === '\r') {
             var j = i + 1;
             while (j < len && /\s/.test(noComments[j])) j++;
@@ -1203,31 +1210,24 @@ function safeInlineJs(code) {
             var prevCh = lastNonWs;
 
             if (prevCh && nextCh) {
-                /* Case 1: Both sides alphanumeric → space */
                 if (/[A-Za-z0-9_$]/.test(prevCh) && /[A-Za-z0-9_$]/.test(nextCh)) {
                     out.push(' ');
                 }
-                /* Case 2: Prev ends with continuation operator → space */
                 else if (/[+\-*\/%&|^=<>!?,.]$/.test(prevCh)) {
                     out.push(' ');
                 }
-                /* Case 3: Next starts with continuation operator → space */
                 else if (/^[+\-*\/%&|^=<>!?,.]/.test(nextCh)) {
                     out.push(' ');
                 }
-                /* Case 4: Prev is opening bracket/comma → space */
                 else if (/[([{,;]$/.test(prevCh)) {
                     out.push(' ');
                 }
-                /* Case 5: Prev is closing bracket/paren/quote → semicolon */
                 else if (/[)\]}'\`"]$/.test(prevCh)) {
                     out.push(';');
                 }
-                /* Case 6: Prev ends with keyword return/throw/break/continue → semicolon */
                 else if (/\b(return|throw|break|continue|yield|await)$/.test(out.join('').slice(-40))) {
                     out.push(';');
                 }
-                /* Case 7: Default safe fallback → semicolon */
                 else {
                     out.push(';');
                 }
@@ -1364,7 +1364,6 @@ function terserMinify(code) {
         return Promise.reject(new Error('Terser not loaded'));
     }
 
-    /* ═══ SAFE MODE: skip Terser for very large files ═══ */
     var safeMode = STATE.dom.optSafe ? STATE.dom.optSafe.checked : true;
     var sizeMB = Utils.sizeOf(code) / (1024 * 1024);
 
@@ -1437,7 +1436,7 @@ function analyzeInput() {
     if (STATE.dom.statSize) STATE.dom.statSize.textContent = Utils.bytes(size);
     if (stats) stats.style.display = 'grid';
     var d = detectInputType(code);
-    var label = d.type === 'mixed' ? 'HTML+JS' : d.type.toUpperCase();
+    var label = d.type === 'html' ? 'HTML' : (d.type === 'js' ? 'JS' : '—');
     if (STATE.dom.statLang) STATE.dom.statLang.textContent = label;
 }
 
@@ -1462,7 +1461,7 @@ function prepareCode(raw) {
 
         var detection = detectInputType(raw);
 
-        if (detection.type === 'html' || detection.type === 'mixed') {
+        if (detection.type === 'html') {
             result.wasHtml = true;
             result.extracted = extractJsFromHtml(raw);
         } else {
@@ -1490,7 +1489,6 @@ function prepareCode(raw) {
             result.finalSize = Utils.sizeOf(result.processed);
             result.minifierUsed = 'inline-safe';
 
-            /* Verify no lines lost */
             var newLines = result.processed.split(';').length;
             if (newLines < 1) {
                 result.warnings.push('Output verification: line count seems low.');
@@ -1511,7 +1509,6 @@ function prepareCode(raw) {
         if (doMinify) {
             var doTryTerser = true;
 
-            /* Safe mode: check file size first */
             if (safeMode) {
                 var sizeMB = result.extractedSize / (1024 * 1024);
                 if (sizeMB > 4) {
@@ -1527,13 +1524,11 @@ function prepareCode(raw) {
                         result.minified = true;
                         result.minifierUsed = 'terser';
 
-                        /* ═══ VERIFY: check that output is not truncated ═══ */
                         var originalLen = result.extracted.length;
                         var outputLen = result.processed.length;
                         var ratio = outputLen / originalLen;
 
                         if (ratio < 0.1 && originalLen > 10000) {
-                            /* Output is suspiciously small — possible truncation */
                             result.warnings.push('Terser output seems truncated (' + (ratio * 100).toFixed(1) + '% of original). Using safe fallback.');
                             result.processed = safeInternalMinify(result.extracted);
                             result.minifierUsed = 'safe-fallback';
@@ -1547,7 +1542,6 @@ function prepareCode(raw) {
                     result.finalSize = Utils.sizeOf(result.processed);
                     resolve(result);
                 }).catch(function(err) {
-                    /* Terser failed — use safe fallback */
                     result.warnings.push('Terser failed: ' + (err.message || 'unknown error') + '. Using safe fallback.');
                     result.processed = safeInternalMinify(result.extracted);
                     result.minified = true;
