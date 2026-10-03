@@ -1189,6 +1189,9 @@ function safeInlineJs(code) {
     var ASI_KEYWORDS = /^(return|throw|break|continue|yield|await)$/;
     var KEYWORDS_BEFORE_REGEX = /^(return|typeof|instanceof|in|of|new|delete|void|do|else|case|throw|yield|await)$/;
 
+    // ⭐ Naye keywords jo naya statement start karte hain
+    var NEW_STATEMENT_KEYWORDS = /^(const|let|var|function|class|if|for|while|do|switch|try|catch|finally|throw|return|typeof|instanceof|new|delete|void|in|of|case|else|default|break|continue|yield|await|async|import|export|with|debugger)$/;
+
     function isIdentChar(c) { return /[A-Za-z0-9_$]/.test(c); }
     function isWordBoundary(c) { return !c || !/[A-Za-z0-9_$]/.test(c); }
 
@@ -1206,44 +1209,23 @@ function safeInlineJs(code) {
         return false;
     }
 
-    /* 
-     ⭐ ASI HAZARD DETECTOR (v9 FINAL)
-     - Agar previous line `;`, `}`, `)`, `]`, ya identifier/number pe khatam
-       hoti hai AUR next line `const`, `let`, `var`, `function`, `class`,
-       `if`, `for`, `while`, `return`, `(` , `[`, `` ` ``, `/`, `+`, `-` 
-       se shuru hoti hai → `;` insert karo
-    */
-    function needSemicolonBeforeNewline(prevChar, nextChar, nextWord, nextFullWord) {
-        if (!prevChar || !nextChar) return false;
+    // ⭐ Check: prev statement complete hai?
+    function isPrevComplete(prevChar) {
+        // Agar prev operator/punctuation hai jo continuation expect karta hai
+        if (/[+\-*/%<>=!&|^~?:,;.([{]/.test(prevChar)) return false;
+        return true;
+    }
 
-        // Next line me in keywords se start → `;` chahiye
-        // (agar prev statement complete hai)
-        var DECL_KEYWORDS = /^(const|let|var|function|class|if|for|while|do|switch|try|throw|return|typeof|new|delete|void|in|of|instanceof|case|else|default|break|continue|yield|await|async|import|export|this|super|null|true|false|undefined|NaN)$/;
-
-        var isPrevComplete = !/[+\-*/%<>=!&|^~?:,;.([{]/.test(prevChar);
-
-        if (!isPrevComplete) return false;
-
-        // Case A: next line keyword se start
-        if (nextWord && DECL_KEYWORDS.test(nextWord)) {
-            return true;
-        }
-
-        // Case B: next line `(`, `[`, `` ` `` se start (IIFE/array/template)
-        if (nextChar === '(' || nextChar === '[' || nextChar === '`') {
-            return true;
-        }
-
-        // Case C: next line `/` se start (regex) — sirf agar prev `)` nahi hai
-        if (nextChar === '/' && prevChar !== ')') {
-            return true;
-        }
-
-        // Case D: next line `+` ya `-` se start (unary)
-        if (nextChar === '+' || nextChar === '-') {
-            return true;
-        }
-
+    // ⭐ Check: next line naya statement start kar rahi hai?
+    function isNewStatement(nextChar, nextWord) {
+        // Agar next keyword hai jo naya statement start karta hai
+        if (nextWord && NEW_STATEMENT_KEYWORDS.test(nextWord)) return true;
+        // `(`, `[`, `` ` `` — ye ASI hazard hain
+        if (nextChar === '(' || nextChar === '[' || nextChar === '`') return true;
+        // `/` — regex start ho sakta hai
+        if (nextChar === '/' ) return true;
+        // `+`, `-` — unary operators
+        if (nextChar === '+' || nextChar === '-') return true;
         return false;
     }
 
@@ -1251,7 +1233,7 @@ function safeInlineJs(code) {
         var ch = noComments[i];
         var nx = noComments[i + 1];
 
-        /* ── Inside string/template/regex ── */
+        /* ── String / Template / Regex: verbatim copy ── */
         if (state !== 'code') {
             out.push(ch);
             if (ch === '\\' && i + 1 < len) {
@@ -1275,14 +1257,14 @@ function safeInlineJs(code) {
             continue;
         }
 
-        /* ── NEWLINE handling (ASI-safe) ── */
+        /* ── NEWLINE — ASI-safe handling ── */
         if (ch === '\n' || ch === '\r') {
             var j = i + 1;
             while (j < len && /\s/.test(noComments[j])) j++;
             var nextCh = noComments[j] || '';
             var prevCh = lastSignificant;
 
-            // Peek next word (identifier/keyword)
+            // Next word peek karo
             var wordBuf = '';
             var k = j;
             while (k < len && isIdentChar(noComments[k])) {
@@ -1295,11 +1277,11 @@ function safeInlineJs(code) {
                 if (ASI_KEYWORDS.test(lastWord)) {
                     out.push('\n');
                 }
-                /* Case 2: ASI hazard → semicolon insert */
-                else if (needSemicolonBeforeNewline(prevCh, nextCh, wordBuf)) {
+                /* Case 2: Previous statement complete + next naya statement → ; insert */
+                else if (isPrevComplete(prevCh) && isNewStatement(nextCh, wordBuf)) {
                     out.push(';');
                 }
-                /* Case 3: identifiers need space */
+                /* Case 3: Do identifiers → space zaroori */
                 else if (isIdentChar(prevCh) && isIdentChar(nextCh)) {
                     out.push(' ');
                 }
@@ -1307,7 +1289,7 @@ function safeInlineJs(code) {
                 else if ((prevCh === '+' || prevCh === '-') && prevCh === nextCh) {
                     out.push(' ');
                 }
-                /* Case 5: baaki sab → single space */
+                /* Case 5: Baaki sab → single space */
                 else {
                     out.push(' ');
                 }
@@ -1316,7 +1298,7 @@ function safeInlineJs(code) {
             continue;
         }
 
-        /* ── String starts ── */
+        /* ── String start ── */
         if (ch === "'" || ch === '"' || ch === '`') {
             state = ch === "'" ? 'single' : ch === '"' ? 'double' : 'template';
             out.push(ch);
