@@ -1183,9 +1183,8 @@ function safeInlineJs(code) {
     var len = noComments.length;
     var state = 'code';
 
-    /* ── PROPER context tracking (tailBuffer hack removed) ── */
-    var lastSignificant = '';   // last non-whitespace char
-    var lastWord = '';          // last identifier/keyword (word-boundary reset)
+    var lastSignificant = '';
+    var lastWord = '';
 
     var ASI_KEYWORDS = /^(return|throw|break|continue|yield|await)$/;
     var KEYWORDS_BEFORE_REGEX = /^(return|typeof|instanceof|in|of|new|delete|void|do|else|case|throw|yield|await)$/;
@@ -1193,7 +1192,6 @@ function safeInlineJs(code) {
     function isIdentChar(c) { return /[A-Za-z0-9_$]/.test(c); }
     function isWordBoundary(c) { return !c || !/[A-Za-z0-9_$]/.test(c); }
 
-    /* Kya `/` regex start kar sakta hai? */
     function canStartRegex(prevChar, prevWord) {
         if (!prevChar) return true;
         if (/[=(:,;!&|?{}\[\]<>+\-*%^~]/.test(prevChar)) return true;
@@ -1201,7 +1199,6 @@ function safeInlineJs(code) {
         return false;
     }
 
-    /* Do tokens ke beech space chahiye? */
     function needsSpace(prev, next) {
         if (!prev || !next) return false;
         if (isIdentChar(prev) && isIdentChar(next)) return true;
@@ -1209,16 +1206,44 @@ function safeInlineJs(code) {
         return false;
     }
 
-    /* ASI hazard: next line `(`, `[`, `` ` ``, `/`, `+`, `-` se start
-       aur prev statement complete → `;` insert karo */
-    function needSemicolonBeforeNewline(prevChar, nextChar) {
-        if (!nextChar) return false;
-        if (nextChar === '(' || nextChar === '[' || nextChar === '`' ||
-            nextChar === '/' || nextChar === '+' || nextChar === '-') {
-            // Agar prev operator/punctuation hai jo continuation expect karta hai → ASI nahi
-            if (/[+\-*/%<>=!&|^~?:,;{([]/.test(prevChar)) return false;
+    /* 
+     ⭐ ASI HAZARD DETECTOR (v9 FINAL)
+     - Agar previous line `;`, `}`, `)`, `]`, ya identifier/number pe khatam
+       hoti hai AUR next line `const`, `let`, `var`, `function`, `class`,
+       `if`, `for`, `while`, `return`, `(` , `[`, `` ` ``, `/`, `+`, `-` 
+       se shuru hoti hai → `;` insert karo
+    */
+    function needSemicolonBeforeNewline(prevChar, nextChar, nextWord, nextFullWord) {
+        if (!prevChar || !nextChar) return false;
+
+        // Next line me in keywords se start → `;` chahiye
+        // (agar prev statement complete hai)
+        var DECL_KEYWORDS = /^(const|let|var|function|class|if|for|while|do|switch|try|throw|return|typeof|new|delete|void|in|of|instanceof|case|else|default|break|continue|yield|await|async|import|export|this|super|null|true|false|undefined|NaN)$/;
+
+        var isPrevComplete = !/[+\-*/%<>=!&|^~?:,;.([{]/.test(prevChar);
+
+        if (!isPrevComplete) return false;
+
+        // Case A: next line keyword se start
+        if (nextWord && DECL_KEYWORDS.test(nextWord)) {
             return true;
         }
+
+        // Case B: next line `(`, `[`, `` ` `` se start (IIFE/array/template)
+        if (nextChar === '(' || nextChar === '[' || nextChar === '`') {
+            return true;
+        }
+
+        // Case C: next line `/` se start (regex) — sirf agar prev `)` nahi hai
+        if (nextChar === '/' && prevChar !== ')') {
+            return true;
+        }
+
+        // Case D: next line `+` ya `-` se start (unary)
+        if (nextChar === '+' || nextChar === '-') {
+            return true;
+        }
+
         return false;
     }
 
@@ -1226,7 +1251,7 @@ function safeInlineJs(code) {
         var ch = noComments[i];
         var nx = noComments[i + 1];
 
-        /* ── String / Template / Regex: verbatim copy ── */
+        /* ── Inside string/template/regex ── */
         if (state !== 'code') {
             out.push(ch);
             if (ch === '\\' && i + 1 < len) {
@@ -1250,32 +1275,39 @@ function safeInlineJs(code) {
             continue;
         }
 
-        /* ── NEWLINE — ASI-SAFE handling ── */
+        /* ── NEWLINE handling (ASI-safe) ── */
         if (ch === '\n' || ch === '\r') {
             var j = i + 1;
             while (j < len && /\s/.test(noComments[j])) j++;
             var nextCh = noComments[j] || '';
             var prevCh = lastSignificant;
 
+            // Peek next word (identifier/keyword)
+            var wordBuf = '';
+            var k = j;
+            while (k < len && isIdentChar(noComments[k])) {
+                wordBuf += noComments[k];
+                k++;
+            }
+
             if (prevCh && nextCh) {
-                /* Case A: ASI keyword ke baad → newline PRESERVE karo
-                   (return/throw/break/continue/yield/await) */
+                /* Case 1: ASI keyword ke baad → newline PRESERVE */
                 if (ASI_KEYWORDS.test(lastWord)) {
                     out.push('\n');
                 }
-                /* Case B: ASI hazard → semicolon insert */
-                else if (needSemicolonBeforeNewline(prevCh, nextCh)) {
+                /* Case 2: ASI hazard → semicolon insert */
+                else if (needSemicolonBeforeNewline(prevCh, nextCh, wordBuf)) {
                     out.push(';');
                 }
-                /* Case C: identifiers need space */
+                /* Case 3: identifiers need space */
                 else if (isIdentChar(prevCh) && isIdentChar(nextCh)) {
                     out.push(' ');
                 }
-                /* Case D: `+ +` / `- -` avoid */
+                /* Case 4: `+ +` / `- -` avoid */
                 else if ((prevCh === '+' || prevCh === '-') && prevCh === nextCh) {
                     out.push(' ');
                 }
-                /* Case E: baaki sab → single space */
+                /* Case 5: baaki sab → single space */
                 else {
                     out.push(' ');
                 }
@@ -1284,7 +1316,7 @@ function safeInlineJs(code) {
             continue;
         }
 
-        /* ── String start ── */
+        /* ── String starts ── */
         if (ch === "'" || ch === '"' || ch === '`') {
             state = ch === "'" ? 'single' : ch === '"' ? 'double' : 'template';
             out.push(ch);
@@ -1294,7 +1326,7 @@ function safeInlineJs(code) {
             continue;
         }
 
-        /* ── Regex detection (PROPER) ── */
+        /* ── Regex detection ── */
         if (ch === '/') {
             if (nx === '/' || nx === '*') {
                 i++;
