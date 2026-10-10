@@ -802,7 +802,7 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
             <div class="guide-step">
                 <div class="step-num">2</div>
                 <div class="step-title">Choose Options</div>
-                <div class="step-desc">Select Minify Code and Remove Comments. Inline mode is <strong>safe mode</strong> — no code loss.</div>
+                <div class="step-desc">Select Minify Code and Remove Comments. Safe mode is <strong>enabled by default</strong> — no code loss.</div>
             </div>
             <div class="guide-step">
                 <div class="step-num">3</div>
@@ -843,18 +843,11 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
 
     <div class="section">
         <label>⚙️ Options — Select What You Want</label>
-        <div class="options-grid">
 
-            <label class="option-box cyan-highlight" for="optInline">
-                <input type="checkbox" id="optInline">
-                <div class="opt-text">
-                    <div class="opt-title">
-                        <i class="fa-solid fa-code"></i> Inline JS (Safe Mode)
-                        <span class="rec-badge cyan">NO CODE LOSS</span>
-                    </div>
-                    <div class="opt-desc">Merge JS into single-line format. Comments auto-removed. <strong>Functions stay safe.</strong></div>
-                </div>
-            </label>
+        <!-- HIDDEN INLINE CHECKBOX — Logic safe rakhne ke liye -->
+        <input type="checkbox" id="optInline" style="display:none;">
+
+        <div class="options-grid">
 
             <label class="option-box recommended" for="optMinify">
                 <input type="checkbox" id="optMinify" checked>
@@ -873,7 +866,7 @@ button.cyan { background: linear-gradient(135deg, var(--cyan), #0099cc); }
                     <div class="opt-title">
                         <i class="fa-solid fa-broom"></i> Remove Comments
                     </div>
-                    <div class="opt-desc">Strip all comments from the output. (Auto-enabled when Inline is checked.)</div>
+                    <div class="opt-desc">Strip all comments from the output. (Auto-enabled when Minify is on.)</div>
                 </div>
             </label>
 
@@ -1017,29 +1010,19 @@ var UI = {
 
 /* ═══════════════════════════════════════════════════════════════
    DETECT INPUT TYPE
-   --------------------------------------------------------------------------
-   FIX: Ab sirf TOP-LEVEL HTML page detect hoga.
-   - Agar code <!DOCTYPE html> ya <html> se shuru hota hai → HTML page
-   - Agar code JavaScript hai (chahe usme HTML strings hon) → JS
-   Isse JS ke andar wale HTML strings ko touch nahi kiya jayega.
    ═══════════════════════════════════════════════════════════════ */
 function detectInputType(code) {
     if (!code || !code.trim()) return { type: 'empty' };
     var t = code.trim();
 
-    // Top-level HTML page check — sirf shuru se
     if (/^<!DOCTYPE\s+html/i.test(t)) return { type: 'html' };
     if (/^<html\b/i.test(t)) return { type: 'html' };
 
-    // Baaki sab JavaScript hai
     return { type: 'js' };
 }
 
 /* ═══════════════════════════════════════════════════════════════
    EXTRACT JS FROM HTML
-   --------------------------------------------------------------------------
-   Sirf <script> tags ke andar wala JS nikaalo.
-   <script src="..."> wale skip karo.
    ═══════════════════════════════════════════════════════════════ */
 function extractJsFromHtml(code) {
     if (!code) return '';
@@ -1172,7 +1155,6 @@ function stripJsComments(code) {
 
 /* ═══════════════════════════════════════════════════════════════
    SAFE INLINE JS — v8 FIXED
-   Sirf whitespace collapse karta hai. Koi semicolon force nahi.
    ═══════════════════════════════════════════════════════════════ */
 function safeInlineJs(code) {
     if (!code) return '';
@@ -1188,8 +1170,6 @@ function safeInlineJs(code) {
 
     var ASI_KEYWORDS = /^(return|throw|break|continue|yield|await)$/;
     var KEYWORDS_BEFORE_REGEX = /^(return|typeof|instanceof|in|of|new|delete|void|do|else|case|throw|yield|await)$/;
-
-    // ⭐ Naye keywords jo naya statement start karte hain
     var NEW_STATEMENT_KEYWORDS = /^(const|let|var|function|class|if|for|while|do|switch|try|catch|finally|throw|return|typeof|instanceof|new|delete|void|in|of|case|else|default|break|continue|yield|await|async|import|export|with|debugger)$/;
 
     function isIdentChar(c) { return /[A-Za-z0-9_$]/.test(c); }
@@ -1209,22 +1189,15 @@ function safeInlineJs(code) {
         return false;
     }
 
-    // ⭐ Check: prev statement complete hai?
     function isPrevComplete(prevChar) {
-        // Agar prev operator/punctuation hai jo continuation expect karta hai
         if (/[+\-*/%<>=!&|^~?:,;.([{]/.test(prevChar)) return false;
         return true;
     }
 
-    // ⭐ Check: next line naya statement start kar rahi hai?
     function isNewStatement(nextChar, nextWord) {
-        // Agar next keyword hai jo naya statement start karta hai
         if (nextWord && NEW_STATEMENT_KEYWORDS.test(nextWord)) return true;
-        // `(`, `[`, `` ` `` — ye ASI hazard hain
         if (nextChar === '(' || nextChar === '[' || nextChar === '`') return true;
-        // `/` — regex start ho sakta hai
         if (nextChar === '/' ) return true;
-        // `+`, `-` — unary operators
         if (nextChar === '+' || nextChar === '-') return true;
         return false;
     }
@@ -1233,7 +1206,6 @@ function safeInlineJs(code) {
         var ch = noComments[i];
         var nx = noComments[i + 1];
 
-        /* ── String / Template / Regex: verbatim copy ── */
         if (state !== 'code') {
             out.push(ch);
             if (ch === '\\' && i + 1 < len) {
@@ -1257,14 +1229,12 @@ function safeInlineJs(code) {
             continue;
         }
 
-        /* ── NEWLINE — ASI-safe handling ── */
         if (ch === '\n' || ch === '\r') {
             var j = i + 1;
             while (j < len && /\s/.test(noComments[j])) j++;
             var nextCh = noComments[j] || '';
             var prevCh = lastSignificant;
 
-            // Next word peek karo
             var wordBuf = '';
             var k = j;
             while (k < len && isIdentChar(noComments[k])) {
@@ -1273,23 +1243,18 @@ function safeInlineJs(code) {
             }
 
             if (prevCh && nextCh) {
-                /* Case 1: ASI keyword ke baad → newline PRESERVE */
                 if (ASI_KEYWORDS.test(lastWord)) {
                     out.push('\n');
                 }
-                /* Case 2: Previous statement complete + next naya statement → ; insert */
                 else if (isPrevComplete(prevCh) && isNewStatement(nextCh, wordBuf)) {
                     out.push(';');
                 }
-                /* Case 3: Do identifiers → space zaroori */
                 else if (isIdentChar(prevCh) && isIdentChar(nextCh)) {
                     out.push(' ');
                 }
-                /* Case 4: `+ +` / `- -` avoid */
                 else if ((prevCh === '+' || prevCh === '-') && prevCh === nextCh) {
                     out.push(' ');
                 }
-                /* Case 5: Baaki sab → single space */
                 else {
                     out.push(' ');
                 }
@@ -1298,7 +1263,6 @@ function safeInlineJs(code) {
             continue;
         }
 
-        /* ── String start ── */
         if (ch === "'" || ch === '"' || ch === '`') {
             state = ch === "'" ? 'single' : ch === '"' ? 'double' : 'template';
             out.push(ch);
@@ -1308,7 +1272,6 @@ function safeInlineJs(code) {
             continue;
         }
 
-        /* ── Regex detection ── */
         if (ch === '/') {
             if (nx === '/' || nx === '*') {
                 i++;
@@ -1323,7 +1286,6 @@ function safeInlineJs(code) {
             }
         }
 
-        /* ── Whitespace collapse ── */
         if (/\s/.test(ch)) {
             var j2 = i + 1;
             while (j2 < len && /\s/.test(noComments[j2])) j2++;
@@ -1336,7 +1298,6 @@ function safeInlineJs(code) {
             continue;
         }
 
-        /* ── Normal character ── */
         out.push(ch);
         if (isIdentChar(ch)) {
             lastWord = (lastWord + ch).slice(-30);
@@ -1823,7 +1784,7 @@ function fallbackCopy(text) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   INLINE ↔ COMMENTS BINDING
+   INLINE ↔ COMMENTS BINDING (SAFE — null-checked)
    ═══════════════════════════════════════════════════════════════ */
 function bindInlineToggle() {
     var inlineChk = STATE.dom.optInline;
@@ -1832,24 +1793,19 @@ function bindInlineToggle() {
 
     if (!inlineChk) return;
 
-    // ═══ INLINE CHANGE — Minify ko uncheck karo ═══
     inlineChk.addEventListener('change', function() {
         if (inlineChk.checked) {
-            // Inline ON → Minify OFF, Comments ON + disabled
             if (hintsChk) { hintsChk.checked = true; hintsChk.disabled = true; }
             if (minifyChk) { minifyChk.checked = false; minifyChk.disabled = true; }
         } else {
-            // Inline OFF → Minify ON + enabled, Comments enabled
             if (hintsChk) { hintsChk.disabled = false; }
             if (minifyChk) { minifyChk.disabled = false; minifyChk.checked = true; }
         }
     });
 
-    // ═══ MINIFY CHANGE — Inline ko uncheck karo ═══
     if (minifyChk) {
         minifyChk.addEventListener('change', function() {
             if (minifyChk.checked) {
-                // Minify ON → Inline OFF + enabled, Comments enabled
                 if (inlineChk) { inlineChk.checked = false; inlineChk.disabled = false; }
                 if (hintsChk) { hintsChk.disabled = false; }
             }
