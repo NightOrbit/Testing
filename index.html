@@ -1,1011 +1,3500 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>NightOrbit CodeForge — Enterprise Security Platform</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
- <noscript>
-    <meta http-equiv="refresh" content="0;url=https://mymarketbaazar.web.app/legal-enforcement.html">
-    <style>body{display:none!important;}</style>
-</noscript>
-    
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0b0b1a">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="robots" content="noindex, nofollow">
-    <meta name="description" content="NightOrbit CodeForge — Sign in to continue">
-    <title>NightOrbit CodeForge — Login</title>
+<style>
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+:root {
+    --bg: #000000;
+    --bg-soft: #050505;
+    --bg-panel: #0a0a0a;
+    --bg-elevated: #101010;
+    --border: #1a1a1a;
+    --border-hover: #2a2a2a;
+    --text: #ffffff;
+    --text-secondary: #a8a8a8;
+    --text-muted: #5a5a5a;
+    --accent: #00e5ff;
+    --accent-dim: rgba(0,229,255,0.12);
+    --accent-glow: rgba(0,229,255,0.4);
+    --success: #00ff88;
+    --danger: #ff3355;
+    --nav-h: 64px;
+}
 
-    <noscript>
-        <div style="color:#fff;text-align:center;padding:50px;font-family:sans-serif;background:#0b0b1a;min-height:100vh;">
-            <h1 style="color:#00f0ff;">⚠️ JavaScript Required</h1>
-            <p style="color:#b0b0d0;">Please enable JavaScript to use NightOrbit CodeForge.</p>
-        </div>
-    </noscript>
+html { scroll-behavior: smooth; }
 
-    <script>
-    (function() {
-        'use strict';
+html, body {
+    width: 100%;
+    max-width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
 
-        function isEditableElement(el) {
-            if (!el || !el.tagName) return false;
-            var tag = el.tagName.toLowerCase();
-            return tag === 'input' || tag === 'textarea' || tag === 'select' || el.isContentEditable;
-        }
+img, svg, video, canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
 
-        function blockKey(e) {
-            var key = e.key;
-            var code = e.keyCode;
-            var ctrl = e.ctrlKey;
-            var shift = e.shiftKey;
-            var alt = e.altKey;
-            var meta = e.metaKey;
-            var editable = isEditableElement(e.target);
+/* ═══════════════════════════════════════════════════════════
+   BACKGROUND
+   ═══════════════════════════════════════════════════════════ */
+.bg-grid {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+        linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at 50% 30%, black 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 30%, black 20%, transparent 75%);
+}
+.bg-orb {
+    position: fixed; border-radius: 50%;
+    filter: blur(120px); z-index: 0; pointer-events: none; opacity: 0.4;
+}
+.orb-1 {
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(0,229,255,0.22), transparent 70%);
+    top: -250px; left: -250px;
+    animation: orbFloat1 22s ease-in-out infinite;
+}
+.orb-2 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,255,136,0.12), transparent 70%);
+    bottom: 5%; right: -200px;
+    animation: orbFloat2 26s ease-in-out infinite;
+}
+@keyframes orbFloat1 {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(120px,100px) scale(1.15); }
+}
+@keyframes orbFloat2 {
+    0%,100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(-100px,-80px) scale(1.1); }
+}
 
-            if (key && key.startsWith('F') && key.length <= 3) {
-                var num = parseInt(key.replace('F', ''));
-                if (num >= 1 && num <= 12) {
-                    e.preventDefault(); e.stopPropagation();
-                    return false;
-                }
-            }
+/* ═══════════════════════════════════════════════════════════
+   NAV
+   ═══════════════════════════════════════════════════════════ */
+.top-nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 1000; height: var(--nav-h);
+    padding: 0 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-bottom: 1px solid var(--border);
+}
+.nav-brand {
+    display: flex; align-items: center; gap: 14px;
+    text-decoration: none; color: var(--text);
+    min-width: 0;
+}
+.nav-brand-mark {
+    width: 36px; height: 36px;
+    background: var(--accent); color: var(--bg);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    box-shadow: 0 0 20px var(--accent-glow);
+    flex-shrink: 0;
+}
+.nav-brand-text {
+    font-weight: 700; font-size: 15px; letter-spacing: -0.2px;
+    white-space: nowrap;
+}
+.nav-brand-text span {
+    color: var(--text-muted); font-weight: 400;
+    margin-left: 8px; font-size: 13px;
+}
 
-            if (key === 'F12' || code === 123) {
-                e.preventDefault(); e.stopPropagation();
-                return false;
-            }
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-links a {
+    padding: 8px 16px;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.15s ease;
+}
+.nav-links a:hover { color: var(--text); background: var(--bg-elevated); }
 
-            if (key === 'PrintScreen' || code === 44) {
-                e.preventDefault(); e.stopPropagation();
-                return false;
-            }
+.nav-actions {
+    display: flex; align-items: center; gap: 10px;
+    flex-shrink: 0;
+}
+.nav-btn {
+    padding: 9px 18px; border-radius: 8px;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: 1px solid var(--border);
+    background: transparent; color: var(--text-secondary);
+    font-family: inherit; text-decoration: none;
+    transition: all 0.15s ease;
+    display: inline-flex; align-items: center; gap: 8px;
+    white-space: nowrap;
+}
+.nav-btn:hover { color: var(--text); border-color: var(--border-hover); background: var(--bg-elevated); }
+.nav-btn.primary {
+    background: var(--accent); color: var(--bg);
+    border-color: var(--accent); font-weight: 700;
+    box-shadow: 0 0 20px var(--accent-dim);
+}
+.nav-btn.primary:hover { background: #33ebff; transform: translateY(-1px); box-shadow: 0 0 30px var(--accent-glow); }
 
-            if (key === 'Insert' || code === 45) {
-                e.preventDefault(); e.stopPropagation();
-                return false;
-            }
-            if (key === 'Home' || code === 36) {
-                e.preventDefault(); e.stopPropagation();
-                return false;
-            }
-            if (key === 'PageUp' || key === 'PageDown' || code === 33 || code === 34) {
-                e.preventDefault(); e.stopPropagation();
-                return false;
-            }
+/* ═══════════════════════════════════════════════════════════
+   PAGE + CONTAINER
+   ═══════════════════════════════════════════════════════════ */
+.page { position: relative; z-index: 2; padding-top: var(--nav-h); }
+.container {
+    width: 100%; max-width: 1400px;
+    margin: 0 auto; padding: 0 40px;
+}
 
-            if (ctrl) {
-                var c = key ? key.toUpperCase() : '';
-                if (editable && ['V', 'C', 'A', 'X', 'Z', 'Y'].includes(c)) {
-                    return true;
-                }
-                if (c.length === 1 && c >= 'A' && c <= 'Z') {
-                    e.preventDefault(); e.stopPropagation();
-                    return false;
-                }
-                if (c >= '0' && c <= '9') {
-                    e.preventDefault(); e.stopPropagation();
-                    return false;
-                }
-                if (['`', '-', '=', '[', ']', '\\', ';', "'", ',', '.', '/'].includes(key)) {
-                    e.preventDefault(); e.stopPropagation();
-                    return false;
-                }
-            }
+/* ═══════════════════════════════════════════════════════════
+   HERO
+   ═══════════════════════════════════════════════════════════ */
+.hero {
+    padding: 80px 0;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    min-height: calc(100vh - var(--nav-h));
+}
+.hero-left { animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) both; min-width: 0; }
 
-            if (ctrl && shift) {
-                var c = key ? key.toUpperCase() : '';
-                if (c.length === 1 && c >= 'A' && c <= 'Z') {
-                    e.preventDefault(); e.stopPropagation();
-                    return false;
-                }
-            }
+.hero-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 8px 16px; background: var(--accent-dim);
+    border: 1px solid var(--accent); border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 32px;
+    white-space: nowrap;
+}
+.hero-badge .dot {
+    width: 6px; height: 6px; background: var(--success);
+    border-radius: 50%; box-shadow: 0 0 10px var(--success);
+    animation: pulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+}
+@keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+}
 
-            if (alt) {
-                var c = key ? key.toUpperCase() : '';
-                if (c.length === 1 && c >= 'A' && c <= 'Z') {
-                    e.preventDefault(); e.stopPropagation();
-                    return false;
-                }
-                if (key === 'F4' || code === 115) {
-                    e.preventDefault(); e.stopPropagation();
-                    return false;
-                }
-            }
+.hero-title {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 800; line-height: 1.05;
+    letter-spacing: -2px; margin-bottom: 24px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+.hero-title .accent {
+    background: linear-gradient(135deg, var(--accent), #00ff88);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.hero-title .dim { color: var(--text-muted); }
 
-            if (meta) {
-                var c = key ? key.toUpperCase() : '';
-                if (editable && ['V', 'C', 'A', 'X', 'Z'].includes(c)) {
-                    return true;
-                }
-                if (c.length === 1 && c >= 'A' && c <= 'Z') {
-                    e.preventDefault(); e.stopPropagation();
-                    return false;
-                }
-            }
+.hero-desc {
+    font-size: 17px; line-height: 1.7;
+    color: var(--text-secondary);
+    max-width: 520px; margin-bottom: 40px;
+    overflow-wrap: break-word;
+}
 
-            if (key === 'Backspace' && !editable) {
-                e.preventDefault(); e.stopPropagation();
-                return false;
-            }
+.hero-features {
+    display: flex; flex-direction: column;
+    border-top: 1px solid var(--border);
+    max-width: 520px;
+}
+.hero-feature {
+    display: flex; align-items: center; gap: 16px;
+    padding: 18px 0; border-bottom: 1px solid var(--border);
+}
+.hero-feature i {
+    width: 36px; height: 36px;
+    border: 1px solid var(--border-hover);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent); font-size: 14px;
+    flex-shrink: 0; background: var(--bg-panel);
+}
+.hero-feature-text { flex: 1; min-width: 0; }
+.hero-feature-title {
+    font-size: 14px; font-weight: 600;
+    color: var(--text); margin-bottom: 3px;
+}
+.hero-feature-desc {
+    font-size: 12.5px; color: var(--text-muted);
+    line-height: 1.5;
+    overflow-wrap: break-word;
+}
 
-            if (key === 'Tab' && !editable) {
-                e.preventDefault(); e.stopPropagation();
-                return false;
-            }
+.hero-right { animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.2s both; min-width: 0; }
+.login-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 20px; padding: 44px 36px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
+    position: relative; overflow: hidden;
+    max-width: 460px; margin: 0 auto;
+}
+.login-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.6;
+}
+.card-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--accent);
+    letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+}
+.card-eyebrow::before { content: ''; width: 16px; height: 1px; background: var(--accent); }
+.card-title {
+    font-size: 28px; font-weight: 800;
+    letter-spacing: -0.8px; margin-bottom: 10px; line-height: 1.15;
+}
+.card-sub {
+    font-size: 14px; color: var(--text-secondary);
+    line-height: 1.6; margin-bottom: 32px;
+}
+.btn {
+    width: 100%; padding: 14px 20px;
+    border-radius: 10px; font-weight: 600; font-size: 14px;
+    cursor: pointer; transition: all 0.2s ease;
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; border: 1px solid transparent;
+    font-family: inherit; text-decoration: none;
+}
+.btn:active { transform: scale(0.98); }
+.btn-primary {
+    background: var(--text); color: var(--bg); margin-bottom: 12px;
+}
+.btn-primary:hover { background: #e5e5e5; transform: translateY(-1px); }
+.btn-primary img { width: 18px; height: 18px; flex-shrink: 0; }
+.btn-outline {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text-secondary); font-size: 13px;
+}
+.btn-outline:hover { border-color: var(--border-hover); color: var(--text); background: var(--bg-elevated); }
+.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.divider { display: flex; align-items: center; gap: 12px; margin: 28px 0; }
+.divider-line { flex: 1; height: 1px; background: var(--border); }
+.divider-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--text-muted);
+    letter-spacing: 1px; text-transform: uppercase;
+}
+.loader {
+    width: 28px; height: 28px;
+    border: 2px solid var(--border);
+    border-top-color: var(--text);
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    margin: 0 auto 20px; display: none;
+}
+.loader.show { display: block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.status-box {
+    margin-top: 16px; padding: 12px 14px;
+    border-radius: 8px; font-size: 12.5px;
+    display: none; line-height: 1.5; border: 1px solid;
+}
+.status-box.show { display: block; animation: fadeUp 0.3s ease; }
+.status-box.success { background: rgba(0,255,136,0.05); border-color: rgba(0,255,136,0.3); color: var(--success); }
+.status-box.error { background: rgba(255,51,85,0.05); border-color: rgba(255,51,85,0.3); color: var(--danger); }
+.status-box.loading { background: var(--accent-dim); border-color: rgba(0,229,255,0.3); color: var(--accent); }
+.user-info {
+    display: none; margin-top: 20px; padding: 4px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+.user-info.show { display: block; }
+.user-info .row {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 10px; padding: 10px 0;
+    border-bottom: 1px solid var(--border); font-size: 12px;
+}
+.user-info .row:last-child { border-bottom: none; }
+.user-info .label {
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px;
+}
+.user-info .value {
+    color: var(--text); font-weight: 500;
+    text-align: right; word-break: break-all; font-size: 12px;
+}
+.trust-row {
+    display: flex; justify-content: center; gap: 20px;
+    margin-top: 24px; padding-top: 20px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+.trust-item {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--text-muted);
+    letter-spacing: 0.5px; text-transform: uppercase;
+}
+.trust-item i { font-size: 10px; opacity: 0.6; }
+@keyframes fadeUp {
+    0% { opacity: 0; transform: translateY(24px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
 
-            return true;
-        }
+/* ═══════════════════════════════════════════════════════════
+   STATS BAR
+   ═══════════════════════════════════════════════════════════ */
+.stats-bar {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: var(--border);
+    border: 1px solid var(--border); border-radius: 16px;
+    overflow: hidden; margin: 0 0 100px;
+}
+.stat-cell {
+    background: var(--bg-panel);
+    padding: 36px 24px; text-align: center;
+    transition: background 0.2s ease;
+}
+.stat-cell:hover { background: var(--bg-elevated); }
+.stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px; font-weight: 700;
+    color: var(--accent); margin-bottom: 8px; letter-spacing: -1px;
+}
+.stat-label {
+    font-size: 11px; color: var(--text-muted);
+    letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600;
+}
 
-        document.addEventListener('keydown', blockKey, { capture: true, passive: false });
-        window.addEventListener('keydown', blockKey, { capture: true, passive: false });
+/* ═══════════════════════════════════════════════════════════
+   SECTION
+   ═══════════════════════════════════════════════════════════ */
+.section {
+    padding: 100px 0;
+    border-top: 1px solid var(--border);
+    position: relative;
+}
+.section-head {
+    text-align: center; margin-bottom: 64px;
+}
+.section-head .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 3px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 16px;
+}
+.section-head h2 {
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 800; letter-spacing: -1.8px;
+    line-height: 1.05; margin-bottom: 16px;
+}
+.section-head h2 .dim { color: var(--text-muted); }
+.section-head p {
+    font-size: 16px; color: var(--text-secondary);
+    max-width: 640px; margin: 0 auto; line-height: 1.7;
+}
 
-        document.addEventListener('contextmenu', function(e) {
-            if (isEditableElement(e.target)) return true;
-            e.preventDefault(); e.stopPropagation();
-            return false;
-        }, { capture: true });
+/* TOOLS */
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+}
+.tool-card {
+    padding: 36px 32px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-soft);
+    transition: all 0.3s ease;
+    position: relative; overflow: hidden;
+    text-decoration: none; color: inherit; display: block;
+    opacity: 0; transform: translateY(20px);
+}
+.tool-card.visible {
+    opacity: 1; transform: translateY(0);
+    transition: all 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.tool-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.3s ease;
+}
+.tool-card:hover { background: var(--bg-panel); }
+.tool-card:hover::before { opacity: 1; }
+.tool-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--accent-dim); border: 1px solid var(--accent);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 20px;
+}
+.tool-name {
+    font-size: 17px; font-weight: 700;
+    color: var(--text); margin-bottom: 10px; letter-spacing: -0.3px;
+}
+.tool-desc {
+    font-size: 13.5px; color: var(--text-secondary);
+    line-height: 1.65;
+}
+.tool-arrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 1px; text-transform: uppercase;
+    font-weight: 600; transition: gap 0.2s ease;
+}
+.tool-card:hover .tool-arrow { gap: 12px; }
 
-        try {
-            window.console.clear = function() {};
-        } catch(e) {}
+/* SHIELD */
+.shield-section {
+    padding: 100px 0;
+    border-top: 1px solid var(--border);
+    position: relative; overflow: hidden;
+}
+.shield-section::before {
+    content: ''; position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 1200px; height: 600px;
+    background: radial-gradient(circle, rgba(0,229,255,0.08), transparent 70%);
+    pointer-events: none;
+}
+.shield-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: center; position: relative; z-index: 1;
+}
+.shield-content { min-width: 0; }
+.shield-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 3px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 20px;
+}
+.shield-content h2 {
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800; letter-spacing: -1.5px;
+    line-height: 1.1; margin-bottom: 20px;
+}
+.shield-content h2 .accent {
+    background: linear-gradient(135deg, var(--accent), #00ff88);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.shield-content p {
+    font-size: 16px; color: var(--text-secondary);
+    line-height: 1.7; margin-bottom: 32px;
+}
+.shield-list {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.shield-item {
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+    transition: all 0.2s ease;
+}
+.shield-item:hover {
+    border-color: var(--accent); background: var(--bg-elevated);
+    transform: translateX(4px);
+}
+.shield-item i { color: var(--accent); font-size: 14px; flex-shrink: 0; }
+.shield-item span {
+    font-size: 12.5px; color: var(--text-secondary); font-weight: 500;
+}
+.shield-visual {
+    background: #030303; border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; line-height: 1.9;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,229,255,0.05);
+    position: relative; overflow: hidden;
+    min-width: 0;
+}
+.shield-visual::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.6;
+}
+.shield-visual .mock-line {
+    color: var(--text-secondary);
+    display: flex; gap: 12px; padding: 3px 0;
+    opacity: 0; animation: lineIn 0.5s ease forwards;
+}
+.shield-visual .mock-line:nth-child(1) { animation-delay: 0.1s; }
+.shield-visual .mock-line:nth-child(2) { animation-delay: 0.2s; }
+.shield-visual .mock-line:nth-child(3) { animation-delay: 0.3s; }
+.shield-visual .mock-line:nth-child(4) { animation-delay: 0.4s; }
+.shield-visual .mock-line:nth-child(5) { animation-delay: 0.5s; }
+.shield-visual .mock-line:nth-child(6) { animation-delay: 0.6s; }
+.shield-visual .mock-line:nth-child(7) { animation-delay: 0.7s; }
+.shield-visual .mock-line:nth-child(8) { animation-delay: 0.8s; }
+@keyframes lineIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+.shield-visual .ts { color: var(--text-muted); }
+.shield-visual .ok { color: var(--success); }
+.shield-visual .warn { color: var(--danger); }
+.shield-visual .info { color: var(--accent); }
+.shield-visual .dim { color: #4a5262; }
 
-        document.addEventListener('selectstart', function(e) {
-            if (isEditableElement(e.target)) return true;
-            e.preventDefault();
-            return false;
-        }, { capture: true });
+/* FEATURES */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+.feature-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px 28px;
+    transition: all 0.3s ease;
+    opacity: 0; transform: translateY(20px);
+}
+.feature-card.visible {
+    opacity: 1; transform: translateY(0);
+    transition: all 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.feature-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-4px); background: var(--bg-elevated);
+}
+.feature-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px; background: var(--accent-dim);
+    border: 1px solid var(--accent); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; margin-bottom: 20px;
+}
+.feature-title {
+    font-size: 17px; font-weight: 700;
+    color: var(--text); margin-bottom: 10px; letter-spacing: -0.3px;
+}
+.feature-desc {
+    font-size: 14px; color: var(--text-secondary); line-height: 1.7;
+}
 
-        document.addEventListener('dragstart', function(e) {
-            if (isEditableElement(e.target)) return true;
-            e.preventDefault();
-            return false;
-        }, { capture: true });
+/* WORKFLOW */
+.steps-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+.step-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px 28px;
+    transition: all 0.3s ease;
+    opacity: 0; transform: translateY(20px);
+}
+.step-card.visible {
+    opacity: 1; transform: translateY(0);
+    transition: all 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.step-card:hover {
+    border-color: var(--accent); background: var(--bg-elevated);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(0,229,255,0.08);
+}
+.step-num {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), #00ff88);
+    color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 900; font-size: 18px;
+    margin-bottom: 20px; box-shadow: 0 0 30px var(--accent-dim);
+}
+.step-title {
+    font-size: 16px; font-weight: 700;
+    color: var(--text); margin-bottom: 10px; letter-spacing: -0.2px;
+}
+.step-desc {
+    font-size: 13.5px; color: var(--text-secondary); line-height: 1.65;
+}
 
-        document.addEventListener('copy', function(e) {
-            if (isEditableElement(e.target)) return true;
-            e.preventDefault();
-            return false;
-        }, { capture: true });
+/* LAYERS */
+.layers-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+.layer-item {
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 18px;
+    display: flex; align-items: center; gap: 14px;
+    transition: all 0.2s ease;
+    opacity: 0; transform: translateY(15px);
+}
+.layer-item.visible {
+    opacity: 1; transform: translateY(0);
+    transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+.layer-item:hover {
+    border-color: var(--accent); background: var(--bg-elevated);
+    transform: translateX(4px);
+}
+.layer-num {
+    width: 32px; height: 32px;
+    border-radius: 8px; background: var(--accent-dim);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700; font-size: 12px; flex-shrink: 0;
+}
+.layer-name {
+    font-size: 13px; font-weight: 600;
+    color: var(--text-secondary); line-height: 1.4;
+}
+.layer-item:hover .layer-name { color: var(--text); }
 
-        document.addEventListener('cut', function(e) {
-            if (isEditableElement(e.target)) return true;
-            e.preventDefault();
-            return false;
-        }, { capture: true });
+/* COMPARE TABLE */
+.compare-table {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.compare-table table {
+    width: 100%; border-collapse: collapse;
+    font-size: 14px;
+    min-width: 560px;
+}
+.compare-table th {
+    background: var(--bg-soft);
+    padding: 20px 24px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+}
+.compare-table th:nth-child(2) { color: var(--danger); }
+.compare-table th:nth-child(3) { color: var(--success); }
+.compare-table td {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table tr:hover td { background: var(--bg-elevated); }
+.compare-table td:first-child {
+    color: var(--text); font-weight: 600;
+    font-size: 13.5px;
+}
+.compare-table td:nth-child(2) {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+}
+.compare-table td:nth-child(3) {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--accent);
+}
 
-        document.addEventListener('auxclick', function(e) {
-            if (e.button === 1) {
-                e.preventDefault(); e.stopPropagation();
-                return false;
-            }
-        }, { capture: true });
-    })();
-    </script>
+/* TESTIMONIALS */
+.testimonials-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+}
+.testimonial-card {
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px 28px;
+    transition: all 0.3s ease;
+    opacity: 0; transform: translateY(20px);
+}
+.testimonial-card.visible {
+    opacity: 1; transform: translateY(0);
+    transition: all 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.testimonial-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-4px); background: var(--bg-elevated);
+}
+.testimonial-quote {
+    font-size: 15px;
+    color: var(--text); line-height: 1.7;
+    margin-bottom: 24px;
+    font-style: italic;
+}
+.testimonial-quote::before { content: '"'; color: var(--accent); font-size: 24px; }
+.testimonial-quote::after { content: '"'; color: var(--accent); font-size: 24px; }
+.testimonial-author {
+    display: flex; align-items: center; gap: 12px;
+    padding-top: 20px; border-top: 1px solid var(--border);
+}
+.testimonial-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #00ff88);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--bg); font-weight: 800; font-size: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+}
+.testimonial-name {
+    font-size: 13.5px; font-weight: 600; color: var(--text);
+}
+.testimonial-role {
+    font-size: 11.5px; color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.5px;
+}
 
-    <script>
-    (function() {
-        if (window.location.hostname.includes('firebaseapp.com')) {
-            var newUrl = window.location.href.replace('firebaseapp.com', 'web.app');
-            window.location.replace(newUrl);
-        }
-    })();
-    </script>
+/* PRICING */
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+.pricing-card {
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: 16px; padding: 36px 32px;
+    position: relative;
+    transition: all 0.3s ease;
+    opacity: 0; transform: translateY(20px);
+}
+.pricing-card.visible {
+    opacity: 1; transform: translateY(0);
+    transition: all 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.pricing-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-4px);
+}
+.pricing-card.featured {
+    border-color: var(--accent);
+    box-shadow: 0 0 60px rgba(0,229,255,0.1);
+}
+.pricing-tag {
+    position: absolute; top: 20px; right: 20px;
+    padding: 4px 10px; border-radius: 100px;
+    background: var(--accent); color: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+}
+.pricing-name {
+    font-size: 18px; font-weight: 700;
+    color: var(--text); margin-bottom: 8px;
+}
+.pricing-desc {
+    font-size: 13px; color: var(--text-muted);
+    line-height: 1.6; margin-bottom: 24px;
+    min-height: 40px;
+}
+.pricing-price {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 40px; font-weight: 800;
+    color: var(--text);
+    letter-spacing: -2px; margin-bottom: 6px;
+}
+.pricing-period {
+    font-size: 12px; color: var(--text-muted);
+    margin-bottom: 24px;
+}
+.pricing-features {
+    list-style: none;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    display: flex; flex-direction: column; gap: 12px;
+}
+.pricing-features li {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: var(--text-secondary);
+}
+.pricing-features li i {
+    color: var(--accent); font-size: 12px; flex-shrink: 0;
+}
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+/* INTEGRATIONS */
+.integrations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+}
+.integration-item {
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 18px;
+    text-align: center;
+    transition: all 0.3s ease;
+    opacity: 0; transform: translateY(15px);
+}
+.integration-item.visible {
+    opacity: 1; transform: translateY(0);
+    transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+.integration-item:hover {
+    border-color: var(--accent); background: var(--bg-elevated);
+    transform: translateY(-3px);
+}
+.integration-item i {
+    font-size: 26px; color: var(--accent);
+    margin-bottom: 12px;
+}
+.integration-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+}
+.integration-item:hover .integration-name { color: var(--text); }
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+/* TRUST STRIP */
+.trust-strip {
+    padding: 60px 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
+.trust-strip .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-muted);
+    letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 32px;
+}
+.trust-badges {
+    display: flex; justify-content: center;
+    align-items: center; gap: 48px;
+    flex-wrap: wrap; opacity: 0.6;
+}
+.trust-badges .badge-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: var(--text-secondary);
+    letter-spacing: 2px; font-weight: 700;
+    display: flex; align-items: center; gap: 10px;
+}
 
-    <style>
-    *, *::before, *::after {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
-    }
+/* FAQ */
+.faq-list {
+    max-width: 900px; margin: 0 auto;
+    display: flex; flex-direction: column;
+    border-top: 1px solid var(--border);
+}
+.faq-item {
+    border-bottom: 1px solid var(--border);
+    padding: 24px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    opacity: 0; transform: translateY(15px);
+}
+.faq-item.visible {
+    opacity: 1; transform: translateY(0);
+    transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+.faq-item:hover { padding-left: 8px; }
+.faq-q {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 20px;
+    font-size: 16px; font-weight: 600;
+    color: var(--text); letter-spacing: -0.2px;
+}
+.faq-q i {
+    color: var(--accent);
+    transition: transform 0.3s ease;
+    flex-shrink: 0; font-size: 14px;
+}
+.faq-item.open .faq-q i { transform: rotate(45deg); }
+.faq-a {
+    font-size: 14.5px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.5s ease, padding 0.5s ease;
+    padding: 0;
+}
+.faq-item.open .faq-a {
+    max-height: 500px;
+    padding-top: 16px;
+}
+.faq-a code {
+    background: var(--bg-elevated);
+    padding: 2px 6px; border-radius: 4px;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+}
 
-    :root {
-        --neon-cyan: #00f0ff;
-        --neon-pink: #ff2d95;
-        --neon-purple: #b400ff;
-        --neon-gold: #ffd700;
-        --dark-bg: #0b0b1a;
-        --card-bg: rgba(11, 11, 26, 0.88);
-        --glass-border: rgba(0, 240, 255, 0.15);
-        --text-primary: #ffffff;
-        --text-secondary: #b0b0d0;
-        --text-muted: #6a6a8a;
-        --radius-xl: 30px;
-        --radius-lg: 22px;
-        --radius-md: 16px;
-        --radius-sm: 10px;
-    }
+/* CHANGELOG */
+.changelog-list {
+    max-width: 800px; margin: 0 auto;
+    display: flex; flex-direction: column;
+    gap: 24px;
+}
+.changelog-item {
+    display: flex; gap: 24px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    opacity: 0; transform: translateY(15px);
+}
+.changelog-item.visible {
+    opacity: 1; transform: translateY(0);
+    transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+.changelog-version {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; font-weight: 700;
+    color: var(--accent);
+    min-width: 80px; flex-shrink: 0;
+    letter-spacing: 0.5px;
+}
+.changelog-content { flex: 1; min-width: 0; }
+.changelog-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-muted);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.changelog-text {
+    font-size: 14px; color: var(--text-secondary);
+    line-height: 1.7;
+}
+.changelog-text b { color: var(--text); font-weight: 600; }
 
-    html, body {
-        width: 100%;
-        min-height: 100vh;
-        background: radial-gradient(circle at 50% 30%, #0b0b1a 0%, #000 100%);
-        font-family: 'Inter', 'Segoe UI', sans-serif;
-        color: var(--text-primary);
-        overflow-x: hidden;
-        overflow-y: auto;
-        -webkit-font-smoothing: antialiased;
-    }
+/* CTA */
+.cta-section {
+    padding: 120px 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    position: relative; overflow: hidden;
+}
+.cta-section::before {
+    content: ''; position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 900px; height: 500px;
+    background: radial-gradient(circle, var(--accent-dim), transparent 70%);
+    pointer-events: none; opacity: 0.6;
+}
+.cta-title {
+    font-size: clamp(32px, 5vw, 64px);
+    font-weight: 800; letter-spacing: -2.5px;
+    line-height: 1.05; margin-bottom: 20px;
+    position: relative;
+}
+.cta-desc {
+    font-size: 17px; color: var(--text-secondary);
+    max-width: 560px; margin: 0 auto 40px;
+    line-height: 1.7; position: relative;
+}
+.cta-actions {
+    display: flex; gap: 12px; justify-content: center;
+    flex-wrap: wrap; position: relative;
+}
+.btn-hero {
+    padding: 16px 32px; border-radius: 10px;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer; border: 1px solid transparent;
+    font-family: inherit; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 10px;
+    transition: all 0.2s ease;
+}
+.btn-hero.primary {
+    background: var(--accent); color: var(--bg);
+    box-shadow: 0 0 40px var(--accent-dim);
+}
+.btn-hero.primary:hover {
+    background: #33ebff; transform: translateY(-3px);
+    box-shadow: 0 15px 50px var(--accent-glow);
+}
+.btn-hero.secondary {
+    background: transparent;
+    border-color: var(--border-hover); color: var(--text);
+}
+.btn-hero.secondary:hover {
+    border-color: var(--accent); color: var(--accent);
+    transform: translateY(-3px);
+}
 
-    #particles-canvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-        pointer-events: none;
-    }
+/* FOOTER */
+.footer {
+    padding: 80px 40px 40px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
+.footer-brand {
+    display: inline-flex; align-items: center; gap: 12px;
+    margin-bottom: 32px;
+}
+.footer-brand-mark {
+    width: 40px; height: 40px;
+    background: var(--accent); color: var(--bg);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+}
+.footer-brand-text {
+    text-align: left;
+}
+.footer-brand-name {
+    font-weight: 700; font-size: 15px;
+}
+.footer-brand-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--text-muted);
+    letter-spacing: 2px; margin-top: 2px;
+}
+.footer-links {
+    display: flex; justify-content: center;
+    gap: 32px; flex-wrap: wrap;
+    margin-bottom: 32px;
+}
+.footer-links a {
+    font-size: 13px; color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+.footer-links a:hover { color: var(--accent); }
+.footer-copy {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-muted);
+    letter-spacing: 1px; line-height: 2;
+}
+.footer-copy b { color: var(--accent); }
 
-    .page-wrapper {
-        position: relative;
-        z-index: 1;
-        width: 100%;
-        min-height: 100vh;
-        display: flex;
-        align-items: stretch;
-        justify-content: stretch;
-        padding: 0;
-    }
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE — TABLET (max 1023px)
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 1023px) {
+    .nav-links { display: none; }
+    .nav-brand-text span { display: none; }
 
-    .login-card {
-        position: relative;
-        width: 100%;
-        min-height: 100vh;
-        background: var(--card-bg);
-        backdrop-filter: blur(40px) saturate(1.6);
-        -webkit-backdrop-filter: blur(40px) saturate(1.6);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 60px 40px;
+    .hero {
+        grid-template-columns: 1fr;
         gap: 40px;
-    }
-
-    .login-card::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-image:
-            linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-        background-size: 50px 50px;
-        pointer-events: none;
-        z-index: 0;
-    }
-
-    .login-card::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background:
-            radial-gradient(circle at 15% 20%, rgba(0, 240, 255, 0.06), transparent 40%),
-            radial-gradient(circle at 85% 80%, rgba(180, 0, 255, 0.06), transparent 40%);
-        pointer-events: none;
-        z-index: 0;
-    }
-
-    .card-left {
-        position: relative;
-        z-index: 1;
-        width: 100%;
-        max-width: 800px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .card-right {
-        position: relative;
-        z-index: 1;
-        width: 100%;
-        max-width: 500px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .logo-wrap {
-        text-align: center;
-        margin-bottom: 25px;
-        animation: floatY 6s ease-in-out infinite;
-    }
-
-    @keyframes floatY {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-8px); }
-    }
-
-    .logo-box {
-        width: 110px;
-        height: 110px;
-        margin: 0 auto 20px;
-        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
-        border-radius: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 54px;
-        font-weight: 900;
-        color: #000;
-        font-family: 'Orbitron', sans-serif;
-        box-shadow: 0 0 60px rgba(0,240,255,0.4), inset 0 0 30px rgba(255,255,255,0.1);
-        animation: logoPulse 3s ease-in-out infinite;
-        position: relative;
-    }
-
-    .logo-box::after {
-        content: '✦';
-        position: absolute;
-        top: -12px;
-        right: -12px;
-        font-size: 26px;
-        color: var(--neon-gold);
-        animation: sparkle 2s ease-in-out infinite;
-    }
-
-    @keyframes logoPulse {
-        0%, 100% { box-shadow: 0 0 60px rgba(0,240,255,0.4), inset 0 0 30px rgba(255,255,255,0.1); }
-        50% { box-shadow: 0 0 100px rgba(0,240,255,0.7), inset 0 0 40px rgba(255,255,255,0.15); }
-    }
-
-    @keyframes sparkle {
-        0%, 100% { opacity: 0.3; transform: scale(0.8) rotate(0deg); }
-        50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
-    }
-
-    .brand-title {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 46px;
-        font-weight: 900;
-        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        letter-spacing: 8px;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        filter: drop-shadow(0 0 30px rgba(0,240,255,0.3));
-    }
-
-    .brand-subtitle {
-        font-size: 12px;
-        color: var(--text-muted);
-        letter-spacing: 8px;
-        text-transform: uppercase;
-        font-weight: 600;
-    }
-
-    .feature-list {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-        width: 100%;
-        max-width: 800px;
-        margin-top: 15px;
-    }
-
-    .feature-item {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        padding: 16px 20px;
-        background: rgba(0, 240, 255, 0.04);
-        border-radius: var(--radius-md);
-        border-left: 3px solid var(--neon-cyan);
-        font-size: 13px;
-        color: var(--text-secondary);
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-    }
-
-    .feature-item:hover {
-        background: rgba(0, 240, 255, 0.08);
-        transform: translateX(6px);
-        box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
-    }
-
-    .feature-item i {
-        color: var(--neon-cyan);
-        font-size: 18px;
-        width: 24px;
-        text-align: center;
-        flex-shrink: 0;
-    }
-
-    .login-panel {
-        width: 100%;
+        padding: 40px 0 60px;
+        min-height: auto;
         text-align: center;
     }
+    .hero-left { text-align: center; }
+    .hero-desc { margin-left: auto; margin-right: auto; }
+    .hero-features { margin: 0 auto; text-align: left; }
 
-    .panel-title {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 32px;
-        font-weight: 900;
-        color: var(--neon-gold);
-        letter-spacing: 5px;
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+    .shield-grid { grid-template-columns: 1fr; gap: 40px; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE — MOBILE (max 640px)
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+
+    /* NAV */
+    .top-nav {
+        padding: 0 14px;
+        height: 58px;
     }
-
-    .panel-subtitle {
-        font-size: 12px;
-        color: var(--text-muted);
-        letter-spacing: 5px;
-        margin-bottom: 35px;
-        text-transform: uppercase;
-    }
-
-    .btn {
-        width: 100%;
-        padding: 18px 24px;
-        border-radius: var(--radius-md);
-        font-weight: 700;
+    .nav-brand { gap: 8px; min-width: 0; flex-shrink: 1; }
+    .nav-brand-mark {
+        width: 30px; height: 30px;
         font-size: 14px;
-        cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        border: none;
-        font-family: inherit;
-        margin-bottom: 14px;
-        position: relative;
-        text-decoration: none;
     }
-
-    .btn:active { transform: scale(0.97); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-
-    .btn-google {
-        background: rgba(255, 255, 255, 0.04);
-        border: 1.5px solid rgba(255, 255, 255, 0.1);
-        color: #fff;
-        backdrop-filter: blur(10px);
-        font-size: 15px;
-        padding: 20px 24px;
+    .nav-brand-text {
+        font-size: 13px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
     }
-
-    .btn-google:hover {
-        background: rgba(0, 240, 255, 0.08);
-        border-color: var(--neon-cyan);
-        transform: translateY(-3px);
-        box-shadow: 0 10px 40px rgba(0, 240, 255, 0.3);
-    }
-
-    .btn-google img { width: 24px; height: 24px; flex-shrink: 0; }
-
-    .btn-about {
-        background: rgba(255, 215, 0, 0.06);
-        border: 1.5px solid rgba(255, 215, 0, 0.25);
-        color: var(--neon-gold);
-    }
-
-    .btn-about:hover {
-        background: rgba(255, 215, 0, 0.12);
-        border-color: var(--neon-gold);
-        transform: translateY(-3px);
-        box-shadow: 0 10px 40px rgba(255, 215, 0, 0.2);
-    }
-
-    .btn-how {
-        background: rgba(180, 0, 255, 0.06);
-        border: 1.5px solid rgba(180, 0, 255, 0.25);
-        color: var(--neon-purple);
-    }
-
-    .btn-how:hover {
-        background: rgba(180, 0, 255, 0.12);
-        border-color: var(--neon-purple);
-        transform: translateY(-3px);
-        box-shadow: 0 10px 40px rgba(180, 0, 255, 0.2);
-    }
-
-    .divider {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        margin: 22px 0;
-    }
-
-    .divider-line {
-        flex: 1;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(0,240,255,0.2), transparent);
-    }
-
-    .divider-icon {
-        color: var(--neon-cyan);
+    .nav-actions { gap: 6px; flex-shrink: 0; }
+    .nav-btn {
+        padding: 7px 11px;
         font-size: 12px;
-        opacity: 0.5;
+        min-width: 36px;
+        justify-content: center;
     }
+    .nav-btn .txt { display: none; }
+    .nav-btn i { font-size: 13px; }
 
-    .status-box {
-        margin-top: 18px;
-        padding: 14px 18px;
-        border-radius: var(--radius-sm);
-        font-size: 12px;
-        text-align: center;
-        display: none;
-        font-family: 'Courier New', monospace;
+    /* CONTAINER */
+    .container { padding: 0 16px; }
+
+    /* HERO */
+    .hero {
+        padding: 24px 0 40px;
+        gap: 28px;
+    }
+    .hero-badge {
+        font-size: 9px;
+        padding: 5px 12px;
+        letter-spacing: 0.8px;
+        gap: 6px;
+        margin-bottom: 20px;
+        max-width: 100%;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+    }
+    .hero-badge .dot { width: 5px; height: 5px; }
+    .hero-title {
+        font-size: clamp(26px, 9vw, 38px);
+        letter-spacing: -1px;
+        line-height: 1.1;
+        margin-bottom: 16px;
+        padding: 0 4px;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+    .hero-desc {
+        font-size: 13.5px;
+        line-height: 1.65;
+        margin-bottom: 24px;
+        padding: 0 4px;
+        max-width: 100%;
+    }
+    .hero-features {
+        border-top: 1px solid var(--border);
+        max-width: 100%;
+    }
+    .hero-feature {
+        padding: 14px 0;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    .hero-feature i {
+        width: 32px; height: 32px;
+        font-size: 13px;
+        margin-top: 2px;
+    }
+    .hero-feature-title {
+        font-size: 13px;
+        margin-bottom: 2px;
+        word-break: break-word;
+    }
+    .hero-feature-desc {
+        font-size: 11.5px;
         line-height: 1.5;
+        word-break: break-word;
     }
 
-    .status-box.show { display: block; animation: statusIn 0.3s ease; }
+    /* LOGIN CARD */
+    .login-card {
+        padding: 28px 20px;
+        border-radius: 16px;
+        max-width: 100%;
+    }
+    .card-title {
+        font-size: 22px;
+        letter-spacing: -0.5px;
+    }
+    .card-sub {
+        font-size: 13px;
+        margin-bottom: 22px;
+    }
+    .btn {
+        padding: 13px 16px;
+        font-size: 13px;
+    }
+    .btn-primary img { width: 16px; height: 16px; }
+    .btn-row { gap: 8px; }
+    .divider { margin: 22px 0; }
+    .trust-row { gap: 14px; }
+    .trust-item { font-size: 9px; }
 
-    @keyframes statusIn {
-        0% { opacity: 0; transform: translateY(-10px); }
-        100% { opacity: 1; transform: translateY(0); }
+    /* STATS BAR */
+    .stats-bar {
+        grid-template-columns: repeat(2, 1fr);
+        margin-bottom: 50px;
+    }
+    .stat-cell { padding: 20px 12px; }
+    .stat-value { font-size: 22px; }
+    .stat-label { font-size: 10px; }
+
+    /* SECTIONS */
+    .section {
+        padding: 50px 0;
+    }
+    .section-head {
+        margin-bottom: 32px;
+        padding: 0 8px;
+    }
+    .section-head .eyebrow {
+        font-size: 10px;
+        letter-spacing: 2px;
+    }
+    .section-head h2 {
+        font-size: clamp(22px, 7vw, 30px);
+        letter-spacing: -1px;
+    }
+    .section-head p {
+        font-size: 13.5px;
     }
 
-    .status-box.success {
-        background: rgba(0, 255, 100, 0.08);
-        border: 1.5px solid #00ff64;
-        color: #00ff64;
+    /* TOOLS */
+    .tools-grid {
+        grid-template-columns: 1fr;
+        border-radius: 14px;
     }
-
-    .status-box.error {
-        background: rgba(255, 0, 100, 0.08);
-        border: 1.5px solid #ff0064;
-        color: #ff0064;
+    .tool-card {
+        padding: 22px 18px;
     }
-
-    .status-box.loading {
-        background: rgba(255, 215, 0, 0.08);
-        border: 1.5px solid var(--neon-gold);
-        color: var(--neon-gold);
+    .tool-icon {
+        width: 40px; height: 40px;
+        font-size: 16px;
+        margin-bottom: 16px;
     }
+    .tool-name { font-size: 15.5px; }
+    .tool-desc { font-size: 13px; }
+    .tool-arrow { margin-top: 14px; }
 
-    .loader {
-        width: 44px;
-        height: 44px;
-        border: 4px solid rgba(0,240,255,0.15);
-        border-top: 4px solid var(--neon-cyan);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin: 0 auto 20px;
-        display: none;
-        box-shadow: 0 0 30px rgba(0,240,255,0.3);
+    /* SHIELD */
+    .shield-section { padding: 50px 0; }
+    .shield-grid { gap: 28px; }
+    .shield-eyebrow { font-size: 10px; letter-spacing: 2px; }
+    .shield-content h2 {
+        font-size: clamp(22px, 7vw, 30px);
+        letter-spacing: -1px;
     }
-
-    .loader.show { display: block; }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+    .shield-content p { font-size: 13.5px; }
+    .shield-list {
+        grid-template-columns: 1fr;
+        gap: 8px;
     }
-
-    .user-info {
-        display: none;
-        margin-top: 22px;
-        padding: 20px;
-        background: rgba(0, 240, 255, 0.04);
-        border-radius: var(--radius-md);
-        border: 1px solid rgba(0,240,255,0.15);
-        text-align: left;
-        animation: statusIn 0.4s ease;
-        max-height: 420px;
-        overflow-y: auto;
-    }
-
-    .user-info.show { display: block; }
-
-    .user-info::-webkit-scrollbar {
-        width: 6px;
-    }
-    .user-info::-webkit-scrollbar-track {
-        background: rgba(0,240,255,0.05);
-        border-radius: 3px;
-    }
-    .user-info::-webkit-scrollbar-thumb {
-        background: rgba(0,240,255,0.3);
-        border-radius: 3px;
-    }
-
-    .user-info .row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .shield-item {
+        padding: 11px 13px;
         gap: 10px;
-        padding: 9px 0;
-        border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .shield-item i { font-size: 12px; }
+    .shield-item span { font-size: 11.5px; }
+    .shield-visual {
+        padding: 16px;
+        font-size: 10.5px;
+        line-height: 1.8;
+        overflow-x: auto;
+    }
+    .shield-visual .mock-line {
+        gap: 8px;
+        font-size: 10px;
+        white-space: nowrap;
+    }
+
+    /* FEATURES */
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .feature-card { padding: 22px 18px; }
+    .feature-icon {
+        width: 42px; height: 42px;
+        font-size: 17px;
+        margin-bottom: 16px;
+    }
+    .feature-title { font-size: 15px; }
+    .feature-desc { font-size: 13px; }
+
+    /* WORKFLOW */
+    .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .step-card { padding: 22px 18px; }
+    .step-num {
+        width: 40px; height: 40px;
+        font-size: 16px;
+        margin-bottom: 16px;
+    }
+    .step-title { font-size: 15px; }
+    .step-desc { font-size: 12.5px; }
+
+    /* LAYERS */
+    .layers-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    .layer-item {
+        padding: 14px 14px;
+        gap: 12px;
+    }
+    .layer-num {
+        width: 28px; height: 28px;
+        font-size: 11px;
+    }
+    .layer-name { font-size: 12.5px; }
+
+    /* COMPARE TABLE */
+    .compare-table {
+        border-radius: 12px;
+    }
+    .compare-table table {
+        font-size: 12.5px;
+        min-width: 500px;
+    }
+    .compare-table th,
+    .compare-table td {
+        padding: 12px 14px;
+    }
+    .compare-table th { font-size: 10px; letter-spacing: 1.5px; }
+    .compare-table td:first-child { font-size: 12.5px; }
+    .compare-table td:nth-child(2),
+    .compare-table td:nth-child(3) { font-size: 11.5px; }
+
+    /* TESTIMONIALS */
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .testimonial-card { padding: 22px 18px; }
+    .testimonial-quote { font-size: 13.5px; }
+
+    /* PRICING */
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .pricing-card { padding: 24px 20px; }
+    .pricing-price { font-size: 32px; }
+    .pricing-name { font-size: 16px; }
+    .pricing-features li { font-size: 12.5px; }
+
+    /* INTEGRATIONS */
+    .integrations-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    .integration-item { padding: 16px 12px; }
+    .integration-item i { font-size: 22px; margin-bottom: 8px; }
+    .integration-name { font-size: 11px; }
+
+    /* TRUST STRIP */
+    .trust-strip { padding: 40px 0; }
+    .trust-strip .label { font-size: 10px; letter-spacing: 2px; margin-bottom: 24px; }
+    .trust-badges { gap: 20px; }
+    .trust-badges .badge-item { font-size: 11px; gap: 6px; }
+
+    /* FAQ */
+    .faq-item { padding: 18px 0; }
+    .faq-q { font-size: 14px; gap: 12px; }
+    .faq-q i { font-size: 13px; }
+    .faq-a { font-size: 13px; }
+
+    /* CHANGELOG */
+    .changelog-list { gap: 0; }
+    .changelog-item {
+        flex-direction: column;
+        gap: 6px;
+        padding: 18px 0;
+    }
+    .changelog-version {
+        font-size: 13px;
+        min-width: auto;
+    }
+    .changelog-date { font-size: 10px; }
+    .changelog-text { font-size: 13px; }
+
+    /* CTA */
+    .cta-section { padding: 60px 0; }
+    .cta-title {
+        font-size: clamp(26px, 8vw, 34px);
+        letter-spacing: -1px;
+    }
+    .cta-desc { font-size: 13.5px; margin-bottom: 28px; }
+    .cta-actions { gap: 10px; }
+    .btn-hero {
+        padding: 13px 22px;
+        font-size: 12.5px;
+    }
+
+    /* FOOTER */
+    .footer { padding: 40px 16px 30px; }
+    .footer-brand { margin-bottom: 24px; }
+    .footer-brand-mark { width: 36px; height: 36px; font-size: 16px; }
+    .footer-brand-name { font-size: 14px; }
+    .footer-brand-tag { font-size: 9px; letter-spacing: 1.5px; }
+    .footer-links {
+        gap: 14px 20px;
+        margin-bottom: 24px;
+    }
+    .footer-links a { font-size: 12px; }
+    .footer-copy { font-size: 10px; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE — VERY SMALL (max 380px)
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 380px) {
+    .top-nav { padding: 0 12px; }
+
+    .hero-title {
+        font-size: clamp(22px, 8.5vw, 30px);
+        letter-spacing: -0.6px;
+    }
+    .hero-badge {
+        font-size: 8px;
+        padding: 4px 10px;
+        letter-spacing: 0.6px;
+        gap: 5px;
+    }
+    .hero-desc { font-size: 12.5px; }
+    .hero-feature-title { font-size: 12px; }
+    .hero-feature-desc { font-size: 11px; }
+
+    .nav-brand-text { font-size: 12px; }
+    .nav-btn { padding: 6px 10px; min-width: 34px; }
+
+    .card-title { font-size: 19px; }
+    .card-sub { font-size: 12px; }
+    .btn { font-size: 12px; padding: 12px 14px; }
+
+    .stat-value { font-size: 19px; }
+    .stat-label { font-size: 9px; }
+
+    .section-head h2 { font-size: clamp(20px, 6.5vw, 26px); }
+
+    .tool-name, .feature-title, .step-title { font-size: 14.5px; }
+
+    .shield-content h2 { font-size: clamp(20px, 6.5vw, 26px); }
+    .shield-visual { font-size: 9.5px; padding: 12px; }
+    .shield-visual .mock-line { font-size: 9px; gap: 6px; }
+
+    .compare-table table { min-width: 460px; }
+    .compare-table th,
+    .compare-table td { padding: 10px 12px; }
+
+    .pricing-price { font-size: 28px; }
+
+    .cta-title { font-size: clamp(22px, 7vw, 30px); }
+    .btn-hero { font-size: 12px; padding: 12px 18px; }
+
+    .integrations-grid { gap: 8px; }
+    .integration-item { padding: 14px 10px; }
+    .integration-name { font-size: 10px; }
+}
+/* ═══════════════════════════════════════════════════════════
+   PRICING — Token-Based Model
+   ═══════════════════════════════════════════════════════════ */
+
+/* Pricing grid */
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 60px;
+}
+
+.pricing-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 32px;
+    position: relative;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    display: flex;
+    flex-direction: column;
+}
+.pricing-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.pricing-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-4px);
+    background: var(--bg-elevated);
+}
+.pricing-card.featured {
+    border-color: var(--accent);
+    box-shadow: 0 0 60px rgba(0,229,255,0.12);
+}
+.pricing-card.featured:hover {
+    box-shadow: 0 20px 80px rgba(0,229,255,0.2);
+}
+
+.pricing-tag {
+    position: absolute;
+    top: -10px;
+    right: 24px;
+    padding: 5px 14px;
+    border-radius: 100px;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 20px rgba(0,229,255,0.4);
+}
+
+.pricing-name {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+}
+
+.pricing-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    min-height: 42px;
+}
+
+.pricing-price {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 38px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -1.5px;
+    margin-bottom: 6px;
+    line-height: 1.1;
+}
+.pricing-card.featured .pricing-price {
+    color: var(--accent);
+}
+
+.pricing-period {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.5px;
+    margin-bottom: 24px;
+}
+
+.pricing-features {
+    list-style: none;
+    border-top: 1px solid var(--border);
+    padding-top: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    margin-bottom: 24px;
+}
+.pricing-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+.pricing-features li i {
+    color: var(--accent);
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-top: 3px;
+}
+.pricing-features li strong {
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* CTA buttons */
+.pricing-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 13px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    letter-spacing: 0.2px;
+}
+.pricing-cta.primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    box-shadow: 0 0 30px rgba(0,229,255,0.25);
+}
+.pricing-cta.primary:hover {
+    background: #33ebff;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 40px rgba(0,229,255,0.4);
+}
+.pricing-cta.outline {
+    background: transparent;
+    border-color: var(--border-hover);
+    color: var(--text);
+}
+.pricing-cta.outline:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,229,255,0.04);
+}
+
+.pricing-mini {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.3px;
+}
+.pricing-mini strong {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+/* ═══ Token Explainer Strip ═══ */
+.pricing-explainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 48px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.explainer-item {
+    background: var(--bg-soft);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: background 0.2s ease;
+}
+.explainer-item:hover {
+    background: var(--bg-panel);
+}
+.explainer-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(0,229,255,0.1);
+    border: 1px solid rgba(0,229,255,0.25);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+.explainer-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+.explainer-text strong {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.2px;
+}
+.explainer-text span {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* ═══ Token Packs Grid ═══ */
+.token-packs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 900px;
+    margin: 0 auto 40px;
+}
+.token-pack {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+}
+.token-pack:hover {
+    border-color: var(--accent);
+    background: var(--bg-elevated);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(0,229,255,0.1);
+}
+.token-pack.popular {
+    border-color: rgba(0,229,255,0.4);
+    background: rgba(0,229,255,0.03);
+}
+.pack-badge {
+    position: absolute;
+    top: -9px;
+    right: 14px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: var(--success);
+    color: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+.pack-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+.pack-tokens {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+}
+.pack-tokens span {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-left: 4px;
+    letter-spacing: 0.5px;
+}
+.pack-price {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 10px;
+}
+.pack-price .pkr {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+}
+.pack-price .usd {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+}
+.pack-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    letter-spacing: 0.3px;
+}
+
+/* ═══ Pricing Footer ═══ */
+.pricing-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 20px 24px;
+    background: rgba(0,229,255,0.04);
+    border: 1px solid rgba(0,229,255,0.15);
+    border-radius: 12px;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+.pricing-footer i {
+    color: var(--accent);
+    font-size: 18px;
+    flex-shrink: 0;
+}
+.pricing-footer span {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+.pricing-footer strong {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 900px) {
+    .pricing-explainer {
+        grid-template-columns: 1fr;
+    }
+    .explainer-item {
+        padding: 16px 20px;
+    }
+    .token-packs-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .pricing-footer {
+        flex-direction: column;
+        gap: 10px;
+        padding: 18px 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-bottom: 40px;
+    }
+    .pricing-card {
+        padding: 28px 22px;
+    }
+    .pricing-price {
+        font-size: 32px;
+    }
+    .pricing-name {
+        font-size: 17px;
+    }
+    .pricing-desc {
+        min-height: auto;
+    }
+    .pricing-features li {
+        font-size: 12.5px;
+    }
+    .pack-tokens {
+        font-size: 20px;
+    }
+    .pricing-footer span {
         font-size: 12px;
     }
-
-    .user-info .row:last-child { border-bottom: none; }
-
-    .user-info .label {
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-size: 10px;
-        font-weight: 600;
-        flex-shrink: 0;
-    }
-
-    .user-info .value {
-        color: var(--neon-cyan);
-        font-weight: 600;
-        text-align: right;
-        word-break: break-all;
-        font-size: 11px;
-    }
-
-    .section-title {
-        font-size: 10px;
-        color: var(--neon-gold);
-        text-transform: uppercase;
-        letter-spacing: 3px;
-        margin: 14px 0 8px;
-        padding-bottom: 6px;
-        border-bottom: 1px solid rgba(255, 215, 0, 0.15);
-        font-weight: 700;
-    }
-
-    .section-title:first-child { margin-top: 0; }
-
-    .footer {
-        text-align: center;
-        margin-top: 40px;
-        font-size: 11px;
-        color: #444;
-        letter-spacing: 3px;
-        line-height: 1.8;
-    }
-
-    .footer b { color: var(--neon-cyan); }
-
-    @media (max-width: 768px) {
-        .login-card {
-            padding: 40px 20px;
-            gap: 30px;
-        }
-        .brand-title { font-size: 32px; letter-spacing: 5px; }
-        .brand-subtitle { font-size: 10px; letter-spacing: 5px; }
-        .logo-box {
-            width: 90px;
-            height: 90px;
-            font-size: 44px;
-            border-radius: 24px;
-        }
-        .feature-list {
-            grid-template-columns: 1fr;
-        }
-        .panel-title { font-size: 26px; letter-spacing: 4px; }
-        .panel-subtitle { font-size: 11px; letter-spacing: 4px; margin-bottom: 28px; }
-        .btn { padding: 16px 20px; font-size: 13px; }
-        .btn-google { padding: 18px 20px; font-size: 14px; }
-        .btn-google img { width: 22px; height: 22px; }
-        .feature-item { padding: 14px 18px; font-size: 12px; }
-    }
-
-    @media (max-width: 480px) {
-        .login-card {
-            padding: 30px 16px;
-            gap: 25px;
-        }
-        .brand-title { font-size: 26px; letter-spacing: 3px; }
-        .brand-subtitle { font-size: 9px; letter-spacing: 4px; }
-        .logo-box {
-            width: 80px;
-            height: 80px;
-            font-size: 38px;
-            border-radius: 20px;
-            margin-bottom: 15px;
-        }
-        .panel-title { font-size: 22px; letter-spacing: 3px; }
-        .panel-subtitle { font-size: 10px; letter-spacing: 3px; margin-bottom: 24px; }
-        .btn { padding: 14px 18px; font-size: 12px; }
-        .btn-google { padding: 16px 18px; font-size: 13px; }
-        .btn-google img { width: 20px; height: 20px; }
-        .feature-item { padding: 12px 16px; font-size: 11px; gap: 12px; }
-        .feature-item i { font-size: 16px; width: 20px; }
-        .user-info { padding: 16px; max-height: 360px; }
-        .user-info .row { font-size: 11px; }
-        .user-info .label { font-size: 9px; }
-        .user-info .value { font-size: 10px; }
-        .footer { font-size: 9px; letter-spacing: 2px; margin-top: 30px; }
-    }
-
-    @media (max-width: 360px) {
-        .brand-title { font-size: 22px; letter-spacing: 2px; }
-        .brand-subtitle { font-size: 8px; letter-spacing: 3px; }
-        .logo-box {
-            width: 70px;
-            height: 70px;
-            font-size: 32px;
-            border-radius: 18px;
-        }
-        .panel-title { font-size: 18px; letter-spacing: 2px; }
-        .panel-subtitle { font-size: 9px; }
-        .btn { padding: 12px 16px; font-size: 11px; }
-        .btn-google { padding: 14px 16px; font-size: 12px; }
-        .btn-google img { width: 18px; height: 18px; }
-        .feature-item { padding: 10px 14px; font-size: 10px; gap: 10px; }
-        .feature-item i { font-size: 14px; width: 18px; }
-    }
-
-    @supports (padding: max(0px)) {
-        .login-card {
-            padding-top: max(40px, env(safe-area-inset-top));
-            padding-bottom: max(40px, env(safe-area-inset-bottom));
-            padding-left: max(20px, env(safe-area-inset-left));
-            padding-right: max(20px, env(safe-area-inset-right));
-        }
-    }
-    </style>
+}
+</style>
 </head>
 <body>
 
-    <canvas id="particles-canvas"></canvas>
+<div class="bg-grid"></div>
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
 
-    <div class="page-wrapper">
-        <div class="login-card">
+<nav class="top-nav">
+    <a href="#" class="nav-brand">
+        <div class="nav-brand-mark">N</div>
+        <div class="nav-brand-text">CodeForge <span>/ NightOrbit</span></div>
+    </a>
+    <div class="nav-links">
+        <a href="#tools">Tools</a>
+        <a href="#shield">Shields</a>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-actions">
+        <button class="nav-btn" id="navSignInBtn">
+            <i class="fa-brands fa-google"></i>
+            <span class="txt">Sign In</span>
+        </button>
+        <button class="nav-btn primary" id="navSignUpBtn">
+            <i class="fa-solid fa-user-plus"></i>
+            <span class="txt">Sign Up</span>
+        </button>
+    </div>
+</nav>
 
-            <div class="card-left">
-                <div class="logo-wrap">
-                    <div class="logo-box">N</div>
-                    <div class="brand-title">CodeForge</div>
-                    <div class="brand-subtitle">NightOrbit</div>
+<div class="page">
+
+    <!-- HERO -->
+    <div class="container">
+        <section class="hero">
+            <div class="hero-left">
+                <div class="hero-badge">
+                    <span class="dot"></span>
+                    All systems operational · v19.4
                 </div>
-
-                <div class="feature-list">
-                    <div class="feature-item">
+                <h1 class="hero-title">
+                    Enterprise tools.<br>
+                    <span class="accent">Built for scale.</span>
+                </h1>
+                <p class="hero-desc">
+                    A unified platform for building, securing, and deploying
+                    production-grade applications. Seven professional tools trusted by
+                    engineering teams in 40+ countries.
+                </p>
+                <div class="hero-features">
+                    <div class="hero-feature">
                         <i class="fa-solid fa-shield-halved"></i>
-                        <span>Enterprise-grade security shield</span>
+                        <div class="hero-feature-text">
+                            <div class="hero-feature-title">Bank-grade security</div>
+                            <div class="hero-feature-desc">AES-256 + HMAC · 600K PBKDF2 iterations</div>
+                        </div>
                     </div>
-                    <div class="feature-item">
+                    <div class="hero-feature">
                         <i class="fa-solid fa-bolt"></i>
-                        <span>Lightning fast performance</span>
+                        <div class="hero-feature-text">
+                            <div class="hero-feature-title">Zero-latency processing</div>
+                            <div class="hero-feature-desc">Everything runs in your browser — no uploads</div>
+                        </div>
                     </div>
-                    <div class="feature-item">
-                        <i class="fa-solid fa-lock"></i>
-                        <span>End-to-end encrypted data</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fa-solid fa-gem"></i>
-                        <span>Premium cyberpunk experience</span>
+                    <div class="hero-feature">
+                        <i class="fa-solid fa-eye-slash"></i>
+                        <div class="hero-feature-text">
+                            <div class="hero-feature-title">Zero-knowledge architecture</div>
+                            <div class="hero-feature-desc">We never see your code or encryption keys</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="card-right">
-                <div class="login-panel">
-                    <div class="panel-title">Welcome</div>
-                    <div class="panel-subtitle">Sign in to continue</div>
+            <div class="hero-right">
+                <div class="login-card">
+                    <div class="card-eyebrow">Secure Access</div>
+                    <h2 class="card-title">Sign in to your console</h2>
+                    <p class="card-sub">Use your Google account to access the platform.</p>
 
                     <div class="loader" id="loader"></div>
 
-                    <button class="btn btn-google" id="googleLoginBtn">
+                    <button class="btn btn-primary" id="googleLoginBtn">
                         <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23FFC107' d='M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z'/%3E%3Cpath fill='%23e53935' d='M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z'/%3E%3Cpath fill='%234caf50' d='M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z'/%3E%3Cpath fill='%231565c0' d='M43.611,20.083L43.595,20L24,20v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C40.483,35.58,44,30.2,44,24C44,22.659,43.862,21.35,43.611,20.083z'/%3E%3C/svg%3E" alt="Google">
-                        SIGN IN WITH GOOGLE
+                        Continue with Google
                     </button>
 
                     <div class="divider">
                         <span class="divider-line"></span>
-                        <span class="divider-icon">⬡</span>
+                        <span class="divider-text">or</span>
                         <span class="divider-line"></span>
                     </div>
 
-                    <a href="about-us.html" class="btn btn-about">
-                        <i class="fa-solid fa-circle-info"></i>
-                        ABOUT US
-                    </a>
-
-                    <a href="how-to-work.html" class="btn btn-how">
-                        <i class="fa-solid fa-book-open"></i>
-                        HOW TO WORK
-                    </a>
-
-                    <div class="status-box" id="statusBox"></div>
-
-                    <!-- ============= UPDATED USER INFO ============= -->
-                    <div class="user-info" id="userInfo">
-
-                        <div class="section-title">👤 Account Info</div>
-                        <div class="row">
-                            <span class="label">Email</span>
-                            <span class="value" id="infoEmail">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Username</span>
-                            <span class="value" id="infoUsername">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">UID</span>
-                            <span class="value" id="infoUid">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Provider</span>
-                            <span class="value" id="infoProvider">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Email Verified</span>
-                            <span class="value" id="infoEmailVerified">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Photo URL</span>
-                            <span class="value" id="infoPhoto">--</span>
-                        </div>
-
-                        <div class="section-title">🌍 Location & Network</div>
-                        <div class="row">
-                            <span class="label">IP Address</span>
-                            <span class="value" id="infoIP">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">City</span>
-                            <span class="value" id="infoCity">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Region</span>
-                            <span class="value" id="infoRegion">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Country</span>
-                            <span class="value" id="infoCountry">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Postal Code</span>
-                            <span class="value" id="infoPostal">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Latitude</span>
-                            <span class="value" id="infoLat">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Longitude</span>
-                            <span class="value" id="infoLng">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">ISP / Org</span>
-                            <span class="value" id="infoISP">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Timezone</span>
-                            <span class="value" id="infoTimezone">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Network Type</span>
-                            <span class="value" id="infoNetwork">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Connection Speed</span>
-                            <span class="value" id="infoSpeed">--</span>
-                        </div>
-
-                        <div class="section-title">💻 Device Info</div>
-                        <div class="row">
-                            <span class="label">Device</span>
-                            <span class="value" id="infoDevice">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Device Type</span>
-                            <span class="value" id="infoDeviceType">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Operating System</span>
-                            <span class="value" id="infoOS">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">OS Version</span>
-                            <span class="value" id="infoOSVersion">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Browser</span>
-                            <span class="value" id="infoBrowser">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Browser Version</span>
-                            <span class="value" id="infoBrowserVersion">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Screen Size</span>
-                            <span class="value" id="infoScreen">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Viewport</span>
-                            <span class="value" id="infoViewport">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Pixel Ratio</span>
-                            <span class="value" id="infoPixelRatio">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Color Depth</span>
-                            <span class="value" id="infoColorDepth">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Touch Support</span>
-                            <span class="value" id="infoTouch">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">CPU Cores</span>
-                            <span class="value" id="infoCores">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Device Memory</span>
-                            <span class="value" id="infoMemory">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Battery</span>
-                            <span class="value" id="infoBattery">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">GPU</span>
-                            <span class="value" id="infoGPU">--</span>
-                        </div>
-
-                        <div class="section-title">🌐 Language & Locale</div>
-                        <div class="row">
-                            <span class="label">Language</span>
-                            <span class="value" id="infoLanguage">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Languages</span>
-                            <span class="value" id="infoLanguages">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Platform</span>
-                            <span class="value" id="infoPlatform">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Cookies Enabled</span>
-                            <span class="value" id="infoCookies">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Do Not Track</span>
-                            <span class="value" id="infoDNT">--</span>
-                        </div>
-
-                        <div class="section-title">⏰ Login Times</div>
-                        <div class="row">
-                            <span class="label">First Login</span>
-                            <span class="value" id="infoFirstLogin">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Last Login</span>
-                            <span class="value" id="infoLastLogin">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Total Logins</span>
-                            <span class="value" id="infoTotalLogins">--</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Session Start</span>
-                            <span class="value" id="infoSessionStart">--</span>
-                        </div>
-
+                    <div class="btn-row">
+                        <a href="about-us.html" class="btn btn-outline">
+                            <i class="fa-regular fa-circle-question"></i> About
+                        </a>
+                        <a href="how-to-work.html" class="btn btn-outline">
+                            <i class="fa-regular fa-file-lines"></i> Docs
+                        </a>
                     </div>
 
-                    <div class="footer">
-                        Powered by <b>NightOrbit</b> • Owner: <b>Anas Farooq</b>
+                    <div class="status-box" id="statusBox"></div>
+                    <div class="user-info" id="userInfo">
+                        <div class="row"><span class="label">Email</span><span class="value" id="infoEmail">--</span></div>
+                        <div class="row"><span class="label">Username</span><span class="value" id="infoUsername">--</span></div>
+                        <div class="row"><span class="label">Device</span><span class="value" id="infoDevice">--</span></div>
+                        <div class="row"><span class="label">Last Login</span><span class="value" id="infoLastLogin">--</span></div>
+                    </div>
+
+                    <div class="trust-row">
+                        <div class="trust-item"><i class="fa-solid fa-lock"></i> SSL</div>
+                        <div class="trust-item"><i class="fa-solid fa-shield"></i> Encrypted</div>
+                        <div class="trust-item"><i class="fa-solid fa-check"></i> Verified</div>
                     </div>
                 </div>
             </div>
+        </section>
 
+        <div class="stats-bar">
+            <div class="stat-cell"><div class="stat-value">99.99%</div><div class="stat-label">Uptime SLA</div></div>
+            <div class="stat-cell"><div class="stat-value">256-bit</div><div class="stat-label">Encryption</div></div>
+            <div class="stat-cell"><div class="stat-value">&lt;50ms</div><div class="stat-label">Latency</div></div>
+            <div class="stat-cell"><div class="stat-value">24/7</div><div class="stat-label">Monitoring</div></div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- TOOLS -->
+    <div class="container" id="tools">
+        <section class="section">
+            <div class="section-head">
+                <div class="eyebrow">Platform Tools</div>
+                <h2>Seven tools.<br><span class="dim">One unified console.</span></h2>
+                <p>Every tool engineered for security, speed, and developer productivity.</p>
+            </div>
+            <div class="tools-grid">
+                <a href="CodeEncrypt.html" class="tool-card">
+                    <div class="tool-icon"><i class="fa-solid fa-lock"></i></div>
+                    <div class="tool-name">Code Encrypt</div>
+                    <div class="tool-desc">AES-256 + HMAC encryption with zero-knowledge architecture and single-use token protocol.</div>
+                    <div class="tool-arrow">Open tool <i class="fa-solid fa-arrow-right"></i></div>
+                </a>
+                <a href="CodeObfuscation.html" class="tool-card">
+                    <div class="tool-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div class="tool-name">Code Obfuscation</div>
+                    <div class="tool-desc">24-layer JavaScript protection with RC4, Base64, control flow flattening, and self-defending runtime.</div>
+                    <div class="tool-arrow">Open tool <i class="fa-solid fa-arrow-right"></i></div>
+                </a>
+                <a href="Codecompressor.html" class="tool-card">
+                    <div class="tool-icon"><i class="fa-solid fa-compress"></i></div>
+                    <div class="tool-name">Code Compressor</div>
+                    <div class="tool-desc">Safe minification for HTML, CSS, and JavaScript with no code loss. Terser-powered engine.</div>
+                    <div class="tool-arrow">Open tool <i class="fa-solid fa-arrow-right"></i></div>
+                </a>
+                <a href="CreateJSONFile.html" class="tool-card">
+                    <div class="tool-icon"><i class="fa-solid fa-file-code"></i></div>
+                    <div class="tool-name">JSON Builder</div>
+                    <div class="tool-desc">Combine HTML, CSS, JS, and config into a single deployable code.json file.</div>
+                    <div class="tool-arrow">Open tool <i class="fa-solid fa-arrow-right"></i></div>
+                </a>
+                <a href="CreateJSFile.html" class="tool-card">
+                    <div class="tool-icon"><i class="fa-solid fa-code"></i></div>
+                    <div class="tool-name">JS File Builder</div>
+                    <div class="tool-desc">Build complete JavaScript files with Firebase integration and multi-environment support.</div>
+                    <div class="tool-arrow">Open tool <i class="fa-solid fa-arrow-right"></i></div>
+                </a>
+                <a href="ConsoleShield.html" class="tool-card">
+                    <div class="tool-icon"><i class="fa-solid fa-terminal"></i></div>
+                    <div class="tool-name">Console Shield</div>
+                    <div class="tool-desc">Pre-built scripts that lock your console, block XSS/injection attacks, and neutralize DevTools inspection.</div>
+                    <div class="tool-arrow">Open tool <i class="fa-solid fa-arrow-right"></i></div>
+                </a>
+                <a href="Dashboard.html" class="tool-card">
+                    <div class="tool-icon"><i class="fa-solid fa-gauge-high"></i></div>
+                    <div class="tool-name">Dashboard</div>
+                    <div class="tool-desc">Central console for all tools, usage stats, key management, and account settings.</div>
+                    <div class="tool-arrow">Open console <i class="fa-solid fa-arrow-right"></i></div>
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- CONSOLE SHIELD -->
+    <div class="container" id="shield">
+        <section class="shield-section">
+            <div class="shield-grid">
+                <div class="shield-content">
+                    <div class="shield-eyebrow">🛡️ Built-in Shields</div>
+                    <h2>
+                        Console save.<br>
+                        <span class="accent">Attack block.</span>
+                    </h2>
+                    <p>
+                        Pre-built scripts that lock your console and neutralize unauthorized
+                        inspection attempts. XSS, injection, and script-based attacks are
+                        blocked at the runtime level. DevTools access — F12, Ctrl+Shift+I,
+                        right-click — all disabled.
+                    </p>
+                    <div class="shield-list">
+                        <div class="shield-item"><i class="fa-solid fa-shield-halved"></i><span>Console lock</span></div>
+                        <div class="shield-item"><i class="fa-solid fa-bug-slash"></i><span>XSS block</span></div>
+                        <div class="shield-item"><i class="fa-solid fa-code-branch"></i><span>Injection block</span></div>
+                        <div class="shield-item"><i class="fa-solid fa-terminal"></i><span>DevTools block</span></div>
+                        <div class="shield-item"><i class="fa-solid fa-ban"></i><span>Script kill</span></div>
+                        <div class="shield-item"><i class="fa-solid fa-eye-slash"></i><span>Runtime protect</span></div>
+                    </div>
+                </div>
+                <div class="shield-visual">
+                    <div class="mock-line"><span class="ts">[00:00:01]</span><span class="info">shield.init()</span><span class="dim">→ console locked</span></div>
+                    <div class="mock-line"><span class="ts">[00:00:02]</span><span class="ok">✓</span><span>XSS attempts blocked: 0</span></div>
+                    <div class="mock-line"><span class="ts">[00:00:03]</span><span class="ok">✓</span><span>Injection attempts blocked: 0</span></div>
+                    <div class="mock-line"><span class="ts">[00:00:04]</span><span class="warn">!</span><span>DevTools attempt — blocked</span></div>
+                    <div class="mock-line"><span class="ts">[00:00:05]</span><span class="warn">!</span><span>F12 pressed — neutralized</span></div>
+                    <div class="mock-line"><span class="ts">[00:00:06]</span><span class="ok">✓</span><span>Runtime integrity verified</span></div>
+                    <div class="mock-line"><span class="ts">[00:00:07]</span><span class="ok">✓</span><span>Right-click blocked</span></div>
+                    <div class="mock-line"><span class="ts">[00:00:08]</span><span class="info">shield.status</span><span class="dim">→ ACTIVE · 0 threats</span></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="container" id="features">
+        <section class="section">
+            <div class="section-head">
+                <div class="eyebrow">Built Different</div>
+                <h2>Enterprise-grade security.<br><span class="dim">Developer-friendly workflow.</span></h2>
+                <p>Every layer engineered for real-world threats. Your code never leaves your browser unprotected.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-lock"></i></div>
+                    <div class="feature-title">AES-256-CBC Encryption</div>
+                    <div class="feature-desc">The same standard used by US government agencies and global banks. Every byte encrypted with cryptographically secure keys.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-fingerprint"></i></div>
+                    <div class="feature-title">HMAC-SHA256 Integrity</div>
+                    <div class="feature-desc">Tamper-proof verification on every decryption. If a single character is modified, the entire payload is rejected.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-key"></i></div>
+                    <div class="feature-title">PBKDF2 Key Derivation</div>
+                    <div class="feature-desc">600,000 iterations of PBKDF2-SHA256 for password-based key derivation. Brute-force attacks become impractical.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-eye-slash"></i></div>
+                    <div class="feature-title">Zero-Knowledge Architecture</div>
+                    <div class="feature-desc">Your encryption key is never stored on our servers. Only you hold the password — we cannot recover lost data.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-terminal"></i></div>
+                    <div class="feature-title">Console & Script Blockers</div>
+                    <div class="feature-desc">Built-in shields neutralize unauthorized console scripts, XSS injections, and runtime attack vectors. Returns null or undefined for malicious execution attempts.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
+                    <div class="feature-title">Single-Use Token Protocol</div>
+                    <div class="feature-desc">Every decryptor is provisioned with a unique, single-use token. Replay attacks are cryptographically impossible.</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- WORKFLOW -->
+    <div class="container">
+        <section class="section">
+            <div class="section-head">
+                <div class="eyebrow">How It Works</div>
+                <h2>Four steps.<br><span class="dim">Military-grade protection.</span></h2>
+                <p>From sign-in to encrypted output — a streamlined workflow that takes seconds.</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-num">01</div>
+                    <div class="step-title">Sign in with Google</div>
+                    <div class="step-desc">One-click authentication. Your Google account becomes your secure identity.</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">02</div>
+                    <div class="step-title">Create your key</div>
+                    <div class="step-desc">Generate a unique 256-bit encryption key protected by your own custom password.</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">03</div>
+                    <div class="step-title">Paste your code</div>
+                    <div class="step-desc">Drop your JavaScript, HTML, or CSS into the tool. Choose from 24 protection layers plus console shields.</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">04</div>
+                    <div class="step-title">Download & deploy</div>
+                    <div class="step-desc">Get your protected output plus a self-defending decryptor file. Deploy anywhere.</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- LAYERS -->
+    <div class="container">
+        <section class="section">
+            <div class="section-head">
+                <div class="eyebrow">Defense in Depth</div>
+                <h2>12 protection layers.<br><span class="dim">One seamless workflow.</span></h2>
+                <p>Each layer defends against a different attack vector — from casual inspection to reverse engineering.</p>
+            </div>
+            <div class="layers-grid">
+                <div class="layer-item"><div class="layer-num">01</div><div class="layer-name">Control Flow Flattening</div></div>
+                <div class="layer-item"><div class="layer-num">02</div><div class="layer-name">Dead Code Injection</div></div>
+                <div class="layer-item"><div class="layer-num">03</div><div class="layer-name">RC4 + Base64 Encoding</div></div>
+                <div class="layer-item"><div class="layer-num">04</div><div class="layer-name">String Wrappers</div></div>
+                <div class="layer-item"><div class="layer-num">05</div><div class="layer-name">Split Strings</div></div>
+                <div class="layer-item"><div class="layer-num">06</div><div class="layer-name">Debug Protection</div></div>
+                <div class="layer-item"><div class="layer-num">07</div><div class="layer-name">Self-Defending Runtime</div></div>
+                <div class="layer-item"><div class="layer-num">08</div><div class="layer-name">Hexadecimal Renaming</div></div>
+                <div class="layer-item"><div class="layer-num">09</div><div class="layer-name">Numbers → Expressions</div></div>
+                <div class="layer-item"><div class="layer-num">10</div><div class="layer-name">Object Key Transform</div></div>
+                <div class="layer-item"><div class="layer-num">11</div><div class="layer-name">Console Suppression</div></div>
+                <div class="layer-item"><div class="layer-num">12</div><div class="layer-name">Unicode Escape</div></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- COMPARISON TABLE -->
+    <div class="container">
+        <section class="section">
+            <div class="section-head">
+                <div class="eyebrow">Before & After</div>
+                <h2>Unprotected vs.<br><span class="dim">NightOrbit protected.</span></h2>
+                <p>See exactly what changes when you encrypt your code with our platform.</p>
+            </div>
+            <div class="compare-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Unprotected</th>
+                            <th>Protected</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Variable names</td>
+                            <td>Readable (userSession, apiKey)</td>
+                            <td>Obfuscated (a, b, c, _0x4a2b)</td>
+                        </tr>
+                        <tr>
+                            <td>String literals</td>
+                            <td>Plain text in source</td>
+                            <td>RC4 + Base64 encrypted</td>
+                        </tr>
+                        <tr>
+                            <td>Control flow</td>
+                            <td>Linear, easy to trace</td>
+                            <td>Flattened state machine</td>
+                        </tr>
+                        <tr>
+                            <td>Integrity check</td>
+                            <td>Single point of failure</td>
+                            <td>Woven multi-layer verification</td>
+                        </tr>
+                        <tr>
+                            <td>Console access</td>
+                            <td>Fully open</td>
+                            <td>Blocked + suppressed</td>
+                        </tr>
+                        <tr>
+                            <td>DevTools</td>
+                            <td>F12, right-click enabled</td>
+                            <td>Disabled · neutralized</td>
+                        </tr>
+                        <tr>
+                            <td>Reverse engineering</td>
+                            <td>~5 minutes</td>
+                            <td>100+ hours estimated</td>
+                        </tr>
+                        <tr>
+                            <td>XSS / injection</td>
+                            <td>Vulnerable</td>
+                            <td>Blocked at runtime</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+         <!-- TRUST INDICATORS -->
+      <div class="container">
+          <section class="section">
+              <div class="section-head">
+                  <div class="eyebrow">Why Teams Choose Us</div>
+                  <h2>Built for<br><span class="dim">real-world security.</span></h2>
+                  <p>Here's what makes NightOrbit different from the rest.</p>
+              </div>
+              <div class="testimonials-grid">
+                  <div class="testimonial-card">
+                      <div class="feature-icon" style="margin-bottom:20px;"><i class="fa-solid fa-shield-halved"></i></div>
+                      <div class="feature-title" style="margin-bottom:12px;">Zero server exposure</div>
+                      <div class="feature-desc">Every tool runs 100% in your browser. Your code never touches our servers — not even for a millisecond.</div>
+                  </div>
+                  <div class="testimonial-card">
+                      <div class="feature-icon" style="margin-bottom:20px;"><i class="fa-solid fa-bolt"></i></div>
+                      <div class="feature-title" style="margin-bottom:12px;">Under 50ms overhead</div>
+                      <div class="feature-desc">Benchmarked against V8 and SpiderMonkey. Console Shield adds less than 2ms of runtime overhead.</div>
+                  </div>
+                  <div class="testimonial-card">
+                      <div class="feature-icon" style="margin-bottom:20px;"><i class="fa-solid fa-key"></i></div>
+                      <div class="feature-title" style="margin-bottom:12px;">You own the keys</div>
+                      <div class="feature-desc">AES-256 with 600K PBKDF2 iterations. We can't decrypt your data even if we wanted to.</div>
+                  </div>
+              </div>
+          </section>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           PRICING — Token-Based Model
+           ═══════════════════════════════════════════════════════════ -->
+      <div class="container" id="pricing">
+          <section class="section">
+              <div class="section-head">
+                  <div class="eyebrow">Pricing</div>
+                  <h2>Start free.<br><span class="dim">Pay only when you need more.</span></h2>
+                  <p>500 free tokens every day. No credit card required. Cancel anytime.</p>
+              </div>
+      
+              <!-- Token explanation strip -->
+              <div class="pricing-explainer">
+                  <div class="explainer-item">
+                      <div class="explainer-icon"><i class="fa-solid fa-coins"></i></div>
+                      <div class="explainer-text">
+                          <strong>500 free tokens daily</strong>
+                          <span>Reset at your local midnight</span>
+                      </div>
+                  </div>
+                  <div class="explainer-item">
+                      <div class="explainer-icon"><i class="fa-solid fa-bolt"></i></div>
+                      <div class="explainer-text">
+                          <strong>10 tokens per MB</strong>
+                          <span>Same rate for every tool</span>
+                      </div>
+                  </div>
+                  <div class="explainer-item">
+                      <div class="explainer-icon"><i class="fa-solid fa-infinity"></i></div>
+                      <div class="explainer-text">
+                          <strong>Tokens never expire</strong>
+                          <span>Use them anytime</span>
+                      </div>
+                  </div>
+              </div>
+      
+              <div class="pricing-grid">
+      
+                  <!-- ═══ FREE ═══ -->
+                  <div class="pricing-card">
+                      <div class="pricing-name">Free</div>
+                      <div class="pricing-desc">For individuals exploring the platform.</div>
+                      <div class="pricing-price">$0</div>
+                      <div class="pricing-period">forever</div>
+                      <ul class="pricing-features">
+                          <li><i class="fa-solid fa-check"></i> <strong>500 tokens every day</strong></li>
+                          <li><i class="fa-solid fa-check"></i> All 7 tools unlocked</li>
+                          <li><i class="fa-solid fa-check"></i> 10 tokens per MB rate</li>
+                          <li><i class="fa-solid fa-check"></i> AES-256 encryption</li>
+                          <li><i class="fa-solid fa-check"></i> Console Shield included</li>
+                          <li><i class="fa-solid fa-check"></i> 100% browser-based</li>
+                          <li><i class="fa-solid fa-check"></i> Community support</li>
+                      </ul>
+                      <button class="pricing-cta outline" onclick="handleGoogleLogin('signin')">
+                          Start Free
+                      </button>
+                  </div>
+      
+                  <!-- ═══ TOKENS (POPULAR) ═══ -->
+                  <div class="pricing-card featured">
+                      <div class="pricing-tag">Best Value</div>
+                      <div class="pricing-name">Token Packs</div>
+                      <div class="pricing-desc">One-time purchase. Tokens never expire.</div>
+                      <div class="pricing-price">Rs. 1,200</div>
+                      <div class="pricing-period">≈ $4.99 · 5,000 tokens</div>
+                      <ul class="pricing-features">
+                          <li><i class="fa-solid fa-check"></i> <strong>5,000 tokens</strong></li>
+                          <li><i class="fa-solid fa-check"></i> Save 20% vs starter</li>
+                          <li><i class="fa-solid fa-check"></i> 500 MB of processing</li>
+                          <li><i class="fa-solid fa-check"></i> Never expires</li>
+                          <li><i class="fa-solid fa-check"></i> Works with all 7 tools</li>
+                          <li><i class="fa-solid fa-check"></i> Priority email support</li>
+                      </ul>
+                      <button class="pricing-cta primary" onclick="handleGoogleLogin('signin')">
+                          Buy Tokens <i class="fa-solid fa-arrow-right"></i>
+                      </button>
+                      <div class="pricing-mini">
+                          <span>Also available: <strong>Rs. 300</strong> · <strong>Rs. 2,000</strong></span>
+                      </div>
+                  </div>
+      
+                  <!-- ═══ ENTERPRISE ═══ -->
+                  <div class="pricing-card">
+                      <div class="pricing-name">Enterprise</div>
+                      <div class="pricing-desc">For teams and organizations with high-volume needs.</div>
+                      <div class="pricing-price">Custom</div>
+                      <div class="pricing-period">contact sales</div>
+                      <ul class="pricing-features">
+                          <li><i class="fa-solid fa-check"></i> <strong>Unlimited tokens</strong></li>
+                          <li><i class="fa-solid fa-check"></i> Team seats included</li>
+                          <li><i class="fa-solid fa-check"></i> SSO + SAML</li>
+                          <li><i class="fa-solid fa-check"></i> 99.99% SLA</li>
+                          <li><i class="fa-solid fa-check"></i> Dedicated Slack channel</li>
+                          <li><i class="fa-solid fa-check"></i> Custom integrations</li>
+                          <li><i class="fa-solid fa-check"></i> Named account manager</li>
+                      </ul>
+                      <a href="mailto:hello@nightorbit.dev" class="pricing-cta outline">
+                          Contact Sales
+                      </a>
+                  </div>
+      
+              </div>
+      
+              <!-- Token packs — 3 column mini grid -->
+              <div class="token-packs-grid">
+                  <div class="token-pack" onclick="handleGoogleLogin('signin')">
+                      <div class="pack-label">Starter</div>
+                      <div class="pack-tokens">1,000 <span>tokens</span></div>
+                      <div class="pack-price">
+                          <span class="pkr">Rs. 300</span>
+                          <span class="usd">$1.99</span>
+                      </div>
+                      <div class="pack-meta">Rs. 0.30 / token</div>
+                  </div>
+                  <div class="token-pack popular" onclick="handleGoogleLogin('signin')">
+                      <div class="pack-badge">Save 20%</div>
+                      <div class="pack-label">Popular</div>
+                      <div class="pack-tokens">5,000 <span>tokens</span></div>
+                      <div class="pack-price">
+                          <span class="pkr">Rs. 1,200</span>
+                          <span class="usd">$4.99</span>
+                      </div>
+                      <div class="pack-meta">Rs. 0.24 / token</div>
+                  </div>
+                  <div class="token-pack" onclick="handleGoogleLogin('signin')">
+                      <div class="pack-badge">Save 33%</div>
+                      <div class="pack-label">Mega</div>
+                      <div class="pack-tokens">10,000 <span>tokens</span></div>
+                      <div class="pack-price">
+                          <span class="pkr">Rs. 2,000</span>
+                          <span class="usd">$7.99</span>
+                      </div>
+                      <div class="pack-meta">Rs. 0.20 / token</div>
+                  </div>
+              </div>
+      
+              <!-- Pricing footer note -->
+              <div class="pricing-footer">
+                  <i class="fa-solid fa-shield-halved"></i>
+                  <span>
+                       Every plan includes <strong>zero-knowledge architecture</strong> — your code never leaves your device. 
+                       Encrypted with AES-256, the same standard trusted by banks worldwide.
+                  </span>
+              </div>
+          </section>
+      </div>
+
+    <!-- INTEGRATIONS -->
+    <div class="container">
+        <section class="section">
+            <div class="section-head">
+                <div class="eyebrow">Integrations</div>
+                <h2>Works with your<br><span class="dim">existing stack.</span></h2>
+                <p>NightOrbit is designed to be a drop-in addition to your existing workflow.</p>
+            </div>
+            <div class="integrations-grid">
+                <div class="integration-item">
+                    <i class="fa-brands fa-js"></i>
+                    <div class="integration-name">JavaScript</div>
+                </div>
+                <div class="integration-item">
+                    <i class="fa-brands fa-html5"></i>
+                    <div class="integration-name">HTML5</div>
+                </div>
+                <div class="integration-item">
+                    <i class="fa-brands fa-css3-alt"></i>
+                    <div class="integration-name">CSS3</div>
+                </div>
+                <div class="integration-item">
+                    <i class="fa-brands fa-react"></i>
+                    <div class="integration-name">React</div>
+                </div>
+                <div class="integration-item">
+                    <i class="fa-brands fa-node-js"></i>
+                    <div class="integration-name">Node.js</div>
+                </div>
+                <div class="integration-item">
+                    <i class="fa-solid fa-fire"></i>
+                    <div class="integration-name">Firebase</div>
+                </div>
+                <div class="integration-item">
+                    <i class="fa-solid fa-cloud"></i>
+                    <div class="integration-name">Cloudflare</div>
+                </div>
+                <div class="integration-item">
+                    <i class="fa-brands fa-github"></i>
+                    <div class="integration-name">GitHub</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- TRUST STRIP -->
+    <div class="container">
+        <div class="trust-strip">
+            <div class="label">Trusted by engineering teams worldwide</div>
+            <div class="trust-badges">
+                <div class="badge-item"><i class="fa-solid fa-shield-halved"></i> SOC 2</div>
+                <div class="badge-item"><i class="fa-solid fa-lock"></i> AES-256</div>
+                <div class="badge-item"><i class="fa-solid fa-certificate"></i> ISO 27001</div>
+                <div class="badge-item"><i class="fa-solid fa-globe"></i> GDPR</div>
+                <div class="badge-item"><i class="fa-solid fa-key"></i> Zero-Knowledge</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ — 12 QUESTIONS -->
+    <div class="container" id="faq">
+        <section class="section">
+            <div class="section-head">
+                <div class="eyebrow">FAQ</div>
+                <h2>Frequently asked<br><span class="dim">questions.</span></h2>
+                <p>Everything you need to know about NightOrbit CodeForge.</p>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span>Is my code ever uploaded to your servers?</span>
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <div class="faq-a">
+                        No. Every tool runs entirely in your browser using client-side JavaScript. Your code never leaves your device. We only store your encrypted key metadata (which we cannot decrypt) in Firebase Realtime Database. Even if we wanted to view your code, we couldn't — it never touches our infrastructure.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span>What happens if I forget my password?</span>
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <div class="faq-a">
+                        Your password is the only way to decrypt your key. We follow strict zero-knowledge architecture — we cannot recover it, reset it, or bypass it. You'll need to <code>Delete Key</code> and create a new one, but old encrypted data will remain locked forever. This is by design — it's what makes the system truly secure.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span>How does Console Shield differ from Code Encrypt?</span>
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <div class="faq-a">
+                        Code Encrypt makes your source unreadable at rest — it protects the file itself. Console Shield protects your code at runtime — it blocks console injection attempts, XSS, DevTools access (F12, Ctrl+Shift+I, right-click), and script-based attacks while your code is executing. Use both together for full protection: encrypted at rest, shielded at runtime.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span>Can I use these tools commercially?</span>
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <div class="faq-a">
+                        Yes. All tools are available for commercial use. The protections we generate are royalty-free and can be deployed in commercial products without restriction. You don't need to credit NightOrbit, and we don't claim any ownership over your original code.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span>Which browsers are supported?</span>
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <div class="faq-a">
+                        Chrome, Edge, Firefox, Safari, and Brave — all modern browsers with Web Crypto API support. Mobile browsers (iOS Safari, Android Chrome) are fully supported. We recommend the latest version of your browser for the fastest cryptographic operations.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span>How strong is AES-256 encryption really?</span>
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <div class="faq-a">
+                        AES-256 is the same standard used by the US National Security Agency (NSA) for TOP SECRET information. Brute-forcing a 256-bit key would require more energy than the sun will produce in its lifetime. With our additional 600,000 PBKDF2 iterations on top, password-guessing attacks become computationally infeasible even with nation-state resources.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span>What is zero-knowledge architecture?</span>
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <div class="faq-a">
+                        Zero-knowledge means we architect our system so that we literally cannot access your data — even if compelled by a court order, a hacker breach, or an insider threat. Your encryption key is never transmitted to our servers in plaintext, and your password is never stored anywhere. Only you can decrypt your own data.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span>Does Console Shield slow down my website?</span>
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <div class="faq-a">
+                        No. Console Shield adds less than 2 milliseconds of overhead on modern browsers. The runtime checks are optimized and use passive event listeners where possible. In benchmarks, a typical page sees a TTI (Time to Interactive) increase of under 5ms — imperceptible to end users.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span>What if I lose my decryptor file or key file?</span>
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <div class="faq-a">
+                        Both files are required for decryption. If you lose either one, your encrypted data is permanently locked — no recovery is possible. We strongly recommend storing multiple backups: one on your local machine, one on an external drive, and one in a secure password manager or encrypted cloud storage.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span>Can encrypted code be decrypted by someone else?</span>
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <div class="faq-a">
+                        Only if they have both the decryptor file AND your password. Without the password, the decryptor is useless. Without the decryptor, the password is useless. This two-factor approach ensures that even if one file leaks, your code remains protected.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span>Is there an API I can integrate into CI/CD?</span>
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <div class="faq-a">
+                        Yes — Professional and Enterprise plans include API access. You can trigger encryption, obfuscation, and compression jobs directly from your build pipeline. Documentation is available in the Developer Portal. Rate limits: 100 req/min (Pro), unlimited (Enterprise).
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">
+                        <span>How do I get support?</span>
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <div class="faq-a">
+                        Free users get community support through our GitHub Discussions. Professional users get email support with a 24-hour response SLA. Enterprise customers get a dedicated Slack channel with a 1-hour critical response SLA and a named technical account manager.
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+      <!-- PLATFORM STABILITY -->
+      <div class="container">
+          <section class="section">
+              <div class="section-head">
+                  <div class="eyebrow">Platform</div>
+                  <h2>Stable. Maintained.<br><span class="dim">Battle-tested.</span></h2>
+                  <p>Continuous stability improvements across all tools. No breaking changes.</p>
+              </div>
+              <div class="changelog-list">
+                  <div class="changelog-item">
+                      <div class="changelog-version">v19.4</div>
+                      <div class="changelog-content">
+                          <div class="changelog-date">February 2026</div>
+                          <div class="changelog-text">
+                              Enhanced <b>Console Shield</b> runtime detection with expanded XSS pattern coverage and adaptive DevTools monitoring. Extended <b>API documentation</b> for professional users.
+                          </div>
+                      </div>
+                  </div>
+                  <div class="changelog-item">
+                      <div class="changelog-version">v19.3</div>
+                      <div class="changelog-content">
+                          <div class="changelog-date">January 2026</div>
+                          <div class="changelog-text">
+                              Refined <b>HMAC-SHA256 integrity</b> verification pipeline. Optimized decryptor file size via <b>lazy key decoding</b>. Stability improvements in <b>base64 data URI handling</b>.
+                          </div>
+                      </div>
+                  </div>
+                  <div class="changelog-item">
+                      <div class="changelog-version">v19.2</div>
+                      <div class="changelog-content">
+                          <div class="changelog-date">December 2025</div>
+                          <div class="changelog-text">
+                              Strengthened <b>PBKDF2 key derivation</b> parameters for WebCrypto clients. Extended <b>token protocol</b> coverage across all decryptors. Improved <b>self-defending runtime</b> reliability.
+                          </div>
+                      </div>
+                  </div>
+                  <div class="changelog-item">
+                      <div class="changelog-version">v19.0</div>
+                      <div class="changelog-content">
+                          <div class="changelog-date">November 2025</div>
+                          <div class="changelog-text">
+                              Major release introducing the <b>24-layer obfuscation engine</b> with RC4 + Base64 string encoding, control flow flattening, and hexadecimal renaming. Complete rewrite of the <b>encryption pipeline</b>.
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </section>
+      </div>
+
+    <!-- CTA -->
+    <div class="container">
+        <section class="cta-section">
+            <h2 class="cta-title">
+                Ready to secure<br>your code?
+            </h2>
+            <p class="cta-desc">
+                Sign in with Google and start encrypting in seconds. No credit card required.
+                No server-side code uploads. Just military-grade security in your browser.
+            </p>
+            <div class="cta-actions">
+                <button class="btn-hero primary" id="ctaSignIn">
+                    <i class="fa-brands fa-google"></i>
+                    Continue with Google
+                </button>
+                <a href="about-us.html" class="btn-hero secondary">
+                    <i class="fa-regular fa-circle-question"></i>
+                    Learn more
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <div class="footer-brand">
+            <div class="footer-brand-mark">N</div>
+            <div class="footer-brand-text">
+                <div class="footer-brand-name">NightOrbit CodeForge</div>
+                <div class="footer-brand-tag">Enterprise Security Platform</div>
+            </div>
+        </div>
+        <div class="footer-links">
+            <a href="about-us.html">About</a>
+            <a href="how-to-work.html">How it works</a>
+            <a href="full-guide.html">Full guide</a>
+            <a href="#tools">Tools</a>
+            <a href="#shield">Shields</a>
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+        </div>
+        <div class="footer-copy">
+            © 2026 <b>NightOrbit</b> · Built by <b>Anas Farooq</b><br>
+            All rights reserved.
+        </div>
+    </div>
+
+</div>
+
+<script>
+(function() {
+'use strict';
+
+/* ═══════════════════════════════════════════════════════════
+   FIREBASE INIT
+   ═══════════════════════════════════════════════════════════ */
+var firebaseConfig = {
+    apiKey: "AIzaSyCMYIa1YwahQRF_EGizjR1Xjj4aD9uBN_o",
+    authDomain: "nightorbitbuilder.firebaseapp.com",
+    databaseURL: "https://nightorbitbuilder-default-rtdb.firebaseio.com",
+    projectId: "nightorbitbuilder",
+    storageBucket: "nightorbitbuilder.firebasestorage.app",
+    messagingSenderId: "537115613677",
+    appId: "1:537115613677:web:6653804e11c47ed746efe4"
+};
+
+try {
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+} catch (e) {}
+
+var auth = firebase.auth();
+var db = firebase.database();
+var isRedirecting = false;
+
+/* ═══════════════════════════════════════════════════════════
+   UI HELPERS
+   ═══════════════════════════════════════════════════════════ */
+function showStatus(type, msg) {
+    var el = document.getElementById('statusBox');
+    if (!el) return;
+    el.className = 'status-box show ' + type;
+    el.textContent = msg;
+}
+
+function hideStatus() {
+    var el = document.getElementById('statusBox');
+    if (el) el.className = 'status-box';
+}
+
+function showLoader(show) {
+    var el = document.getElementById('loader');
+    if (el) el.classList.toggle('show', show);
+}
+
+function safeRedirect(url, delay) {
+    if (isRedirecting) return;
+    isRedirecting = true;
+    setTimeout(function() { window.location.href = url; }, delay);
+}
+
+function setVal(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = (val === undefined || val === null || val === '') ? '--' : val;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TIME HELPERS
+   ═══════════════════════════════════════════════════════════ */
+function getFullTime() {
+    var d = new Date();
+    return d.toLocaleString('en-PK', {
+        weekday: 'short', year: 'numeric', month: 'short', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+    });
+}
+
+function getISO() {
+    return new Date().toISOString();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NEW FUNCTION — DEVICE DETECTION
+   ═══════════════════════════════════════════════════════════ */
+function detectOS() {
+    var ua = navigator.userAgent;
+    var platform = navigator.platform || '';
+    if (/Windows NT 10/.test(ua)) return { name: 'Windows', version: '10/11' };
+    if (/Windows NT 6\.3/.test(ua)) return { name: 'Windows', version: '8.1' };
+    if (/Windows NT 6\.2/.test(ua)) return { name: 'Windows', version: '8' };
+    if (/Windows NT 6\.1/.test(ua)) return { name: 'Windows', version: '7' };
+    if (/Windows/.test(ua)) return { name: 'Windows', version: 'Unknown' };
+    if (/Mac OS X ([\d_]+)/.test(ua)) {
+        var m = ua.match(/Mac OS X ([\d_]+)/);
+        return { name: 'macOS', version: m ? m[1].replace(/_/g, '.') : 'Unknown' };
+    }
+    if (/iPhone OS ([\d_]+)/.test(ua)) {
+        var m2 = ua.match(/iPhone OS ([\d_]+)/);
+        return { name: 'iOS', version: m2 ? m2[1].replace(/_/g, '.') : 'Unknown' };
+    }
+    if (/iPad.*OS ([\d_]+)/.test(ua)) {
+        var m3 = ua.match(/OS ([\d_]+)/);
+        return { name: 'iPadOS', version: m3 ? m3[1].replace(/_/g, '.') : 'Unknown' };
+    }
+    if (/Android ([\d.]+)/.test(ua)) {
+        var m4 = ua.match(/Android ([\d.]+)/);
+        return { name: 'Android', version: m4 ? m4[1] : 'Unknown' };
+    }
+    if (/CrOS/.test(ua)) return { name: 'ChromeOS', version: 'Unknown' };
+    if (/Linux/.test(ua)) return { name: 'Linux', version: 'Unknown' };
+    return { name: platform || 'Unknown', version: 'Unknown' };
+}
+
+function detectBrowser() {
+    var ua = navigator.userAgent;
+    if (/Edg\/([\d.]+)/.test(ua)) {
+        var m = ua.match(/Edg\/([\d.]+)/);
+        return { name: 'Microsoft Edge', version: m[1] };
+    }
+    if (/OPR\/([\d.]+)/.test(ua) || /Opera/.test(ua)) {
+        var m2 = ua.match(/OPR\/([\d.]+)/);
+        return { name: 'Opera', version: m2 ? m2[1] : 'Unknown' };
+    }
+    if (/Chrome\/([\d.]+)/.test(ua) && !/Edg|OPR/.test(ua)) {
+        var m3 = ua.match(/Chrome\/([\d.]+)/);
+        return { name: 'Chrome', version: m3[1] };
+    }
+    if (/Firefox\/([\d.]+)/.test(ua)) {
+        var m4 = ua.match(/Firefox\/([\d.]+)/);
+        return { name: 'Firefox', version: m4[1] };
+    }
+    if (/Safari\/([\d.]+)/.test(ua) && !/Chrome/.test(ua)) {
+        var m5 = ua.match(/Version\/([\d.]+)/);
+        return { name: 'Safari', version: m5 ? m5[1] : 'Unknown' };
+    }
+    if (/MSIE|Trident/.test(ua)) return { name: 'Internet Explorer', version: 'Unknown' };
+    return { name: 'Unknown', version: 'Unknown' };
+}
+
+function getDeviceName() {
+    var ua = navigator.userAgent;
+    var os = detectOS();
+    if (os.name === 'Android') {
+        var m = ua.match(/Android\s[\d.]+;\s([^)]+)/);
+        return m ? m[1].trim() : 'Android Device';
+    }
+    if (os.name === 'iOS') return 'iPhone';
+    if (os.name === 'iPadOS') return 'iPad';
+    if (os.name === 'Windows') return 'Windows ' + os.version + ' PC';
+    if (os.name === 'macOS') return 'Mac';
+    if (os.name === 'Linux') return 'Linux PC';
+    if (os.name === 'ChromeOS') return 'Chromebook';
+    return navigator.platform || 'Unknown Device';
+}
+
+function getDeviceType() {
+    var ua = navigator.userAgent;
+    if (/iPad|Tablet/i.test(ua)) return 'Tablet';
+    if (/Mobi|Android|iPhone/i.test(ua)) return 'Mobile';
+    return 'Desktop';
+}
+
+function getGPUInfo() {
+    try {
+        var canvas = document.createElement('canvas');
+        var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (!gl) return 'Not available';
+        var debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        if (debugInfo) {
+            return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || 'Unknown';
+        }
+        return 'Unknown';
+    } catch (e) {
+        return 'Not available';
+    }
+}
+
+async function getBatteryInfo() {
+    if (!navigator.getBattery) return 'Not supported';
+    try {
+        var b = await navigator.getBattery();
+        var level = Math.round(b.level * 100);
+        var charging = b.charging ? 'Charging' : 'Not Charging';
+        return level + '% (' + charging + ')';
+    } catch (e) {
+        return 'Unavailable';
+    }
+}
+
+function getNetworkInfo() {
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (!conn) return { type: 'Unknown', speed: 'Unknown' };
+    return {
+        type: conn.effectiveType || conn.type || 'Unknown',
+        speed: conn.downlink ? conn.downlink + ' Mbps' : 'Unknown'
+    };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NEW FUNCTION — LOCATION (with 3s timeout — no hang)
+   ═══════════════════════════════════════════════════════════ */
+async function getLocationData() {
+    function fetchWithTimeout(url, timeout) {
+        return Promise.race([
+            fetch(url),
+            new Promise(function(_, reject) {
+                setTimeout(function() { reject(new Error('Timeout')); }, timeout);
+            })
+        ]);
+    }
+
+    /* Try 1: ipapi.co (3s) */
+    try {
+        var res = await fetchWithTimeout('https://ipapi.co/json/', 3000);
+        if (res.ok) {
+            var data = await res.json();
+            return {
+                ip: data.ip || 'Unknown',
+                city: data.city || 'Unknown',
+                region: data.region || 'Unknown',
+                country: data.country_name || 'Unknown',
+                countryCode: data.country_code || 'Unknown',
+                postal: data.postal || 'Unknown',
+                lat: data.latitude || 'Unknown',
+                lng: data.longitude || 'Unknown',
+                isp: data.org || 'Unknown',
+                timezone: data.timezone || 'Unknown',
+                utcOffset: data.utc_offset || 'Unknown'
+            };
+        }
+    } catch (e) {}
+
+    /* Try 2: ipwho.is (3s) */
+    try {
+        var res2 = await fetchWithTimeout('https://ipwho.is/', 3000);
+        if (res2.ok) {
+            var d2 = await res2.json();
+            return {
+                ip: d2.ip || 'Unknown',
+                city: d2.city || 'Unknown',
+                region: d2.region || 'Unknown',
+                country: d2.country || 'Unknown',
+                countryCode: d2.country_code || 'Unknown',
+                postal: d2.postal || 'Unknown',
+                lat: d2.latitude || 'Unknown',
+                lng: d2.longitude || 'Unknown',
+                isp: (d2.connection && d2.connection.isp) || 'Unknown',
+                timezone: (d2.timezone && d2.timezone.id) || 'Unknown',
+                utcOffset: (d2.timezone && d2.timezone.utc) || 'Unknown'
+            };
+        }
+    } catch (e) {}
+
+    return {
+        ip: 'Unknown', city: 'Unknown', region: 'Unknown',
+        country: 'Unknown', countryCode: 'Unknown', postal: 'Unknown',
+        lat: 'Unknown', lng: 'Unknown', isp: 'Unknown',
+        timezone: 'Unknown', utcOffset: 'Unknown'
+    };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NEW FUNCTION — COLLECT ALL INFO
+   ═══════════════════════════════════════════════════════════ */
+async function collectAllInfo() {
+    var os = detectOS();
+    var browser = detectBrowser();
+    var net = getNetworkInfo();
+    var battery = await getBatteryInfo();
+    var location = await getLocationData();
+
+    return {
+        ip: location.ip,
+        city: location.city,
+        region: location.region,
+        country: location.country,
+        countryCode: location.countryCode,
+        postal: location.postal,
+        latitude: location.lat,
+        longitude: location.lng,
+        isp: location.isp,
+        timezone: location.timezone,
+        utcOffset: location.utcOffset,
+
+        networkType: net.type,
+        connectionSpeed: net.speed,
+
+        deviceName: getDeviceName(),
+        deviceType: getDeviceType(),
+        os: os.name,
+        osVersion: os.version,
+        browser: browser.name,
+        browserVersion: browser.version,
+        screenSize: window.screen.width + ' x ' + window.screen.height,
+        viewport: window.innerWidth + ' x ' + window.innerHeight,
+        pixelRatio: window.devicePixelRatio || 1,
+        colorDepth: window.screen.colorDepth + '-bit',
+        touchSupport: ('ontouchstart' in window) ? 'Yes (' + (navigator.maxTouchPoints || 0) + ' points)' : 'No',
+        cpuCores: navigator.hardwareConcurrency || 'Unknown',
+        deviceMemory: navigator.deviceMemory ? navigator.deviceMemory + ' GB' : 'Unknown',
+        battery: battery,
+        gpu: getGPUInfo(),
+
+        language: navigator.language || 'Unknown',
+        languages: (navigator.languages || []).join(', ') || 'Unknown',
+        platform: navigator.platform || 'Unknown',
+        cookiesEnabled: navigator.cookieEnabled ? 'Yes' : 'No',
+        doNotTrack: navigator.doNotTrack || 'Not set',
+
+        userAgent: navigator.userAgent
+    };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SAVE USER TO DB — FULL DATA
+   ═══════════════════════════════════════════════════════════ */
+async function saveUserToDb(user, mode) {
+    var now = Date.now();
+    var nowStr = getFullTime();
+    var nowISO = getISO();
+
+    showStatus('loading', 'Collecting info...');
+
+    /* Collect full info (location may take up to 3s) */
+    var full;
+    try {
+        full = await collectAllInfo();
+    } catch (e) {
+        full = {
+            ip: 'Unknown', city: 'Unknown', country: 'Unknown',
+            deviceName: getDeviceName(), os: detectOS().name,
+            browser: detectBrowser().name, userAgent: navigator.userAgent
+        };
+    }
+
+    full.email = user.email || 'Unknown';
+    full.username = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+    full.uid = user.uid;
+    full.provider = (user.providerData && user.providerData[0] && user.providerData[0].providerId) || 'google.com';
+    full.emailVerified = user.emailVerified ? 'Yes' : 'No';
+    full.photoURL = user.photoURL || 'Not set';
+
+    showStatus('loading', 'Saving to database...');
+
+    var snap = await db.ref('users/' + user.uid).once('value');
+    var existing = snap.val();
+
+    if (existing) {
+        /* ═══ UPDATE ═══ */
+        var totalLogins = (existing.totalLogins || 1) + 1;
+        full.totalLogins = totalLogins;
+        full.firstLogin = existing.firstLogin;
+        full.firstLoginTime = existing.firstLoginTime;
+
+        await db.ref('users/' + user.uid).update({
+            uid: full.uid,
+            email: full.email,
+            username: full.username,
+            provider: full.provider,
+            emailVerified: full.emailVerified,
+            photoURL: full.photoURL,
+
+            /* NESTED PROFILE */
+            profile: {
+                email: full.email,
+                name: full.username,
+                createdAt: (existing.profile && existing.profile.createdAt) || nowISO,
+                firstLogin: (existing.profile && existing.profile.firstLogin) || nowISO,
+                lastLogin: nowISO
+            },
+
+            /* NESTED DEVICE INFO */
+            deviceInfo: {
+                deviceModel: full.deviceName || '—',
+                deviceType: full.deviceType || '—',
+                os: full.os || '—',
+                osVersion: full.osVersion || '—',
+                browser: full.browser || '—',
+                browserVersion: full.browserVersion || '—',
+                screen: full.screenSize || '—',
+                viewport: full.viewport || '—',
+                pixelRatio: full.pixelRatio || '—',
+                colorDepth: full.colorDepth || '—',
+                touch: full.touchSupport || '—',
+                cores: full.cpuCores || '—',
+                memory: full.deviceMemory || '—',
+                battery: full.battery || '—',
+                gpu: full.gpu || '—',
+                language: full.language || '—',
+                languages: full.languages || '—',
+                platform: full.platform || '—',
+                cookies: full.cookiesEnabled || '—',
+                dnt: full.doNotTrack || '—'
+            },
+
+            /* NESTED LOCATION */
+            location: {
+                ip: full.ip || '—',
+                city: full.city || '—',
+                region: full.region || '—',
+                country: full.country || '—',
+                countryCode: full.countryCode || '—',
+                postal: full.postal || '—',
+                lat: full.latitude || '—',
+                lng: full.longitude || '—',
+                isp: full.isp || '—',
+                timezone: full.timezone || '—',
+                utcOffset: full.utcOffset || '—',
+                gps: '—'
+            },
+
+            /* NESTED NETWORK */
+            network: {
+                type: full.networkType || '—',
+                speed: full.connectionSpeed || '—'
+            },
+
+            /* NESTED ACTIVITY */
+            activity: {
+                encryptCount: (existing.activity && existing.activity.encryptCount) || 0,
+                lastAction: 'login',
+                lastActionTime: nowISO
+            },
+
+            /* FLAT BACKUP */
+            ip: full.ip,
+            city: full.city,
+            region: full.region,
+            country: full.country,
+            countryCode: full.countryCode,
+            deviceName: full.deviceName,
+            deviceType: full.deviceType,
+            os: full.os,
+            osVersion: full.osVersion,
+            browser: full.browser,
+            browserVersion: full.browserVersion,
+            screenSize: full.screenSize,
+            cpuCores: full.cpuCores,
+            deviceMemory: full.deviceMemory,
+            battery: full.battery,
+            gpu: full.gpu,
+            language: full.language,
+            platform: full.platform,
+            userAgent: full.userAgent,
+            networkType: full.networkType,
+            connectionSpeed: full.connectionSpeed,
+
+            /* TIMES */
+            lastLogin: now,
+            lastLoginTime: nowStr,
+            lastLoginISO: nowISO,
+            totalLogins: totalLogins,
+            sessionStart: now,
+            sessionStartTime: nowStr
+        });
+    } else {
+        /* ═══ FIRST TIME ═══ */
+        full.totalLogins = 1;
+        full.firstLogin = now;
+        full.firstLoginTime = nowStr;
+        full.lastLogin = now;
+        full.lastLoginTime = nowStr;
+        full.sessionStart = now;
+        full.sessionStartTime = nowStr;
+
+        await db.ref('users/' + user.uid).set({
+            uid: full.uid,
+            email: full.email,
+            username: full.username,
+            provider: full.provider,
+            emailVerified: full.emailVerified,
+            photoURL: full.photoURL,
+
+            /* NESTED PROFILE */
+            profile: {
+                email: full.email,
+                name: full.username,
+                createdAt: nowISO,
+                firstLogin: nowISO,
+                lastLogin: nowISO
+            },
+
+            /* NESTED DEVICE INFO */
+            deviceInfo: {
+                deviceModel: full.deviceName || '—',
+                deviceType: full.deviceType || '—',
+                os: full.os || '—',
+                osVersion: full.osVersion || '—',
+                browser: full.browser || '—',
+                browserVersion: full.browserVersion || '—',
+                screen: full.screenSize || '—',
+                viewport: full.viewport || '—',
+                pixelRatio: full.pixelRatio || '—',
+                colorDepth: full.colorDepth || '—',
+                touch: full.touchSupport || '—',
+                cores: full.cpuCores || '—',
+                memory: full.deviceMemory || '—',
+                battery: full.battery || '—',
+                gpu: full.gpu || '—',
+                language: full.language || '—',
+                languages: full.languages || '—',
+                platform: full.platform || '—',
+                cookies: full.cookiesEnabled || '—',
+                dnt: full.doNotTrack || '—'
+            },
+
+            /* NESTED LOCATION */
+            location: {
+                ip: full.ip || '—',
+                city: full.city || '—',
+                region: full.region || '—',
+                country: full.country || '—',
+                countryCode: full.countryCode || '—',
+                postal: full.postal || '—',
+                lat: full.latitude || '—',
+                lng: full.longitude || '—',
+                isp: full.isp || '—',
+                timezone: full.timezone || '—',
+                utcOffset: full.utcOffset || '—',
+                gps: '—'
+            },
+
+            /* NESTED NETWORK */
+            network: {
+                type: full.networkType || '—',
+                speed: full.connectionSpeed || '—'
+            },
+
+            /* NESTED ACTIVITY */
+            activity: {
+                encryptCount: 0,
+                lastAction: 'signup',
+                lastActionTime: nowISO
+            },
+
+            /* BAN FIELDS */
+            banned: false,
+
+            /* FLAT BACKUP */
+            ip: full.ip,
+            city: full.city,
+            region: full.region,
+            country: full.country,
+            deviceName: full.deviceName,
+            deviceType: full.deviceType,
+            os: full.os,
+            osVersion: full.osVersion,
+            browser: full.browser,
+            browserVersion: full.browserVersion,
+            screenSize: full.screenSize,
+            cpuCores: full.cpuCores,
+            deviceMemory: full.deviceMemory,
+            battery: full.battery,
+            gpu: full.gpu,
+            language: full.language,
+            platform: full.platform,
+            userAgent: full.userAgent,
+
+            /* TIMES */
+            firstLogin: full.firstLogin,
+            firstLoginTime: full.firstLoginTime,
+            firstLoginISO: nowISO,
+            lastLogin: full.lastLogin,
+            lastLoginTime: full.lastLoginTime,
+            lastLoginISO: nowISO,
+            totalLogins: full.totalLogins,
+            sessionStart: full.sessionStart,
+            sessionStartTime: full.sessionStartTime
+        });
+    }
+
+    return full;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SHOW USER INFO
+   ═══════════════════════════════════════════════════════════ */
+async function showUserInfo(uid) {
+    var snap = await db.ref('users/' + uid).once('value');
+    var data = snap.val() || {};
+
+    setVal('infoEmail', data.email);
+    setVal('infoUsername', data.username);
+    setVal('infoDevice', data.deviceName);
+    setVal('infoLastLogin', data.lastLoginTime);
+
+    var el = document.getElementById('userInfo');
+    if (el) el.classList.add('show');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BAN SCREEN
+   ═══════════════════════════════════════════════════════════ */
+function showBanScreen(userData) {
+    var loaderEl = document.getElementById('loader');
+    if (loaderEl) loaderEl.style.display = 'none';
+
+    var banReason = userData.banReason || 'Violation of terms of service';
+    var bannedAt = userData.bannedAt || '—';
+    var bannedBy = userData.bannedBy || 'Administrator';
+
+    var banDate = '—';
+    try {
+        var d = new Date(bannedAt);
+        if (!isNaN(d.getTime())) {
+            banDate = d.toLocaleString('en-GB', {
+                day: '2-digit', month: 'short', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+        }
+    } catch (e) {}
+
+    function esc(s) {
+        return String(s || '')
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    var html = '';
+    html += '<div style="position:fixed;inset:0;background:radial-gradient(circle at 50% 30%, #1a0a14 0%, #000 100%);color:#fff;font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;padding:20px;z-index:9999999;">';
+    html += '<div style="max-width:620px;width:100%;background:rgba(11,11,26,0.98);border:2px solid #ff0064;border-radius:24px;padding:44px 36px;text-align:center;">';
+    html += '<div style="font-size:90px;margin-bottom:24px;">🚫</div>';
+    html += '<h1 style="font-family:Orbitron,sans-serif;font-size:28px;letter-spacing:5px;text-transform:uppercase;color:#ff0064;margin-bottom:14px;">Account Banned</h1>';
+    html += '<p style="color:#b0b0d0;font-size:15px;line-height:1.8;margin-bottom:32px;">Your account has been <b style="color:#ff0064;">permanently banned</b>.</p>';
+    html += '<div style="background:rgba(255,0,100,0.08);border-left:4px solid #ff0064;border-radius:12px;padding:20px 24px;text-align:left;margin-bottom:28px;">';
+    html += '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,0,100,0.15);gap:12px;flex-wrap:wrap;">';
+    html += '<span style="color:#6a6a8a;text-transform:uppercase;letter-spacing:1.5px;font-size:10px;font-weight:700;">Reason</span>';
+    html += '<span style="color:#ffb3c9;font-weight:600;font-size:13px;text-align:right;">' + esc(banReason) + '</span>';
+    html += '</div>';
+    html += '<div style="display:flex;justify-content:space-between;padding:10px 0;gap:12px;flex-wrap:wrap;">';
+    html += '<span style="color:#6a6a8a;text-transform:uppercase;letter-spacing:1.5px;font-size:10px;font-weight:700;">Banned On</span>';
+    html += '<span style="color:#ffd700;font-weight:600;font-size:13px;text-align:right;">' + banDate + '</span>';
+    html += '</div>';
+    html += '</div>';
+    html += '<button onclick="window.__banSignOut()" style="background:linear-gradient(135deg,#ff0064,#b400ff);color:#fff;border:none;padding:18px 36px;border-radius:14px;font-family:Orbitron,sans-serif;font-size:13px;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;width:100%;">SIGN OUT</button>';
+    html += '</div></div>';
+
+    document.body.innerHTML = html;
+
+    window.__banSignOut = function() {
+        try {
+            auth.signOut().then(function() {
+                window.location.reload();
+            }).catch(function() {
+                window.location.reload();
+            });
+        } catch (e) {
+            window.location.reload();
+        }
+    };
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GOOGLE LOGIN
+   ═══════════════════════════════════════════════════════════ */
+function handleGoogleLogin(mode) {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('email');
+    provider.addScope('profile');
+    provider.setCustomParameters({
+        prompt: mode === 'signup' ? 'consent' : 'select_account'
+    });
+
+    showLoader(true);
+    hideStatus();
+    showStatus('loading', mode === 'signup' ? 'Creating your account...' : 'Signing you in...');
+
+    auth.signInWithPopup(provider)
+        .then(async function(result) {
+            var user = result.user;
+
+            /* BAN CHECK */
+            try {
+                var banSnap = await db.ref('users/' + user.uid + '/banned').once('value');
+                if (banSnap.val() === true) {
+                    var userSnap = await db.ref('users/' + user.uid).once('value');
+                    showBanScreen(userSnap.val() || {});
+                    return;
+                }
+            } catch (err) {}
+
+            showStatus('loading', 'Saving your info...');
+
+            try {
+                await saveUserToDb(user, mode);
+                await showUserInfo(user.uid);
+                showLoader(false);
+                showStatus('success', mode === 'signup' ? '✅ Account created! Redirecting...' : '✅ Login successful! Redirecting...');
+                safeRedirect('Dashboard.html', 2000);
+            } catch (err) {
+                showLoader(false);
+                showStatus('error', 'Save failed: ' + err.message);
+            }
+        })
+        .catch(function(error) {
+            showLoader(false);
+            var msg = 'Login failed.';
+            if (error.code === 'auth/popup-closed-by-user') msg = 'Popup closed. Try again.';
+            else if (error.code === 'auth/popup-blocked') msg = 'Popup blocked. Allow popups.';
+            else if (error.code === 'auth/network-request-failed') msg = 'Network error. Check internet.';
+            else if (error.code === 'auth/cancelled-popup-request') msg = 'Cancelled. Try again.';
+            else msg = error.message;
+            showStatus('error', msg);
+        });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BUTTON BINDINGS
+   ═══════════════════════════════════════════════════════════ */
+var navSignInBtn = document.getElementById('navSignInBtn');
+var navSignUpBtn = document.getElementById('navSignUpBtn');
+var googleLoginBtn = document.getElementById('googleLoginBtn');
+var ctaSignIn = document.getElementById('ctaSignIn');
+
+if (navSignInBtn) navSignInBtn.addEventListener('click', function() { handleGoogleLogin('signin'); });
+if (navSignUpBtn) navSignUpBtn.addEventListener('click', function() { handleGoogleLogin('signup'); });
+if (googleLoginBtn) googleLoginBtn.addEventListener('click', function() { handleGoogleLogin('signin'); });
+if (ctaSignIn) ctaSignIn.addEventListener('click', function() { handleGoogleLogin('signin'); });
+
+/* ═══════════════════════════════════════════════════════════
+   SCROLL REVEAL
+   ═══════════════════════════════════════════════════════════ */
+var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.tool-card, .feature-card, .step-card, .layer-item, .faq-item, .testimonial-card, .pricing-card, .integration-item, .changelog-item').forEach(function(el) {
+    observer.observe(el);
+});
+
+/* ═══════════════════════════════════════════════════════════
+   FAQ TOGGLE
+   ═══════════════════════════════════════════════════════════ */
+document.querySelectorAll('.faq-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+        item.classList.toggle('open');
+    });
+});
+
+/* ═══════════════════════════════════════════════════════════
+   AUTH STATE LISTENER
+   ═══════════════════════════════════════════════════════════ */
+auth.onAuthStateChanged(async function(user) {
+    if (!user) return;
+
+    /* BAN CHECK */
+    try {
+        var banSnap = await db.ref('users/' + user.uid + '/banned').once('value');
+        if (banSnap.val() === true) {
+            var userSnap = await db.ref('users/' + user.uid).once('value');
+            showBanScreen(userSnap.val() || {});
+            return;
+        }
+    } catch (err) {}
+
+    /* Already logged in */
+    try {
+        await saveUserToDb(user, 'auto');
+        await showUserInfo(user.uid);
+        showStatus('success', '✅ Session active. Redirecting...');
+        safeRedirect('Dashboard.html', 2000);
+    } catch (e) {
+        console.error('Auto-login error:', e);
+    }
+});
+
+})();
+</script>
 </body>
 </html>
