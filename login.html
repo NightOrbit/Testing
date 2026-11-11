@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Sign In — Gyidi Bazar</title>
+  <meta name="description" content="Sign in to Gyidi Bazar — Premium Global SaaS Earning Platform." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       VARIABLES & RESET
+       ═══════════════════════════════════════════════════════════ */
+    :root {
+      --bg-base: #020105;
+      --neon-purple: #8B5CF6;
+      --neon-pink: #D946EF;
+      --neon-cyan: #06B6D4;
+      --neon-gold: #F59E0B;
+      --text-main: #FFFFFF;
+      --text-muted: #A1A1AA;
+      --glass-bg: rgba(15, 10, 25, 0.6);
+      --glass-border: rgba(255, 255, 255, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-base);
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(217, 70, 239, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ═══════════════════════════════════════════════════════════
+       SPLIT LAYOUT
+       ═══════════════════════════════════════════════════════════ */
+    .login-wrapper {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* ─── LEFT SIDE ─── */
+    .login-left {
+      flex: 1.1;
+      padding: 60px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 1px solid var(--glass-border);
+      position: relative;
+      background: linear-gradient(180deg, rgba(2, 1, 5, 0) 0%, rgba(2, 1, 5, 0.5) 100%);
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 50px;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 20px;
+      color: white;
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+    }
+
+    .brand-text h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .brand-text span {
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--neon-cyan);
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+    }
+
+    .hero-content { max-width: 550px; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 100px;
+      background: rgba(139, 92, 246, 0.08);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      color: #C4B5FD;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 28px;
+    }
+
+    .hero-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--neon-cyan);
+      box-shadow: 0 0 12px var(--neon-cyan);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .hero-content h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(38px, 5vw, 56px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      margin-bottom: 24px;
+    }
+
+    .hero-content h2 span {
+      background: linear-gradient(90deg, #A78BFA 0%, #22D3EE 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: block;
+    }
+
+    .hero-content p {
+      color: var(--text-muted);
+      font-size: 17px;
+      font-weight: 300;
+      line-height: 1.7;
+      max-width: 480px;
+    }
+
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 500px;
+      margin-top: 40px;
+    }
+
+    .feature-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .feature-card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateX(8px);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .f-purple .feature-icon { color: #A78BFA; background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.2); }
+    .f-cyan .feature-icon { color: #22D3EE; background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.2); }
+    .f-gold .feature-icon { color: #FBBF24; background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); }
+
+    .feature-text h4 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .feature-text p { font-size: 13.5px; color: var(--text-muted); line-height: 1.5; font-weight: 300; }
+
+    /* ─── RIGHT SIDE ─── */
+    .login-right {
+      flex: 0.9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      position: relative;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid var(--glass-border);
+      border-radius: 28px;
+      padding: 45px 35px;
+      box-shadow:
+        0 30px 80px -20px rgba(0,0,0,0.9),
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 0 60px rgba(139, 92, 246, 0.08);
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 20%; right: 20%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon-purple), var(--neon-cyan), transparent);
+      opacity: 0.6;
+    }
+
+    .auth-header { text-align: center; margin-bottom: 30px; }
+    .auth-header h1 { font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+    .auth-header p { color: var(--text-muted); font-size: 14px; font-weight: 300; }
+
+    .btn {
+      width: 100%;
+      padding: 16px 20px;
+      border-radius: 14px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid transparent;
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn-google {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      margin-bottom: 24px;
+    }
+
+    .btn-google:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-google img { width: 22px; height: 22px; }
+    .btn-google:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      margin-bottom: 24px;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .divider span { padding: 0 16px; opacity: 0.7; }
+
+    .input-group { position: relative; margin-bottom: 18px; }
+
+    .input-group input {
+      width: 100%;
+      padding: 20px 18px 12px 18px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .input-group input:focus {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--neon-purple);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
+    }
+
+    .input-group input.error {
+      border-color: #EF4444;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
+    }
+
+    .input-group label {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 15px;
+      font-weight: 400;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    .input-group input:focus ~ label,
+    .input-group input:not(:placeholder-shown) ~ label {
+      top: 10px;
+      font-size: 11px;
+      color: var(--neon-purple);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .toggle-pw {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 16px;
+      transition: color 0.3s;
+      z-index: 10;
+    }
+
+    .toggle-pw:hover { color: var(--text-main); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+      color: white;
+      border: none;
+      margin-top: 8px;
+      font-size: 16px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 10px 30px -10px var(--neon-purple);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px -10px var(--neon-purple);
+    }
+
+    .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+    .secondary-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      font-size: 14px;
+      padding: 15px 20px;
+    }
+
+    .btn-outline.gold { border-color: rgba(245, 158, 11, 0.2); color: var(--neon-gold); }
+    .btn-outline.gold:hover { border-color: rgba(245, 158, 11, 0.6); background: rgba(245, 158, 11, 0.05); }
+    .btn-outline.cyan { border-color: rgba(6, 182, 212, 0.2); color: var(--neon-cyan); }
+    .btn-outline.cyan:hover { border-color: rgba(6, 182, 212, 0.6); background: rgba(6, 182, 212, 0.05); }
+    .btn-outline.white { border-color: rgba(255, 255, 255, 0.1); color: var(--text-main); }
+    .btn-outline.white:hover { border-color: rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.05); }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .auth-footer a {
+      color: var(--neon-pink);
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .auth-footer a:hover { text-shadow: 0 0 15px rgba(217, 70, 239, 0.5); color: #fff; }
+
+    /* ═══════════════════════════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .login-wrapper { flex-direction: column; }
+      .login-right { order: 1; padding: 50px 20px 40px 20px; min-height: 100vh; }
+      .login-left { order: 2; padding: 50px 20px; border-right: none; border-top: 1px solid var(--glass-border); text-align: center; }
+      .brand-header { justify-content: center; margin-bottom: 30px; }
+      .hero-content { margin: 0 auto; }
+      .hero-content p { margin: 0 auto; }
+      .feature-list { margin: 40px auto 0; text-align: left; }
+    }
+
+    @media (max-width: 576px) {
+      .auth-card { padding: 35px 24px; border-radius: 24px; }
+      .hero-content h2 { font-size: 36px; }
+      .auth-header h1 { font-size: 24px; }
+      .btn { padding: 15px 18px; font-size: 14.5px; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       LOADING OVERLAY (matches UI-utils)
+       ═══════════════════════════════════════════════════════════ */
+    #global-loading {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 1, 5, 0.85);
+      backdrop-filter: blur(15px);
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    #global-loading.active { display: flex; }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid rgba(255,255,255,0.05);
+      border-top-color: var(--neon-cyan);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+    }
+
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ LOADING OVERLAY ═══ -->
+  <div id="global-loading">
+    <div class="spinner"></div>
+    <div style="color: var(--neon-cyan); font-size: 13px; font-weight: 600; letter-spacing: 2px;">
+      PLEASE WAIT...
+    </div>
+  </div>
+
+  <div class="login-wrapper">
+
+    <!-- ═══ LEFT SIDE ═══ -->
+    <div class="login-left">
+      <div class="brand-header">
+        <div class="brand-mark">GB</div>
+        <div class="brand-text">
+          <h1>Gyidi Bazar</h1>
+          <span>Digital Earning Platform</span>
+        </div>
+      </div>
+
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="dot"></span> Trusted across 12+ countries
+        </div>
+        <h2>Earn in PKR & USD.<span>Build Lifetime Income.</span></h2>
+        <p>Join the globally recognized digital earning ecosystem. Connect with 300+ global brands and withdraw real cash securely.</p>
+      </div>
+
+      <div class="feature-list">
+        <div class="feature-card f-purple">
+          <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
+          <div class="feature-text">
+            <h4>Instant Withdrawals</h4>
+            <p>Cash out securely via JazzCash, EasyPaisa, or Bank within 24 hours.</p>
+          </div>
+        </div>
+
+        <div class="feature-card f-cyan">
+          <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="feature-text">
+            <h4>Enterprise-Grade Security</h4>
+            <p>PECA 2016 compliant with AES-256 encryption and 24/7 monitoring.</p>
+          </div>
+        </div>
+
+        <div class="feature-card f-gold">
+          <div class="feature-icon"><i class="fa-solid fa-store"></i></div>
+          <div class="feature-text">
+            <h4>300+ Global Brands</h4>
+            <p>Earn up to 20% lifetime commission on top global platforms.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ RIGHT SIDE ═══ -->
+    <div class="login-right">
+      <div class="auth-card">
+
+        <div class="auth-header">
+          <h1>Welcome Back</h1>
+          <p>Sign in to continue to Gyidi Bazar</p>
+        </div>
+
+        <!-- Google Login -->
+        <button class="btn btn-google" id="google-login-btn" type="button">
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23FFC107' d='M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z'/%3E%3Cpath fill='%23e53935' d='M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z'/%3E%3Cpath fill='%234caf50' d='M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z'/%3E%3Cpath fill='%231565c0' d='M43.611,20.083L43.595,20L24,20v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C40.483,35.58,44,30.2,44,24C44,22.659,43.862,21.35,43.611,20.083z'/%3E%3C/svg%3E" alt="Google">
+          Connect with Google
+        </button>
+
+        <div class="divider">
+          <span>OR LOGIN WITH EMAIL</span>
+        </div>
+
+        <!-- Email/Password Form -->
+        <form id="login-form" onsubmit="event.preventDefault();">
+          <div class="input-group">
+            <input type="email" id="u-email" placeholder=" " required autocomplete="email" autofocus>
+            <label for="u-email">Email Address</label>
+          </div>
+
+          <div class="input-group">
+            <input type="password" id="u-pass" placeholder=" " required autocomplete="current-password">
+            <label for="u-pass">Password</label>
+            <i class="fa-regular fa-eye toggle-pw" id="toggle-password-icon"></i>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="login-btn">
+            Sign In
+          </button>
+        </form>
+
+        <div class="secondary-actions">
+          <a href="reset-password.html" class="btn btn-outline gold">
+            <i class="fa-solid fa-key"></i> Forgot Password?
+          </a>
+
+          <a href="help.html" class="btn btn-outline cyan">
+            <i class="fa-regular fa-circle-question"></i> Help Center
+          </a>
+
+          <a href="about-us.html" class="btn btn-outline white">
+            <i class="fa-regular fa-address-card"></i> About Us
+          </a>
+        </div>
+
+        <div class="auth-footer">
+          Don't have an account? <a href="signup.html">Create Free Account</a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SINGLE SCRIPT TAG — core-loader handles everything
+       ═══════════════════════════════════════════════════════════ -->
+  <script src="system/core-loarder.js"></script>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LOGIN PAGE LOGIC
+       Waits for preLoginReady event from core-loader, then binds
+       ═══════════════════════════════════════════════════════════ -->
+  <script>
+  (function () {
+    'use strict';
+
+    /* ═══ BIND AFTER core-loader IS READY ═══ */
+    document.addEventListener('preLoginReady', initLoginPage);
+
+    // Fallback: if event already fired before this listener attached
+    if (window.PreLoginHandlers) {
+      setTimeout(initLoginPage, 100);
+    }
+
+    function initLoginPage() {
+      if (window.__loginPageReady) return;
+      window.__loginPageReady = true;
+
+      const form = document.getElementById('login-form');
+      const emailInput = document.getElementById('u-email');
+      const passInput = document.getElementById('u-pass');
+      const loginBtn = document.getElementById('login-btn');
+      const googleBtn = document.getElementById('google-login-btn');
+      const togglePw = document.getElementById('toggle-password-icon');
+
+      /* ═══ TOGGLE PASSWORD VISIBILITY ═══ */
+      if (togglePw) {
+        togglePw.addEventListener('click', () => {
+          const type = passInput.type === 'password' ? 'text' : 'password';
+          passInput.type = type;
+          togglePw.classList.toggle('fa-eye');
+          togglePw.classList.toggle('fa-eye-slash');
+        });
+      }
+
+      /* ═══ CLEAR ERROR ON INPUT ═══ */
+      [emailInput, passInput].forEach(el => {
+        if (!el) return;
+        el.addEventListener('input', () => {
+          el.classList.remove('error');
+        });
+      });
+
+      /* ═══ EMAIL/PASSWORD LOGIN ═══ */
+      if (form) {
+        form.addEventListener('submit', handleEmailLogin);
+      }
+
+      async function handleEmailLogin(e) {
+        if (e) e.preventDefault();
+
+        const email = emailInput.value.trim().toLowerCase();
+        const password = passInput.value;
+
+        // ─── Client-side validation ───
+        if (!email) {
+          emailInput.classList.add('error');
+          emailInput.focus();
+          window.UIUtils?.toast('Please enter your email address', 'error');
+          return;
+        }
+        if (!window.PreLoginHandlers.isValidGmail(email)) {
+          emailInput.classList.add('error');
+          emailInput.focus();
+          window.UIUtils?.toast('Please enter a valid @gmail.com address', 'error');
+          return;
+        }
+        if (!password) {
+          passInput.classList.add('error');
+          passInput.focus();
+          window.UIUtils?.toast('Please enter your password', 'error');
+          return;
+        }
+
+        // ─── Disable button + loader ───
+        setLoading(loginBtn, true, 'Signing in...');
+        window.UIUtils?.showLoad('VERIFYING IDENTITY...');
+
+        try {
+          await window.PreLoginHandlers.login(email, password);
+
+          window.UIUtils?.hideLoad();
+          window.UIUtils?.toast('Login successful! Redirecting...', 'success');
+
+          // Handle post-login redirect
+          const redirectTo = sessionStorage.getItem('redirectAfterLogin') || 'Dashboard.html';
+          sessionStorage.removeItem('redirectAfterLogin');
+
+          setTimeout(() => {
+            window.location.replace(redirectTo);
+          }, 800);
+
+        } catch (err) {
+          window.UIUtils?.hideLoad();
+          setLoading(loginBtn, false);
+
+          handleLoginError(err);
+        }
+      }
+
+      function handleLoginError(err) {
+        const msg = err && err.message ? err.message : 'Login failed';
+
+        if (msg === 'NO_ACCOUNT') {
+          emailInput.classList.add('error');
+          emailInput.focus();
+          window.UIUtils?.toast(
+            'No account found with this email. Please sign up first.',
+            'error', 5000
+          );
+        }
+        else if (msg.startsWith('PERM_BANNED')) {
+          const reason = msg.replace('PERM_BANNED:', '').trim();
+          window.UIUtils?.toast(
+            'Your account is permanently banned. ' + (reason || 'Contact support.'),
+            'error', 6000
+          );
+        }
+        else if (msg.startsWith('TEMP_BANNED')) {
+          const reason = msg.replace('TEMP_BANNED:', '').trim();
+          window.UIUtils?.toast(
+            'Account temporarily banned. ' + (reason || ''),
+            'error', 6000
+          );
+        }
+        else if (msg === 'GOOGLE_ACCOUNT') {
+          window.UIUtils?.toast(
+            'This account uses Google Sign-In. Please use the Google button above.',
+            'warning', 5000
+          );
+        }
+        else if (
+          msg.includes('wrong-password') ||
+          msg.includes('invalid-credential') ||
+          msg.includes('invalid-login-credentials')
+        ) {
+          passInput.classList.add('error');
+          passInput.focus();
+          window.UIUtils?.toast('Incorrect password. Please try again.', 'error');
+        }
+        else if (msg.includes('user-not-found')) {
+          emailInput.classList.add('error');
+          emailInput.focus();
+          window.UIUtils?.toast('No account found. Please sign up first.', 'error');
+        }
+        else if (msg.includes('too-many-requests')) {
+          window.UIUtils?.toast(
+            'Too many attempts. Please wait a few minutes and try again.',
+            'warning', 6000
+          );
+        }
+        else if (msg.includes('network')) {
+          window.UIUtils?.toast('Network error. Check your internet.', 'error');
+        }
+        else {
+          window.UIUtils?.toast(msg || 'Login failed. Please try again.', 'error');
+        }
+      }
+
+      /* ═══ GOOGLE LOGIN ═══ */
+      if (googleBtn) {
+        googleBtn.addEventListener('click', handleGoogleLogin);
+      }
+
+      async function handleGoogleLogin() {
+        setLoading(googleBtn, true, 'Connecting...');
+        window.UIUtils?.showLoad('CONNECTING GOOGLE...');
+
+        try {
+          const result = await window.PreLoginHandlers.googleLogin();
+
+          window.UIUtils?.hideLoad();
+          window.UIUtils?.toast(
+            result.isNew ? 'Account created! Redirecting...' : 'Welcome back! Redirecting...',
+            'success'
+          );
+
+          const redirectTo = sessionStorage.getItem('redirectAfterLogin') || 'Dashboard.html';
+          sessionStorage.removeItem('redirectAfterLogin');
+
+          setTimeout(() => {
+            window.location.replace(redirectTo);
+          }, 800);
+
+        } catch (err) {
+          window.UIUtils?.hideLoad();
+          setLoading(googleBtn, false);
+
+          const msg = err && err.message ? err.message : '';
+
+          if (msg === 'PERM_BANNED') {
+            window.UIUtils?.toast('This account is permanently banned.', 'error', 6000);
+          }
+          else if (msg.includes('popup-closed-by-user')) {
+            window.UIUtils?.toast('Popup closed. Please try again.', 'info');
+          }
+          else if (msg.includes('popup-blocked')) {
+            window.UIUtils?.toast(
+              'Popup blocked. Please allow popups and try again.',
+              'warning', 5000
+            );
+          }
+          else if (msg.includes('cancelled-popup-request')) {
+            window.UIUtils?.toast('Request cancelled. Try again.', 'info');
+          }
+          else if (msg.includes('network')) {
+            window.UIUtils?.toast('Network error. Check your internet.', 'error');
+          }
+          else {
+            window.UIUtils?.toast(msg || 'Google login failed.', 'error');
+          }
+        }
+      }
+
+      /* ═══ LOADING STATE HELPER ═══ */
+      function setLoading(btn, loading, text) {
+        if (!btn) return;
+        if (loading) {
+          btn.disabled = true;
+          btn.dataset.originalHtml = btn.innerHTML;
+          btn.innerHTML = `
+            <span style="display:inline-block;width:16px;height:16px;
+              border:2px solid rgba(255,255,255,0.3);
+              border-top-color:#fff;border-radius:50%;
+              animation:spin 0.7s linear infinite;"></span>
+            ${text || 'Please wait...'}
+          `;
+        } else {
+          btn.disabled = false;
+          if (btn.dataset.originalHtml) {
+            btn.innerHTML = btn.dataset.originalHtml;
+          }
+        }
+      }
+
+      console.log('%c[login.html] ✅ Ready', 'color:#10B981;font-weight:bold;');
+    }
+
+  })();
+  </script>
+
+  <!-- spin animation for button loaders -->
+  <style>
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+
+</body>
+</html>
